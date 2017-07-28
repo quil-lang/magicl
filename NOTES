@@ -1,0 +1,18 @@
+ -*- mode: text -*-
+
+Rif wrote:
+
+There are sometimes parameters named T.  CFFI seems not to like this,
+so we just change the name to TT.  This would break if there were any
+argument named TT, so watch out.
+
+Don't understand export behavior.  It seems like compilation gets the
+symbol interned in common-lisp?
+
+There probably ought to be more type checking somewhere.
+
+Tony wrote: 
+
+last comment first -- type checking can probably be handled via
+MATLISP on top.
+
