@@ -2,6 +2,7 @@
   (:nicknames #:generate-interface)
   (:use :common-lisp
         :foreign-numeric-vector
+        :fnv-utils
         :cffi-types)
   (:export #:generate-blapack-files))
 
@@ -33,7 +34,7 @@
 	(cur-token nil))
     (map nil
 	 (lambda (c)
-	   (cond 
+	   (cond
 	     ((member c '(#\Space #\,))
 	      (when cur-token
 		(push (to-string (nreverse cur-token)) tokens)
@@ -48,38 +49,73 @@
     (when cur-token
       (push (to-string (nreverse cur-token)) tokens))
     (nreverse tokens)))
-				      
+
 (defparameter *lines* nil
   "This special variable holds the lines of the file currently being
   parsed.  It's a kludge that makes life easy.")
 
 (defparameter *types* '(("character") ("character*1") ("character*6")
 			("character*")
-			("integer") ("real") 
-			("complex") ("double" "precision") 
+			("integer") ("real")
+			("complex") ("double" "precision")
 			("double" "complex") ("complex*16")
 			("logical")))
 
-(defparameter *typemap* 
-  '((("character") :string)
-    (("character*") :string)
-    (("character*1") :string)
-    (("character*6") :string)
-    (("integer") int32)                   ; Not clear this is right on 64 bit machines?
-    (("real") float)
-    (("double" "precision") double)
-    (("complex") complex-float)           ; :complex-float and :complex-double
-    (("double" "complex") complex-double) ; are from foreign-numeric-vector
-    (("complex*16") complex-double)
-    (("logical") :logical)
-    (("none") :void)))
+(defparameter *typemap*
+  '((("character")          :fortran-string)
+    (("character*")         :fortran-string)
+    (("character*1")        :fortran-string)
+    (("character*6")        :fortran-string)
+    (("integer")            :fortran-int)
+    (("real")               :fortran-single-float)
+    (("double" "precision") :fortran-double-float)
+    (("complex")            :fortran-complex-single-float)
+    (("double" "complex")   :fortran-complex-double-float)
+    (("complex*16")         :fortran-complex-double-float)
+    (("logical")            :fortran-logical)
+    (("none")               :fortran-none)))
 
+(defparameter *normalized-type-to-cffi-type*
+  '((:fortran-string               :string)
+    (:fortran-int                  fortran-int)
+    (:fortran-single-float         fortran-float)
+    (:fortran-double-float         fortran-double)
+    (:fortran-complex-single-float fortran-complex-float)
+    (:fortran-complex-double-float fortran-complex-double)
+    (:fortran-logical              fortran-logical)
+    (:fortran-none                 :void)))
+
+(defparameter *array-of-normalized-type-to-cffi-type*
+  '((:fortran-string               :pointer)
+    (:fortran-int                  cffi-fnv-int32)
+    (:fortran-single-float         cffi-fnv-float)
+    (:fortran-double-float         cffi-fnv-double)
+    (:fortran-complex-single-float cffi-fnv-complex-float)
+    (:fortran-complex-double-float cffi-fnv-complex-double)
+    (:fortran-none                 :void)))
+
+(defun normalized-type-to-cffi-type (norm)
+  (etypecase norm
+    (keyword
+     (let ((found (assoc norm *normalized-type-to-cffi-type*)))
+       (assert found)
+       (second found)))
+
+    (list
+     (destructuring-bind (compound-type base-type rank)
+         norm
+       (assert (eq ':fortran-array compound-type))
+       (assert (and (integerp rank)
+                    (<= 1 rank)))
+       (let ((found (assoc base-type *array-of-normalized-type-to-cffi-type*)))
+         (assert found)
+         (second found))))))
 
 (defparameter *ctype-to-fortrantype*
   '((:string :string)
-    (int32 fortran-int)
-    (float fortran-float)
-    (double fortran-double)
+    (:int32 fortran-int)
+    (:float fortran-float)
+    (:double fortran-double)
     (complex-float fortran-complex-float)
     (complex-double fortran-complex-double)
     (:logical fortran-logical)))
@@ -92,7 +128,7 @@
 indicate a continued line.  We'll pop off these $'s and put them
 together into one line, and return that extended line and the remainder."
   (let ((line (pop *lines*)))
-    (loop while (and (>= (length (first *lines*)) 6) 
+    (loop while (and (>= (length (first *lines*)) 6)
 		     (char= (char (first *lines*) 5) #\$)) do
           (setf line (concatenate 'string line (subseq (pop *lines*) 6))))
     (mapcar #'string-downcase (tokenize line))))
@@ -116,19 +152,19 @@ remaining lines."
     (values name (butlast vars) return-type)))
 
 (defun extract-type (line)
-  (let ((type 
-	 (find-if (lambda (e) 
+  (let ((type
+	 (find-if (lambda (e)
 		    (every #'string= e (subseq line 0 (length e))))
 		  *types*)))
     (unless type
       (error "Can't find type: ~A" line))
     (values type (subseq line (length type)))))
-		  
+
 (defun fill-in-type (names type vars array-maps)
   (mapcar (lambda (v)
 	    (let ((pair (assoc v names :test #'string=)))
 	      (when pair
-		(setf (cdr pair) 
+		(setf (cdr pair)
 		      (append type
 			      (cdr (assoc v array-maps :test #'string=)))))))
 	  vars))
@@ -149,7 +185,7 @@ remaining lines."
 		   (setf in-array nil)))
 		(in-array
 		 (push i in-array))
-		(t 
+		(t
 		 (push i keepers)))
 	  (setf prev i))
     (values (nreverse keepers) (nreverse array-maps))))
@@ -167,11 +203,28 @@ remaining lines."
 		  (fill-in-type names type vars array-maps))))))
     names))
 
+(defstruct fortran-function
+  name
+  return-type
+  arguments)
+
 (defun parse-fortran-file (fortran-file)
+  (format *trace-output* "; Reading Fortran file: ~A~%" fortran-file)
+  (finish-output *trace-output*)
+  ;; Collect the lines
   (setf *lines* (read-lines fortran-file))
-    (multiple-value-bind (name vars return-type)
-	(parse-signature)
-      (values name (parse-argument-types vars) return-type)))
+  ;; Remove comments
+  (setf *lines* (delete-if (lambda (line)
+                             (or (zerop (length line))
+                                 (char= #\* (char line 0))
+                                 (char= #\c (char line 0))))
+                           *lines*))
+  (multiple-value-bind (name vars return-type)
+      (parse-signature)
+    (make-fortran-function
+     :name name
+     :return-type return-type
+     :arguments (parse-argument-types vars))))
 
 ;; Edit these if you want to change the input/output locations!
 (defparameter *basedir* #p"/home/rif/software/LAPACK/")
@@ -182,138 +235,98 @@ remaining lines."
                              (asdf:find-system
                               :magicl-gen))))))
 
-(defmacro fortran-dir-parsing-fn (fn-name fortran-files-wildcard-string)
-  `(defun ,fn-name  (&optional (basedir *basedir*))
-     (let ((files
-	    (directory
-	     (pathname 
-	      (concatenate 'string (namestring basedir)
-			   ,fortran-files-wildcard-string)))))
-       (mapcar (lambda (f)
-		 (multiple-value-bind (name vars ret)
-		     (parse-fortran-file f)
-		   (list name vars ret)))
-	       files))))
-
-;; above macro WHEN PROPERLY written (still need to verify the above)
-;; should simplify the following two functions into something like:
-;;
-;; (defvar *basedir* "testme/")
-;; (fortran-dir-parsing-fn my-parse-blas-files "BLAS/SRC/*.f") ; slime: C-c M-m
-;; (fortran-dir-parsing-fn my-parse-lapack-files "SRC/*.f")    ; slime: C-c M-m
-;; 
-;; The reason is that we'd like to add in other Fortran libraries if
-;; possible, and factor out the auto-gen bindings into a
-;; cffi-fortran-grovel package.
-
 (defun parse-blas-files (&optional (basedir *basedir*))
   (let ((files
 	 (directory
-	  (pathname 
+	  (pathname
 	   (concatenate 'string
 			(namestring basedir) "BLAS/SRC/*.f")))))
-    (mapcar (lambda (f)
-	      (multiple-value-bind (name vars ret)
-		  (parse-fortran-file f)
-		(list name vars ret)))
-	    files)))
+    (mapcar #'parse-fortran-file files)))
 
-(defun parse-lapack-files (&optional (basedir *basedir*)) 
+(defun parse-lapack-files (&optional (basedir *basedir*))
   (let ((files
 	 (directory
-	  (pathname 
+	  (pathname
 	   (concatenate 'string (namestring basedir) "SRC/*.f")))))
-    (mapcar (lambda (f)
-	      (multiple-value-bind (name vars ret)
-		  (parse-fortran-file f)
-		(list name vars ret)))
-	    files)))
+    (mapcar #'parse-fortran-file files)))
+
+(defun kw (s)
+  (intern (string s) :keyword))
+
+(defun lookup-type (type-string-list)
+  (let ((found-type nil)
+        (match-length 0))
+    (loop :for (fortran-type-tokens normalized-type) :in *typemap*
+          :for mismatch := (or (mismatch type-string-list fortran-type-tokens :test #'string-equal)
+                               (length type-string-list))
+          :when (> mismatch match-length) :do
+            (setf match-length mismatch
+                  found-type normalized-type))
+    (assert found-type () "Didn't find a type for ~S" type-string-list)
+    (let ((rest (subseq type-string-list match-length)))
+      (if (null rest)
+          found-type
+          `(:fortran-array ,found-type ,(length rest))))))
 
 
-(defun lookup-type (type-string-list &optional (return-type nil))
-  (let ((base-type
-	 (cadr 
-	  (find-if
-	   (lambda (type-map)
-	     (and (>= (length type-string-list) (length type-map))
-		  (every #'string= 
-			 type-map
-			 (subseq type-string-list 0 (length type-map)))))
-	   *typemap*
-	   :key #'car))))
-    (if (member "*" type-string-list :test #'string=)
-	(cffi-type-to-fnv-type base-type)
-	(if return-type base-type
-	    (cffi-type-to-fortran-type base-type)))))
-
-
-(defun fortran-transform (name)
+(defun fortran-mangle-name (name)
   "Turns a fortran library function into a C library function.  May
 need to be customized."
   (concatenate 'string name "_"))
 
-(defun safe-string (string)
-  "Use of T as an argument is a proble -- in particular, there are
-issues with CFFI when using T as a function arg vs. the CL value."
-  (if (string= string "T") "TT" string))
-
 (defun generate-cffi-interface (parsed-representation)
-  (destructuring-bind (name vars return-type) parsed-representation
-    `(cffi::defcfun 
-      (,(fortran-transform name) ,(intern 
-	       (concatenate 'string "%" (string-upcase name))))
-      ,(lookup-type return-type t)
-      ,@(mapcar (lambda (v)
-		  (list (intern (safe-string (string-upcase (car v))))
-			(lookup-type (cdr v))))
-		vars))))
+  (let ((name (fortran-function-name parsed-representation))
+        (vars (fortran-function-arguments parsed-representation))
+        (return-type (fortran-function-return-type parsed-representation)))
+    `(cffi::defcfun
+         ;; (name lisp-name)
+         (,(fortran-mangle-name name) ,(intern
+                                      (concatenate 'string "%" (string-upcase name))))
+         ;; return type
+         ,(normalized-type-to-cffi-type (lookup-type return-type))
+       ;; params and their types
+       ,@(mapcar (lambda (v)
+                   (list (intern (string-upcase (car v)) *package*)
+                         (normalized-type-to-cffi-type (lookup-type (cdr v)))))
+                 vars))))
 
-(defun terpri2 (str)
-  "Square the terpri!"
-  (terpri str) (terpri str))
-
-(defun generate-bindings-file (filename package-name nickname bindings
+(defun generate-bindings-file (filename package-name bindings
 			       &optional (outdir *outdir*))
   "This does the bulk of the work in getting things automagically
 done, and is used by generate-blas-bindings etc to automagically do
 the CFFI binding file."
-  (with-open-file (f (make-pathname :name filename 
-				    :type "lisp" 
-				    :defaults outdir)
-		     :direction :output
-		     :if-exists :supersede)
-    (write 
-     `(defpackage ,package-name
-       (:nicknames ,nickname)
-       (:use :common-lisp :cffi :foreign-numeric-vector
-             :cffi-types))
-     :stream f)
-    (terpri2 f)
-    (write 
-     `(in-package ,package-name)
-     :stream f)
-    (terpri2 f)
-    (map nil
-	 (lambda (cffi-def)
-	   (write cffi-def :stream f)
-	   (terpri f)
-	   (write `(export ',(cadadr cffi-def) ,nickname) :stream f)
-	   (terpri2 f))
-	 bindings)))
+  (let ((*print-pretty* t))
+    (with-open-file (f (make-pathname :name filename
+                                      :type "lisp"
+                                      :defaults outdir)
+                       :direction :output
+                       :if-exists :supersede)
+
+      (prin1 `(in-package ,package-name) f)
+      (terpri f)
+      (terpri f)
+      (dolist (cffi-def bindings)
+        (prin1 cffi-def f)
+        (terpri f)
+        (prin1 `(export ',(cadadr cffi-def) ',package-name) f)
+        (terpri f)
+        (terpri f)))))
 
 (defun generate-blas-file ()
-  (generate-bindings-file 
-   "blas-cffi"
-   :magicl.blas-cffi
-   :blas-cffi
-   (mapcar #'generate-cffi-interface (parse-blas-files))))
+  (let* ((package-name '#:magicl.blas-cffi)
+         (*package* (find-package package-name)))
+    (generate-bindings-file
+     "blas-cffi"
+     package-name
+     (mapcar #'generate-cffi-interface (parse-blas-files)))))
 
 (defun generate-lapack-file ()
-  (generate-bindings-file 
-   "lapack-cffi"
-   :magicl.lapack-cffi
-   :lapack-cffi
-   (mapcar #'generate-cffi-interface (parse-lapack-files))))
+  (let* ((package-name '#:magicl.lapack-cffi)
+         (*package* (find-package package-name)))
+    (generate-bindings-file
+     "lapack-cffi"
+     '#:magicl.lapack-cffi
+     (mapcar #'generate-cffi-interface (parse-lapack-files)))))
 
 (defun generate-blapack-files (&optional (basedir *basedir*))
   (let ((*basedir* basedir))
