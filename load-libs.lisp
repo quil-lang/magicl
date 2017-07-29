@@ -1,5 +1,7 @@
 (in-package #:magicl)
 
+;; useful command: nm -jgU
+
 ;; EDIT THESE VARIABLES TO POINT TO YOUR LIBRARIES!
 
 
@@ -28,16 +30,27 @@
 
 |#
 
+;;; TODO:
+;;;
+;;; define library name
+;;; add library to defcfun
 
 (eval-when (:compile-toplevel :load-toplevel)
 
 
 #+darwin (progn
-	   (defparameter *gfortran-lib* nil)
+           (defparameter *use-brew* nil)
+	   (defparameter *gfortran-lib* (if *use-brew*
+                                            "/usr/local/opt/gcc/lib/gcc/7/libgfortran.dylib"
+                                            nil))
 	   (defparameter *blas-lib*
-	     "/System/Library/Frameworks/Accelerate.framework/Frameworks/vecLib.framework/Versions/A/libBLAS.dylib")
+             (if *use-brew*
+                 "/usr/local/opt/lapack/lib/libblas.dylib"
+                 "/System/Library/Frameworks/Accelerate.framework/Frameworks/vecLib.framework/Versions/A/libBLAS.dylib"))
 	   (defparameter *lapack-lib*
-	     "/System/Library/Frameworks/Accelerate.framework/Frameworks/vecLib.framework/Versions/A/libLAPACK.dylib"))
+             (if *use-brew*
+                 "/usr/local/opt/lapack/lib/liblapack.dylib"
+                 "/System/Library/Frameworks/Accelerate.framework/Frameworks/vecLib.framework/Versions/A/libLAPACK.dylib")))
 #-darwin (progn
 	   (defparameter *gfortran-lib* "libgfortran.so.3")
 	   (defparameter *blas-lib* "libblas.so")
