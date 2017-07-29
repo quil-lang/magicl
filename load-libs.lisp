@@ -1,11 +1,4 @@
-;; Copyright rif 2006.
-;; Modified BSD License (see LICENSE file in this directory).
-
-(defpackage :org.middleangle.load-blapack-libs
-  (:use :common-lisp :cffi)
-  (:export *blapack-libs-loaded*))
-
-(in-package :org.middleangle.load-blapack-libs)
+(in-package #:magicl)
 
 ;; EDIT THESE VARIABLES TO POINT TO YOUR LIBRARIES!
 

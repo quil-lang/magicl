@@ -1,12 +1,4 @@
-;; Copyright rif 2006.
-;; Modified BSD License (see LICENSE file in this directory).
-
-(defpackage :org.middleangle.cl-blapack
-  (:nicknames :cl-blapack)
-  (:use :common-lisp :foreign-numeric-vector :blas-cffi)
-  (:export :with-blapack))
-
-(in-package :org.middleangle.cl-blapack)
+(in-package #:magicl)
 
 ;; Import/Export BLAS-CFFI symbols
 (do-external-symbols (s :blas-cffi)
@@ -17,7 +9,7 @@
 ;; such as %XERBLA and %LSAME are defined in both LAPACK and BLAS and
 ;; we want to use the BLAS versions.
 (do-external-symbols (s :lapack-cffi)
-  (unless (find-symbol (symbol-name s) :cl-blapack)
+  (unless (find-symbol (symbol-name s) :magicl)
     (import s)
     (export s)))
 

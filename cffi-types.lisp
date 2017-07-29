@@ -1,19 +1,4 @@
-;; Copyright rif 2006.
-;; Modified BSD License (see LICENSE file in this directory).
-
-(defpackage :org.middleangle.blapack-cffi-types
-  (:nicknames :blapack-cffi-types)
-  (:use :common-lisp :cffi :fnv)
-
-  (:export :fortran-int
-           :fortran-float
-           :fortran-double
-           :fortran-complex-float
-           :fortran-complex-double
-           :fortran-logical
-           :logical))
-
-(in-package :org.middleangle.blapack-cffi-types)
+(in-package #:magicl.cffi-types)
 
 (defmacro define-fortran-type (name actual-type)
   "Define types for interfacing with fortran code.  Uses

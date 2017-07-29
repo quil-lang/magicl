@@ -1,12 +1,8 @@
-;; Copyright rif 2006.
-;; Modified BSD License (see LICENSE file in this directory).
-
-(defpackage :org.middleangle.cl-blapack-examples
-  (:nicknames :blapack-examples)
-  (:use :common-lisp :fnv :fnv-utils :cl-blapack)
+(defpackage #:magicl-examples
+  (:use :common-lisp :fnv :fnv-utils :magicl)
   (:export :simple-example))
 
-(in-package :org.middleangle.cl-blapack-examples)
+(in-package #:magicl-examples)
 
 ;; This is a demonstration of the features of the CL blapack
 ;; interface.  We are working with BLAS/LAPACK (henceforth blapack) at
@@ -60,5 +56,3 @@
 	    (%dgemm "N" "N" 2 2 2 1.0d0 V 2 Df 2 0.0d0 Mri 2)
 	    (%dgemm "N" "T" 2 2 2 1.0d0 Mri 2 V 2 0.0d0 Mr 2)
 	    (format t "Reconstructed M = ~A~%" Mr)))))))
-
-;; (simple-example)

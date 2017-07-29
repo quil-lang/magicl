@@ -1,17 +1,11 @@
-;; Copyright rif 2006.
-;; Modified BSD License (see LICENSE file in this directory).
-
-;; minimal changes, Copyright 2008, AJ Rossini <blindglobe@gmail.com>
-;; Similar license.
-
-(defpackage :org.middleangle.generate-blapack-interface
-  (:nicknames :generate-blapack-interface)
+(defpackage #:magicl.generate-interface
+  (:nicknames #:generate-interface)
   (:use :common-lisp
         :foreign-numeric-vector
-        :blapack-cffi-types)
-  (:export :generate-blapack-files))
+        :cffi-types)
+  (:export #:generate-blapack-files))
 
-(in-package :org.middleangle.generate-blapack-interface)
+(in-package #:magicl.generate-interface)
 
 (declaim (optimize (safety 3) (debug 3) (speed 1)))
 
@@ -186,7 +180,7 @@ remaining lines."
                  (pathname-directory
                   (truename (asdf:system-definition-pathname
                              (asdf:find-system
-                              :org.middleangle.cl-blapack-gen))))))
+                              :magicl-gen))))))
 
 (defmacro fortran-dir-parsing-fn (fn-name fortran-files-wildcard-string)
   `(defun ,fn-name  (&optional (basedir *basedir*))
@@ -292,7 +286,7 @@ the CFFI binding file."
      `(defpackage ,package-name
        (:nicknames ,nickname)
        (:use :common-lisp :cffi :foreign-numeric-vector
-             :blapack-ffi-types))
+             :cffi-types))
      :stream f)
     (terpri2 f)
     (write 
@@ -310,14 +304,14 @@ the CFFI binding file."
 (defun generate-blas-file ()
   (generate-bindings-file 
    "blas-cffi"
-   :org.middleangle.cl-blapack.blas-cffi
+   :magicl.blas-cffi
    :blas-cffi
    (mapcar #'generate-cffi-interface (parse-blas-files))))
 
 (defun generate-lapack-file ()
   (generate-bindings-file 
    "lapack-cffi"
-   :org.middleangle.cl-blapack.lapack-cffi
+   :magicl.lapack-cffi
    :lapack-cffi
    (mapcar #'generate-cffi-interface (parse-lapack-files))))
 
