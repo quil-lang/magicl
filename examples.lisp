@@ -1,6 +1,6 @@
 (defpackage #:magicl-examples
   (:use :common-lisp :fnv :fnv-utils :magicl)
-  (:export :simple-example))
+  (:export :dot-example))
 
 (in-package #:magicl-examples)
 

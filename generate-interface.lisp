@@ -159,7 +159,7 @@ remaining lines."
 	(setf name (car signature)
 	      vars (subseq signature 2 (- (length signature) 1)))
         (error "Can't parse routine: ~A | ~A" (car line) line))
-    (values name (butlast vars) return-type)))
+    (values name vars return-type)))
 
 (defun extract-type (line)
   (let ((type
