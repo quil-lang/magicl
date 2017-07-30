@@ -10,6 +10,8 @@
 
 (declaim (optimize (safety 3) (debug 3) (speed 1)))
 
+;; can we use FSBV?
+
 (defun read-lines (file)
   "Returns a list of strings, one string per line of file."
   (with-open-file (f file :direction :input)
@@ -76,30 +78,34 @@
     (("none")               :fortran-none)))
 
 (defparameter *normalized-type-to-cffi-type*
-  '((:fortran-string               :string)
-    (:fortran-int                  fortran-int)
-    (:fortran-single-float         fortran-float)
-    (:fortran-double-float         fortran-double)
-    (:fortran-complex-single-float fortran-complex-float)
-    (:fortran-complex-double-float fortran-complex-double)
-    (:fortran-logical              fortran-logical)
-    (:fortran-none                 :void)))
+  ;; normalized type               reference CFFI type     immediate CFFI type   lisp type
+  '((:fortran-string               :string                 :string               string)
+    (:fortran-int                  fortran-int             :int32                (signed-byte 32))
+    (:fortran-single-float         fortran-float           :float                single-float)
+    (:fortran-double-float         fortran-double          :double               double-float)
+    (:fortran-complex-single-float fortran-complex-float   complex-single-float  (complex single-float))
+    (:fortran-complex-double-float fortran-complex-double  complex-double-float  (complex double-float))
+    (:fortran-logical              fortran-logical         :int32                (signed-byte 32))
+    (:fortran-none                 :void                   :void                 nil)))
 
 (defparameter *array-of-normalized-type-to-cffi-type*
-  '((:fortran-string               :pointer)
-    (:fortran-int                  cffi-fnv-int32)
-    (:fortran-single-float         cffi-fnv-float)
-    (:fortran-double-float         cffi-fnv-double)
-    (:fortran-complex-single-float cffi-fnv-complex-float)
-    (:fortran-complex-double-float cffi-fnv-complex-double)
-    (:fortran-none                 :void)))
+  '((:fortran-string               :pointer                   array)
+    (:fortran-int                  cffi-fnv-int32             fnv-int32)
+    (:fortran-single-float         cffi-fnv-float             fnv-float)
+    (:fortran-double-float         cffi-fnv-double            fnv-double)
+    (:fortran-complex-single-float cffi-fnv-complex-float     fnv-complex-float)
+    (:fortran-complex-double-float cffi-fnv-complex-double    fnv-complex-double)
+    (:fortran-none                 :pointer                   array)))
 
-(defun normalized-type-to-cffi-type (norm)
+(defun normalized-type-to-cffi-type (norm &optional (kind ':reference))
   (etypecase norm
     (keyword
      (let ((found (assoc norm *normalized-type-to-cffi-type*)))
        (assert found)
-       (second found)))
+       (ecase kind
+         (:reference (second found))
+         (:immediate (third found))
+         (:lisp      (fourth found)))))
 
     (list
      (destructuring-bind (compound-type base-type rank)
@@ -109,7 +115,9 @@
                     (<= 1 rank)))
        (let ((found (assoc base-type *array-of-normalized-type-to-cffi-type*)))
          (assert found)
-         (second found))))))
+         (ecase kind
+           ((:reference :immediate) (second found))
+           (:lisp (third found))))))))
 
 (defparameter *ctype-to-fortrantype*
   '((:string :string)
@@ -131,7 +139,7 @@ together into one line, and return that extended line and the remainder."
     (loop while (and (>= (length (first *lines*)) 6)
 		     (char= (char (first *lines*) 5) #\$)) do
           (setf line (concatenate 'string line (subseq (pop *lines*) 6))))
-    (mapcar #'string-downcase (tokenize line))))
+    (tokenize line)))
 
 (defun parse-signature ()
   "Parses the name of the function and the names of all the arguments.
@@ -140,10 +148,10 @@ remaining lines."
   (let ((line (extract-continued-line))
 	(return-type (list "none"))
 	name vars)
-    (if (string= (car line) "subroutine")
+    (if (string-equal (car line) "subroutine")
 	(setf name (second line)
 	      vars (nthcdr 3 line))
-	(let ((fpos (position "function" line :test #'string=)))
+	(let ((fpos (position "function" line :test #'string-equal)))
 	  (if fpos
 	      (setf name (nth (1+ fpos) line)
 		    return-type (subseq line 0 fpos)
@@ -154,7 +162,7 @@ remaining lines."
 (defun extract-type (line)
   (let ((type
 	 (find-if (lambda (e)
-		    (every #'string= e (subseq line 0 (length e))))
+		    (every #'string-equal e (subseq line 0 (length e))))
 		  *types*)))
     (unless type
       (error "Can't find type: ~A" line))
@@ -162,11 +170,11 @@ remaining lines."
 
 (defun fill-in-type (names type vars array-maps)
   (mapcar (lambda (v)
-	    (let ((pair (assoc v names :test #'string=)))
+	    (let ((pair (assoc v names :test #'string-equal)))
 	      (when pair
 		(setf (cdr pair)
 		      (append type
-			      (cdr (assoc v array-maps :test #'string=)))))))
+			      (cdr (assoc v array-maps :test #'string-equal)))))))
 	  vars))
 
 
@@ -177,9 +185,9 @@ remaining lines."
 	(in-array nil)
 	(prev nil))
     (loop for i in line do
-	  (cond ((string= i "(" )
+	  (cond ((string-equal i "(" )
 		 (push prev in-array))
-		((string= i ")" )
+		((string-equal i ")" )
 		 (progn
 		   (push (nreverse in-array) array-maps)
 		   (setf in-array nil)))
@@ -223,11 +231,14 @@ remaining lines."
       (parse-signature)
     (make-fortran-function
      :name name
-     :return-type return-type
-     :arguments (parse-argument-types vars))))
+     :return-type (lookup-type return-type)
+     ;; Normalize the types.
+     :arguments (mapcar (lambda (name-type)
+                          (list (first name-type)
+                                (lookup-type (rest name-type))))
+                        (parse-argument-types vars)))))
 
-;; Edit these if you want to change the input/output locations!
-(defparameter *basedir* #p"/home/rif/software/LAPACK/")
+(defvar *basedir*)
 (defparameter *outdir*
   (make-pathname :directory
                  (pathname-directory
@@ -250,9 +261,6 @@ remaining lines."
 	   (concatenate 'string (namestring basedir) "SRC/*.f")))))
     (mapcar #'parse-fortran-file files)))
 
-(defun kw (s)
-  (intern (string s) :keyword))
-
 (defun lookup-type (type-string-list)
   (let ((found-type nil)
         (match-length 0))
@@ -272,7 +280,7 @@ remaining lines."
 (defun fortran-mangle-name (name)
   "Turns a fortran library function into a C library function.  May
 need to be customized."
-  (concatenate 'string name "_"))
+  (concatenate 'string (string-downcase name) "_"))
 
 (defun generate-cffi-interface (parsed-representation)
   (let ((name (fortran-function-name parsed-representation))
@@ -283,12 +291,96 @@ need to be customized."
          (,(fortran-mangle-name name) ,(intern
                                       (concatenate 'string "%" (string-upcase name))))
          ;; return type
-         ,(normalized-type-to-cffi-type (lookup-type return-type))
+         ,(normalized-type-to-cffi-type return-type ':immediate)
        ;; params and their types
        ,@(mapcar (lambda (v)
-                   (list (intern (string-upcase (car v)) *package*)
-                         (normalized-type-to-cffi-type (lookup-type (cdr v)))))
+                   (list (intern (string-upcase (first v)) *package*)
+                         (normalized-type-to-cffi-type (second v))))
                  vars))))
+
+(defun generate-cffi-interface-alternate (ff)
+  (labels ((sym (var-name)
+             (intern (string-upcase var-name) *package*)))
+    (let* ((name (fortran-function-name ff))
+           (vars-types (fortran-function-arguments ff))
+           (vars (mapcar (lambda (vt) (sym (first vt))) vars-types))
+           (ref-vars (mapcar (lambda (v) (gentemp (concatenate 'string (symbol-name v) "-REF")
+                                                  *package*))
+                             vars))
+           (normalized-types (mapcar #'second vars-types))
+           (return-type (fortran-function-return-type ff))
+           (raw-call-name (sym (concatenate 'string "%%" (string-upcase name))))
+           (lisp-fun-name (sym (concatenate 'string "%" (string-upcase name)))))
+      (list
+       ;; CFFI form
+       `(cffi:defcfun (,(fortran-mangle-name name) ,raw-call-name)
+            ,(normalized-type-to-cffi-type return-type ':immediate)
+          ,@(loop :for var :in vars
+                  :for norm-type :in normalized-types
+                  ;; TODO: add more type information
+                  :collect (list (sym var) (if (eq norm-type ':fortran-string)
+                                               ':string
+                                               ':pointer))))
+
+       ;; Lisp function form
+       `(cl:defun ,lisp-fun-name ,(mapcar #'sym vars)
+          ;; Type declaration expressions
+          (cl:declare ,@(loop :for var :in vars
+                              :for norm-type :in normalized-types
+                              :collect `(cl:type ,(normalized-type-to-cffi-type
+                                                   norm-type
+                                                   ':lisp)
+                                                 ,var )))
+          ;; Foreign allocation
+          (cffi:with-foreign-objects ,(loop :for ref-var :in ref-vars
+                                            :for norm-type :in normalized-types
+                                            :when (and (atom norm-type)
+                                                       (not (eq ':fortran-string norm-type)))
+                                              :collect `(,ref-var
+                                                         ',(normalized-type-to-cffi-type norm-type ':immediate)))
+            ;; Setters
+            ,@(remove nil
+                      (loop :with real := 'magicl.cffi-types::real
+                            :with imag := 'magicl.cffi-types::imag
+                            :for var :in vars
+                            :for ref-var :in ref-vars
+                            :for norm-type :in normalized-types
+                            :when (atom norm-type)
+                              :collect (case norm-type
+                                         (:fortran-string
+                                          ;; No copying needed.
+                                          nil)
+
+                                         ((:fortran-int
+                                           :fortran-single-float
+                                           :fortran-double-float
+                                           :fortran-logical)
+                                          ;; Immediate set
+                                          `(cl:setf (cffi:mem-ref
+                                                     ,ref-var
+                                                     ,(normalized-type-to-cffi-type
+                                                       norm-type
+                                                       ':immediate))
+                                                    ,var))
+                                         ((:fortran-complex-single-float
+                                           :fortran-complex-double-float)
+                                          `(cffi:with-foreign-slots ((,real ,imag)
+                                                                     ,ref-var
+                                                                     ,(normalized-type-to-cffi-type norm-type ':immediate))
+                                             (setf ,real (realpart ,var)
+                                                   ,imag (imagpart ,var))))
+
+                                         (otherwise
+                                          (error "Invalid argument type: ~S" norm-type)))))
+            ;; Call
+            (,raw-call-name
+             ,@(loop :for var :in vars
+                     :for ref-var :in ref-vars
+                     :for norm-type :in normalized-types
+                     :collect (cond
+                                ((eq ':fortran-string norm-type) var)
+                                ((atom norm-type) ref-var)
+                                (t `(fnv:fnv-foreign-pointer ,var)))))))))))
 
 (defun generate-bindings-file (filename package-name bindings
 			       &optional (outdir *outdir*))
@@ -305,11 +397,12 @@ the CFFI binding file."
       (prin1 `(in-package ,package-name) f)
       (terpri f)
       (terpri f)
-      (dolist (cffi-def bindings)
-        (prin1 cffi-def f)
+      (dolist (form bindings)
+        (prin1 form f)
         (terpri f)
-        (prin1 `(export ',(cadadr cffi-def) ',package-name) f)
-        (terpri f)
+        (when (eq 'cl:defun (car form))
+          (prin1 `(export ',(cadr form) ',package-name) f)
+          (terpri f))
         (terpri f)))))
 
 (defun generate-blas-file ()
@@ -318,7 +411,7 @@ the CFFI binding file."
     (generate-bindings-file
      "blas-cffi"
      package-name
-     (mapcar #'generate-cffi-interface (parse-blas-files)))))
+     (mapcan #'generate-cffi-interface-alternate (parse-blas-files)))))
 
 (defun generate-lapack-file ()
   (let* ((package-name '#:magicl.lapack-cffi)
@@ -326,7 +419,7 @@ the CFFI binding file."
     (generate-bindings-file
      "lapack-cffi"
      '#:magicl.lapack-cffi
-     (mapcar #'generate-cffi-interface (parse-lapack-files)))))
+     (mapcan #'generate-cffi-interface-alternate (parse-lapack-files)))))
 
 (defun generate-blapack-files (&optional (basedir *basedir*))
   (let ((*basedir* basedir))

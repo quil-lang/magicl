@@ -1,5 +1,7 @@
 (asdf:defsystem #:magicl-gen
-  :depends-on (:cffi :org.middleangle.foreign-numeric-vector)
+  :depends-on (#:cffi
+               #:cffi-libffi
+               #:org.middleangle.foreign-numeric-vector)
   :serial t
   :components
   ((:file "packages")

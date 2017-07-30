@@ -4,7 +4,9 @@
         #:cffi 
         #:fnv)
 
-  (:export #:fortran-int
+  (:export #:complex-single-float
+           #:complex-double-float
+           #:fortran-int
            #:fortran-float
            #:fortran-double
            #:fortran-complex-float

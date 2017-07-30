@@ -39,7 +39,7 @@
 
 
 #+darwin (progn
-           (defparameter *use-brew* nil)
+           (defparameter *use-brew* t)
 	   (defparameter *gfortran-lib* (if *use-brew*
                                             "/usr/local/opt/gcc/lib/gcc/7/libgfortran.dylib"
                                             nil))
