@@ -145,18 +145,19 @@ together into one line, and return that extended line and the remainder."
   "Parses the name of the function and the names of all the arguments.
 Returns three values: the name, the list of arguments, and all
 remaining lines."
-  (let ((line (extract-continued-line))
-	(return-type (list "none"))
-	name vars)
-    (if (string-equal (car line) "subroutine")
-	(setf name (second line)
-	      vars (nthcdr 3 line))
-	(let ((fpos (position "function" line :test #'string-equal)))
-	  (if fpos
-	      (setf name (nth (1+ fpos) line)
-		    return-type (subseq line 0 fpos)
-		    vars (nthcdr (+ 3 fpos) line))
-	      (error "Can't parse routine: ~A | ~A" (car line) line))))
+  (let* ((line (extract-continued-line))
+         (subroutine-line (cdr (member "subroutine" line :test #'string=)))
+         (function-line (cdr (member "function" line :test #'string=)))
+         (return-type (list "none"))
+         signature name vars)
+    (if subroutine-line 
+        (setf signature subroutine-line)
+        (if function-line 
+            (setf signature function-line)))
+    (if signature
+	(setf name (car signature)
+	      vars (subseq signature 2 (- (length signature) 1)))
+        (error "Can't parse routine: ~A | ~A" (car line) line))
     (values name (butlast vars) return-type)))
 
 (defun extract-type (line)
@@ -206,10 +207,16 @@ remaining lines."
 	    (when (not (comment-line-p line))
 	      (multiple-value-bind (line array-maps)
 		  (deparenthesize line)
-		(multiple-value-bind (type vars)
-		    (extract-type line)
-		  (fill-in-type names type vars array-maps))))))
+                (when (variable-declaration-p line)
+                  (multiple-value-bind (type vars)
+                      (extract-type line)
+                    (fill-in-type names type vars array-maps)))))))
     names))
+
+(defun variable-declaration-p (line)
+  (let ((one-word-type (list (car line)))
+        (two-word-type (if (cdr line) (subseq line 0 2))))
+    (or (member one-word-type *types* :test 'equal) (member two-word-type *types* :test 'equal))))
 
 (defstruct fortran-function
   name
