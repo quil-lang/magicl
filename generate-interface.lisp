@@ -150,7 +150,7 @@ remaining lines."
          (function-line (cdr (member "function" line :test #'string=)))
          (return-type (list "none"))
          signature name vars)
-    (if subroutine-line 
+     (if subroutine-line 
         (setf signature subroutine-line)
         (if function-line 
             (setf signature function-line)))
@@ -163,10 +163,13 @@ remaining lines."
 (defun extract-type (line)
   (let ((type
 	 (find-if (lambda (e)
-		    (every #'string-equal e (subseq line 0 (length e))))
-		  *types*)))
+		    (every #'string-equal e (subseq line (length e))))
+		  *types*))
+        args)
     (unless type
       (error "Can't find type: ~A" line))
+    (setf args (subseq line (length type)))
+    (when (every #'(lambda (x) (eq #\* (char x (- (length x) 1)))) args))
     (values type (subseq line (length type)))))
 
 (defun fill-in-type (names type vars array-maps)
@@ -204,7 +207,7 @@ remaining lines."
   (let ((names (mapcar (lambda (n) (cons n nil)) names)))
     (loop while (find-if #'null names :key #'cdr) do
 	  (let ((line (extract-continued-line)))
-	    (when (not (comment-line-p line))
+     	    (when (not (comment-line-p line))
 	      (multiple-value-bind (line array-maps)
 		  (deparenthesize line)
                 (when (variable-declaration-p line)
@@ -214,8 +217,8 @@ remaining lines."
     names))
 
 (defun variable-declaration-p (line)
-  (let ((one-word-type (list (car line)))
-        (two-word-type (if (cdr line) (subseq line 0 2))))
+  (let ((one-word-type (list (string-downcase (first line))))
+        (two-word-type (if (rest line) (map 'list #'string-downcase (subseq line 0 2)))))
     (or (member one-word-type *types* :test 'equal) (member two-word-type *types* :test 'equal))))
 
 (defstruct fortran-function
