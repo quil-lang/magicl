@@ -153,8 +153,9 @@ remaining lines."
          signature name vars)
      (if subroutine-line 
         (setf signature subroutine-line)
-        (if function-line 
-            (setf signature function-line)))
+        (when function-line 
+            (setf signature function-line
+                  return-type (subseq line 0 (- (length line) (length function-line) 1)))))
     (if signature
 	(setf name (car signature)
 	      vars (subseq signature 2 (- (length signature) 1)))
