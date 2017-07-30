@@ -95,6 +95,7 @@
     (:fortran-double-float         cffi-fnv-double            fnv-double)
     (:fortran-complex-single-float cffi-fnv-complex-float     fnv-complex-float)
     (:fortran-complex-double-float cffi-fnv-complex-double    fnv-complex-double)
+    (:fortran-logical              cffi-fnv-int32             fnv-int32)
     (:fortran-none                 :pointer                   array)))
 
 (defun normalized-type-to-cffi-type (norm &optional (kind ':reference))
@@ -163,14 +164,16 @@ remaining lines."
 (defun extract-type (line)
   (let ((type
 	 (find-if (lambda (e)
-		    (every #'string-equal e (subseq line (length e))))
+		    (every #'string-equal e (subseq line 0 (length e))))
 		  *types*))
         args)
     (unless type
       (error "Can't find type: ~A" line))
     (setf args (subseq line (length type)))
-    (when (every #'(lambda (x) (eq #\* (char x (- (length x) 1)))) args))
-    (values type (subseq line (length type)))))
+    (when (every #'(lambda (x) (char-equal #\* (char x (- (length x) 1)))) args)
+      (setf args (map 'list #'(lambda (x) (string-right-trim "*" x)) args))
+      (setf type (list (concatenate 'string (first type) "*"))))
+    (values type args)))
 
 (defun fill-in-type (names type vars array-maps)
   (mapcar (lambda (v)
