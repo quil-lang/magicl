@@ -9,4 +9,5 @@
    (:file "cffi-types")
    (:file "blas-cffi")
    (:file "lapack-cffi")
+   (:file "high-level")
    (:file "magicl")))
