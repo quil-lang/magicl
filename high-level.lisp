@@ -36,7 +36,23 @@
     (assert (< -1 j cols) () "col index ~S is out of range" j)
     (fnv:fnv-complex-double-ref data (+ (* rows j) i))))
 
-; (defun qr (m))
+(defun qr (m)
+  "Finds the QR factorization of the matrix m."
+  (let ((rows (matrix-rows m))
+        (cols (matrix-cols m))
+        (a (copy-fnv-complex-double (matrix-data m)))
+        (lwork -1)
+        (info 0))
+    (let ((lda rows)
+          (tau (fnv:make-fnv-complex-double (min rows cols)))
+          (work (fnv:make-fnv-complex-double (max 1 lwork))))
+      ; run it once as a workspace query
+      (magicl.lapack-cffi::%zgeqrf rows cols a lda tau work lwork info)
+      (setf lwork (truncate (realpart (fnv:fnv-complex-double-ref work 0))))
+      (setf work (fnv:make-fnv-complex-double (max 1 lwork)))
+      ; run it again with optimal workspace size
+      (magicl.lapack-cffi::%zgeqrf rows cols a lda tau work lwork info)
+      (values a tau))))
 
 ; (defun svd (m))
 
