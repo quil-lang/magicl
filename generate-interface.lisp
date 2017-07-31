@@ -21,12 +21,6 @@
   (member (first line) (list "c" "*") :test #'string=))
 
 (defun to-string (char-list)
-" Original def:
-   (let* ((n (length char-list))
- 	 (s (make-string n)))
-     (dotimes (i n)
-       (setf (char s i) (elt char-list i)))
-     s))  "
   (map 'string #'identity char-list))
 
 
@@ -173,7 +167,7 @@ remaining lines."
     (setf args (subseq line (length type)))
     (when (every #'(lambda (x) (char-equal #\* (char x (- (length x) 1)))) args)
       (setf args (map 'list #'(lambda (x) (string-right-trim "*" x)) args))
-      (setf type (list (concatenate 'string (first type) "*"))))
+      (setf type (list (concatenate 'string (first type) "*")))) ; TODO: modify this in case some but not all args in the line have stars
     (values type args)))
 
 (defun fill-in-type (names type vars array-maps)

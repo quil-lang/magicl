@@ -1,6 +1,6 @@
 (defpackage #:magicl-examples
   (:use :common-lisp :fnv :fnv-utils :magicl)
-  (:export :dot-example))
+  (:export :dot-example :eigenvalue-example))
 
 (in-package #:magicl-examples)
 
@@ -33,17 +33,10 @@
     (format t "a^t = ~A~%b^t = ~A~%a^t b = ~A~%~%"
             a b (magicl.blas-cffi::%cdotu 4 a 1 b 1))))
 
-#+ignore
-(defun simple-example ()
+(defun eigenvalue-example ()
   ;; Set the traps
-  (sb-int:with-float-traps-masked (:divide-by-zero)
-
-    ;; A simple dot product example
-    (let ((a (make-fnv-double 4 :initial-value 1.0d0))
-	  (b (make-fnv-double 4 :initial-value 2.0d0)))
-      (format t "a^t = ~A~%b^t = ~A~%a^t b = ~A~%~%"
-	      a b (%ddot 10 a 1 b 1)))
-
+  (sb-int:with-float-traps-masked (:divide-by-zero :invalid)
+    
     ;; An eigenvalue example.  Note that we have no matrix abstraction a
     ;; this point.  We pretend 4-vectors are 2-by-2 matrices.
 
@@ -59,10 +52,10 @@
 	    (D (make-fnv-double 2))
 	    (lwork 4096)
 	    (liwork 4096)
-	    (info (make-fnv-int32 1))
-	    (eigs-found (make-fnv-int32 1)))
+	    (info 0)
+	    (eigs-found 0))
 
-	(%dsyevr "V" "A" "U" 2 (copy-fnv-double M) 2 0.0d0 0.0d0
+	(magicl.lapack-cffi::%dsyevr "V" "A" "U" 2 (copy-fnv-double M) 2 0.0d0 0.0d0
 		 0 0 -1.0d0  eigs-found D V 2 (make-fnv-int32 4)
 		 (make-fnv-double lwork) lwork
 		 (make-fnv-int32 liwork) liwork
