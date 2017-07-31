@@ -141,8 +141,8 @@ together into one line, and return that extended line and the remainder."
 Returns three values: the name, the list of arguments, and all
 remaining lines."
   (let* ((line (extract-continued-line))
-         (subroutine-line (cdr (member "subroutine" line :test #'string=)))
-         (function-line (cdr (member "function" line :test #'string=)))
+         (subroutine-line (cdr (member "subroutine" line :test #'string-equal)))
+         (function-line (cdr (member "function" line :test #'string-equal)))
          (return-type (list "none"))
          signature name vars)
      (if subroutine-line 
