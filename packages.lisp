@@ -31,6 +31,16 @@
         #:fnv-utils
         #:magicl.cffi-types))
 
+(defpackage #:magicl.high-level
+  (:nicknames #:high-level)
+  (:use #:common-lisp
+        #:foreign-numeric-vector
+        #:fnv-utils)
+  (:export #:make-complex-matrix
+           #:print-matrix
+           #:qr
+           #:svd))
+
 (defpackage #:magicl
   (:use #:common-lisp
         #:cffi
