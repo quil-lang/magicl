@@ -8,5 +8,5 @@
    (:file "load-libs")
    (:file "cffi-types")
    (:file "blas-cffi")
-   #+#:ignore (:file "lapack-cffi")
+   (:file "lapack-cffi")
    (:file "magicl")))

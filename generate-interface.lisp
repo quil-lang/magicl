@@ -429,7 +429,7 @@ the CFFI binding file."
      '#:magicl.lapack-cffi
      (mapcan #'generate-cffi-interface-alternate (parse-lapack-files)))))
 
-(defun generate-blapack-files (&optional (basedir *basedir*))
-  (let ((*basedir* basedir))
+(defun generate-blapack-files (lapack-dir)
+  (let ((*basedir* lapack-dir))
     (generate-blas-file)
     (generate-lapack-file)))
