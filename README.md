@@ -1,6 +1,6 @@
 # MAGICL
 
-_Matrix Algebra proGrams In Common Lisp_ by [Rigetti Computing](www.rigetti.com).
+_Matrix Algebra proGrams In Common Lisp_ by [Rigetti Computing](www.rigetti.com). (née FLAIL: _Finally, Linear Algebra In Lisp!_)
 
 Load it with `(ql:quickload :magicl)`.
 
