@@ -12,7 +12,7 @@
     (dotimes (i n)
       (let ((e (nth i entries)))
         (assert (numberp e) () "~S is not a number" e)
-        (setf (fnv:fnv-complex-double-ref v i) (complex (coerce e 'double-float)))))
+        (setf (fnv:fnv-complex-double-ref v i) (coerce e (list 'complex 'double-float)))))
     (values v)))
 
 (defun make-complex-matrix (m n &rest entries)
@@ -52,7 +52,24 @@
       (setf work (fnv:make-fnv-complex-double (max 1 lwork)))
       ; run it again with optimal workspace size
       (magicl.lapack-cffi::%zgeqrf rows cols a lda tau work lwork info)
-      (values a tau))))
+      (let ((r (qr-helper-get-r a cols))
+            (q (qr-helper-get-q a tau cols)))
+        (break "~S" r)
+        (values q r)))))
+
+(defun qr-helper-get-r (a n)
+  "Get the matrix R from the upper triangular portion of a, where n is the number of columns"
+  (let ((m (/ (fnv:fnv-length a) n))
+        (r-entries (list n n)))
+    (dotimes (j n)
+      (dotimes (i n)
+        (if (>= j i)
+            (nconc r-entries (list (fnv:fnv-complex-double-ref a (+ (* m j) i))))
+            (nconc r-entries (list 0)))))
+    (break "~S" r-entries)
+    (values (apply #'make-complex-matrix r-entries))))
+
+(defun qr-helper-get-q (a tau n))
 
 ; (defun svd (m))
 
