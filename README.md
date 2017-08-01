@@ -32,9 +32,9 @@ Currently, this is the assumed default for MAGICL. One can control the libraries
 
 #### System-Provided _Accelerate_ Framework
 
-The first are the system-optimized libraries included with macOS. These are a part of the _Accelerate_ framework. The included libraries are `libBLAS.dylib` and `libLAPACK.dylib`.
+The first are the system-optimized libraries included with macOS. These are a part of the [_Accelerate_](https://developer.apple.com/documentation/accelerate) framework. The included libraries are `libBLAS.dylib` and `libLAPACK.dylib`.
 
-While the _Accelerate_ framework includes these libraries, they are not a complete. We count more than 500 missing functions provided in the standard LAPACK distribution.
+While the Accelerate framework includes these libraries, they are not a complete. We count more than 500 missing functions provided in the standard LAPACK distribution.
 
 ## Generating BLAS and LAPACK Bindings
 
