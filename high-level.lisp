@@ -54,7 +54,8 @@
     (assert (integerp j) () "column index ~S is not an integer" j)
     (assert (< -1 i rows) () "row index ~S is out of range" i)
     (assert (< -1 j cols) () "col index ~S is out of range" j)
-    (fnv:fnv-complex-double-ref data (+ (* rows j) i))))
+    ; currently a bit hacky to make a generic call to fnv-ref for a particular type
+    (funcall (intern (concatenate 'string (string (type-of data)) "-REF")) data (+ (* rows j) i))))
 
 (defun set-val (m i j val)
   "Set the value of m_ij to val."
@@ -81,7 +82,7 @@
   "Finds the QR factorization of the matrix m."
   (let ((rows (matrix-rows m))
         (cols (matrix-cols m))
-        (a (copy-fnv-complex-double (matrix-data m)))
+        (a (fnv:copy-fnv-complex-double (matrix-data m)))
         (lwork -1)
         (info 0))
     (let ((lda rows)
@@ -142,7 +143,7 @@
         (jobvt "A")
         (rows (matrix-rows m))
         (cols (matrix-cols m))
-        (a (copy-fnv-complex-double (matrix-data m)))
+        (a (fnv:copy-fnv-complex-double (matrix-data m)))
         (lwork -1)
         (info 0))
     (let ((lda rows)
@@ -163,7 +164,7 @@
                                      work lwork rwork info)
         (let ((smat (fnv:make-fnv-double (* rows cols) :initial-value 0d0)))
           (dotimes (i (min rows cols))
-            (setf (fnv-double-ref smat (+ (* rows i) i)) (fnv-double-ref s i)))          
+            (setf (fnv:fnv-double-ref smat (+ (* rows i) i)) (fnv-double-ref s i)))          
           (values (make-matrix :rows rows :cols rows :data u)
                   (make-matrix :rows rows :cols cols :data smat)
                   (make-matrix :rows cols :cols cols :data vt)))))))
