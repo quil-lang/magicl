@@ -16,6 +16,13 @@
         (incf i)))
     (values v)))
 
+(defun complex-vector-to-list (v)
+  "Make a list from a complex double fnv."
+  (let ((lst (list)))
+    (dotimes (i (fnv:fnv-length v))
+      (setf lst (append lst (list (fnv:fnv-complex-double-ref v i)))))
+    (values lst)))
+
 (defun make-complex-matrix (m n &rest entries)
   "Makes an m-by-n matrix assuming entries is a list of complex numbers in column major order."
   (let ((entries-size (length entries))
@@ -25,6 +32,18 @@
             "Length of entries is ~S, is not ~S*~S = ~S" 
             entries-size m n expected-size)
     (values (make-matrix :rows m :cols n :data (apply #'make-complex-vector entries)))))
+
+(defun diag (m n &rest entries)
+  "Creates a matrix with entries along the diagonal"
+  (let ((entries-size (length entries))
+        (expected-size (min m n)))
+    (assert (= entries-size expected-size) ()
+            "Min dimension is ~S but number of entries is ~S" expected-size entries-size)
+    (let ((mat (apply #'make-complex-matrix 
+                      (append (list m n) (make-list (* m n) :initial-element 0)))))
+      (dotimes (i entries-size)
+        (set-val mat i i (nth i entries)))
+      (values mat))))
 
 (defun ref (m i j)
   "Accessor method for the element in the i-th row and j-th column of m, assuming zero indexing."
@@ -38,6 +57,7 @@
     (fnv:fnv-complex-double-ref data (+ (* rows j) i))))
 
 (defun set-val (m i j val)
+  "Set the value of m_ij to val."
   (let ((rows (matrix-rows m))
         (cols (matrix-cols m))
         (data (matrix-data m)))
@@ -116,5 +136,35 @@
       (magicl.lapack-cffi::%zungqr m n k a lda tau work lwork info)
       (values (make-matrix :rows m :cols n :data a)))))
 
-; (defun svd (m))
+(defun svd (m)
+  "Find the SVD of a matrix m."
+  (let ((jobu "A")
+        (jobvt "A")
+        (rows (matrix-rows m))
+        (cols (matrix-cols m))
+        (a (copy-fnv-complex-double (matrix-data m)))
+        (lwork -1)
+        (info 0))
+    (let ((lda rows)
+          (s (fnv:make-fnv-double (min rows cols)))
+          (ldu rows)
+          (ldvt cols)
+          (work (fnv:make-fnv-complex-double (max 1 lwork)))
+          (rwork (fnv:make-fnv-double (* 5 (min rows cols)))))
+      (let ((u (fnv:make-fnv-complex-double (* ldu rows)))
+            (vt (fnv:make-fnv-complex-double (* ldvt cols))))
+        ; run it once as a workspace query
+        (magicl.lapack-cffi::%zgesvd jobu jobvt rows cols a lda s u ldu vt ldvt 
+                                     work lwork rwork info)
+        (setf lwork (truncate (realpart (fnv:fnv-complex-double-ref work 0))))
+        (setf work (fnv:make-fnv-complex-double (max 1 lwork)))
+        ; run it again with optimal workspace size
+        (magicl.lapack-cffi::%zgesvd jobu jobvt rows cols a lda s u ldu vt ldvt 
+                                     work lwork rwork info)
+        (let ((smat (fnv:make-fnv-double (* rows cols) :initial-value 0d0)))
+          (dotimes (i (min rows cols))
+            (setf (fnv-double-ref smat (+ (* rows i) i)) (fnv-double-ref s i)))          
+          (values (make-matrix :rows rows :cols rows :data u)
+                  (make-matrix :rows rows :cols cols :data smat)
+                  (make-matrix :rows cols :cols cols :data vt)))))))
 
