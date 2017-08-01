@@ -7,13 +7,13 @@
 
 (defun make-complex-vector (&rest entries)
   "Makes a complex vector out entries, a list of complex numbers."
-  (let* ((n (length entries))
-         (v (fnv:make-fnv-complex-double n)))
-    (fnv:with-fnv-complex-double-ptr (p v)
-      (dotimes (i n)
-        (let ((e (nth i entries)))
-          (assert (numberp e) () "~S is not a number" e)
-          (setf (fnv:fnv-complex-double-ptr-ref p i) (coerce e (list 'complex 'double-float))))))
+  (let ((v (fnv:make-fnv-complex-double (length entries)))
+        (i 0))
+    (over-fnv-complex-double (p) v
+      (let ((e (nth i entries)))
+        (assert (numberp e) () "~S is not a number" e)
+        (setf p (coerce e (list 'complex 'double-float)))
+        (incf i)))
     (values v)))
 
 (defun make-complex-matrix (m n &rest entries)
@@ -37,7 +37,13 @@
     (assert (< -1 j cols) () "col index ~S is out of range" j)
     (fnv:fnv-complex-double-ref data (+ (* rows j) i))))
 
-; (defun print-matrix (m))
+(defun print-matrix (m)
+  "Print method for matrices."
+  (dotimes (i (matrix-rows m))
+    (dotimes (j (matrix-cols m))
+      (princ (ref m i j))
+      (princ #\Space))
+    (princ #\Newline)))
 
 (defun qr (m)
   "Finds the QR factorization of the matrix m."
@@ -72,6 +78,7 @@
     (values (make-matrix :rows n :cols n :data r))))
 
 (defun qr-helper-get-q (a tau n)
+  "Get the matrix Q as a product of reflectors, from results given by ZGEQRF."
   (let ((m (/ (fnv:fnv-length a) n))
         (k (fnv:fnv-length tau))
         (lwork -1)
