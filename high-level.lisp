@@ -55,6 +55,7 @@
       (let ((r (qr-helper-get-r a cols))
             (q (qr-helper-get-q a tau cols)))
         (break "~S" r)
+        (break "~S" q)
         (values q r)))))
 
 (defun qr-helper-get-r (a n)
@@ -66,10 +67,17 @@
         (if (>= j i)
             (nconc r-entries (list (fnv:fnv-complex-double-ref a (+ (* m j) i))))
             (nconc r-entries (list 0)))))
-    (break "~S" r-entries)
     (values (apply #'make-complex-matrix r-entries))))
 
-(defun qr-helper-get-q (a tau n))
+(defun qr-helper-get-q (a tau n)
+  (let ((m (/ (fnv:fnv-length a) n))
+        (k (fnv:fnv-length tau))
+        (lwork -1)
+        (info 0))
+    (let ((lda m)
+          (work (fnv:make-fnv-complex-double (max 1 lwork))))
+      (magicl.lapack-cffi::%zungqr m n k a lda tau work lwork info)
+      (values a)))) ; TODO make a into a matrix
 
 ; (defun svd (m))
 
