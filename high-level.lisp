@@ -37,6 +37,18 @@
     (assert (< -1 j cols) () "col index ~S is out of range" j)
     (fnv:fnv-complex-double-ref data (+ (* rows j) i))))
 
+(defun set-val (m i j val)
+  (let ((rows (matrix-rows m))
+        (cols (matrix-cols m))
+        (data (matrix-data m)))
+    (assert (integerp i) () "row index ~S is not an integer" i)
+    (assert (integerp j) () "column index ~S is not an integer" j)
+    (assert (< -1 i rows) () "row index ~S is out of range" i)
+    (assert (< -1 j cols) () "col index ~S is out of range" j)
+    (assert (numberp val) () "value ~S is not a number" val)
+    (setf (fnv:fnv-complex-double-ref data (+ (* rows j) i)) 
+          (coerce val (list 'complex 'double-float)))))
+
 (defun print-matrix (m)
   "Print method for matrices."
   (dotimes (i (matrix-rows m))
@@ -63,6 +75,17 @@
       (magicl.lapack-cffi::%zgeqrf rows cols a lda tau work lwork info)
       (let* ((r (qr-helper-get-r a cols))
              (q (qr-helper-get-q a tau cols)))
+        ; change signs if diagonal elements of r are negative
+        (dotimes (j cols)
+          (let ((diag-elt (ref r j j)))
+            (assert (= (imagpart diag-elt) 0) 
+                    () "Diagonal element R_~S~S=~S is not real" j j diag-elt)
+            (setf diag-elt (realpart diag-elt))
+            (if (> 0 diag-elt)
+                (dotimes (i rows)
+                  (if (<= j i (1- cols))
+                      (set-val r j i (- (ref r j i))))
+                  (set-val q i j (- (ref q i j)))))))
         (values q r)))))
 
 (defun qr-helper-get-r (a n)
