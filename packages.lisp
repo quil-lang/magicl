@@ -1,3 +1,9 @@
+(defpackage #:magicl.foreign-libraries
+  (:use #:common-lisp)
+  (:export #:libgfortran
+           #:libblas
+           #:liblapack))
+
 (defpackage #:magicl.cffi-types
   (:nicknames #:cffi-types)
   (:use #:common-lisp
@@ -11,8 +17,7 @@
            #:fortran-double
            #:fortran-complex-float
            #:fortran-complex-double
-           #:fortran-logical
-           #:logical))
+           #:fortran-logical))
 
 (defpackage #:magicl.blas-cffi
   (:nicknames #:blas-cffi)

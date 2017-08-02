@@ -1,68 +1,35 @@
-(in-package #:magicl)
+(in-package #:magicl.foreign-libraries)
 
 ;; useful command: nm -jgU
 
-;; EDIT THESE VARIABLES TO POINT TO YOUR LIBRARIES!
+#+(or (not :darwin) (not :magicl.use-accelerate))
+(cffi:define-foreign-library libgfortran
+  (:darwin "libgfortran.dylib" :search-path #P"/usr/local/opt/gcc/lib/gcc/7/")
+  (:unix (:or "libgfortran.so.3" "libgfortran.so"))
+  (t (:default "libgfortran")))
 
+(cffi:define-foreign-library libblas
+  #+:magicl.use-accelerate
+  (:darwin "libBLAS.dylib" :search-path #P"/System/Library/Frameworks/Accelerate.framework/Frameworks/vecLib.framework/Versions/A/")
+  #-:magicl.use-accelerate              ; KLUDGE: Look for Homebrew dir first.
+  (:darwin "/usr/local/opt/lapack/lib/libblas.dylib")
+  (:unix  "libblas.so")
+  (t (:default "libblas")))
 
-#|
-;;; The suggestion (from Leo (sdl.web at gmail dot com) to use native
-;;; accelerated BLAS and LAPACK on MacOSX is to COMMENT OUT the
-;;; gfortran lib DEFPARAMETER and LOAD-FOREIGN-LIBRARY, as it is not
-;;; linked in, and to use the following locations:
+(cffi:define-foreign-library liblapack
+  #+:magicl.use-accelerate
+  (:darwin "libLAPACK.dylib" :search-path #P"/System/Library/Frameworks/Accelerate.framework/Frameworks/vecLib.framework/Versions/A/")
+  #-:magicl.use-accelerate
+  (:darwin "/usr/local/opt/lapack/lib/liblapack.dylib")
+  (:unix  "liblapack.so")
+  (t (:default "liblapack")))
 
-  ;; (defparameter *gfortran-lib* "/usr/lib/libgfortran.so.3")
-  (defparameter *blas-lib*
-     "/System/Library/Frameworks/Accelerate.framework/Frameworks/vecLib.framework/Versions/A/libBLAS.dylib")
-  (defparameter *lapack-lib*
-     "/System/Library/Frameworks/Accelerate.framework/Frameworks/vecLib.framework/Versions/A/libLAPACK.dylib")
+(defvar *blapack-libs-loaded* nil)
 
-;;; and then for the load, comment it out:
-
-+      ;; (load-foreign-library *gfortran-lib*)
-
-;;; This might not hold for your MacOSX setup, please report back!
-
-
-;;; THANKS to David Hodge, we have that included directly in the code.   Sorry that I forgot about it!! 
-
-;;; However, I (Tony Rossini) am leaving the code above for later use.
-
-|#
-
-;;; TODO:
-;;;
-;;; define library name
-;;; add library to defcfun
-
-(eval-when (:compile-toplevel :load-toplevel)
-
-
-#+darwin (progn
-           (defparameter *use-brew* t)
-	   (defparameter *gfortran-lib* (if *use-brew*
-                                            "/usr/local/opt/gcc/lib/gcc/7/libgfortran.dylib"
-                                            nil))
-	   (defparameter *blas-lib*
-             (if *use-brew*
-                 "/usr/local/opt/lapack/lib/libblas.dylib"
-                 "/System/Library/Frameworks/Accelerate.framework/Frameworks/vecLib.framework/Versions/A/libBLAS.dylib"))
-	   (defparameter *lapack-lib*
-             (if *use-brew*
-                 "/usr/local/opt/lapack/lib/liblapack.dylib"
-                 "/System/Library/Frameworks/Accelerate.framework/Frameworks/vecLib.framework/Versions/A/libLAPACK.dylib")))
-#-darwin (progn
-	   (defparameter *gfortran-lib* "libgfortran.so.3")
-	   (defparameter *blas-lib* "libblas.so")
-	   (defparameter *lapack-lib* "liblapack.so"))
-
-
-  (defvar *blapack-libs-loaded* nil)
-
-  (unless *blapack-libs-loaded*
-    (progn
-      (when *gfortran-lib* (load-foreign-library *gfortran-lib*))
-      (load-foreign-library *blas-lib*)
-      (load-foreign-library *lapack-lib*)
-      (setf *blapack-libs-loaded* t))))
+(unless *blapack-libs-loaded*
+  #+(or (not :darwin) (not :magicl.use-accelerate))
+  (cffi:load-foreign-library 'libgfortran)
+  (cffi:load-foreign-library 'libblas)
+  (cffi:load-foreign-library 'liblapack)
+  (setf *blapack-libs-loaded* t))
 

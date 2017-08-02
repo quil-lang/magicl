@@ -306,7 +306,7 @@ need to be customized."
                          (normalized-type-to-cffi-type (second v))))
                  vars))))
 
-(defun generate-cffi-interface-alternate (ff)
+(defun generate-cffi-interface-alternate (ff &key originating-library)
   (labels ((sym (var-name)
              (intern (string-upcase var-name) *package*)))
     (let* ((name (fortran-function-name ff))
@@ -321,7 +321,10 @@ need to be customized."
            (lisp-fun-name (sym (concatenate 'string "%" (string-upcase name)))))
       (list
        ;; CFFI form
-       `(cffi:defcfun (,(fortran-mangle-name name) ,raw-call-name)
+       `(cffi:defcfun (,(fortran-mangle-name name) ,raw-call-name
+                       ,@(if (not originating-library)
+                             nil
+                             `(:library ,originating-library)))
             ,(normalized-type-to-cffi-type return-type ':immediate)
           ,@(loop :for var :in vars
                   :for norm-type :in normalized-types
@@ -419,7 +422,11 @@ the CFFI binding file."
     (generate-bindings-file
      "blas-cffi"
      package-name
-     (mapcan #'generate-cffi-interface-alternate (parse-blas-files)))))
+     (mapcan (lambda (def)
+               (generate-cffi-interface-alternate
+                def
+                :originating-library 'magicl.foreign-libraries:libblas))
+             (parse-blas-files)))))
 
 (defun generate-lapack-file ()
   (let* ((package-name '#:magicl.lapack-cffi)
@@ -427,7 +434,11 @@ the CFFI binding file."
     (generate-bindings-file
      "lapack-cffi"
      '#:magicl.lapack-cffi
-     (mapcan #'generate-cffi-interface-alternate (parse-lapack-files)))))
+     (mapcan (lambda (def)
+               (generate-cffi-interface-alternate
+                def
+                :originating-library 'magicl.foreign-libraries:liblapack))
+             (parse-lapack-files)))))
 
 (defun generate-blapack-files (lapack-dir)
   (let ((*basedir* lapack-dir))

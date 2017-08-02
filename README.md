@@ -28,13 +28,17 @@ On macOS, there are at least two options for using BLAS and LAPACK. The first is
 brew install gfortran lapack
 ```
 
-Currently, this is the assumed default for MAGICL. One can control the libraries used with the global variable `magicl::*use-brew*` set at compile time.
+By default, `libgfortran` is searched for where Homebrew installs it, namely `/usr/local/opt/gcc/lib/gcc/7/`. Likewise with `libblas` and `liblapack`, located in `/usr/local/opt/lapack/lib/`. Refer to [CFFI's documentation](https://common-lisp.net/project/cffi/manual/cffi-manual.html#g_t_002aforeign_002dlibrary_002ddirectories_002a) on search paths to configure this more specifically.
+
+Libraries are searched here by default.
 
 #### System-Provided _Accelerate_ Framework
 
-The first are the system-optimized libraries included with macOS. These are a part of the [_Accelerate_](https://developer.apple.com/documentation/accelerate) framework. The included libraries are `libBLAS.dylib` and `libLAPACK.dylib`.
+MacOS provides optimized BLAS and LAPACK libraries as a part of the [_Accelerate_](https://developer.apple.com/documentation/accelerate) framework. The libraries are `libBLAS.dylib` and `libLAPACK.dylib`.
 
 While the Accelerate framework includes these libraries, they are not a complete. We count more than 500 missing functions provided in the standard LAPACK distribution.
+
+In order to use the system-provided libraries, add `:magicl.use-accelerate` to your `*features*` before compilation.
 
 ## Generating BLAS and LAPACK Bindings
 
