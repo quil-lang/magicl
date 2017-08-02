@@ -1,6 +1,6 @@
 (defpackage #:magicl-examples
   (:use :common-lisp :fnv :fnv-utils :magicl)
-  (:export :dot-example :eigenvalue-example))
+  (:export :dot-example :eigenvalue-example :qr-example :svd-example))
 
 (in-package #:magicl-examples)
 
@@ -73,7 +73,6 @@
 	    (%dgemm "N" "T" 2 2 2 1.0d0 Mri 2 V 2 0.0d0 Mr 2)
 	    (format t "Reconstructed M = ~A~%" Mr)))))))
 
-#+ignore
 (defun qr-example ()
   (let ((a (make-complex-matrix 3 2 #C (1 2) #C (-4 3) #C (-3 -3) #C (9 2) 4 #C (0 -2.9d0))))
     (multiple-value-bind (q r)
@@ -91,16 +90,26 @@
         (princ "Reconstructed A")
         (princ '#\Newline)
         (print-matrix a-reconst)))))
-#+ignore
+
 (defun svd-example ()
-  (multiple-value-bind (u sigma vt) 
-            (svd (make-complex-matrix 2 3 3 2 2 3 2 -2))
-          (print "U")
-          (princ '#\Newline)
-          (print-matrix u)
-          (print "SIGMA")
-          (princ '#\Newline)
-          (print-matrix sigma)
-          (princ '#\Newline)
-          (princ "VT")
-          (print-matrix vt)))
+  (let ((a (make-complex-matrix 3 2 #C (1 2) #C (-4 3) #C (-3 -3) #C (9 2) 4 #C (0 -2.9d0))))
+    (multiple-value-bind (u sigma vt) 
+        (svd a)
+      (print-matrix  (multiply-complex-matrices u sigma))
+      (let ((a-reconst (multiply-complex-matrices (multiply-complex-matrices u sigma) vt)))
+        (princ "A")
+        (princ '#\Newline)
+        (print-matrix a)
+        (print "U")
+        (princ '#\Newline)
+        (print-matrix u)
+        (print "SIGMA")
+        (princ '#\Newline)
+        (print-matrix sigma)
+        (princ "VT")
+        (princ '#\Newline)
+        (print-matrix vt)
+        (princ "Reconstructed A")
+        (princ '#\Newline)
+        (print-matrix a-reconst))))))
+
