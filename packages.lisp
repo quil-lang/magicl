@@ -41,4 +41,6 @@
            #:print-matrix
            #:qr
            #:svd
-           #:multiply-complex-matrices))
+           #:multiply-complex-matrices
+           #:ref
+           #:make-matrix))
