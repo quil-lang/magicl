@@ -43,4 +43,7 @@
            #:svd
            #:multiply-complex-matrices
            #:ref
-           #:make-matrix))
+           #:make-matrix
+           #:matrix-rows
+           #:matrix-cols
+           #:matrix-data))
