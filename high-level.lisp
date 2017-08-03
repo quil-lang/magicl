@@ -39,8 +39,7 @@
         (expected-size (min m n)))
     (assert (= entries-size expected-size) ()
             "Min dimension is ~S but number of entries is ~S" expected-size entries-size)
-    (let ((mat (apply #'make-complex-matrix 
-                      (append (list m n) (make-list (* m n) :initial-element 0)))))
+    (let ((mat (apply #'make-complex-matrix m n (make-list (* m n) :initial-element #C(0.0d0 0.0d0)))))
       (dotimes (i entries-size mat)
         (setf (ref mat i i) (nth i entries))))))
 
