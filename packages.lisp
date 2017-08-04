@@ -2,14 +2,14 @@
   (:use #:common-lisp)
   (:export #:libgfortran
            #:libblas
-           #:liblapack))
+           #:liblapack
+           #:foreign-symbol-available-p
+           #:print-availability-report))
 
 (defpackage #:magicl.cffi-types
-  (:nicknames #:cffi-types)
   (:use #:common-lisp
         #:cffi 
         #:fnv)
-
   (:export #:complex-single-float
            #:complex-double-float
            #:fortran-int
@@ -20,23 +20,30 @@
            #:fortran-logical))
 
 (defpackage #:magicl.blas-cffi
-  (:nicknames #:blas-cffi)
   (:use #:foreign-numeric-vector
         #:fnv-utils
-        #:magicl.cffi-types))
+        #:magicl.cffi-types)
+  #-package-local-nicknames
+  (:nicknames #:blas))
 
 (defpackage #:magicl.lapack-cffi
-  (:nicknames #:lapack-cffi)
   (:use #:foreign-numeric-vector
         #:fnv-utils
-        #:magicl.cffi-types))
+        #:magicl.cffi-types)
+  #-package-local-nicknames
+  (:nicknames #:lapack))
 
 (defpackage #:magicl
   (:use #:common-lisp
         #:cffi
-        #:foreign-numeric-vector
-        #:blas-cffi)
-  (:export #:with-blapack
+        #:foreign-numeric-vector)
+  #+package-local-nicknames
+  (:local-nicknames (#:blas #:magicl.blas-cffi)
+                    (#:lapack #:magicl.lapack-cffi))
+  (:import-from #:magicl.foreign-libraries
+                #:print-availability-report)
+  (:export #:print-availability-report
+           #:with-blapack
            #:make-complex-matrix
            #:print-matrix
            #:qr

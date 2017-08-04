@@ -11,3 +11,11 @@
    (:file "lapack-cffi")
    (:file "high-level")
    (:file "magicl")))
+
+#+#:ignore
+(defmethod perform :after ((op load-op)
+                           (system (eql (find-system ':magicl))))
+  (uiop:symbol-call ':magicl.foreign-libraries
+                    '#:print-availability-report
+                    :show-available nil
+                    :show-unavailable t))

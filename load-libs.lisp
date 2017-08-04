@@ -24,6 +24,66 @@
   (:unix  "liblapack.so")
   (t (:default "liblapack")))
 
+(defparameter *cffi-libraries* '(
+                                 #+(or (not :darwin) (not :magicl.use-accelerate))
+                                 libgfortran
+                                 libblas
+                                 liblapack))
+
+(defun foreign-symbol-available-p (name library)
+  "Check that NAME is available from the libarary LIBRARY."
+  (check-type name string)
+  (check-type library symbol)
+  (let ((found (cffi:foreign-symbol-pointer name :library library)))
+    (and found
+         (not (cffi:null-pointer-p found))
+         t)))
+
+(defun print-availability-report (&key (stream *standard-output*)
+                                       (show-available t)
+                                       (show-unavailable t)
+                                       search)
+  (check-type search (or null string))
+  (check-type stream stream)
+  ;; Print header
+  (format stream "~&~7T~
+                  ~T~A~
+                  ~0,32T~A~%"
+          "Fortran Function"
+          "Lisp Function")
+  (write-line #.(make-string 80 :initial-element #\-) stream)
+  (terpri stream)
+
+  ;; Print symbol information
+  (dolist (lib *cffi-libraries*)
+    (let ((symbols (sort (copy-seq (getf (symbol-plist lib) ':magicl))
+                         #'string<
+                         :key #'first)))
+      (unless (null symbols)
+        (format stream "Library ~A: ~A~%"
+                (symbol-name lib)
+                (cffi:foreign-library-pathname lib))
+        
+        (loop :for (real-name mangled-name raw-symbol external-symbol) :in symbols :do
+          (let ((available (foreign-symbol-available-p mangled-name lib)))
+            (when (and
+                   ;; search query
+                   (or (null search)
+                       (search search real-name)
+                       (search search mangled-name))
+                   ;; availability filter
+                   (or (and show-available available)
+                       (and show-unavailable (not available))))
+              (format stream "~4T[~:[ ~;x~]]~
+                              ~T~A~
+                              ~0,32T~S~%"
+                      available
+                      real-name
+                      external-symbol))))
+        (terpri stream)))))
+
+;;;;;;;;;;;;;;;;;;;;;;;;; Load the Libraies ;;;;;;;;;;;;;;;;;;;;;;;;;;
+
 (defvar *blapack-libs-loaded* nil)
 
 (unless *blapack-libs-loaded*
@@ -32,4 +92,3 @@
   (cffi:load-foreign-library 'libblas)
   (cffi:load-foreign-library 'liblapack)
   (setf *blapack-libs-loaded* t))
-

@@ -310,6 +310,7 @@ need to be customized."
   (labels ((sym (var-name)
              (intern (string-upcase var-name) *package*)))
     (let* ((name (fortran-function-name ff))
+           (fortran-name (fortran-mangle-name name))
            (vars-types (fortran-function-arguments ff))
            (vars (mapcar (lambda (vt) (sym (first vt))) vars-types))
            (ref-vars (mapcar (lambda (v) (gentemp (concatenate 'string (symbol-name v) "-REF")
@@ -319,9 +320,9 @@ need to be customized."
            (return-type (fortran-function-return-type ff))
            (raw-call-name (sym (concatenate 'string "%%" (string-upcase name))))
            (lisp-fun-name (sym (concatenate 'string "%" (string-upcase name)))))
-      (list
-       ;; CFFI form
-       `(cffi:defcfun (,(fortran-mangle-name name) ,raw-call-name
+      `(
+        ;; CFFI form
+        (cffi:defcfun (,fortran-name ,raw-call-name
                        ,@(if (not originating-library)
                              nil
                              `(:library ,originating-library)))
@@ -332,11 +333,30 @@ need to be customized."
                   :collect (list (sym var) (if (eq norm-type ':fortran-string)
                                                ':string
                                                ':pointer))))
+       
+        ;; Record the following in the SYMBOL-PLIST of the library
+        ;; symbol:
+        ;;
+        ;;     1. The function name as it appears in the Fortran file.
+        ;;
+        ;;     2. The mangled name.
+        ;;
+        ;;     3. The Lisp symbol name refering to the CFFI-defined
+        ;;        function.
+        ;;
+        ;;     4. The "high level" entry point function which handles
+        ;;        the by-ref semantics of Fortran.
+        ,@(when originating-library
+            (list `(cl:pushnew '(,name ,fortran-name ,raw-call-name ,lisp-fun-name)
+                               (cl:getf (cl:symbol-plist ',originating-library) ':magicl)
+                               :test 'cl:equal
+                               :key 'cl:car)))
 
-       ;; Lisp function form
-       `(cl:defun ,lisp-fun-name ,(mapcar #'sym vars)
-          ;; Type declaration expressions
-          (cl:declare ,@(loop :for var :in vars
+        ;; Lisp function form
+        (cl:defun ,lisp-fun-name ,(mapcar #'sym vars)
+          ;; Inline and type declaration expressions
+          (cl:declare (cl:inline ,raw-call-name)
+                      ,@(loop :for var :in vars
                               :for norm-type :in normalized-types
                               :collect `(cl:type ,(normalized-type-to-cffi-type
                                                    norm-type
@@ -409,12 +429,39 @@ the CFFI binding file."
       (terpri f)
       (terpri f)
       (dolist (form bindings)
-        (prin1 form f)
-        (terpri f)
-        (when (eq 'cl:defun (car form))
-          (prin1 `(export ',(cadr form) ',package-name) f)
-          (terpri f))
-        (terpri f)))))
+        (cond
+          ((eq 'cffi:defcfun (car form))
+           (let ((name (cadadr form)))
+             (prin1 `(cl:declaim (cl:inline ,name)) f)
+             (terpri f)
+             (terpri f)
+             (prin1 form f)
+             (terpri f)
+             (terpri f)
+             (prin1 `(cl:declaim (cl:notinline ,name)) f)
+             (terpri f)
+             (terpri f)))
+          ((eq 'cl:defun (car form))
+           (let ((name (cadr form)))
+             (prin1 `(cl:declaim (cl:inline ,name)) f)
+             (terpri f)
+             (terpri f)
+             (prin1 form f)
+             (terpri f)
+             (terpri f)
+             (prin1 `(cl:declaim (cl:notinline ,name)) f)
+             (terpri f)
+             (terpri f)
+             (prin1 `(export ',name ',package-name) f)
+             (terpri f)
+             (terpri f)
+             (terpri f)))
+          (t
+           (prin1 form f)
+           (terpri f)
+           (terpri f))))
+      (write-line ";;; End of file." f)
+      nil)))
 
 (defun generate-blas-file ()
   (let* ((package-name '#:magicl.blas-cffi)

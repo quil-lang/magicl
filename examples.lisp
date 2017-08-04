@@ -1,5 +1,8 @@
 (defpackage #:magicl-examples
   (:use :common-lisp :fnv :fnv-utils :magicl)
+  #+package-local-nicknames
+  (:local-nicknames (:blas :magicl.blas-cffi)
+                    (:lapack :magicl.lapack-cffi))
   (:export :dot-example :eigenvalue-example :qr-example :svd-example))
 
 (in-package #:magicl-examples)
@@ -20,7 +23,7 @@
           (setf (fnv:fnv-complex-double-ref cx i) (aref u i)
                 (fnv:fnv-complex-double-ref cy i) (aref v i)))
         (format t "x: ~A~%y: ~A~%" cx cy)
-        (magicl.blas-cffi::%zdotc
+        (blas:%zdotc
          n
          cx
          1
@@ -31,7 +34,7 @@
   (let ((a (fnv:make-fnv-complex-float 4 :initial-value (complex 1.0e0)))
         (b (fnv:make-fnv-complex-float 4 :initial-value (complex 2.0e0))))
     (format t "a^t = ~A~%b^t = ~A~%a^t b = ~A~%~%"
-            a b (magicl.blas-cffi::%cdotu 4 a 1 b 1))))
+            a b (blas:%cdotu 4 a 1 b 1))))
 
 (defun eigenvalue-example ()
   ;; Set the traps
@@ -44,34 +47,34 @@
     ;; (matlab notation) matrix M = [1 2; 2 3].
     (let ((M (make-fnv-double 4)))
       (setf (fnv-double-ref M 0) 1.0d0
-	    (fnv-double-ref M 1) 2.0d0
-	    (fnv-double-ref M 2) 2.0d0
-	    (fnv-double-ref M 3) 3.0d0)
+            (fnv-double-ref M 1) 2.0d0
+            (fnv-double-ref M 2) 2.0d0
+            (fnv-double-ref M 3) 3.0d0)
 
       (let ((V (make-fnv-double 4))
-	    (D (make-fnv-double 2))
-	    (lwork 4096)
-	    (liwork 4096)
-	    (info 0)
-	    (eigs-found 0))
+            (D (make-fnv-double 2))
+            (lwork 4096)
+            (liwork 4096)
+            (info 0)
+            (eigs-found 0))
 
-	(magicl.lapack-cffi::%dsyevr "V" "A" "U" 2 (copy-fnv-double M) 2 0.0d0 0.0d0
-		 0 0 -1.0d0  eigs-found D V 2 (make-fnv-int32 4)
-		 (make-fnv-double lwork) lwork
-		 (make-fnv-int32 liwork) liwork
-		 info)
-	(format t "M = ~A~%V=~A~%D=~A~%~%" M V D)
+        (lapack:%dsyevr "V" "A" "U" 2 (copy-fnv-double M) 2 0.0d0 0.0d0
+                        0 0 -1.0d0  eigs-found D V 2 (make-fnv-int32 4)
+                        (make-fnv-double lwork) lwork
+                        (make-fnv-int32 liwork) liwork
+                        info)
+        (format t "M = ~A~%V=~A~%D=~A~%~%" M V D)
 
-	;; Construct a "matlab-style D" --- is there a better way?
-	(let ((Df (make-fnv-double 4 :initial-value 0.0d0)))
-	  (setf (fnv-double-ref Df 0) (fnv-double-ref D 0)
-		(fnv-double-ref Df 3) (fnv-double-ref D 1))
-	  ;; Reconstruct M as V*Df*V';
-	  (let ((Mri (make-fnv-double 4))
-		(Mr (make-fnv-double 4)))
-	    (%dgemm "N" "N" 2 2 2 1.0d0 V 2 Df 2 0.0d0 Mri 2)
-	    (%dgemm "N" "T" 2 2 2 1.0d0 Mri 2 V 2 0.0d0 Mr 2)
-	    (format t "Reconstructed M = ~A~%" Mr)))))))
+        ;; Construct a "matlab-style D" --- is there a better way?
+        (let ((Df (make-fnv-double 4 :initial-value 0.0d0)))
+          (setf (fnv-double-ref Df 0) (fnv-double-ref D 0)
+                (fnv-double-ref Df 3) (fnv-double-ref D 1))
+          ;; Reconstruct M as V*Df*V';
+          (let ((Mri (make-fnv-double 4))
+                (Mr (make-fnv-double 4)))
+            (blas:%dgemm "N" "N" 2 2 2 1.0d0 V 2 Df 2 0.0d0 Mri 2)
+            (blas:%dgemm "N" "T" 2 2 2 1.0d0 Mri 2 V 2 0.0d0 Mr 2)
+            (format t "Reconstructed M = ~A~%" Mr)))))))
 
 (defun qr-example ()
   (let ((a (make-complex-matrix 3 2 #C (1 2) #C (-4 3) #C (-3 -3) #C (9 2) 4 #C (0 -2.9d0))))
