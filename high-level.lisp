@@ -293,11 +293,11 @@ with upper left block with dimension P-by-Q."
                                                              :initial-value #C (0.0d0 0.0d0)))))
       ; Create U block by block
       (loop for i from 0 to (1- p)
-            for j from 0 to (1- p)
-            do (setf (ref u i j) (ref u1 i j)))
+            do (loop for j from 0 to (1- p)
+                     do (setf (ref u i j) (ref u1 i j))))
       (loop for i from 0 to (- m p 1)
-            for j from 0 to (- m p 1)
-            do (setf (ref u (+ i p) (+ j p)) (ref u2 i j)))
+            do (loop for j from 0 to (- m p 1)
+                     do (setf (ref u (+ i p) (+ j p)) (ref u2 i j))))
       
       ; Create SIGMA block by block
       (let ((diag11 (min p q))
@@ -325,13 +325,14 @@ with upper left block with dimension P-by-Q."
           (loop for i from 0 to (1- iden22)
                 do (setf (ref sigma (+ p i) (+ q i)) #C (1.0d0 0.0d0)))
           (loop for i from iden22 to (1- diag22)
-                do (setf (ref sigma (+ p i) (+ q i)) (cos (nth i theta))))))
+                do (setf (ref sigma (+ p i) (+ q i)) (cos (nth (- i iden22) theta))))))
+      
       ; Ceate VT block by block
       (loop for i from 0 to (1- q)
-            for j from 0 to (1- q)
-            do (setf (ref vt i j) (ref v1t i j)))
+            do (loop for j from 0 to (1- q)
+                     do (setf (ref vt i j) (ref v1t i j))))
       (loop for i from 0 to (- m q 1)
-            for j from 0 to (- m q 1)
-            do (setf (ref vt (+ i q) (+ j q)) (ref v2t i j)))
-
+            do (loop for j from 0 to (- m q 1)
+                     do (setf (ref vt (+ i q) (+ j q)) (ref v2t i j))))
+      
       (values u sigma vt))))
