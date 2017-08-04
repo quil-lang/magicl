@@ -1,4 +1,6 @@
 (asdf:defsystem #:magicl
+  :license "BSD 3-Clause (See LICENSE.txt)"
+  :maintainer "Rigetti Computing"
   :depends-on (#:cffi
                #:cffi-libffi
                #:org.middleangle.foreign-numeric-vector)
