@@ -51,7 +51,7 @@
                   ~0,32T~A~%"
           "Fortran Function"
           "Lisp Function")
-  (write-line #.(make-string 80 :initial-element #\-) stream)
+  (write-line #.(make-string 72 :initial-element #\-) stream)
   (terpri stream)
 
   ;; Print symbol information
@@ -69,8 +69,8 @@
             (when (and
                    ;; search query
                    (or (null search)
-                       (search search real-name)
-                       (search search mangled-name))
+                       (search search real-name :test #'char-equal)
+                       (search search mangled-name :test #'char-equal))
                    ;; availability filter
                    (or (and show-available available)
                        (and show-unavailable (not available))))
