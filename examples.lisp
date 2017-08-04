@@ -3,7 +3,7 @@
   #+package-local-nicknames
   (:local-nicknames (:blas :magicl.blas-cffi)
                     (:lapack :magicl.lapack-cffi))
-  (:export :dot-example :eigenvalue-example :qr-example :svd-example))
+  (:export :dot-example :eigenvalue-example :qr-example :svd-example :csd-example))
 
 (in-package #:magicl-examples)
 
@@ -130,3 +130,29 @@
           (print "Reconstructed A")
           (princ '#\Newline)
           (print-matrix a-reconst)))))
+
+(defun csd-example ()
+  (let ((x (make-complex-matrix 2 2 -0.894288 #C(-0.372336 -0.248224) #C(0.372336 -0.248224) -0.894288)))
+    (csd-printing x 1 1)))
+
+(defun csd-printing (x p q)
+  (multiple-value-bind (u sigma vt)
+      (multiple-value-bind (u1 u2 v1t v2t theta)
+          (csd x p q)
+        (csd-from-blocks u1 u2 v1t v2t theta))
+    (let ((x-reconst (multiply-complex-matrices u (multiply-complex-matrices sigma vt))))
+      (print "X")
+      (princ '#\Newline)
+      (print-matrix x)
+      (print "U")
+      (princ '#\Newline)
+      (print-matrix u)
+      (print "SIGMA")
+      (princ '#\Newline)
+      (print-matrix sigma)
+      (print "VT")
+      (princ '#\Newline)
+      (print-matrix vt)
+      (print "Reconstructed X")
+      (princ '#\Newline)
+      (print-matrix x-reconst))))

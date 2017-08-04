@@ -53,4 +53,6 @@
            #:make-matrix
            #:matrix-rows
            #:matrix-cols
-           #:matrix-data))
+           #:matrix-data
+           #:csd
+           #:csd-from-blocks))

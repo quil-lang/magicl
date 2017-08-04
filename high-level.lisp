@@ -16,10 +16,15 @@
                 (setf (fnv:fnv-complex-double-ref v i) (coerce e '(complex double-float))))
           :finally (return v))))
 
-(defun complex-vector-to-list (v)
-  "Make a list from a complex double fnv."
+(defun vector-to-list (v)
+  "Make a list from a fnv."
   (loop :for i :below (fnv:fnv-length v)
-        :collect (fnv:fnv-complex-double-ref v i)))
+        :collect 
+        (etypecase v
+          (fnv:fnv-float          (fnv:fnv-float-ref v i))
+          (fnv:fnv-double         (fnv:fnv-double-ref v i))
+          (fnv:fnv-complex-float  (fnv:fnv-complex-float-ref v i))
+          (fnv:fnv-complex-double (fnv:fnv-complex-double-ref v i)))))
 
 (defun make-complex-matrix (m n &rest entries)
   "Makes an m-by-n matrix assuming entries is a list of complex numbers in column major order."
@@ -194,3 +199,139 @@
           (values (make-matrix :rows rows :cols rows :data u)
                   (make-matrix :rows rows :cols cols :data smat)
                   (make-matrix :rows cols :cols cols :data vt)))))))
+
+(defun slice (m rmin rmax cmin cmax)
+  "Get the subarray given by M(rmin:rmax, cmin:cmax)."
+  (let ((rows (matrix-rows m))
+        (cols (matrix-cols m)))
+    (assert (<= 0 rmin rmax rows) () "Invalid row indices")
+    (assert (<= 0 cmin cmax cols) () "Invalid column indices")
+    (let* ((sliced-rows (- rmax rmin))
+          (sliced-cols (- cmax cmin))
+          (v (fnv:make-fnv-complex-double (* sliced-rows sliced-cols))))
+      (dotimes (j sliced-cols)
+        (dotimes (i sliced-rows)
+          (setf (fnv:fnv-complex-double-ref 
+                 v (+ (* j sliced-rows) i)) (ref m (+ rmin i) (+ cmin j)))))
+      (values (make-matrix :rows sliced-rows :cols sliced-cols :data v)))))
+
+(defun csd (x p q)
+  "Find the Cosine-Sine Decomposition of a matrix X given that it is to be partitioned
+with upper left block with dimension P-by-Q."
+  (let ((m (matrix-rows x))
+        (n (matrix-cols x)))
+    (assert (= m n) () "X is not a square matrix")
+    (check-type p integer)
+    (check-type q integer)
+    (assert (<= 1 p (1- m)) () "P = ~D is out of range" p)
+    (assert (<= 1 q (1- m)) () "Q = ~D is out of range" q)
+    (let ((jobu1 "Y")
+          (jobu2 "Y")
+          (jobv1t "Y")
+          (jobv2t "Y")
+          (trans "F")
+          (signs "D")
+          (ldx11 p)
+          (ldx12 p)
+          (ldx21 (- m p))
+          (ldx22 (- m p))
+          (r (min p (- m p) q (- m q)))
+          (ldu1 p)
+          (ldu2 (- m p))
+          (ldv1t q)
+          (ldv2t (- m q))
+          (lwork -1)
+          (work (fnv:make-fnv-complex-double 1))
+          (lrwork -1)
+          (rwork (fnv:make-fnv-double 1))
+          (info 0))
+      (let ((x11 (matrix-data (slice x 0 p 0 q)))
+            (x12 (matrix-data (slice x 0 p q m)))
+            (x21 (matrix-data (slice x p m 0 q)))
+            (x22 (matrix-data (slice x p m q m)))
+            (theta (fnv:make-fnv-double r))
+            (u1 (fnv:make-fnv-complex-double (* ldu1 p)))
+            (u2 (fnv:make-fnv-complex-double (* ldu2 (- m p))))
+            (v1t (fnv:make-fnv-complex-double (* ldv1t q)))
+            (v2t (fnv:make-fnv-complex-double (* ldv2t (- m q))))
+            (iwork (fnv:make-fnv-int32 (- m r))))
+        ; run it once as a workspace query
+        (magicl.lapack-cffi::%zuncsd jobu1 jobu2 jobv1t jobv2t 
+                                     trans signs m p q 
+                                     x11 ldx11 x12 ldx12 x21 ldx21 x22 ldx22 
+                                     theta u1 ldu1 u2 ldu2 v1t ldv1t v2t ldv2t 
+                                     work lwork rwork lrwork iwork info)
+        (setf lwork (truncate (realpart (fnv:fnv-complex-double-ref work 0))))
+        (setf work (fnv:make-fnv-complex-double (max 1 lwork)))
+        (setf lrwork (truncate (fnv:fnv-double-ref rwork 0)))
+        (setf rwork (fnv:make-fnv-double (max 1 lrwork)))
+        ; run it again with optimal workspace size
+        (magicl.lapack-cffi::%zuncsd jobu1 jobu2 jobv1t jobv2t 
+                                     trans signs m p q 
+                                     x11 ldx11 x12 ldx12 x21 ldx21 x22 ldx22 
+                                     theta u1 ldu1 u2 ldu2 v1t ldv1t v2t ldv2t 
+                                     work lwork rwork lrwork iwork info)
+        (values (make-matrix :rows p :cols p :data u1)
+                (make-matrix :rows (- m p) :cols (- m p) :data u2)
+                (make-matrix :rows q :cols q :data v1t)
+                (make-matrix :rows (- m q) :cols (- m q) :data v2t)
+                (vector-to-list theta))))))
+
+(defun csd-from-blocks (u1 u2 v1t v2t theta)
+  (let ((p (matrix-rows u1))
+        (q (matrix-rows v1t))
+        (m (+ (matrix-rows u1) (matrix-rows u2)))
+        (r (length theta)))
+    (let ((u (make-matrix :rows m :cols m 
+                          :data (fnv:make-fnv-complex-double (* m m) 
+                                                             :initial-value #C (0.0d0 0.0d0))))
+          (sigma (make-matrix :rows m :cols m 
+                          :data (fnv:make-fnv-complex-double (* m m) 
+                                                             :initial-value #C (0.0d0 0.0d0))))
+          (vt (make-matrix :rows m :cols m 
+                          :data (fnv:make-fnv-complex-double (* m m) 
+                                                             :initial-value #C (0.0d0 0.0d0)))))
+      ; Create U block by block
+      (loop for i from 0 to (1- p)
+            for j from 0 to (1- p)
+            do (setf (ref u i j) (ref u1 i j)))
+      (loop for i from 0 to (- m p 1)
+            for j from 0 to (- m p 1)
+            do (setf (ref u (+ i p) (+ j p)) (ref u2 i j)))
+      
+      ; Create SIGMA block by block
+      (let ((diag11 (min p q))
+            (diag12 (min p (- m q)))
+            (diag21 (min (- m p) q))
+            (diag22 (min (- m p) (- m q))))
+        (let ((iden11 (- diag11 r))
+              (iden12 (- diag12 r))
+              (iden21 (- diag21 r))
+              (iden22 (- diag22 r)))
+          (loop for i from 0 to (1- iden11)
+                do (setf (ref sigma i i) #C (1.0d0 0.0d0)))
+          (loop for i from iden11 to (1- diag11)
+                do (setf (ref sigma i i) (cos (nth i theta))))
+          (loop for i from 0 to (1- iden12)
+                do (setf (ref sigma (- p 1 i) (- m 1 i)) #C (-1.0d0 0.0d0)))
+          (loop for i from iden12 to (1- diag12)
+                do (setf (ref sigma (- p 1 i) (- m 1 i))
+                         (- (sin (nth (- r 1 (- i iden12)) theta)))))
+          (loop for i from 0 to (1- iden21)
+                do (setf (ref sigma (- m 1 i) (- q 1 i)) #C (1.0d0 0.0d0)))
+          (loop for i from iden21 to (1- diag21)
+                do (setf (ref sigma (- m 1 i) (- q 1 i))
+                         (sin (nth (- r 1 (- i iden21)) theta))))
+          (loop for i from 0 to (1- iden22)
+                do (setf (ref sigma (+ p i) (+ q i)) #C (1.0d0 0.0d0)))
+          (loop for i from iden22 to (1- diag22)
+                do (setf (ref sigma (+ p i) (+ q i)) (cos (nth i theta))))))
+      ; Ceate VT block by block
+      (loop for i from 0 to (1- q)
+            for j from 0 to (1- q)
+            do (setf (ref vt i j) (ref v1t i j)))
+      (loop for i from 0 to (- m q 1)
+            for j from 0 to (- m q 1)
+            do (setf (ref vt (+ i q) (+ j q)) (ref v2t i j)))
+
+      (values u sigma vt))))
