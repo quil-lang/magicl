@@ -311,7 +311,7 @@ with upper left block with dimension P-by-Q."
           (loop for i from 0 to (1- iden11)
                 do (setf (ref sigma i i) #C (1.0d0 0.0d0)))
           (loop for i from iden11 to (1- diag11)
-                do (setf (ref sigma i i) (cos (nth i theta))))
+                do (setf (ref sigma i i) (cos (nth (- i iden11) theta))))
           (loop for i from 0 to (1- iden12)
                 do (setf (ref sigma (- p 1 i) (- m 1 i)) #C (-1.0d0 0.0d0)))
           (loop for i from iden12 to (1- diag12)
