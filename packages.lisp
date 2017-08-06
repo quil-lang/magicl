@@ -56,4 +56,5 @@
            #:matrix-data
            #:csd
            #:csd-from-blocks
-           #:det))
+           #:det
+           #:inv))
