@@ -111,6 +111,26 @@
 (defun qr (m)
   "Finds the QR factorization of the matrix m."
   (let ((rows (matrix-rows m))
+        (cols (matrix-cols m)))
+    (multiple-value-bind (a tau) (lapack-qr m)
+      ; serial let is important because qr-helper-get-q modifies a
+      (let* ((r (qr-helper-get-r a cols))
+             (q (qr-helper-get-q a tau cols)))
+          ; change signs if diagonal elements of r are negative
+          (dotimes (j cols)
+            (let ((diag-elt (ref r j j)))
+              (assert (= (imagpart diag-elt) 0) 
+                      () "Diagonal element R_~S~S=~S is not real" j j diag-elt)
+              (setf diag-elt (realpart diag-elt))
+              (if (minusp diag-elt)
+                  (dotimes (i rows)
+                    (if (<= j i (1- cols))
+                        (setf (ref r j i) (- (ref r j i))))
+                    (setf (ref q i j) (- (ref q i j)))))))
+        (values q r)))))
+
+(defun lapack-qr (m)
+    (let ((rows (matrix-rows m))
         (cols (matrix-cols m))
         (a (fnv:copy-fnv-complex-double (matrix-data m)))
         (lwork -1)
@@ -124,20 +144,7 @@
       (setf work (fnv:make-fnv-complex-double (max 1 lwork)))
       ; run it again with optimal workspace size
       (magicl.lapack-cffi::%zgeqrf rows cols a lda tau work lwork info)
-      (let* ((r (qr-helper-get-r a cols))
-             (q (qr-helper-get-q a tau cols)))
-        ; change signs if diagonal elements of r are negative
-        (dotimes (j cols)
-          (let ((diag-elt (ref r j j)))
-            (assert (= (imagpart diag-elt) 0) 
-                    () "Diagonal element R_~S~S=~S is not real" j j diag-elt)
-            (setf diag-elt (realpart diag-elt))
-            (if (minusp diag-elt)
-                (dotimes (i rows)
-                  (if (<= j i (1- cols))
-                      (setf (ref r j i) (- (ref r j i))))
-                  (setf (ref q i j) (- (ref q i j)))))))
-        (values q r)))))
+      (values a tau))))
 
 (defun qr-helper-get-r (a n)
   "Get the matrix R from the upper triangular portion of a, where n is the number of columns"
@@ -336,3 +343,15 @@ with upper left block with dimension P-by-Q."
                      do (setf (ref vt (+ i q) (+ j q)) (ref v2t i j))))
       
       (values u sigma vt))))
+
+(defun lu-factorize (m)
+  (let ((rows (matrix-rows m))
+        (cols (matrix-cols m))
+        (a (matrix-data m))
+        (info 0))
+    (let ((lda rows)
+          (ipiv (fnv:make-fnv-int32 (min rows cols))))
+      (magicl.lapack-cffi::%zgetrf rows cols a lda ipiv info)
+      (values a ipiv))))
+
+
