@@ -156,3 +156,13 @@
       (print "Reconstructed X")
       (princ '#\Newline)
       (print-matrix x-reconst))))
+
+(defun det-example ()
+  (let* ((x (make-complex-matrix 3 3 2 3 5 #C(1.5 -2) -3 1.5 #C(0 2) 0 #C(0 -3)))
+         (d (det x)))
+    (print 'X)
+    (princ '#\Newline)
+    (print-matrix x)
+    (print "det(X)")
+    (print d)
+    (values nil)))
