@@ -3,7 +3,7 @@
   #+package-local-nicknames
   (:local-nicknames (:blas :magicl.blas-cffi)
                     (:lapack :magicl.lapack-cffi))
-  (:export :dot-example :eigenvalue-example :qr-example :svd-example :csd-example :det-example))
+  (:export :dot-example :eigenvalue-example :qr-example :svd-example :csd-example :det-example :inv-example))
 
 (in-package #:magicl-examples)
 
@@ -165,4 +165,19 @@
     (print-matrix x)
     (print "det(X)")
     (print d)
+    (values nil)))
+
+(defun inv-example ()
+  (let* ((x (make-complex-matrix 3 3 2 3 5 #C(1.5 -2) -3 1.5 #C(0 2) 0 #C(0 -3)))
+         (inv-x (inv x))
+         (id (multiply-complex-matrices x inv-x)))
+    (print "X")
+    (princ '#\Newline)
+    (print-matrix x)
+    (print "X^-1")
+    (princ '#\Newline)
+    (print-matrix inv-x)
+    (print "X*X^-1")
+    (princ '#\Newline)
+    (print-matrix id)
     (values nil)))
