@@ -354,4 +354,17 @@ with upper left block with dimension P-by-Q."
       (magicl.lapack-cffi::%zgetrf rows cols a lda ipiv info)
       (values a ipiv))))
 
+(defun det (m)
+  "Finds the determinant of a matrix M."
+  (let ((rows (matrix-rows m))
+        (cols (matrix-cols m))
+        (d 1))
+    (assert (= rows cols) () "M is not a matrix.")
+    (multiple-value-bind (a tau) (lapack-qr m)
+      (dotimes (i rows)
+        (setq d (* d (fnv:fnv-complex-double-ref a (+ (* i rows) i)))))
+      (fnv:over-fnv-complex-double (val) tau
+        (if (> (abs val) 1.0e-6)
+            (setq d (- d))))
+      (values d))))
 
