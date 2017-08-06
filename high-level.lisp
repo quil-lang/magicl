@@ -347,7 +347,7 @@ with upper left block with dimension P-by-Q."
 (defun lapack-lu (m)
   (let ((rows (matrix-rows m))
         (cols (matrix-cols m))
-        (a (matrix-data m))
+        (a (fnv:copy-fnv-complex-double (matrix-data m)))
         (info 0))
     (let ((lda rows)
           (ipiv (fnv:make-fnv-int32 (min rows cols))))
@@ -367,3 +367,21 @@ with upper left block with dimension P-by-Q."
         (if (not (= (1+ i) (fnv:fnv-int32-ref ipiv i)))
             (setq d (- d))))
       (values d))))
+
+(defun inv (m)
+  "Finds the inverse of a matrix M."
+  (let ((rows (matrix-rows m))
+        (cols (matrix-cols m)))
+    (assert (= rows cols) () "M is not a square matrix.")
+    (multiple-value-bind (a ipiv) (lapack-lu m)
+      (let ((lda rows)
+            (lwork -1)
+            (work (fnv:make-fnv-complex-double 1))
+            (info 0))
+        ; run it once as a workspace query
+        (magicl.lapack-cffi::%zgetri rows a lda ipiv work lwork info)
+        (setf lwork (truncate (realpart (fnv:fnv-complex-double-ref work 0))))
+        (setf work (fnv:make-fnv-complex-double (max 1 lwork)))
+        ; run it again with optimal workspace size
+        (magicl.lapack-cffi::%zgetri rows a lda ipiv work lwork info)
+        (values (make-matrix :rows rows :cols cols :data a))))))

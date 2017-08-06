@@ -3,7 +3,7 @@
   #+package-local-nicknames
   (:local-nicknames (:blas :magicl.blas-cffi)
                     (:lapack :magicl.lapack-cffi))
-  (:export :dot-example :eigenvalue-example :qr-example :svd-example :csd-example))
+  (:export :dot-example :eigenvalue-example :qr-example :svd-example :csd-example :det-example))
 
 (in-package #:magicl-examples)
 
