@@ -344,7 +344,7 @@ with upper left block with dimension P-by-Q."
       
       (values u sigma vt))))
 
-(defun lu-factorize (m)
+(defun lapack-lu (m)
   (let ((rows (matrix-rows m))
         (cols (matrix-cols m))
         (a (matrix-data m))
@@ -359,12 +359,11 @@ with upper left block with dimension P-by-Q."
   (let ((rows (matrix-rows m))
         (cols (matrix-cols m))
         (d 1))
-    (assert (= rows cols) () "M is not a matrix.")
-    (multiple-value-bind (a tau) (lapack-qr m)
+    (assert (= rows cols) () "M is not a square matrix.")
+    (multiple-value-bind (a ipiv) (lapack-lu m)
       (dotimes (i rows)
         (setq d (* d (fnv:fnv-complex-double-ref a (+ (* i rows) i)))))
-      (fnv:over-fnv-complex-double (val) tau
-        (if (> (abs val) 1.0e-6)
+      (dotimes (i (fnv:fnv-length ipiv))
+        (if (not (= (1+ i) (fnv:fnv-int32-ref ipiv i)))
             (setq d (- d))))
       (values d))))
-
