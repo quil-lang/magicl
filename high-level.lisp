@@ -85,9 +85,9 @@
   "Print method for matrices."
   (dotimes (i (matrix-rows m))
     (dotimes (j (matrix-cols m))
-      (princ (ref m i j))
-      (princ #\Space))
-    (princ #\Newline)))
+      (format t "~D " (ref m i j)))
+    (format t "~%"))
+  (format t "~%"))
 
 (defun multiply-complex-matrices (ma mb)
   "Multiplies two complex marices MA and MB."

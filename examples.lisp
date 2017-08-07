@@ -146,8 +146,7 @@
          (d (det x)))
     (format t "X~%")
     (print-matrix x)
-    (format t "det(X) = ~D~%" d)
-    (values nil)))
+    (format t "det(X) = ~D~%" d)))
 
 (defun inv-example ()
   (let* ((x (make-complex-matrix 3 3 2 3 5 #C(1.5 -2) -3 1.5 #C(0 2) 0 #C(0 -3)))
@@ -158,5 +157,4 @@
     (format t "X^-1~%")
     (print-matrix inv-x)
     (format t "X*X^-1~%")
-    (print-matrix id)
-    (values nil)))
+    (print-matrix id)))
