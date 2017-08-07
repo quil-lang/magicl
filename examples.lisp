@@ -137,9 +137,7 @@
 
 (defun csd-printing (x p q)
   (multiple-value-bind (u sigma vt)
-      (multiple-value-bind (u1 u2 v1t v2t theta)
-          (csd x p q)
-        (csd-from-blocks u1 u2 v1t v2t theta))
+      (csd x p q)
     (let ((x-reconst (multiply-complex-matrices u (multiply-complex-matrices sigma vt))))
       (print "X")
       (princ '#\Newline)

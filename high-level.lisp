@@ -27,7 +27,7 @@
           (fnv:fnv-complex-double (fnv:fnv-complex-double-ref v i)))))
 
 (defun make-complex-matrix (m n &rest entries)
-  "Makes an m-by-n matrix assuming entries is a list of complex numbers in column major order."
+  "Makes an M-by-N matrix assuming ENTRIES is a list of complex numbers in column major order."
   (let ((entries-size (length entries))
         (expected-size (* m n)))
     (assert (= entries-size expected-size)
@@ -49,7 +49,7 @@
         (setf (ref mat i i) (nth i entries))))))
 
 (defun ref (m i j)
-  "Accessor method for the element in the i-th row and j-th column of m, assuming zero indexing."
+  "Accessor method for the element in the I-th row and J-th column of a matrix M, assuming zero indexing."
   (let ((rows (matrix-rows m))
         (cols (matrix-cols m))
         (data (matrix-data m)))
@@ -65,7 +65,7 @@
         (fnv:fnv-complex-double (fnv:fnv-complex-double-ref data idx))))))
 
 (defun (setf ref) (new-value m i j)
-  "Set the value of m_ij to val."
+  "Set the value of M_IJ to NEW-VALUE."
   (let ((rows (matrix-rows m))
         (cols (matrix-cols m))
         (data (matrix-data m)))
@@ -90,6 +90,7 @@
     (princ #\Newline)))
 
 (defun multiply-complex-matrices (ma mb)
+  "Multiplies two complex marices MA and MB."
   (assert (= (matrix-cols ma) (matrix-rows mb)) ()
           "Matrix A has ~S columns while matrix B has ~S rows" (matrix-cols ma) (matrix-rows mb))
   (let ((transa "N")
@@ -109,7 +110,7 @@
       (make-matrix :rows m :cols n :data c))))
 
 (defun qr (m)
-  "Finds the QR factorization of the matrix m."
+  "Finds the QR factorization of the matrix M."
   (let ((rows (matrix-rows m))
         (cols (matrix-cols m)))
     (multiple-value-bind (a tau) (lapack-qr m)
@@ -130,6 +131,7 @@
         (values q r)))))
 
 (defun lapack-qr (m)
+  "Finds the QR factorization of the matrix M to the intermediate representation, as given by the LAPACK ZGEQRF subroutine."
     (let ((rows (matrix-rows m))
         (cols (matrix-cols m))
         (a (fnv:copy-fnv-complex-double (matrix-data m)))
@@ -147,7 +149,7 @@
       (values a tau))))
 
 (defun qr-helper-get-r (a n)
-  "Get the matrix R from the upper triangular portion of a, where n is the number of columns"
+  "Get the matrix R from the upper triangular portion of A, where N is the number of columns"
   (let ((m (/ (fnv:fnv-length a) n))
         (r (fnv:make-fnv-complex-double (* n n))))
     (check-type m integer)
@@ -208,7 +210,7 @@
                   (make-matrix :rows cols :cols cols :data vt)))))))
 
 (defun slice (m rmin rmax cmin cmax)
-  "Get the subarray given by M(rmin:rmax, cmin:cmax)."
+  "Get the subarray of M containing all elements M_IJ, where RMIN<=I<RMAX and CMIN<=J<CMAX."
   (let ((rows (matrix-rows m))
         (cols (matrix-cols m)))
     (assert (<= 0 rmin rmax rows) () "Invalid row indices")
@@ -223,8 +225,13 @@
       (values (make-matrix :rows sliced-rows :cols sliced-cols :data v)))))
 
 (defun csd (x p q)
+  "Find the Cosine-Sine Decomposition of a matrix X given tha tit is to be partitioned with upper left block of dimension P-by-Q. Returns the CSD elements (VALUES U SIGMA VT) such that X=U*SIGMA*VT."
+  (multiple-value-bind (u1 u2 v1t v2t theta) (lapack-csd x p q)
+    (csd-from-blocks u1 u2 v1t v2t theta)))
+
+(defun lapack-csd (x p q)
   "Find the Cosine-Sine Decomposition of a matrix X given that it is to be partitioned
-with upper left block with dimension P-by-Q."
+with upper left block with dimension P-by-Q. Returns the intermediate representation given by the ZUNCSD LAPACK subroutine."
   (let ((m (matrix-rows x))
         (n (matrix-cols x)))
     (assert (= m n) () "X is not a square matrix")
@@ -285,6 +292,7 @@ with upper left block with dimension P-by-Q."
                 (vector-to-list theta))))))
 
 (defun csd-from-blocks (u1 u2 v1t v2t theta)
+  "Calculates the matrices U, SIGMA, and VT of the CSD of a matrix from its intermediate representation, as calculated from ZUNCSD."
   (let ((p (matrix-rows u1))
         (q (matrix-rows v1t))
         (m (+ (matrix-rows u1) (matrix-rows u2)))
@@ -345,6 +353,7 @@ with upper left block with dimension P-by-Q."
       (values u sigma vt))))
 
 (defun lapack-lu (m)
+  "Finds the LU decomposition of a square matrix M, in terms of the intermediate representation given by the ZGETRF LAPACK subroutine."
   (let ((rows (matrix-rows m))
         (cols (matrix-cols m))
         (a (fnv:copy-fnv-complex-double (matrix-data m)))
@@ -355,7 +364,7 @@ with upper left block with dimension P-by-Q."
       (values a ipiv))))
 
 (defun det (m)
-  "Finds the determinant of a matrix M."
+  "Finds the determinant of a square matrix M."
   (let ((rows (matrix-rows m))
         (cols (matrix-cols m))
         (d 1))
@@ -369,7 +378,7 @@ with upper left block with dimension P-by-Q."
       (values d))))
 
 (defun inv (m)
-  "Finds the inverse of a matrix M."
+  "Finds the inverse of a square matrix M."
   (let ((rows (matrix-rows m))
         (cols (matrix-cols m)))
     (assert (= rows cols) () "M is not a square matrix.")
