@@ -151,6 +151,48 @@
                     (setf (ref q i j) (- (ref q i j)))))))
         (values q l)))))
 
+(defun rq (m)
+  "Finds the RQ factorization of the matrix M."
+  (let ((rows (matrix-rows m))
+        (cols (matrix-cols m)))
+    (multiple-value-bind (a tau) (lapack-unitary-triangular-decomposition m "RQ")
+      (let* ((amat (make-matrix :rows rows :cols cols :data a))
+             (r (get-square-triangular amat T rows))
+             (q (unitary-triangular-helper-get-q amat tau "RQ")))
+          ; change signs if diagonal elements of r are negative
+          (dotimes (i rows)
+            (let ((diag-elt (ref r i i)))
+              (assert (= (imagpart diag-elt) 0) 
+                      () "Diagonal element R_~S~S=~S is not real" i i diag-elt)
+              (setf diag-elt (realpart diag-elt))
+              (if (minusp diag-elt)
+                  (dotimes (j cols)
+                    (if (<= j i)
+                        (setf (ref r j i) (- (ref r j i))))
+                    (setf (ref q i j) (- (ref q i j)))))))
+        (values q r)))))
+
+(defun lq (m)
+  "Finds the LQ factorization of the matrix M."
+  (let ((rows (matrix-rows m))
+        (cols (matrix-cols m)))
+    (multiple-value-bind (a tau) (lapack-unitary-triangular-decomposition m "LQ")
+      (let* ((amat (make-matrix :rows rows :cols cols :data a))
+             (r (get-square-triangular amat nil rows))
+             (q (unitary-triangular-helper-get-q amat tau "LQ")))
+          ; change signs if diagonal elements of l are negative
+          (dotimes (i rows)
+            (let ((diag-elt (ref r i i)))
+              (assert (= (imagpart diag-elt) 0) 
+                      () "Diagonal element R_~S~S=~S is not real" i i diag-elt)
+              (setf diag-elt (realpart diag-elt))
+              (if (minusp diag-elt)
+                  (dotimes (j cols)
+                    (if (<= i j (1- rows))
+                        (setf (ref r j i) (- (ref r j i))))
+                    (setf (ref q i j) (- (ref q i j)))))))
+        (values q r)))))
+
 (defun lapack-unitary-triangular-decomposition (m option)
   "Finds the QR/QL/RQ/LQ factorization of the matrix M to the intermediate representation, as given by the LAPACK ZGE(QR/QL/RQ/LQ)F subroutine, depending on the string option OPTION."
   (let ((lapack-func))
