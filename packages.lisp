@@ -48,6 +48,8 @@
            #:print-matrix
            #:qr
            #:ql
+           #:rq
+           #:lq
            #:svd
            #:multiply-complex-matrices
            #:ref
