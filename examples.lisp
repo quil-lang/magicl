@@ -80,6 +80,10 @@
   (let ((a (make-complex-matrix 3 2 #C (1 2) #C (-4 3) #C (-3 -3) #C (9 2) 4 #C (0 -2.9d0))))
     (qr-printing a)))
 
+(defun ql-example ()
+  (let ((a (make-complex-matrix 3 2 #C (1 2) #C (-4 3) #C (-3 -3) #C (9 2) 4 #C (0 -2.9d0))))
+    (ql-printing a)))
+
 (defun svd-example ()
   (let ((a (make-complex-matrix 3 2 #C (1 2) #C (-4 3) #C (-3 -3) #C (9 2) 4 #C (0 -2.9d0))))
     (svd-printing a)))
@@ -94,6 +98,19 @@
       (print-matrix q)
       (format t "R~%")
       (print-matrix r)
+      (format t "Reconstructed A~%")
+      (print-matrix a-reconst))))
+
+(defun ql-printing (a)
+  (multiple-value-bind (q l)
+      (ql a)
+    (let ((a-reconst (multiply-complex-matrices q l)))
+      (format t "A~%")
+      (print-matrix a)
+      (format t "Q~%")
+      (print-matrix q)
+      (format t "L~%")
+      (print-matrix l)
       (format t "Reconstructed A~%")
       (print-matrix a-reconst))))
 
