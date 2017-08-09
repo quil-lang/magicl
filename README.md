@@ -40,6 +40,13 @@ While the Accelerate framework includes these libraries, they are not a complete
 
 In order to use the system-provided libraries, add `:magicl.use-accelerate` to your `*features*` before compilation.
 
+### Intel processors
+
+Intel's Math Kernel Library, or MKL, contains math routines, including BLAS and LAPACK, that are specifically optimized for Intel processors. To install MKL, download the package from the [Intel website](https://software.intel.com/en-us/mkl) and follow the instructions within the Install_Guide.pdf file. The particular library of interest that will be installed is `libmkl_rt.so`.
+
+In order to use MKL in MAGICL, add `:magicl.use-mkl` to your `*features*` before compilation.
+
+
 ## Showing Available Functions
 
 As said, some distributions of a library don't actually provide all of the functions of a the reference BLAS and LAPACK. One can look at a summary of available and unavailable functions with the function `magicl:print-availability-report`. By default, it will show all functions and their availability. There are three arguments to fine-tune this behavior:
