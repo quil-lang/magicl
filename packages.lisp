@@ -52,11 +52,13 @@
            #:lq
            #:svd
            #:multiply-complex-matrices
+           #:scale
            #:ref
            #:make-matrix
            #:matrix-rows
            #:matrix-cols
            #:matrix-data
            #:csd
+           #:lapack-csd
            #:det
            #:inv))
