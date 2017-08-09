@@ -89,8 +89,10 @@
     (format t "~%"))
   (format t "~%"))
 
+; TODO: use generics to implement matrix multipilcation using *
+
 (defun multiply-complex-matrices (ma mb)
-  "Multiplies two complex marices MA and MB."
+  "Multiplies two complex marices MA and MB, returning MA*MB."
   (assert (= (matrix-cols ma) (matrix-rows mb)) ()
           "Matrix A has ~S columns while matrix B has ~S rows" (matrix-cols ma) (matrix-rows mb))
   (let ((transa "N")
@@ -108,6 +110,14 @@
           (c (fnv:make-fnv-complex-double (* m n))))
       (magicl.blas-cffi::%zgemm transa transb m n k alpha a lda b ldb beta c ldc)
       (make-matrix :rows m :cols n :data c))))
+
+(defun scale (alpha x)
+  "Scale a complex double matrix X by a complex double ALPHA, i.e. return ALPHA*X."
+  (let* ((zx (fnv:copy-fnv-complex-double (matrix-data x)))
+         (za (coerce alpha '(complex double-float)))
+         (n (fnv:fnv-length zx)))
+    (magicl.blas-cffi::%zscal n za zx 1)
+    (values (make-matrix :rows (matrix-rows x) :cols (matrix-cols x) :data zx))))
 
 (defun qr (m)
   "Finds the QR factorization of the matrix M."
@@ -340,7 +350,7 @@
       (values (make-matrix :rows sliced-rows :cols sliced-cols :data v)))))
 
 (defun csd (x p q)
-  "Find the Cosine-Sine Decomposition of a matrix X given tha tit is to be partitioned with upper left block of dimension P-by-Q. Returns the CSD elements (VALUES U SIGMA VT) such that X=U*SIGMA*VT."
+  "Find the Cosine-Sine Decomposition of a matrix X given that it is to be partitioned with upper left block of dimension P-by-Q. Returns the CSD elements (VALUES U SIGMA VT) such that X=U*SIGMA*VT."
   (multiple-value-bind (u1 u2 v1t v2t theta) (lapack-csd x p q)
     (csd-from-blocks u1 u2 v1t v2t theta)))
 
