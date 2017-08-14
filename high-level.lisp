@@ -1,3 +1,7 @@
+;;;; high-level.lisp
+;;;;
+;;;; Author: Joseph Lin
+
 (in-package #:magicl)
 
 (defstruct matrix
@@ -5,8 +9,8 @@
   cols
   data)
 
-(defun make-complex-vector (&rest entries)
-  "Makes a complex vector out ENTRIES, a list of complex numbers."
+(defun make-complex-foreign-vector (&rest entries)
+  "Makes a complex double FNV out ENTRIES, a list of complex numbers."
   (let* ((len (length entries))
          (v (fnv:make-fnv-complex-double len)))
     (loop :for i :below len
@@ -26,6 +30,10 @@
           (fnv:fnv-complex-float  (fnv:fnv-complex-float-ref v i))
           (fnv:fnv-complex-double (fnv:fnv-complex-double-ref v i)))))
 
+(defun make-complex-vector (&rest entries)
+  "Makes a complex column vector out of ENTRIES, a list of complex numbers."
+  (apply #'make-complex-matrix (length entries) 1 entries))
+
 (defun make-complex-matrix (m n &rest entries)
   "Makes an M-by-N matrix assuming ENTRIES is a list of complex numbers in column major order."
   (let ((entries-size (length entries))
@@ -36,7 +44,7 @@
             entries-size m n expected-size)
     (make-matrix :rows m
                  :cols n
-                 :data (apply #'make-complex-vector entries))))
+                 :data (apply #'make-complex-foreign-vector entries))))
 
 (defun diag (m n &rest entries)
   "Creates a matrix with entries along the diagonal"
@@ -89,27 +97,38 @@
     (format t "~%"))
   (format t "~%"))
 
-; TODO: use generics to implement matrix multipilcation using *
-
 (defun multiply-complex-matrices (ma mb)
-  "Multiplies two complex marices MA and MB, returning MA*MB."
-  (assert (= (matrix-cols ma) (matrix-rows mb)) ()
-          "Matrix A has ~S columns while matrix B has ~S rows" (matrix-cols ma) (matrix-rows mb))
-  (let ((transa "N")
-        (transb "N")
-        (m (matrix-rows ma))
-        (n (matrix-cols mb))
-        (k (matrix-cols ma))
-        (alpha (coerce 1 '(complex double-float)))
-        (a (fnv:copy-fnv-complex-double (matrix-data ma)))
-        (b (fnv:copy-fnv-complex-double (matrix-data mb)))
-        (beta (coerce 0 '(complex double-float))))
-    (let ((lda m)
-          (ldb k)
-          (ldc m)
-          (c (fnv:make-fnv-complex-double (* m n))))
-      (magicl.blas-cffi::%zgemm transa transb m n k alpha a lda b ldb beta c ldc)
-      (make-matrix :rows m :cols n :data c))))
+  "Multiplies two complex marices MA and MB, returning MA*MB. If MA is M x KA and MB is KB x N,
+it must be that KA = KB, and the resulting matrix is M x N."
+  (let ((ka (matrix-cols ma))
+        (kb (matrix-rows mb)))
+    (assert (= ka kb) ()
+            "Matrix A has ~S columns while matrix B has ~S rows" ka kb)
+    (let ((n (matrix-cols mb))
+          (m (matrix-rows ma))
+          (a (fnv:copy-fnv-complex-double (matrix-data ma)))
+          (b (fnv:copy-fnv-complex-double (matrix-data mb))))
+      (if (= n 1)
+          ; mb is a column vector
+          (if (= m 1)
+              ; ma is a row vector
+              ; use dot product
+              (magicl.blas-cffi::%zdotu ka a 1 b 1)
+              ; use matrix-vector multiplication
+              (let ((trans "N")
+                    (alpha (coerce 1 '(complex double-float)))
+                    (beta (coerce 0 '(complex double-float)))
+                    (y (fnv:make-fnv-complex-double kb)))
+                (magicl.blas-cffi::%zgemv trans m ka alpha a m b 1 beta y 1)
+                (make-matrix :rows m :cols n :data y)))
+          ; use matrix-matrix multiplication
+          (let ((transa "N")
+                (transb "N")
+                (alpha (coerce 1 '(complex double-float)))
+                (beta (coerce 0 '(complex double-float)))
+                (c (fnv:make-fnv-complex-double (* m n))))
+            (magicl.blas-cffi::%zgemm transa transb m n ka alpha a m b kb beta c m)
+            (make-matrix :rows m :cols n :data c))))))
 
 (defun scale (alpha x)
   "Scale a complex double matrix X by a complex double ALPHA, i.e. return ALPHA*X."
