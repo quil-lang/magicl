@@ -3,7 +3,7 @@
   (:use :common-lisp
         :foreign-numeric-vector
         :fnv-utils
-        :cffi-types)
+        :magicl.cffi-types)
   (:export #:generate-blapack-files))
 
 (in-package #:magicl.generate-interface)
@@ -425,6 +425,20 @@ the CFFI binding file."
                        :direction :output
                        :if-exists :supersede)
 
+      (multiple-value-bind 
+            (second minute hour date month year day-of-week dst-p tz)
+          (get-decoded-time)
+        (declare (ignore day-of-week dst-p))
+        (format f ";;;; Generated on ~d/~2,'0d/~d at ~2,'0d:~2,'0d:~2,'0d (UTC~@d)."
+                month
+                date
+                year
+                hour
+                minute
+                second
+                (- tz)))
+      (terpri f)
+      (terpri f)
       (prin1 `(in-package ,package-name) f)
       (terpri f)
       (terpri f)
