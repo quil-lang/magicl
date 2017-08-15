@@ -386,6 +386,7 @@ it must be that KA = KB, and the resulting matrix is M x N."
                  v (+ (* j sliced-rows) i)) (ref m (+ rmin i) (+ cmin j)))))
       (values (make-matrix :rows sliced-rows :cols sliced-cols :data v)))))
 
+
 (defun csd (x p q)
   "Find the Cosine-Sine Decomposition of a matrix X given that it is to be partitioned with upper left block of dimension P-by-Q. Returns the CSD elements (VALUES U SIGMA VT) such that X=U*SIGMA*VT."
   (multiple-value-bind (u1 u2 v1t v2t theta) (lapack-csd x p q)
@@ -394,8 +395,9 @@ it must be that KA = KB, and the resulting matrix is M x N."
 (defun lapack-csd (x p q)
   "Find the Cosine-Sine Decomposition of a matrix X given that it is to be partitioned
 with upper left block with dimension P-by-Q. Returns the intermediate representation given by the ZUNCSD LAPACK subroutine."
-  (let ((m (matrix-rows x))
-        (n (matrix-cols x)))
+  (let* ((m (matrix-rows x))
+         (n (matrix-cols x))
+         (xcopy (make-matrix :rows m :cols n :data (fnv:copy-fnv-complex-double (matrix-data x)))))
     (assert (= m n) () "X is not a square matrix")
     (check-type p integer)
     (check-type q integer)
@@ -407,10 +409,11 @@ with upper left block with dimension P-by-Q. Returns the intermediate representa
           (jobv2t "Y")
           (trans "F")
           (signs "D")
-          (ldx11 p)
-          (ldx12 p)
-          (ldx21 (- m p))
-          (ldx22 (- m p))
+          ; leading dimension is M because full X array will be used
+          (ldx11 m)
+          (ldx12 m)
+          (ldx21 m)
+          (ldx22 m)
           (r (min p (- m p) q (- m q)))
           (ldu1 p)
           (ldu2 (- m p))
@@ -421,16 +424,26 @@ with upper left block with dimension P-by-Q. Returns the intermediate representa
           (lrwork -1)
           (rwork (fnv:make-fnv-double 1))
           (info 0))
-      (let ((x11 (matrix-data (slice x 0 p 0 q)))
-            (x12 (matrix-data (slice x 0 p q m)))
-            (x21 (matrix-data (slice x p m 0 q)))
-            (x22 (matrix-data (slice x p m q m)))
+      ; rather than slice up matrix, use full array with pointers to head of blocks
+      (let ((x11 (matrix-data xcopy))
+            (x12 (fnv:make-fnv-complex-double 
+                  (* (- m q) m) 
+                  :foreign-ptr (ptr-ref xcopy 0 q)))
+            (x21 (fnv:make-fnv-complex-double 
+                  (- (* m m) p) 
+                  :foreign-ptr (ptr-ref xcopy p 0)))
+            (x22 (fnv:make-fnv-complex-double 
+                  (- (* (- m q) m) p) 
+                  :foreign-ptr (ptr-ref xcopy p q)))
             (theta (fnv:make-fnv-double r))
             (u1 (fnv:make-fnv-complex-double (* ldu1 p)))
             (u2 (fnv:make-fnv-complex-double (* ldu2 (- m p))))
             (v1t (fnv:make-fnv-complex-double (* ldv1t q)))
             (v2t (fnv:make-fnv-complex-double (* ldv2t (- m q))))
             (iwork (fnv:make-fnv-int32 (- m r))))
+        (sb-ext:cancel-finalization x12)
+        (sb-ext:cancel-finalization x21)
+        (sb-ext:cancel-finalization x22)
         ; run it once as a workspace query
         (magicl.lapack-cffi::%zuncsd jobu1 jobu2 jobv1t jobv2t 
                                      trans signs m p q 
@@ -459,24 +472,25 @@ with upper left block with dimension P-by-Q. Returns the intermediate representa
         (q (matrix-rows v1t))
         (m (+ (matrix-rows u1) (matrix-rows u2)))
         (r (length theta)))
-    (let ((u (make-matrix :rows m :cols m 
-                          :data (fnv:make-fnv-complex-double (* m m) 
-                                                             :initial-value #C (0.0d0 0.0d0))))
-          (sigma (make-matrix :rows m :cols m 
-                          :data (fnv:make-fnv-complex-double (* m m) 
-                                                             :initial-value #C (0.0d0 0.0d0))))
-          (vt (make-matrix :rows m :cols m 
-                          :data (fnv:make-fnv-complex-double (* m m) 
-                                                             :initial-value #C (0.0d0 0.0d0)))))
+    (let ((u (apply #'make-complex-matrix m m 
+                    (make-list (* m m) :initial-element #C(0.0d0 0.0d0))))
+          (sigma (apply #'make-complex-matrix m m 
+                        (make-list (* m m) :initial-element #C(0.0d0 0.0d0))))
+          (vt (apply #'make-complex-matrix m m 
+                     (make-list (* m m) :initial-element #C(0.0d0 0.0d0)))))
       ; Create U block by block
-      (loop for i from 0 to (1- p)
-            do (loop for j from 0 to (1- p)
-                     do (setf (ref u i j) (ref u1 i j))))
-      (loop for i from 0 to (- m p 1)
-            do (loop for j from 0 to (- m p 1)
-                     do (setf (ref u (+ i p) (+ j p)) (ref u2 i j))))
+      (magicl.lapack-cffi::%zlacpy "A" p p (matrix-data u1) p (matrix-data u) m)
+      (let ((u2ptr (fnv:make-fnv-complex-double (- (* (- m p) m) p) :foreign-ptr (ptr-ref u p p))))
+        (sb-ext:cancel-finalization u2ptr)
+        (magicl.lapack-cffi::%zlacpy "A" (- m p) (- m p) (matrix-data u2) (- m p) 
+                                     u2ptr m))
       
-      ; Create SIGMA block by block
+      ; Create VT block by block
+      (magicl.lapack-cffi::%zlacpy "A" q q (matrix-data v1t) q (matrix-data vt) m)
+      (let ((v2ptr (fnv:make-fnv-complex-double (- (* (- m q) m) q) :foreign-ptr (ptr-ref vt q q))))
+        (sb-ext:cancel-finalization v2ptr)
+        (magicl.lapack-cffi::%zlacpy "A" (- m q) (- m q) (matrix-data v2t) (- m q) 
+                                     v2ptr m))
       (let ((diag11 (min p q))
             (diag12 (min p (- m q)))
             (diag21 (min (- m p) q))
@@ -503,15 +517,6 @@ with upper left block with dimension P-by-Q. Returns the intermediate representa
                 do (setf (ref sigma (+ p i) (+ q i)) #C (1.0d0 0.0d0)))
           (loop for i from iden22 to (1- diag22)
                 do (setf (ref sigma (+ p i) (+ q i)) (cos (nth (- i iden22) theta))))))
-      
-      ; Ceate VT block by block
-      (loop for i from 0 to (1- q)
-            do (loop for j from 0 to (1- q)
-                     do (setf (ref vt i j) (ref v1t i j))))
-      (loop for i from 0 to (- m q 1)
-            do (loop for j from 0 to (- m q 1)
-                     do (setf (ref vt (+ i q) (+ j q)) (ref v2t i j))))
-      
       (values u sigma vt))))
 
 (defun lapack-lu (m)
