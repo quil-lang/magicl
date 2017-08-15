@@ -61,4 +61,5 @@
            #:csd
            #:lapack-csd
            #:det
-           #:inv))
+           #:inv
+           #:diag))

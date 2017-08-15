@@ -47,12 +47,13 @@
                  :data (apply #'make-complex-foreign-vector entries))))
 
 (defun diag (m n &rest entries)
-  "Creates a matrix with entries along the diagonal"
+  "Creates a matrix with ENTRIES along the diagonal"
   (let ((entries-size (length entries))
         (expected-size (min m n)))
     (assert (= entries-size expected-size) ()
             "Min dimension is ~S but number of entries is ~S" expected-size entries-size)
-    (let ((mat (apply #'make-complex-matrix m n (make-list (* m n) :initial-element #C(0.0d0 0.0d0)))))
+    (let ((mat (apply #'make-complex-matrix 
+                      m n (make-list (* m n) :initial-element #C(0.0d0 0.0d0)))))
       (dotimes (i entries-size mat)
         (setf (ref mat i i) (nth i entries))))))
 
@@ -71,6 +72,23 @@
         (fnv:fnv-double         (fnv:fnv-double-ref data idx))
         (fnv:fnv-complex-float  (fnv:fnv-complex-float-ref data idx))
         (fnv:fnv-complex-double (fnv:fnv-complex-double-ref data idx))))))
+
+(defun ptr-ref (m i j)
+  "Accessor method for the pointer to the element in the I-th row and J-th column of a matrix M, assuming zero indexing."
+  (let ((rows (matrix-rows m))
+        (cols (matrix-cols m))
+        (data (matrix-data m)))
+    (check-type i integer)
+    (check-type j integer)
+    (assert (< -1 i rows) () "row index ~D is out of range" i)
+    (assert (< -1 j cols) () "col index ~D is out of range" j)
+    (let ((head (fnv:fnv-foreign-pointer data))
+          (idx (+ (* rows j) i)))
+      (etypecase data
+        (fnv:fnv-float          (cffi:mem-aptr head :float idx))
+        (fnv:fnv-double         (cffi:mem-aptr head :double idx))
+        (fnv:fnv-complex-float  (cffi:mem-aptr head :float (* 2 idx)))
+        (fnv:fnv-complex-double (cffi:mem-aptr head :double (* 2 idx)))))))
 
 (defun (setf ref) (new-value m i j)
   "Set the value of M_IJ to NEW-VALUE."
