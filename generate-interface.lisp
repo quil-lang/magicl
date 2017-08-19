@@ -494,7 +494,7 @@ the CFFI binding file."
          (*package* (find-package package-name)))
     (generate-bindings-file
      "lapack-cffi"
-     '#:magicl.lapack-cffi
+     package-name
      (mapcan (lambda (def)
                (generate-cffi-interface-alternate
                 def
