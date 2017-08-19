@@ -127,12 +127,14 @@
   (cadr (assoc cffi-type *ctype-to-fortrantype*)))
 
 (defun extract-continued-line ()
-  "Fortran can't have long lines, and so will use a $ in column 7 to
-indicate a continued line.  We'll pop off these $'s and put them
+  "Fortran can't have long lines, and so will use a $ or . in column 7 to
+indicate a continued line.  We'll pop off these $'s and .'s and put them
 together into one line, and return that extended line and the remainder."
   (let ((line (pop *lines*)))
     (loop while (and (>= (length (first *lines*)) 6)
-		     (char= (char (first *lines*) 5) #\$)) do
+                     (or
+                      (char= (char (first *lines*) 5) #\$)
+                      (char= (char (first *lines*) 5) #\.))) do
           (setf line (concatenate 'string line (subseq (pop *lines*) 6))))
     (tokenize line)))
 
@@ -505,3 +507,31 @@ the CFFI binding file."
   (let ((*basedir* lapack-dir))
     (generate-blas-file)
     (generate-lapack-file)))
+
+(defun parse-expokit-files (&optional (basedir *basedir*))
+  "Right now, this only parses the dense matrix exponentiation routines, because the sparse ones call an external subroutine which is not handled by the parser."
+  (let ((files
+          (append
+           (directory
+            (pathname
+             (concatenate 'string (namestring basedir) "fortran/*padm.f")))
+           (directory
+            (pathname
+             (concatenate 'string (namestring basedir) "fortran/*chbv.f"))))))
+    (mapcar #'parse-fortran-file files)))
+
+(defun generate-expokit-file ()
+  (let* ((package-name '#:magicl.expokit-cffi)
+         (*package* (find-package package-name)))
+    (generate-bindings-file
+     "expokit-cffi"
+     package-name
+     (mapcan (lambda (def)
+               (generate-cffi-interface-alternate
+                def
+                :originating-library 'magicl.foreign-libraries:libexpokit))
+             (parse-expokit-files)))))
+
+(defun generate-expokit-files (expokit-dir)
+  (let ((*basedir* expokit-dir))
+    (generate-expokit-file)))
