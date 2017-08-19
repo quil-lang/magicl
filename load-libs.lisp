@@ -106,6 +106,6 @@
 
 (defvar *expokit-libs-loaded* nil)
 
-(unless *expokit-loibs-loaded*
+(unless *expokit-libs-loaded*
   (cffi:load-foreign-library 'libexpokit)
   (setf *expokit-libs-loaded* nil))
