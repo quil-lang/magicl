@@ -3,6 +3,7 @@
   (:export #:libgfortran
            #:libblas
            #:liblapack
+           #:libexpokit
            #:foreign-symbol-available-p
            #:print-availability-report))
 
@@ -33,13 +34,21 @@
   #-package-local-nicknames
   (:nicknames #:lapack))
 
+(defpackage #:magicl.expokit-cffi
+  (:use #:foreign-numeric-vector
+        #:fnv-utils
+        #:magicl.cffi-types)
+  #-package-local-nicknames
+  (:nicknames #:expokit))
+
 (defpackage #:magicl
   (:use #:common-lisp
         #:cffi
         #:foreign-numeric-vector)
   #+package-local-nicknames
   (:local-nicknames (#:blas #:magicl.blas-cffi)
-                    (#:lapack #:magicl.lapack-cffi))
+                    (#:lapack #:magicl.lapack-cffi)
+                    (#:expokit #:magicl.expokit-cffi))
   (:import-from #:magicl.foreign-libraries
                 #:print-availability-report)
   (:export #:print-availability-report

@@ -2,7 +2,8 @@
   (:use :common-lisp :fnv :fnv-utils :magicl)
   #+package-local-nicknames
   (:local-nicknames (:blas :magicl.blas-cffi)
-                    (:lapack :magicl.lapack-cffi))
+                    (:lapack :magicl.lapack-cffi)
+                    (:expokit :magicl.expokit-cffi))
   (:export :dot-example :eigenvalue-example :qr-example :svd-example :csd-example :det-example :inv-example))
 
 (in-package #:magicl-examples)
