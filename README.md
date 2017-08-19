@@ -1,6 +1,6 @@
 # MAGICL
 
-_Matrix Algebra proGrams In Common Lisp_ by [Rigetti Computing](www.rigetti.com). (née FLAIL: _Finally, Linear Algebra In Lisp!_)
+_Matrix Algebra proGrams In Common Lisp_ by [Rigetti Computing](http://www.rigetti.com). (née FLAIL: _Finally, Linear Algebra In Lisp!_)
 
 Load it with `(ql:quickload :magicl)`.
 
@@ -43,6 +43,7 @@ In order to use the system-provided libraries, add `:magicl.use-accelerate` to y
 ### Intel processors
 
 Intel's Math Kernel Library, or MKL, contains math routines, including BLAS and LAPACK, that are specifically optimized for Intel processors. To install MKL, download the package from the [Intel website](https://software.intel.com/en-us/mkl) and follow the instructions within the Install_Guide.pdf file. The particular library of interest that will be installed is `libmkl_rt.so`.
+It is also important to setup the proper environmental variables, especially the `LD_LIBRARY_PATH` that specifies where to look for `libmkl_rt.so`; directions can be found [here](https://software.intel.com/en-us/mkl-linux-developer-guide-automating-the-process-of-setting-environment-variables).
 
 In order to use MKL in MAGICL, add `:magicl.use-mkl` to your `*features*` before compilation.
 
