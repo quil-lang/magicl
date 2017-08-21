@@ -50,7 +50,7 @@ It is also important to setup the proper environmental variables, especially the
 In order to use MKL in MAGICL, add `:magicl.use-mkl` to your `*features*` before compilation.
 
 ### Expokit
-Note that this setup has only been tested for Linux. No testing has yet been done on macOS and OS X. Support for automatic setup is in progress.
+Note that this setup has only been tested for Linux. Options for macOS and Mac OS X are given but untested. Support for automatic setup is in progress.
 
 Download `expokit.tar.gz` from the [Expokit download page](https://www.maths.uq.edu.au/expokit/download.html). Extract the package, and change to the `expokit/fortran/` directory. You should find a file named `expokit.f`, which is the source code for the subroutines we wish to call. To make a shared library out of `expokit.f`, run the following command two commands: 
 
@@ -68,6 +68,11 @@ where the placeholder should be replaced by the path to the directory that the n
 
 As of right now, support is only availabe for the "small dense routines", i.e. those using Pade or Chebyshev (see the expokit `README` file for the exact files). 
 
+On a Mac, use the flag `-dynamiclib` rather than `-shared` and replace all instances of`.so` with the corresponding `.dylib` counterparts. Additionally, add 
+
+`DYLD_FALLBACK_LIBRARY_PATH="$DYLD_FALLBACK_LIBRARY_PATH:<path-to-expokit.dylib-directory>"; export DYLD_FALLBACK_LIBRARY_PATH;`
+
+in place of the `LD_LIBRARY_PATH` change.
 ## Showing Available Functions
 
 As said, some distributions of a library don't actually provide all of the functions of a the reference BLAS and LAPACK. One can look at a summary of available and unavailable functions with the function `magicl:print-availability-report`. By default, it will show all functions and their availability. There are three arguments to fine-tune this behavior:
