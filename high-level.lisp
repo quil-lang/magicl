@@ -594,7 +594,6 @@ with upper left block with dimension P-by-Q. Returns the intermediate representa
                                          (FNV-FOREIGN-POINTER IPIV)
                                          IEXPH-REF111 NS-REF112 IFLAG-REF113)
           (setf iexph (CFFI:MEM-REF IEXPH-REF111 :INT32)))
-        (print-matrix (make-matrix :rows 1 :cols lwsp :data wsp))
         (let ((exph (fnv:make-fnv-complex-double (* rows rows))))
           (dotimes (i (* rows rows))
             (setf (fnv:fnv-complex-double-ref exph i) 
