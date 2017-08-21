@@ -31,6 +31,7 @@
   (t (:default "liblapack")))
 
 (cffi:define-foreign-library libexpokit
+  (:darwin "expokit.dylib")
   (:unix  "expokit.so")
   (t (:default "expokit")))
 
