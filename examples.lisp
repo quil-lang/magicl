@@ -210,3 +210,13 @@
     (print-matrix inv-x)
     (format t "X*X^-1~%")
     (print-matrix id)))
+
+(defun expm-example ()
+  (let* ((x  (make-complex-matrix 4 4 0 0 0 0 0 0 1.5 0 0 -1.5 0 0.5 0 0 -0.5 0))
+         (expx (expm x))
+         (d (det expx)))
+    (format t "X~%")
+    (print-matrix x)
+    (format t "e^X~%")
+    (print-matrix expx)
+    (format t "det(X) = ~D~%" d)))
