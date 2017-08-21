@@ -561,3 +561,42 @@ with upper left block with dimension P-by-Q. Returns the intermediate representa
         ; run it again with optimal workspace size
         (magicl.lapack-cffi::%zgetri rows a lda ipiv work lwork info)
         (values (make-matrix :rows rows :cols cols :data a))))))
+
+(defun expm (m)
+  "Finds the exponential of a square matrix M."
+  (let ((ideg 6)
+        (rows (matrix-rows m))
+        (tcoef (coerce 1.0 'double-float))
+        (h (fnv:copy-fnv-complex-double (matrix-data m)))
+        (iexph 0)
+        (ns 0)
+        (iflag 0))
+    (let ((lwsp (+ (* 4 rows rows) ideg 1))
+          (ipiv (fnv:make-fnv-int32 rows)))
+      (let ((wsp (fnv:make-fnv-complex-double lwsp)))
+        ; Requires direct foreign function call due to need to access a pointer 
+        ; to an integer (IEXPH).
+        (CFFI:WITH-FOREIGN-OBJECTS ((IDEG-REF103 ':INT32) (M-REF104 ':INT32)
+                                    (T-REF105 ':DOUBLE) (LDH-REF107 ':INT32)
+                                    (LWSP-REF109 ':INT32) (IEXPH-REF111 ':INT32)
+                                    (NS-REF112 ':INT32) (IFLAG-REF113 ':INT32))
+          (COMMON-LISP:SETF (CFFI:MEM-REF IDEG-REF103 :INT32) IDEG)
+          (COMMON-LISP:SETF (CFFI:MEM-REF M-REF104 :INT32) ROWS)
+          (COMMON-LISP:SETF (CFFI:MEM-REF T-REF105 :DOUBLE) TCOEF)
+          (COMMON-LISP:SETF (CFFI:MEM-REF LDH-REF107 :INT32) ROWS)
+          (COMMON-LISP:SETF (CFFI:MEM-REF LWSP-REF109 :INT32) LWSP)
+          (COMMON-LISP:SETF (CFFI:MEM-REF IEXPH-REF111 :INT32) IEXPH)
+          (COMMON-LISP:SETF (CFFI:MEM-REF NS-REF112 :INT32) NS)
+          (COMMON-LISP:SETF (CFFI:MEM-REF IFLAG-REF113 :INT32) IFLAG)
+          (magicl.expokit-cffi::%%zgpadm IDEG-REF103 M-REF104 T-REF105 
+                                         (FNV-FOREIGN-POINTER H) LDH-REF107
+                                         (FNV-FOREIGN-POINTER WSP) LWSP-REF109 
+                                         (FNV-FOREIGN-POINTER IPIV)
+                                         IEXPH-REF111 NS-REF112 IFLAG-REF113)
+          (setf iexph (CFFI:MEM-REF IEXPH-REF111 :INT32)))
+        (print-matrix (make-matrix :rows 1 :cols lwsp :data wsp))
+        (let ((exph (fnv:make-fnv-complex-double (* rows rows))))
+          (dotimes (i (* rows rows))
+            (setf (fnv:fnv-complex-double-ref exph i) 
+                  (fnv:fnv-complex-double-ref wsp (+ i (1- iexph)))))
+          (values (make-matrix :rows rows :cols rows :data exph)))))))
