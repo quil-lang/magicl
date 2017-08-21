@@ -12,6 +12,8 @@ though there are no internal APIs being used.
 All UNIX systems require `libffi`. You can usually install this with
 your package manager.
 
+All UNIX systems also require [Expokit](https://www.maths.uq.edu.au/expokit/) for matrix exponentiation. Download and setup instructions can be found in the Expokit subsection below.
+
 ### Linux
 
 Install both gfortran and LAPACK with your favorite package manager. All that's expected is that you have `libgfortran.so.3`, `libblas.so`, `liblapack.so`.
@@ -47,6 +49,24 @@ It is also important to setup the proper environmental variables, especially the
 
 In order to use MKL in MAGICL, add `:magicl.use-mkl` to your `*features*` before compilation.
 
+### Expokit
+Note that this setup has only been tested for Linux. No testing has yet been done on macOS and OS X. Support for automatic setup is in progress.
+
+Download `expokit.tar.gz` from the [Expokit download page](https://www.maths.uq.edu.au/expokit/download.html). Extract the package, and change to the `expokit/fortran/` directory. You should find a file named `expokit.f`, which is the source code for the subroutines we wish to call. To make a shared library out of `expokit.f`, run the following command two commands: 
+
+`gfortran -fPIC -c expokit.f`
+
+`gfortran -shared -o expokit.so expokit.o -lblas -L<path-to-libblas.so> -llapack -L<path-to-liblapack.so>`
+
+replacing the placeholder paths to `libblas.so` and `liblapack.so` appropriately. After running these commands, you should see an `expokit.so` file in your current directory.
+
+Finally, into your `~/.bashrc` add the following command:
+
+`LD_LIBRARY_PATH="$LD_LIBRARY_PATH:<path-to-expokit.so-directory>"; export LD_LIBRARY_PATH;`
+
+where the placeholder should be replaced by the path to the directory that the newly created `expokit.so` file is. Run `source ~/.bashrc` for this to take effect.
+
+As of right now, support is only availabe for the "small dense routines", i.e. those using Pade or Chebyshev (see the expokit `README` file for the exact files). 
 
 ## Showing Available Functions
 
