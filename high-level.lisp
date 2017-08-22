@@ -127,19 +127,19 @@ it must be that KA = KB, and the resulting matrix is M x N."
           (a (fnv:copy-fnv-complex-double (matrix-data ma)))
           (b (fnv:copy-fnv-complex-double (matrix-data mb))))
       (if (= n 1)
-          ; mb is a column vector
+          ;; mb is a column vector
           (if (= m 1)
-              ; ma is a row vector
-              ; use dot product
+              ;; ma is a row vector
+              ;; use dot product
               (magicl.blas-cffi::%zdotu ka a 1 b 1)
-              ; use matrix-vector multiplication
+              ;; use matrix-vector multiplication
               (let ((trans "N")
                     (alpha (coerce 1 '(complex double-float)))
                     (beta (coerce 0 '(complex double-float)))
                     (y (fnv:make-fnv-complex-double kb)))
                 (magicl.blas-cffi::%zgemv trans m ka alpha a m b 1 beta y 1)
                 (make-matrix :rows m :cols n :data y)))
-          ; use matrix-matrix multiplication
+          ;; use matrix-matrix multiplication
           (let ((transa "N")
                 (transb "N")
                 (alpha (coerce 1 '(complex double-float)))
@@ -164,17 +164,17 @@ it must be that KA = KB, and the resulting matrix is M x N."
       (let* ((amat (make-matrix :rows rows :cols cols :data a))
              (r (get-square-triangular amat T cols))
              (q (unitary-triangular-helper-get-q amat tau "QR")))
-          ; change signs if diagonal elements of r are negative
-          (dotimes (j cols)
-            (let ((diag-elt (ref r j j)))
-              (assert (= (imagpart diag-elt) 0) 
-                      () "Diagonal element R_~S~S=~S is not real" j j diag-elt)
-              (setf diag-elt (realpart diag-elt))
-              (if (minusp diag-elt)
-                  (dotimes (i rows)
-                    (if (<= j i (1- cols))
+        ;; change signs if diagonal elements of r are negative
+        (dotimes (j cols)
+          (let ((diag-elt (ref r j j)))
+            (assert (= (imagpart diag-elt) 0) 
+                    () "Diagonal element R_~S~S=~S is not real" j j diag-elt)
+            (setf diag-elt (realpart diag-elt))
+            (if (minusp diag-elt)
+                (dotimes (i rows)
+                  (if (<= j i (1- cols))
                         (setf (ref r j i) (- (ref r j i))))
-                    (setf (ref q i j) (- (ref q i j)))))))
+                  (setf (ref q i j) (- (ref q i j)))))))
         (values q r)))))
 
 (defun ql (m)
@@ -185,17 +185,17 @@ it must be that KA = KB, and the resulting matrix is M x N."
       (let* ((amat (make-matrix :rows rows :cols cols :data a))
              (l (get-square-triangular amat nil cols))
              (q (unitary-triangular-helper-get-q amat tau "QL")))
-          ; change signs if diagonal elements of L are negative
-          (dotimes (j cols)
-            (let ((diag-elt (ref l j j)))
-              (assert (= (imagpart diag-elt) 0) 
-                      () "Diagonal element L_~S~S=~S is not real" j j diag-elt)
-              (setf diag-elt (realpart diag-elt))
-              (if (minusp diag-elt)
-                  (dotimes (i rows)
-                    (if (<= i j)
-                        (setf (ref l j i) (- (ref l j i))))
-                    (setf (ref q i j) (- (ref q i j)))))))
+        ;; change signs if diagonal elements of L are negative
+        (dotimes (j cols)
+          (let ((diag-elt (ref l j j)))
+            (assert (= (imagpart diag-elt) 0) 
+                    () "Diagonal element L_~S~S=~S is not real" j j diag-elt)
+            (setf diag-elt (realpart diag-elt))
+            (if (minusp diag-elt)
+                (dotimes (i rows)
+                  (if (<= i j)
+                      (setf (ref l j i) (- (ref l j i))))
+                  (setf (ref q i j) (- (ref q i j)))))))
         (values q l)))))
 
 (defun rq (m)
@@ -206,17 +206,17 @@ it must be that KA = KB, and the resulting matrix is M x N."
       (let* ((amat (make-matrix :rows rows :cols cols :data a))
              (r (get-square-triangular amat T rows))
              (q (unitary-triangular-helper-get-q amat tau "RQ")))
-          ; change signs if diagonal elements of r are negative
-          (dotimes (i rows)
-            (let ((diag-elt (ref r i i)))
-              (assert (= (imagpart diag-elt) 0) 
-                      () "Diagonal element R_~S~S=~S is not real" i i diag-elt)
-              (setf diag-elt (realpart diag-elt))
-              (if (minusp diag-elt)
-                  (dotimes (j cols)
-                    (if (<= j i)
-                        (setf (ref r j i) (- (ref r j i))))
-                    (setf (ref q i j) (- (ref q i j)))))))
+          ;; change signs if diagonal elements of r are negative
+        (dotimes (i rows)
+          (let ((diag-elt (ref r i i)))
+            (assert (= (imagpart diag-elt) 0) 
+                    () "Diagonal element R_~S~S=~S is not real" i i diag-elt)
+            (setf diag-elt (realpart diag-elt))
+            (if (minusp diag-elt)
+                (dotimes (j cols)
+                  (if (<= j i)
+                      (setf (ref r j i) (- (ref r j i))))
+                  (setf (ref q i j) (- (ref q i j)))))))
         (values q r)))))
 
 (defun lq (m)
@@ -227,17 +227,17 @@ it must be that KA = KB, and the resulting matrix is M x N."
       (let* ((amat (make-matrix :rows rows :cols cols :data a))
              (r (get-square-triangular amat nil rows))
              (q (unitary-triangular-helper-get-q amat tau "LQ")))
-          ; change signs if diagonal elements of l are negative
-          (dotimes (i rows)
-            (let ((diag-elt (ref r i i)))
-              (assert (= (imagpart diag-elt) 0) 
-                      () "Diagonal element R_~S~S=~S is not real" i i diag-elt)
-              (setf diag-elt (realpart diag-elt))
-              (if (minusp diag-elt)
-                  (dotimes (j cols)
-                    (if (<= i j (1- rows))
-                        (setf (ref r j i) (- (ref r j i))))
-                    (setf (ref q i j) (- (ref q i j)))))))
+        ;; change signs if diagonal elements of l are negative
+        (dotimes (i rows)
+          (let ((diag-elt (ref r i i)))
+            (assert (= (imagpart diag-elt) 0) 
+                    () "Diagonal element R_~S~S=~S is not real" i i diag-elt)
+            (setf diag-elt (realpart diag-elt))
+            (if (minusp diag-elt)
+                (dotimes (j cols)
+                  (if (<= i j (1- rows))
+                      (setf (ref r j i) (- (ref r j i))))
+                  (setf (ref q i j) (- (ref q i j)))))))
         (values q r)))))
 
 (defun lapack-unitary-triangular-decomposition (m option)
@@ -260,11 +260,11 @@ it must be that KA = KB, and the resulting matrix is M x N."
       (let ((lda rows)
             (tau (fnv:make-fnv-complex-double (min rows cols)))
             (work (fnv:make-fnv-complex-double (max 1 lwork))))
-        ; run it once as a workspace query
+        ;; run it once as a workspace query
         (apply lapack-func (list rows cols a lda tau work lwork info))
         (setf lwork (truncate (realpart (fnv:fnv-complex-double-ref work 0))))
         (setf work (fnv:make-fnv-complex-double (max 1 lwork)))
-        ; run it again with optimal workspace size
+        ;; run it again with optimal workspace size
         (apply lapack-func (list rows cols a lda tau work lwork info))
         (values a tau)))))
 
@@ -315,11 +315,11 @@ it must be that KA = KB, and the resulting matrix is M x N."
           (info 0))
       (let ((lda m)
             (work (fnv:make-fnv-complex-double (max 1 lwork))))
-        ; run it once as a workspace query
+        ;; run it once as a workspace query
         (apply lapack-func (list m n k a lda tau work lwork info))
         (setf lwork (truncate (realpart (fnv:fnv-complex-double-ref work 0))))
         (setf work (fnv:make-fnv-complex-double (max 1 lwork)))
-        ; run it again with optimal workspace size
+        ;; run it again with optimal workspace size
         (apply lapack-func (list m n k a lda tau work lwork info))
         (make-matrix :rows m :cols n :data a)))))
 
@@ -331,11 +331,11 @@ it must be that KA = KB, and the resulting matrix is M x N."
         (info 0))
     (let ((lda m)
           (work (fnv:make-fnv-complex-double (max 1 lwork))))
-      ; run it once as a workspace query
+      ;; run it once as a workspace query
       (magicl.lapack-cffi::%zungqr m n k a lda tau work lwork info)
       (setf lwork (truncate (realpart (fnv:fnv-complex-double-ref work 0))))
       (setf work (fnv:make-fnv-complex-double (max 1 lwork)))
-      ; run it again with optimal workspace size
+      ;; run it again with optimal workspace size
       (magicl.lapack-cffi::%zungqr m n k a lda tau work lwork info)
       (make-matrix :rows m :cols n :data a))))
 
@@ -356,12 +356,12 @@ it must be that KA = KB, and the resulting matrix is M x N."
           (rwork (fnv:make-fnv-double (* 5 (min rows cols)))))
       (let ((u (fnv:make-fnv-complex-double (* ldu rows)))
             (vt (fnv:make-fnv-complex-double (* ldvt cols))))
-        ; run it once as a workspace query
+        ;; run it once as a workspace query
         (magicl.lapack-cffi::%zgesvd jobu jobvt rows cols a lda s u ldu vt ldvt 
                                      work lwork rwork info)
         (setf lwork (truncate (realpart (fnv:fnv-complex-double-ref work 0))))
         (setf work (fnv:make-fnv-complex-double (max 1 lwork)))
-        ; run it again with optimal workspace size
+        ;; run it again with optimal workspace size
         (magicl.lapack-cffi::%zgesvd jobu jobvt rows cols a lda s u ldu vt ldvt 
                                      work lwork rwork info)
         (let ((smat (fnv:make-fnv-double (* rows cols) :initial-value 0.0d0)))
@@ -409,7 +409,7 @@ with upper left block with dimension P-by-Q. Returns the intermediate representa
           (jobv2t "Y")
           (trans "F")
           (signs "D")
-          ; leading dimension is M because full X array will be used
+          ;; leading dimension is M because full X array will be used
           (ldx11 m)
           (ldx12 m)
           (ldx21 m)
@@ -424,7 +424,7 @@ with upper left block with dimension P-by-Q. Returns the intermediate representa
           (lrwork -1)
           (rwork (fnv:make-fnv-double 1))
           (info 0))
-      ; rather than slice up matrix, use full array with pointers to head of blocks
+      ;; rather than slice up matrix, use full array with pointers to head of blocks
       (let ((x11 (matrix-data xcopy))
             (x12 (fnv:make-fnv-complex-double 
                   (* (- m q) m) 
@@ -444,7 +444,7 @@ with upper left block with dimension P-by-Q. Returns the intermediate representa
         (sb-ext:cancel-finalization x12)
         (sb-ext:cancel-finalization x21)
         (sb-ext:cancel-finalization x22)
-        ; run it once as a workspace query
+        ;; run it once as a workspace query
         (magicl.lapack-cffi::%zuncsd jobu1 jobu2 jobv1t jobv2t 
                                      trans signs m p q 
                                      x11 ldx11 x12 ldx12 x21 ldx21 x22 ldx22 
@@ -454,7 +454,7 @@ with upper left block with dimension P-by-Q. Returns the intermediate representa
         (setf work (fnv:make-fnv-complex-double (max 1 lwork)))
         (setf lrwork (truncate (fnv:fnv-double-ref rwork 0)))
         (setf rwork (fnv:make-fnv-double (max 1 lrwork)))
-        ; run it again with optimal workspace size
+        ;; run it again with optimal workspace size
         (magicl.lapack-cffi::%zuncsd jobu1 jobu2 jobv1t jobv2t 
                                      trans signs m p q 
                                      x11 ldx11 x12 ldx12 x21 ldx21 x22 ldx22 
@@ -478,14 +478,14 @@ with upper left block with dimension P-by-Q. Returns the intermediate representa
                         (make-list (* m m) :initial-element #C(0.0d0 0.0d0))))
           (vt (apply #'make-complex-matrix m m 
                      (make-list (* m m) :initial-element #C(0.0d0 0.0d0)))))
-      ; Create U block by block
+      ;; Create U block by block
       (magicl.lapack-cffi::%zlacpy "A" p p (matrix-data u1) p (matrix-data u) m)
       (let ((u2ptr (fnv:make-fnv-complex-double (- (* (- m p) m) p) :foreign-ptr (ptr-ref u p p))))
         (sb-ext:cancel-finalization u2ptr)
         (magicl.lapack-cffi::%zlacpy "A" (- m p) (- m p) (matrix-data u2) (- m p) 
                                      u2ptr m))
       
-      ; Create VT block by block
+      ;; Create VT block by block
       (magicl.lapack-cffi::%zlacpy "A" q q (matrix-data v1t) q (matrix-data vt) m)
       (let ((v2ptr (fnv:make-fnv-complex-double (- (* (- m q) m) q) :foreign-ptr (ptr-ref vt q q))))
         (sb-ext:cancel-finalization v2ptr)
@@ -554,11 +554,11 @@ with upper left block with dimension P-by-Q. Returns the intermediate representa
             (lwork -1)
             (work (fnv:make-fnv-complex-double 1))
             (info 0))
-        ; run it once as a workspace query
+        ;; run it once as a workspace query
         (magicl.lapack-cffi::%zgetri rows a lda ipiv work lwork info)
         (setf lwork (truncate (realpart (fnv:fnv-complex-double-ref work 0))))
         (setf work (fnv:make-fnv-complex-double (max 1 lwork)))
-        ; run it again with optimal workspace size
+        ;; run it again with optimal workspace size
         (magicl.lapack-cffi::%zgetri rows a lda ipiv work lwork info)
         (values (make-matrix :rows rows :cols cols :data a))))))
 
@@ -574,8 +574,8 @@ with upper left block with dimension P-by-Q. Returns the intermediate representa
     (let ((lwsp (+ (* 4 rows rows) ideg 1))
           (ipiv (fnv:make-fnv-int32 rows)))
       (let ((wsp (fnv:make-fnv-complex-double lwsp)))
-        ; Requires direct foreign function call due to need to access a pointer 
-        ; to an integer (IEXPH).
+        ;; Requires direct foreign function call due to need to access a pointer 
+        ;; to an integer (IEXPH).
         (CFFI:WITH-FOREIGN-OBJECTS ((IDEG-REF103 ':INT32) (M-REF104 ':INT32)
                                     (T-REF105 ':DOUBLE) (LDH-REF107 ':INT32)
                                     (LWSP-REF109 ':INT32) (IEXPH-REF111 ':INT32)
