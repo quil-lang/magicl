@@ -73,5 +73,4 @@
            #:inv
            #:diag
            #:expm
-           #:eig
-           ))
+           #:eig))

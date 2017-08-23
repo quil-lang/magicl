@@ -621,8 +621,4 @@ with upper left block with dimension P-by-Q. Returns the intermediate representa
         (setf work (fnv:make-fnv-complex-double (max 1 lwork)))
         ;; run it again with optimal workspace size
         (magicl.lapack-cffi::%zgeev jobvl jobvr rows a rows w vl 1 vr rows work lwork rwork info)
-        (let ((vr-mat (make-matrix :rows rows :cols rows :data vr))
-              (eigenvectors (make-list rows)))
-          (dotimes (i rows)
-            (setf (nth i eigenvectors) (slice vr-mat 0 rows i (1+ i))))
-          (values (vector-to-list w) eigenvectors))))))
+        (values (vector-to-list w) (make-matrix :rows rows :cols cols :data vr))))))
