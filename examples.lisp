@@ -4,7 +4,7 @@
   (:local-nicknames (:blas :magicl.blas-cffi)
                     (:lapack :magicl.lapack-cffi)
                     (:expokit :magicl.expokit-cffi))
-  (:export :dot-example :eigenvalue-example :qr-example :svd-example :csd-example :det-example :inv-example))
+  (:export :dot-example :eigenvalue-example :qr-example :svd-example :csd-example :det-example :inv-example :eig-example))
 
 (in-package #:magicl-examples)
 
@@ -220,3 +220,23 @@
     (format t "e^X~%")
     (print-matrix expx)
     (format t "det(X) = ~D~%" d)))
+
+(defun eig-printing (m)
+  (multiple-value-bind (vals vects)
+      (eig m)
+    (let* ((rows (matrix-rows m))
+           (val-diag (apply #'diag rows rows vals)))
+      (format t "M~%")
+      (print-matrix m)
+      (format t "Eigenvalues LAMBDA~%")
+      (print-matrix val-diag)
+      (format t "Eigenvectors V~%")
+      (print-matrix vects)
+      (format t "M*V~%")
+      (print-matrix (multiply-complex-matrices m vects))
+      (format t "V*LAMBDA~%")
+      (print-matrix (multiply-complex-matrices vects val-diag)))))
+
+(defun eig-example ()
+  (let ((m (make-complex-matrix 3 3 -2 -1 1 -2 1 1 -9 -3 4)))
+    (eig-printing m)))
