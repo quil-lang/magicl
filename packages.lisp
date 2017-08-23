@@ -72,4 +72,6 @@
            #:det
            #:inv
            #:diag
-           #:expm))
+           #:expm
+           #:eig
+           ))
