@@ -4,6 +4,7 @@
   :depends-on (#:cffi
                #:cffi-libffi
                #:org.middleangle.foreign-numeric-vector)
+  :in-order-to ((asdf:test-op (asdf:test-op #:magicl-tests)))
   :serial t
   :components
   ((:file "packages")
