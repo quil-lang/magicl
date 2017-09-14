@@ -45,34 +45,52 @@ In order to use the system-provided libraries, add `:magicl.use-accelerate` to y
 ### Intel processors
 
 Intel's Math Kernel Library, or MKL, contains math routines, including BLAS and LAPACK, that are specifically optimized for Intel processors. To install MKL, download the package from the [Intel website](https://software.intel.com/en-us/mkl) and follow the instructions within the Install_Guide.pdf file. The particular library of interest that will be installed is `libmkl_rt.so`.
+
 It is also important to setup the proper environmental variables, especially the `LD_LIBRARY_PATH` that specifies where to look for `libmkl_rt.so`; directions can be found [here](https://software.intel.com/en-us/mkl-linux-developer-guide-automating-the-process-of-setting-environment-variables).
 
 In order to use MKL in MAGICL, add `:magicl.use-mkl` to your `*features*` before compilation.
 
 ### Expokit
-Note that this setup has only been tested for Linux. Options for macOS and Mac OS X are given but untested. Support for automatic setup is in progress.
 
-Download `expokit.tar.gz` from the [Expokit download page](https://www.maths.uq.edu.au/expokit/download.html). Extract the package, and change to the `expokit/fortran/` directory. You should find a file named `expokit.f`, which is the source code for the subroutines we wish to call. To make a shared library out of `expokit.f`, run the following command two commands: 
+For all platforms, you will need to build Expokit, a Fortran library for matrix exponentiation. This usually is not included in mainstream software distribution mechanisms. As of right now, support is only available for the "small dense routines", i.e. those using Pade or Chebyshev (see the expokit `README` file for the exact files). 
 
-`gfortran -fPIC -c expokit.f`
+You will need to download `expokit.tar.gz` from the [Expokit download page](https://www.maths.uq.edu.au/expokit/download.html). Extract the archive and `cd` into the directory `expokit/fortran/`. There should be a file named `expokit.f`. This is the only file needed to make the shared library.
 
-`gfortran -shared -o expokit.so expokit.o -lblas -L<path-to-libblas.so> -llapack -L<path-to-liblapack.so>`
+#### Linux
 
-replacing the placeholder paths to `libblas.so` and `liblapack.so` appropriately. After running these commands, you should see an `expokit.so` file in your current directory.
+To make a shared library out of `expokit.f`, run the following command two commands: 
 
-Finally, into your `~/.bashrc` add the following command:
+```
+gfortran -fPIC -c expokit.f
+gfortran -shared -o expokit.so expokit.o -lblas -L<path-to-libblas.so> -llapack -L<path-to-liblapack.so>
+```
+
+Replace the placeholder paths to `libblas.so` and `liblapack.so` appropriately. After running these commands, you should see an `expokit.so` file in your current directory.
+
+Finally, add the following command into your `~/.bashrc`:
 
 `LD_LIBRARY_PATH="$LD_LIBRARY_PATH:<path-to-expokit.so-directory>"; export LD_LIBRARY_PATH;`
 
 where the placeholder should be replaced by the path to the directory that the newly created `expokit.so` file is. Run `source ~/.bashrc` for this to take effect.
 
-As of right now, support is only availabe for the "small dense routines", i.e. those using Pade or Chebyshev (see the expokit `README` file for the exact files). 
+#### macOS and OS X
 
-On a Mac, use the flag `-dynamiclib` rather than `-shared` and replace all instances of`.so` with the corresponding `.dylib` counterparts. Additionally, add 
+On a Mac, the commands are similar to Linux:
 
-`DYLD_FALLBACK_LIBRARY_PATH="$DYLD_FALLBACK_LIBRARY_PATH:<path-to-expokit.dylib-directory>"; export DYLD_FALLBACK_LIBRARY_PATH;`
+```
+gfortran -fPIC -c expokit.f
+gfortran -dynamiclib -o expokit.dylib expokit.o -lblas -llapack
+```
 
-in place of the `LD_LIBRARY_PATH` change.
+If BLAS and LAPACK aren't in a regular location, then you may need to pass the linked path option `-L<path-to-lib>` for each library to the second command.
+
+You will need to put `expokit.dylib` somwhere your system understands, like `/usr/local/lib/`. One may change the variable `DYLD_FALLBACK_LIBRARY_PATH` in a manner like below if the location shall be custom:
+
+```
+DYLD_FALLBACK_LIBRARY_PATH="$DYLD_FALLBACK_LIBRARY_PATH:<path-to-expokit.dylib-directory>"
+export DYLD_FALLBACK_LIBRARY_PATH
+```
+
 ## Showing Available Functions
 
 As said, some distributions of a library don't actually provide all of the functions of a the reference BLAS and LAPACK. One can look at a summary of available and unavailable functions with the function `magicl:print-availability-report`. By default, it will show all functions and their availability. There are three arguments to fine-tune this behavior:
