@@ -141,6 +141,18 @@ In order to generate the bindings, you will need to download the Fortran 90 sour
 
 Currently this will write to the source distribution directory of MAGICL, namely the files `blas-cffi.lisp` and `lapack-cffi.lisp`.
 
+## Quirks and Issues
+
+### Pointer Reification
+
+Internally, MAGICL uses foreign pointers. This means that saving a Lisp executable will usually not save these pointers if you have defined them in any way that makes them accessible.
+
+MAGICL provides the package `reify` which allows one to define ways to reify objects containing these pointers. The high level `matrix` type has defined reification procedures.
+
+If you wish to define a procedure of your own for your own objects, use `reify:set-reification-procedures`. You will need to provide a function to prepare the object for reification, and another to actually reify the object. See the file `high-level.lisp` for an example.
+
+Currently, the `reify` package only works for SBCL.
+
 
 ## History
 

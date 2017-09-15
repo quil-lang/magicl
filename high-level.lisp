@@ -1,6 +1,7 @@
 ;;;; high-level.lisp
 ;;;;
 ;;;; Author: Joseph Lin
+;;;;         Robert Smith
 
 (in-package #:magicl)
 
@@ -22,13 +23,58 @@
 
 (defun vector-to-list (v)
   "Make a list from a fnv."
-  (loop :for i :below (fnv:fnv-length v)
-        :collect 
-        (etypecase v
-          (fnv:fnv-float          (fnv:fnv-float-ref v i))
-          (fnv:fnv-double         (fnv:fnv-double-ref v i))
-          (fnv:fnv-complex-float  (fnv:fnv-complex-float-ref v i))
-          (fnv:fnv-complex-double (fnv:fnv-complex-double-ref v i)))))
+  (let ((accessor (etypecase v
+                    (fnv:fnv-float          #'fnv:fnv-float-ref)
+                    (fnv:fnv-double         #'fnv:fnv-double-ref)
+                    (fnv:fnv-complex-float  #'fnv:fnv-complex-float-ref)
+                    (fnv:fnv-complex-double #'fnv:fnv-complex-double-ref))))
+    (loop :for i :below (fnv:fnv-length v)
+          :collect (funcall accessor v i))))
+
+(defun %pull-matrix-to-lisp-space (mat)
+  "A function to take a MATRIX object MAT and pull its entries into a list of the form (TYPE &REST ENTRIES) in the Lisp heap. This is used for reification.
+
+Internal function. Used for reification."
+  (assert (= (fnv:fnv-length (matrix-data mat))
+             (* (matrix-rows mat)
+                (matrix-cols mat))))
+  (setf (matrix-data mat) (cons (type-of (matrix-data mat))
+                                (vector-to-list (matrix-data mat))))
+  ;; We have to do this to run the finalizers of the FNV.
+  (sb-ext:gc :full t)
+  nil)
+
+(defun %reify-matrix (mat)
+  "A function to take a MATRIX object MAT which has been pulled into Lisp space and put it back into foreign space.
+
+Internal function. Used for reification."
+  (flet ((make-vec (type n)
+           (ecase type
+             (fnv:fnv-float          (fnv:make-fnv-float n))
+             (fnv:fnv-double         (fnv:make-fnv-double n))
+             (fnv:fnv-complex-float  (fnv:make-fnv-complex-float n))
+             (fnv:fnv-complex-double (fnv:make-fnv-complex-double n))))
+         (fill-entries (type entries vec)
+           (loop :for i :from 0
+                 :for entry :in entries
+                 :do (ecase type
+                       (fnv:fnv-float          (setf (fnv:fnv-float-ref vec i) entry))
+                       (fnv:fnv-double         (setf (fnv:fnv-double-ref vec i) entry))
+                       (fnv:fnv-complex-float  (setf (fnv:fnv-complex-float-ref vec i) entry))
+                       (fnv:fnv-complex-double (setf (fnv:fnv-complex-double-ref vec i) entry))))
+           vec))
+    (let ((length (* (matrix-rows mat) (matrix-cols mat))))
+      (assert (and (consp (matrix-data mat))
+                   (symbolp (car (matrix-data mat)))))
+      (destructuring-bind (type &rest entries) (matrix-data mat)
+        (setf (matrix-data mat) (fill-entries type entries (make-vec type length)))
+        mat))))
+
+;; Make sure that MATRIX objects are properly saved when we save an
+;; image.
+(reify:set-reification-procedures 'matrix
+                                  :exit '%pull-matrix-to-lisp-space
+                                  :init '%reify-matrix)
 
 (defun make-complex-vector (&rest entries)
   "Makes a complex column vector out of ENTRIES, a list of complex numbers."

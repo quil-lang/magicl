@@ -7,7 +7,12 @@
   :in-order-to ((asdf:test-op (asdf:test-op #:magicl-tests)))
   :serial t
   :components
-  ((:file "packages")
+  (
+   ;; Generic SBCL object reification hooks. This could be made into a
+   ;; separate library. Stubbed out for non-SBCL implementations.
+   (:file "reify")
+   ;; Start of the "real" MAGICL library.
+   (:file "packages")
    (:file "load-libs")
    (:file "cffi-types")
    (:file "blas-cffi")
