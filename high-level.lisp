@@ -38,10 +38,15 @@ Internal function. Used for reification."
   (assert (= (fnv:fnv-length (matrix-data mat))
              (* (matrix-rows mat)
                 (matrix-cols mat))))
-  (setf (matrix-data mat) (cons (type-of (matrix-data mat))
-                                (vector-to-list (matrix-data mat))))
-  ;; We have to do this to run the finalizers of the FNV.
-  (sb-ext:gc :full t)
+  (let ((old-vector (matrix-data mat)))
+    (setf (matrix-data mat) (cons (type-of (matrix-data mat))
+                                  (vector-to-list (matrix-data mat))))
+    ;; KLUDGE: Finalization isn't necessarily done during a core
+    ;; save. Just do it ourselves here.
+    #+sbcl
+    (progn
+      (sb-ext:cancel-finalization old-vector)
+      (cffi:foreign-free (fnv:fnv-foreign-pointer old-vector))))
   nil)
 
 (defun %reify-matrix (mat)
