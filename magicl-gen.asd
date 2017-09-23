@@ -1,7 +1,10 @@
+;;;; magical-gen.asd
+;;;;
+;;;; Author: Robert Smith
+
 (asdf:defsystem #:magicl-gen
   :depends-on (#:cffi
-               #:cffi-libffi
-               #:org.middleangle.foreign-numeric-vector)
+               #:cffi-libffi)
   :serial t
   :components
   ((:file "packages")

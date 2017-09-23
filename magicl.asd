@@ -1,19 +1,23 @@
+;;;; magicl.asd
+;;;;
+;;;; Author: Robert Smith
+
 (asdf:defsystem #:magicl
   :license "BSD 3-Clause (See LICENSE.txt)"
   :maintainer "Rigetti Computing"
   :depends-on (#:cffi
-               #:cffi-libffi
-               #:org.middleangle.foreign-numeric-vector)
+               #:cffi-libffi)
   :in-order-to ((asdf:test-op (asdf:test-op #:magicl-tests)))
   :serial t
   :components
   (
    ;; Generic SBCL object reification hooks. This could be made into a
    ;; separate library. Stubbed out for non-SBCL implementations.
-   (:file "reify")
+   #+#:ignore (:file "reify")
    ;; Start of the "real" MAGICL library.
    (:file "packages")
    (:file "load-libs")
+   (:file "with-array-pointers")
    (:file "cffi-types")
    (:file "blas-cffi")
    (:file "lapack-cffi")

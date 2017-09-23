@@ -1,10 +1,9 @@
 (defpackage #:magicl.generate-interface
   (:nicknames #:generate-interface)
   (:use :common-lisp
-        :foreign-numeric-vector
-        :fnv-utils
         :magicl.cffi-types)
-  (:export #:generate-blapack-files))
+  (:export #:generate-blapack-files
+           #:generate-expokit-files))
 
 (in-package #:magicl.generate-interface)
 
@@ -83,14 +82,14 @@
     (:fortran-none                 :void                   :void                 nil)))
 
 (defparameter *array-of-normalized-type-to-cffi-type*
-  '((:fortran-string               :pointer                   array)
-    (:fortran-int                  cffi-fnv-int32             fnv-int32)
-    (:fortran-single-float         cffi-fnv-float             fnv-float)
-    (:fortran-double-float         cffi-fnv-double            fnv-double)
-    (:fortran-complex-single-float cffi-fnv-complex-float     fnv-complex-float)
-    (:fortran-complex-double-float cffi-fnv-complex-double    fnv-complex-double)
-    (:fortran-logical              cffi-fnv-int32             fnv-int32)
-    (:fortran-none                 :pointer                   array)))
+  '((:fortran-string               :pointer array)
+    (:fortran-int                  :pointer (simple-array (signed-byte 32) (*)))
+    (:fortran-single-float         :pointer (simple-array single-float) (*))
+    (:fortran-double-float         :pointer (simple-array double-float) (*))
+    (:fortran-complex-single-float :pointer (simple-array (complex single-float) (*)))
+    (:fortran-complex-double-float :pointer (simple-array (complex double-float) (*)))
+    (:fortran-logical              :pointer (simple-array (signed-byte 32) (*)))
+    (:fortran-none                 :pointer array)))
 
 (defun normalized-type-to-cffi-type (norm &optional (kind ':reference))
   (etypecase norm
@@ -115,13 +114,13 @@
            (:lisp (third found))))))))
 
 (defparameter *ctype-to-fortrantype*
-  '((:string :string)
-    (:int32 fortran-int)
-    (:float fortran-float)
-    (:double fortran-double)
-    (complex-float fortran-complex-float)
+  '((:string        :string)
+    (:int32         fortran-int)
+    (:float         fortran-float)
+    (:double        fortran-double)
+    (complex-float  fortran-complex-float)
     (complex-double fortran-complex-double)
-    (:logical fortran-logical)))
+    (:logical       fortran-logical)))
 
 (defun cffi-type-to-fortran-type (cffi-type)
   (cadr (assoc cffi-type *ctype-to-fortrantype*)))
@@ -296,10 +295,10 @@ need to be customized."
   (let ((name (fortran-function-name parsed-representation))
         (vars (fortran-function-arguments parsed-representation))
         (return-type (fortran-function-return-type parsed-representation)))
-    `(cffi::defcfun
+    `(cffi:defcfun
          ;; (name lisp-name)
          (,(fortran-mangle-name name) ,(intern
-                                      (concatenate 'string "%" (string-upcase name))))
+                                        (concatenate 'string "%" (string-upcase name))))
          ;; return type
          ,(normalized-type-to-cffi-type return-type ':immediate)
        ;; params and their types
@@ -364,14 +363,14 @@ need to be customized."
                                                    norm-type
                                                    ':lisp)
                                                  ,var )))
-          ;; Foreign allocation
+          ;; Foreign allocation of single-element references.
           (cffi:with-foreign-objects ,(loop :for ref-var :in ref-vars
                                             :for norm-type :in normalized-types
                                             :when (and (atom norm-type)
                                                        (not (eq ':fortran-string norm-type)))
                                               :collect `(,ref-var
                                                          ',(normalized-type-to-cffi-type norm-type ':immediate)))
-            ;; Setters
+            ;; Setters for single-item references.
             ,@(remove nil
                       (loop :with real := 'magicl.cffi-types::real
                             :with imag := 'magicl.cffi-types::imag
@@ -405,15 +404,23 @@ need to be customized."
 
                                          (otherwise
                                           (error "Invalid argument type: ~S" norm-type)))))
-            ;; Call
-            (,raw-call-name
-             ,@(loop :for var :in vars
-                     :for ref-var :in ref-vars
-                     :for norm-type :in normalized-types
-                     :collect (cond
-                                ((eq ':fortran-string norm-type) var)
-                                ((atom norm-type) ref-var)
-                                (t `(fnv:fnv-foreign-pointer ,var)))))))))))
+            ;; Extraction of array pointers for array arguments.
+            (magicl.cffi-types:with-array-pointers
+                ,(loop :for var :in vars
+                       :for ref-var :in ref-vars
+                       :for norm-type :in normalized-types
+                       :unless (atom norm-type)
+                         :collect `(,ref-var ,var))
+              
+                ;; The raw call.
+                (,raw-call-name
+                 ,@(loop :for var :in vars
+                         :for ref-var :in ref-vars
+                         :for norm-type :in normalized-types
+                         :collect (cond
+                                    ((eq ':fortran-string norm-type) var)
+                                    ((atom norm-type) ref-var)
+                                    (t ref-var)))))))))))
 
 (defun generate-bindings-file (filename package-name bindings
 			       &optional (outdir *outdir*))
@@ -510,14 +517,9 @@ the CFFI binding file."
 
 (defun parse-expokit-files (&optional (basedir *basedir*))
   "Right now, this only parses the dense matrix exponentiation routines, because the sparse ones call an external subroutine which is not handled by the parser."
-  (let ((files
-          (append
-           (directory
-            (pathname
-             (concatenate 'string (namestring basedir) "fortran/*padm.f")))
-           (directory
-            (pathname
-             (concatenate 'string (namestring basedir) "fortran/*chbv.f"))))))
+  (let ((files (append
+                (directory (merge-pathnames "fortran/*padm.f" basedir))
+                (directory (merge-pathnames "fortran/*chbv.f" basedir)))))
     (mapcar #'parse-fortran-file files)))
 
 (defun generate-expokit-file ()

@@ -5,81 +5,71 @@
 
 (in-package #:magicl)
 
+(deftype matrix-storage ()
+  "Representation of the smallest supertype of matrix storage."
+  `(simple-array * (*)))
+
+(deftype matrix-dimension ()
+  "Representation of a valid dimension of a matrix."
+  `(integer 1 ,array-total-size-limit))
+
+(deftype matrix-index ()
+  "Representation of a valid matrix index."
+  `(integer 0 (,array-total-size-limit)))
+
+(defun make-lisp-int32 (n)
+  ;; replacement for MAKE-FNV-INT32
+  (make-array n :element-type '(signed-byte 32) :initial-element 0))
+
+(defun make-lisp-float (n)
+  ;; replacement for MAKE-FNV-FLOAT
+  (make-array n :element-type 'single-float :initial-element 0.0f0))
+
+(defun make-lisp-double (n)
+  ;; replacement for MAKE-FNV-DOUBLE
+  (make-array n :element-type 'double-float :initial-element 0.0d0))
+
+(defun make-lisp-complex-float (n)
+  ;; replacement for MAKE-FNV-COMPLEX-FLOAT
+  (make-array n :element-type '(complex single-float) :initial-element #C(0.0f0 0.0f0)))
+
+(defun make-lisp-complex-double (n)
+  ;; replacement for MAKE-FNV-COMPLEX-DOUBLE
+  (make-array n :element-type '(complex double-float) :initial-element #C(0.0d0 0.0d0)))
+
 (defstruct matrix
-  rows
-  cols
-  data)
+  "Representation of a dense matrix."
+  (rows (error "Required argument")
+   :type matrix-dimension
+   :read-only t)
+  (cols (error "Required argument")
+   :type matrix-dimension
+   :read-only t)
+  (data (error "Required argument")
+   :type matrix-storage))
+
+(defun matrix-storage-size (v)
+  "Compute the size (i.e., number of elements) of the matrix storage vector V."
+  (declare (type matrix-storage v))
+  (length v))
+
+(defun copy-matrix-storage (v)
+  "Copy a matrix storage vector V suitable for the DATA slot on a MATRIX structure."
+  (declare (type matrix-storage v))
+  (copy-seq v))
 
 (defun make-complex-foreign-vector (&rest entries)
   "Makes a complex double FNV out ENTRIES, a list of complex numbers."
   (let* ((len (length entries))
-         (v (fnv:make-fnv-complex-double len)))
+         (v (make-lisp-complex-double len)))
     (loop :for i :below len
           :for e :in entries
-          :do (progn
-                (check-type e number)
-                (setf (fnv:fnv-complex-double-ref v i) (coerce e '(complex double-float))))
+          :do (setf (aref v i) (coerce e '(complex double-float)))
           :finally (return v))))
 
 (defun vector-to-list (v)
   "Make a list from a fnv."
-  (let ((accessor (etypecase v
-                    (fnv:fnv-float          #'fnv:fnv-float-ref)
-                    (fnv:fnv-double         #'fnv:fnv-double-ref)
-                    (fnv:fnv-complex-float  #'fnv:fnv-complex-float-ref)
-                    (fnv:fnv-complex-double #'fnv:fnv-complex-double-ref))))
-    (loop :for i :below (fnv:fnv-length v)
-          :collect (funcall accessor v i))))
-
-(defun %pull-matrix-to-lisp-space (mat)
-  "A function to take a MATRIX object MAT and pull its entries into a list of the form (TYPE &REST ENTRIES) in the Lisp heap. This is used for reification.
-
-Internal function. Used for reification."
-  (assert (= (fnv:fnv-length (matrix-data mat))
-             (* (matrix-rows mat)
-                (matrix-cols mat))))
-  (let ((old-vector (matrix-data mat)))
-    (setf (matrix-data mat) (cons (type-of (matrix-data mat))
-                                  (vector-to-list (matrix-data mat))))
-    ;; KLUDGE: Finalization isn't necessarily done during a core
-    ;; save. Just do it ourselves here.
-    #+sbcl
-    (progn
-      (sb-ext:cancel-finalization old-vector)
-      (cffi:foreign-free (fnv:fnv-foreign-pointer old-vector))))
-  nil)
-
-(defun %reify-matrix (mat)
-  "A function to take a MATRIX object MAT which has been pulled into Lisp space and put it back into foreign space.
-
-Internal function. Used for reification."
-  (flet ((make-vec (type n)
-           (ecase type
-             (fnv:fnv-float          (fnv:make-fnv-float n))
-             (fnv:fnv-double         (fnv:make-fnv-double n))
-             (fnv:fnv-complex-float  (fnv:make-fnv-complex-float n))
-             (fnv:fnv-complex-double (fnv:make-fnv-complex-double n))))
-         (fill-entries (type entries vec)
-           (loop :for i :from 0
-                 :for entry :in entries
-                 :do (ecase type
-                       (fnv:fnv-float          (setf (fnv:fnv-float-ref vec i) entry))
-                       (fnv:fnv-double         (setf (fnv:fnv-double-ref vec i) entry))
-                       (fnv:fnv-complex-float  (setf (fnv:fnv-complex-float-ref vec i) entry))
-                       (fnv:fnv-complex-double (setf (fnv:fnv-complex-double-ref vec i) entry))))
-           vec))
-    (let ((length (* (matrix-rows mat) (matrix-cols mat))))
-      (assert (and (consp (matrix-data mat))
-                   (symbolp (car (matrix-data mat)))))
-      (destructuring-bind (type &rest entries) (matrix-data mat)
-        (setf (matrix-data mat) (fill-entries type entries (make-vec type length)))
-        mat))))
-
-;; Make sure that MATRIX objects are properly saved when we save an
-;; image.
-(reify:set-reification-procedures 'matrix
-                                  :exit '%pull-matrix-to-lisp-space
-                                  :init '%reify-matrix)
+  (coerce v 'list))
 
 (defun make-complex-vector (&rest entries)
   "Makes a complex column vector out of ENTRIES, a list of complex numbers."
@@ -87,15 +77,23 @@ Internal function. Used for reification."
 
 (defun make-complex-matrix (m n &rest entries)
   "Makes an M-by-N matrix assuming ENTRIES is a list of complex numbers in column major order."
+  (check-type m matrix-dimension)
+  (check-type n matrix-dimension)
   (let ((entries-size (length entries))
         (expected-size (* m n)))
     (assert (= entries-size expected-size)
             ()
-            "Length of entries is ~D, is not ~D * ~D = ~D" 
+            "Length of entries is ~D, is not ~D * ~D = ~D"
             entries-size m n expected-size)
     (make-matrix :rows m
                  :cols n
                  :data (apply #'make-complex-foreign-vector entries))))
+
+(defun make-zero-matrix (rows cols)
+  (make-matrix
+   :rows rows
+   :cols cols
+   :data (make-lisp-complex-double (* rows cols))))
 
 (defun diag (m n &rest entries)
   "Creates a matrix with ENTRIES along the diagonal"
@@ -103,68 +101,69 @@ Internal function. Used for reification."
         (expected-size (min m n)))
     (assert (= entries-size expected-size) ()
             "Min dimension is ~S but number of entries is ~S" expected-size entries-size)
-    (let ((mat (apply #'make-complex-matrix 
-                      m n (make-list (* m n) :initial-element #C(0.0d0 0.0d0)))))
+    (let ((mat (make-zero-matrix m n)))
       (dotimes (i entries-size mat)
         (setf (ref mat i i) (nth i entries))))))
+
+(declaim (inline column-major-index)
+         (ftype (function (matrix-dimension matrix-index matrix-index) matrix-index)
+                column-major-index))
+(defun column-major-index (rows i j)
+  "Give the linear index of a matrix element addressed by the I'th row and J'th column, for a matrix with ROWS rows."
+  (+ i (* j rows)))
 
 (defun ref (m i j)
   "Accessor method for the element in the I-th row and J-th column of a matrix M, assuming zero indexing."
   (let ((rows (matrix-rows m))
         (cols (matrix-cols m))
         (data (matrix-data m)))
-    (check-type i integer)
-    (check-type j integer)
+    (check-type i matrix-index)
+    (check-type j matrix-index)
     (assert (< -1 i rows) () "row index ~D is out of range" i)
     (assert (< -1 j cols) () "col index ~D is out of range" j)
-    (let ((idx (+ (* rows j) i)))
-      (etypecase data
-        (fnv:fnv-float          (fnv:fnv-float-ref data idx))
-        (fnv:fnv-double         (fnv:fnv-double-ref data idx))
-        (fnv:fnv-complex-float  (fnv:fnv-complex-float-ref data idx))
-        (fnv:fnv-complex-double (fnv:fnv-complex-double-ref data idx))))))
+    (aref data (column-major-index rows i j))))
 
-(defun ptr-ref (m i j)
+(defun ptr-ref (m base i j)
   "Accessor method for the pointer to the element in the I-th row and J-th column of a matrix M, assuming zero indexing."
   (let ((rows (matrix-rows m))
         (cols (matrix-cols m))
         (data (matrix-data m)))
-    (check-type i integer)
-    (check-type j integer)
+    (check-type i matrix-index)
+    (check-type j matrix-index)
     (assert (< -1 i rows) () "row index ~D is out of range" i)
     (assert (< -1 j cols) () "col index ~D is out of range" j)
-    (let ((head (fnv:fnv-foreign-pointer data))
-          (idx (+ (* rows j) i)))
-      (etypecase data
-        (fnv:fnv-float          (cffi:mem-aptr head :float idx))
-        (fnv:fnv-double         (cffi:mem-aptr head :double idx))
-        (fnv:fnv-complex-float  (cffi:mem-aptr head :float (* 2 idx)))
-        (fnv:fnv-complex-double (cffi:mem-aptr head :double (* 2 idx)))))))
+    (let ((idx (column-major-index rows i j)))
+      (etypecase (row-major-aref data 0)
+        (single-float           (cffi:mem-aptr base :float idx))
+        (double-float           (cffi:mem-aptr base :double idx))
+        ((complex single-float) (cffi:mem-aptr base :float (* 2 idx)))
+        ((complex double-float) (cffi:mem-aptr base :double (* 2 idx)))))))
+
+(defparameter *type-strictness* nil
+  "Be strict about types when setting values in a matrix.")
 
 (defun (setf ref) (new-value m i j)
   "Set the value of M_IJ to NEW-VALUE."
-  (let ((rows (matrix-rows m))
-        (cols (matrix-cols m))
-        (data (matrix-data m)))
+  (let* ((rows (matrix-rows m))
+         (cols (matrix-cols m))
+         (data (matrix-data m))
+         (type (array-element-type data)))
     (check-type i integer)
     (check-type j integer)
-    (check-type new-value number)
     (assert (< -1 i rows) () "row index ~S is out of range" i)
     (assert (< -1 j cols) () "col index ~S is out of range" j)
-    (let ((idx (+ (* rows j) i)))
-      (etypecase data
-        (fnv:fnv-float          (setf (fnv:fnv-float-ref data idx) (coerce new-value 'single-float)))
-        (fnv:fnv-double         (setf (fnv:fnv-double-ref data idx) (coerce new-value 'double-float)))
-        (fnv:fnv-complex-float  (setf (fnv:fnv-complex-float-ref data idx) (coerce new-value '(complex single-float))))
-        (fnv:fnv-complex-double (setf (fnv:fnv-complex-double-ref data idx) (coerce new-value '(complex double-float))))))))
+    (setf (aref data (column-major-index rows i j))
+          (if *type-strictness*
+              new-value
+              (coerce new-value type)))))
 
 (defun print-matrix (m)
   "Print method for matrices."
   (dotimes (i (matrix-rows m))
     (dotimes (j (matrix-cols m))
-      (format t "~D " (ref m i j)))
-    (format t "~%"))
-  (format t "~%"))
+      (format t "~A " (ref m i j)))
+    (terpri))
+  (terpri))
 
 (defun multiply-complex-matrices (ma mb)
   "Multiplies two complex marices MA and MB, returning MA*MB. If MA is M x KA and MB is KB x N,
@@ -172,11 +171,11 @@ it must be that KA = KB, and the resulting matrix is M x N."
   (let ((ka (matrix-cols ma))
         (kb (matrix-rows mb)))
     (assert (= ka kb) ()
-            "Matrix A has ~S columns while matrix B has ~S rows" ka kb)
+            "Matrix A has ~D columns while matrix B has ~D rows" ka kb)
     (let ((n (matrix-cols mb))
           (m (matrix-rows ma))
-          (a (fnv:copy-fnv-complex-double (matrix-data ma)))
-          (b (fnv:copy-fnv-complex-double (matrix-data mb))))
+          (a (copy-matrix-storage (matrix-data ma)))
+          (b (copy-matrix-storage (matrix-data mb))))
       (if (= n 1)
           ;; mb is a column vector
           (if (= m 1)
@@ -185,27 +184,27 @@ it must be that KA = KB, and the resulting matrix is M x N."
               (magicl.blas-cffi::%zdotu ka a 1 b 1)
               ;; use matrix-vector multiplication
               (let ((trans "N")
-                    (alpha (coerce 1 '(complex double-float)))
-                    (beta (coerce 0 '(complex double-float)))
-                    (y (fnv:make-fnv-complex-double kb)))
+                    (alpha #C(1.0d0 0.0d0))
+                    (beta #C(0.0d0 0.0d0))
+                    (y (make-lisp-complex-double kb)))
                 (magicl.blas-cffi::%zgemv trans m ka alpha a m b 1 beta y 1)
                 (make-matrix :rows m :cols n :data y)))
           ;; use matrix-matrix multiplication
           (let ((transa "N")
                 (transb "N")
-                (alpha (coerce 1 '(complex double-float)))
-                (beta (coerce 0 '(complex double-float)))
-                (c (fnv:make-fnv-complex-double (* m n))))
+                (alpha #C(1.0d0 0.0d0))
+                (beta #C(0.0d0 0.0d0))
+                (c (make-lisp-complex-double (* m n))))
             (magicl.blas-cffi::%zgemm transa transb m n ka alpha a m b kb beta c m)
             (make-matrix :rows m :cols n :data c))))))
 
 (defun scale (alpha x)
   "Scale a complex double matrix X by a complex double ALPHA, i.e. return ALPHA*X."
-  (let* ((zx (fnv:copy-fnv-complex-double (matrix-data x)))
+  (let* ((zx (copy-matrix-storage (matrix-data x)))
          (za (coerce alpha '(complex double-float)))
-         (n (fnv:fnv-length zx)))
+         (n (matrix-storage-size zx)))
     (magicl.blas-cffi::%zscal n za zx 1)
-    (values (make-matrix :rows (matrix-rows x) :cols (matrix-cols x) :data zx))))
+    (make-matrix :rows (matrix-rows x) :cols (matrix-cols x) :data zx)))
 
 (defun qr (m)
   "Finds the QR factorization of the matrix M."
@@ -218,14 +217,14 @@ it must be that KA = KB, and the resulting matrix is M x N."
         ;; change signs if diagonal elements of r are negative
         (dotimes (j cols)
           (let ((diag-elt (ref r j j)))
-            (assert (= (imagpart diag-elt) 0) 
-                    () "Diagonal element R_~S~S=~S is not real" j j diag-elt)
+            (assert (zerop (imagpart diag-elt))
+                    () "Diagonal element R_~D~D=~A is not real" j j diag-elt)
             (setf diag-elt (realpart diag-elt))
-            (if (minusp diag-elt)
-                (dotimes (i rows)
-                  (if (<= j i (1- cols))
-                        (setf (ref r j i) (- (ref r j i))))
-                  (setf (ref q i j) (- (ref q i j)))))))
+            (when (minusp diag-elt)
+              (dotimes (i rows)
+                (when (<= j i (1- cols))
+                  (setf (ref r j i) (- (ref r j i))))
+                (setf (ref q i j) (- (ref q i j)))))))
         (values q r)))))
 
 (defun ql (m)
@@ -239,14 +238,14 @@ it must be that KA = KB, and the resulting matrix is M x N."
         ;; change signs if diagonal elements of L are negative
         (dotimes (j cols)
           (let ((diag-elt (ref l j j)))
-            (assert (= (imagpart diag-elt) 0) 
-                    () "Diagonal element L_~S~S=~S is not real" j j diag-elt)
+            (assert (zerop (imagpart diag-elt))
+                    () "Diagonal element L_~D~D=~A is not real" j j diag-elt)
             (setf diag-elt (realpart diag-elt))
-            (if (minusp diag-elt)
-                (dotimes (i rows)
-                  (if (<= i j)
-                      (setf (ref l j i) (- (ref l j i))))
-                  (setf (ref q i j) (- (ref q i j)))))))
+            (when (minusp diag-elt)
+              (dotimes (i rows)
+                (when (<= i j)
+                  (setf (ref l j i) (- (ref l j i))))
+                (setf (ref q i j) (- (ref q i j)))))))
         (values q l)))))
 
 (defun rq (m)
@@ -260,14 +259,14 @@ it must be that KA = KB, and the resulting matrix is M x N."
           ;; change signs if diagonal elements of r are negative
         (dotimes (i rows)
           (let ((diag-elt (ref r i i)))
-            (assert (= (imagpart diag-elt) 0) 
-                    () "Diagonal element R_~S~S=~S is not real" i i diag-elt)
+            (assert (zerop (imagpart diag-elt))
+                    () "Diagonal element R_~D~D=~A is not real" i i diag-elt)
             (setf diag-elt (realpart diag-elt))
-            (if (minusp diag-elt)
-                (dotimes (j cols)
-                  (if (<= j i)
-                      (setf (ref r j i) (- (ref r j i))))
-                  (setf (ref q i j) (- (ref q i j)))))))
+            (when (minusp diag-elt)
+              (dotimes (j cols)
+                (when (<= j i)
+                  (setf (ref r j i) (- (ref r j i))))
+                (setf (ref q i j) (- (ref q i j)))))))
         (values q r)))))
 
 (defun lq (m)
@@ -281,43 +280,38 @@ it must be that KA = KB, and the resulting matrix is M x N."
         ;; change signs if diagonal elements of l are negative
         (dotimes (i rows)
           (let ((diag-elt (ref r i i)))
-            (assert (= (imagpart diag-elt) 0) 
-                    () "Diagonal element R_~S~S=~S is not real" i i diag-elt)
+            (assert (zerop (imagpart diag-elt))
+                    () "Diagonal element R_~D~D=~A is not real" i i diag-elt)
             (setf diag-elt (realpart diag-elt))
-            (if (minusp diag-elt)
-                (dotimes (j cols)
-                  (if (<= i j (1- rows))
-                      (setf (ref r j i) (- (ref r j i))))
-                  (setf (ref q i j) (- (ref q i j)))))))
+            (when (minusp diag-elt)
+              (dotimes (j cols)
+                (when (<= i j (1- rows))
+                  (setf (ref r j i) (- (ref r j i))))
+                (setf (ref q i j) (- (ref q i j)))))))
         (values q r)))))
 
 (defun lapack-unitary-triangular-decomposition (m option)
   "Finds the QR/QL/RQ/LQ factorization of the matrix M to the intermediate representation, as given by the LAPACK ZGE(QR/QL/RQ/LQ)F subroutine, depending on the string option OPTION."
-  (let ((lapack-func))
-    (cond ((string-equal option "QR")
-           (setq lapack-func #'magicl.lapack-cffi::%zgeqrf))
-          ((string-equal option "QL")
-           (setq lapack-func #'magicl.lapack-cffi::%zgeqlf))
-          ((string-equal option "RQ")
-           (setq lapack-func #'magicl.lapack-cffi::%zgerqf))
-          ((string-equal option "LQ")
-           (setq lapack-func #'magicl.lapack-cffi::%zgelqf))
-          (t (error "Option ~S is not one of: QR, QL, RQ, LQ" option)))
-    (let ((rows (matrix-rows m))
-          (cols (matrix-cols m))
-          (a (fnv:copy-fnv-complex-double (matrix-data m)))
-          (lwork -1)
-          (info 0))
-      (let ((lda rows)
-            (tau (fnv:make-fnv-complex-double (min rows cols)))
-            (work (fnv:make-fnv-complex-double (max 1 lwork))))
-        ;; run it once as a workspace query
-        (apply lapack-func (list rows cols a lda tau work lwork info))
-        (setf lwork (truncate (realpart (fnv:fnv-complex-double-ref work 0))))
-        (setf work (fnv:make-fnv-complex-double (max 1 lwork)))
-        ;; run it again with optimal workspace size
-        (apply lapack-func (list rows cols a lda tau work lwork info))
-        (values a tau)))))
+  (let ((lapack-func (alexandria:eswitch (option :test #'string=)
+                       ("QR" #'magicl.lapack-cffi::%zgeqrf)
+                       ("QL" #'magicl.lapack-cffi::%zgeqlf)
+                       ("RQ" #'magicl.lapack-cffi::%zgerqf)
+                       ("LQ" #'magicl.lapack-cffi::%zgelqf)))
+        (rows (matrix-rows m))
+        (cols (matrix-cols m))
+        (a (copy-matrix-storage (matrix-data m)))
+        (lwork -1)
+        (info 0))
+    (let ((lda rows)
+          (tau (make-lisp-complex-double (min rows cols)))
+          (work (make-lisp-complex-double (max 1 lwork))))
+      ;; run it once as a workspace query
+      (funcall lapack-func rows cols a lda tau work lwork info)
+      (setf lwork (round (realpart (aref work 0))))
+      (setf work (make-lisp-complex-double (max 1 lwork)))
+      ;; run it again with optimal workspace size
+      (funcall lapack-func rows cols a lda tau work lwork info)
+      (values a tau))))
 
 (defun get-square-triangular (a upper ord)
   "Creates a square matrix from a triangular or trapezoidal portion of A. The square matrix is upper triangular and taken from the upper portion of A if and only if UPPER is T. The order of the square matrix is given by ORD."
@@ -327,8 +321,7 @@ it must be that KA = KB, and the resulting matrix is M x N."
         (n (matrix-cols a)))
     (assert (<= ord (max m n)) () "ORD, given as ~D, is greater than the maximum dimension of A, ~D." ord (max m n))
 
-    (let ((tri (apply #'make-complex-matrix ord ord 
-                                    (make-list (* ord ord) :initial-element #C(0.0d0 0.0d0)))))
+    (let ((tri (make-zero-matrix ord ord)))
       (if (> m n)
           (if upper
               (loop for i from 0 to (1- ord)
@@ -348,44 +341,39 @@ it must be that KA = KB, and the resulting matrix is M x N."
 
 (defun unitary-triangular-helper-get-q (amat tau option)
   "Finds the unitary matrix Q from QR/QL/RQ/LQ factorization of the matrix M, given the reflectors and intermediate representation provided by the LAPACK ZGE(QR/QL/RQ/LQ)F subroutine. Whether the factorization is QR, QL, RQ or LQ is given by string option OPTION."
-  (let ((lapack-func))
-    (cond ((string-equal option "QR")
-           (setq lapack-func #'magicl.lapack-cffi::%zungqr))
-          ((string-equal option "QL")
-           (setq lapack-func #'magicl.lapack-cffi::%zungql))
-          ((string-equal option "RQ")
-           (setq lapack-func #'magicl.lapack-cffi::%zungrq))
-          ((string-equal option "LQ")
-           (setq lapack-func #'magicl.lapack-cffi::%zunglq))
-          (t (error "Option ~S is not one of: QR, QL, RQ, LQ" option)))
-    (let ((m (matrix-rows amat))
-          (n (matrix-cols amat))
-          (a (matrix-data amat))
-          (k (fnv:fnv-length tau))
-          (lwork -1)
-          (info 0))
-      (let ((lda m)
-            (work (fnv:make-fnv-complex-double (max 1 lwork))))
-        ;; run it once as a workspace query
-        (apply lapack-func (list m n k a lda tau work lwork info))
-        (setf lwork (truncate (realpart (fnv:fnv-complex-double-ref work 0))))
-        (setf work (fnv:make-fnv-complex-double (max 1 lwork)))
-        ;; run it again with optimal workspace size
-        (apply lapack-func (list m n k a lda tau work lwork info))
-        (make-matrix :rows m :cols n :data a)))))
-
-(defun qr-helper-get-q (a tau n)
-  "Get the matrix Q as a product of reflectors, from results given by ZGEQRF."
-  (let ((m (/ (fnv:fnv-length a) n))
-        (k (fnv:fnv-length tau))
+  (let ((lapack-func (alexandria:eswitch (option :test #'string=)
+                       ("QR" #'magicl.lapack-cffi::%zungqr)
+                       ("QL" #'magicl.lapack-cffi::%zungql)
+                       ("RQ" #'magicl.lapack-cffi::%zungrq)
+                       ("LQ" #'magicl.lapack-cffi::%zunglq)))
+        (m (matrix-rows amat))
+        (n (matrix-cols amat))
+        (a (matrix-data amat))
+        (k (matrix-storage-size tau))
         (lwork -1)
         (info 0))
     (let ((lda m)
-          (work (fnv:make-fnv-complex-double (max 1 lwork))))
+          (work (make-lisp-complex-double (max 1 lwork))))
+      ;; run it once as a workspace query
+      (funcall lapack-func m n k a lda tau work lwork info)
+      (setf lwork (round (realpart (aref work 0))))
+      (setf work (make-lisp-complex-double (max 1 lwork)))
+      ;; run it again with optimal workspace size
+      (funcall lapack-func m n k a lda tau work lwork info)
+      (make-matrix :rows m :cols n :data a))))
+
+(defun qr-helper-get-q (a tau n)
+  "Get the matrix Q as a product of reflectors, from results given by ZGEQRF."
+  (let ((m (/ (matrix-storage-size a) n))
+        (k (matrix-storage-size tau))
+        (lwork -1)
+        (info 0))
+    (let ((lda m)
+          (work (make-lisp-complex-double (max 1 lwork))))
       ;; run it once as a workspace query
       (magicl.lapack-cffi::%zungqr m n k a lda tau work lwork info)
-      (setf lwork (truncate (realpart (fnv:fnv-complex-double-ref work 0))))
-      (setf work (fnv:make-fnv-complex-double (max 1 lwork)))
+      (setf lwork (truncate (realpart (aref work 0))))
+      (setf work (make-lisp-complex-double (max 1 lwork)))
       ;; run it again with optimal workspace size
       (magicl.lapack-cffi::%zungqr m n k a lda tau work lwork info)
       (make-matrix :rows m :cols n :data a))))
@@ -396,28 +384,30 @@ it must be that KA = KB, and the resulting matrix is M x N."
         (jobvt "A")
         (rows (matrix-rows m))
         (cols (matrix-cols m))
-        (a (fnv:copy-fnv-complex-double (matrix-data m)))
+        (a (copy-matrix-storage (matrix-data m)))
         (lwork -1)
         (info 0))
     (let ((lda rows)
-          (s (fnv:make-fnv-double (min rows cols)))
+          (s (make-lisp-double (min rows cols)))
           (ldu rows)
           (ldvt cols)
-          (work (fnv:make-fnv-complex-double (max 1 lwork)))
-          (rwork (fnv:make-fnv-double (* 5 (min rows cols)))))
-      (let ((u (fnv:make-fnv-complex-double (* ldu rows)))
-            (vt (fnv:make-fnv-complex-double (* ldvt cols))))
+          (work1 (make-lisp-complex-double (max 1 lwork)))
+          (work nil)
+          (rwork (make-lisp-double (* 5 (min rows cols)))))
+      (let ((u (make-lisp-complex-double (* ldu rows)))
+            (vt (make-lisp-complex-double (* ldvt cols))))
         ;; run it once as a workspace query
-        (magicl.lapack-cffi::%zgesvd jobu jobvt rows cols a lda s u ldu vt ldvt 
-                                     work lwork rwork info)
-        (setf lwork (truncate (realpart (fnv:fnv-complex-double-ref work 0))))
-        (setf work (fnv:make-fnv-complex-double (max 1 lwork)))
+        (magicl.lapack-cffi::%zgesvd jobu jobvt rows cols a lda s u ldu vt ldvt
+                                     work1 lwork rwork info)
+        (setf lwork (round (realpart (aref work1 0))))
+        (setf work (make-lisp-complex-double (max 1 lwork)))
         ;; run it again with optimal workspace size
-        (magicl.lapack-cffi::%zgesvd jobu jobvt rows cols a lda s u ldu vt ldvt 
+        (magicl.lapack-cffi::%zgesvd jobu jobvt rows cols a lda s u ldu vt ldvt
                                      work lwork rwork info)
-        (let ((smat (fnv:make-fnv-double (* rows cols) :initial-value 0.0d0)))
+        (let ((smat (make-lisp-double (* rows cols))))
           (dotimes (i (min rows cols))
-            (setf (fnv:fnv-double-ref smat (+ (* rows i) i)) (fnv-double-ref s i)))          
+            (setf (aref smat (column-major-index rows i i))
+                  (aref s i)))
           (values (make-matrix :rows rows :cols rows :data u)
                   (make-matrix :rows rows :cols cols :data smat)
                   (make-matrix :rows cols :cols cols :data vt)))))))
@@ -429,13 +419,13 @@ it must be that KA = KB, and the resulting matrix is M x N."
     (assert (<= 0 rmin rmax rows) () "Invalid row indices")
     (assert (<= 0 cmin cmax cols) () "Invalid column indices")
     (let* ((sliced-rows (- rmax rmin))
-          (sliced-cols (- cmax cmin))
-          (v (fnv:make-fnv-complex-double (* sliced-rows sliced-cols))))
+           (sliced-cols (- cmax cmin))
+           (v (make-lisp-complex-double (* sliced-rows sliced-cols))))
       (dotimes (j sliced-cols)
         (dotimes (i sliced-rows)
-          (setf (fnv:fnv-complex-double-ref 
-                 v (+ (* j sliced-rows) i)) (ref m (+ rmin i) (+ cmin j)))))
-      (values (make-matrix :rows sliced-rows :cols sliced-cols :data v)))))
+          (setf (aref v (+ (* j sliced-rows) i)) ; TODO: use COLUMN-MAJOR-INDEX
+                (ref m (+ rmin i) (+ cmin j)))))
+      (make-matrix :rows sliced-rows :cols sliced-cols :data v))))
 
 
 (defun csd (x p q)
@@ -443,12 +433,53 @@ it must be that KA = KB, and the resulting matrix is M x N."
   (multiple-value-bind (u1 u2 v1t v2t theta) (lapack-csd x p q)
     (csd-from-blocks u1 u2 v1t v2t theta)))
 
+(COMMON-LISP:DEFUN %ZUNCSD-XPOINTERS
+                   (JOBU1 JOBU2 JOBV1T JOBV2T TRANS SIGNS M P Q X11 LDX11 X12
+                    LDX12 X21 LDX21 X22 LDX22 THETA U1 LDU1 U2 LDU2 V1T LDV1T
+                    V2T LDV2T WORK LWORK RWORK LRWORK IWORK INFO)
+  (CFFI:WITH-FOREIGN-OBJECTS ((M-REF71665 ':INT32) (P-REF71666 ':INT32)
+                              (Q-REF71667 ':INT32) (LDX11-REF71669 ':INT32)
+                              (LDX12-REF71671 ':INT32) (LDX21-REF71673 ':INT32)
+                              (LDX22-REF71675 ':INT32) (LDU1-REF71678 ':INT32)
+                              (LDU2-REF71680 ':INT32) (LDV1T-REF71682 ':INT32)
+                              (LDV2T-REF71684 ':INT32) (LWORK-REF71686 ':INT32)
+                              (LRWORK-REF71688 ':INT32) (INFO-REF71690 ':INT32))
+    (COMMON-LISP:SETF (CFFI:MEM-REF M-REF71665 :INT32) M)
+    (COMMON-LISP:SETF (CFFI:MEM-REF P-REF71666 :INT32) P)
+    (COMMON-LISP:SETF (CFFI:MEM-REF Q-REF71667 :INT32) Q)
+    (COMMON-LISP:SETF (CFFI:MEM-REF LDX11-REF71669 :INT32) LDX11)
+    (COMMON-LISP:SETF (CFFI:MEM-REF LDX12-REF71671 :INT32) LDX12)
+    (COMMON-LISP:SETF (CFFI:MEM-REF LDX21-REF71673 :INT32) LDX21)
+    (COMMON-LISP:SETF (CFFI:MEM-REF LDX22-REF71675 :INT32) LDX22)
+    (COMMON-LISP:SETF (CFFI:MEM-REF LDU1-REF71678 :INT32) LDU1)
+    (COMMON-LISP:SETF (CFFI:MEM-REF LDU2-REF71680 :INT32) LDU2)
+    (COMMON-LISP:SETF (CFFI:MEM-REF LDV1T-REF71682 :INT32) LDV1T)
+    (COMMON-LISP:SETF (CFFI:MEM-REF LDV2T-REF71684 :INT32) LDV2T)
+    (COMMON-LISP:SETF (CFFI:MEM-REF LWORK-REF71686 :INT32) LWORK)
+    (COMMON-LISP:SETF (CFFI:MEM-REF LRWORK-REF71688 :INT32) LRWORK)
+    (COMMON-LISP:SETF (CFFI:MEM-REF INFO-REF71690 :INT32) INFO)
+    (MAGICL.CFFI-TYPES:WITH-ARRAY-POINTERS ((THETA-REF71676 THETA)
+                                            (U1-REF71677 U1) (U2-REF71679 U2)
+                                            (V1T-REF71681 V1T)
+                                            (V2T-REF71683 V2T)
+                                            (WORK-REF71685 WORK)
+                                            (RWORK-REF71687 RWORK)
+                                            (IWORK-REF71689 IWORK))
+      (MAGICL.LAPACK-CFFI::%%ZUNCSD
+       JOBU1 JOBU2 JOBV1T JOBV2T TRANS SIGNS M-REF71665 P-REF71666
+       Q-REF71667 X11 LDX11-REF71669 X12 LDX12-REF71671
+       X21 LDX21-REF71673 X22 LDX22-REF71675 THETA-REF71676
+       U1-REF71677 LDU1-REF71678 U2-REF71679 LDU2-REF71680 V1T-REF71681
+       LDV1T-REF71682 V2T-REF71683 LDV2T-REF71684 WORK-REF71685 LWORK-REF71686
+       RWORK-REF71687 LRWORK-REF71688 IWORK-REF71689 INFO-REF71690))))
+
+
 (defun lapack-csd (x p q)
   "Find the Cosine-Sine Decomposition of a matrix X given that it is to be partitioned
 with upper left block with dimension P-by-Q. Returns the intermediate representation given by the ZUNCSD LAPACK subroutine."
   (let* ((m (matrix-rows x))
          (n (matrix-cols x))
-         (xcopy (make-matrix :rows m :cols n :data (fnv:copy-fnv-complex-double (matrix-data x)))))
+         (xcopy (make-matrix :rows m :cols n :data (copy-matrix-storage (matrix-data x)))))
     (assert (= m n) () "X is not a square matrix")
     (check-type p integer)
     (check-type q integer)
@@ -471,51 +502,70 @@ with upper left block with dimension P-by-Q. Returns the intermediate representa
           (ldv1t q)
           (ldv2t (- m q))
           (lwork -1)
-          (work (fnv:make-fnv-complex-double 1))
+          (work (make-lisp-complex-double 1))
           (lrwork -1)
-          (rwork (fnv:make-fnv-double 1))
+          (rwork (make-lisp-double 1))
           (info 0))
       ;; rather than slice up matrix, use full array with pointers to head of blocks
-      (let ((x11 (matrix-data xcopy))
-            (x12 (fnv:make-fnv-complex-double 
-                  (* (- m q) m) 
-                  :foreign-ptr (ptr-ref xcopy 0 q)))
-            (x21 (fnv:make-fnv-complex-double 
-                  (- (* m m) p) 
-                  :foreign-ptr (ptr-ref xcopy p 0)))
-            (x22 (fnv:make-fnv-complex-double 
-                  (- (* (- m q) m) p) 
-                  :foreign-ptr (ptr-ref xcopy p q)))
-            (theta (fnv:make-fnv-double r))
-            (u1 (fnv:make-fnv-complex-double (* ldu1 p)))
-            (u2 (fnv:make-fnv-complex-double (* ldu2 (- m p))))
-            (v1t (fnv:make-fnv-complex-double (* ldv1t q)))
-            (v2t (fnv:make-fnv-complex-double (* ldv2t (- m q))))
-            (iwork (fnv:make-fnv-int32 (- m r))))
-        (sb-ext:cancel-finalization x12)
-        (sb-ext:cancel-finalization x21)
-        (sb-ext:cancel-finalization x22)
-        ;; run it once as a workspace query
-        (magicl.lapack-cffi::%zuncsd jobu1 jobu2 jobv1t jobv2t 
-                                     trans signs m p q 
-                                     x11 ldx11 x12 ldx12 x21 ldx21 x22 ldx22 
-                                     theta u1 ldu1 u2 ldu2 v1t ldv1t v2t ldv2t 
-                                     work lwork rwork lrwork iwork info)
-        (setf lwork (truncate (realpart (fnv:fnv-complex-double-ref work 0))))
-        (setf work (fnv:make-fnv-complex-double (max 1 lwork)))
-        (setf lrwork (truncate (fnv:fnv-double-ref rwork 0)))
-        (setf rwork (fnv:make-fnv-double (max 1 lrwork)))
-        ;; run it again with optimal workspace size
-        (magicl.lapack-cffi::%zuncsd jobu1 jobu2 jobv1t jobv2t 
-                                     trans signs m p q 
-                                     x11 ldx11 x12 ldx12 x21 ldx21 x22 ldx22 
-                                     theta u1 ldu1 u2 ldu2 v1t ldv1t v2t ldv2t 
-                                     work lwork rwork lrwork iwork info)
-        (values (make-matrix :rows p :cols p :data u1)
-                (make-matrix :rows (- m p) :cols (- m p) :data u2)
-                (make-matrix :rows q :cols q :data v1t)
-                (make-matrix :rows (- m q) :cols (- m q) :data v2t)
-                (vector-to-list theta))))))
+      ;;
+      ;; WARNING: THIS ABYSS IS WHERE DRAGONS LIVE. HERE THE GARBAGE
+      ;; COLLECTOR MUST BE TAMED SO WE DON'T SCREW UP THE POINTERS
+      ;; INTO THE LISP HEAP.
+      (magicl.cffi-types:with-array-pointers ((xcopy-ptr (matrix-data xcopy)))
+        (let ((x11 xcopy-ptr)
+              (x12 (ptr-ref xcopy xcopy-ptr 0 q))
+              (x21 (ptr-ref xcopy xcopy-ptr p 0))
+              (x22 (ptr-ref xcopy xcopy-ptr p q))
+              (theta (make-lisp-double r))
+              (u1 (make-lisp-complex-double (* ldu1 p)))
+              (u2 (make-lisp-complex-double (* ldu2 (- m p))))
+              (v1t (make-lisp-complex-double (* ldv1t q)))
+              (v2t (make-lisp-complex-double (* ldv2t (- m q))))
+              (iwork (make-lisp-int32 (- m r))))
+          ;; run it once as a workspace query
+
+          (%ZUNCSD-XPOINTERS jobu1 jobu2 jobv1t jobv2t
+                             trans signs m p q
+                             x11 ldx11 x12 ldx12 x21 ldx21 x22 ldx22
+                             theta u1 ldu1 u2 ldu2 v1t ldv1t v2t ldv2t
+                             work lwork rwork lrwork iwork info)
+          (setf lwork (truncate (realpart (row-major-aref work 0))))
+          (setf work (make-lisp-complex-double (max 1 lwork)))
+          (setf lrwork (truncate (row-major-aref rwork 0)))
+          (setf rwork (make-lisp-double (max 1 lrwork)))
+          ;; run it again with optimal workspace size
+          (%ZUNCSD-XPOINTERS jobu1 jobu2 jobv1t jobv2t
+                             trans signs m p q
+                             x11 ldx11 x12 ldx12 x21 ldx21 x22 ldx22
+                             theta u1 ldu1 u2 ldu2 v1t ldv1t v2t ldv2t
+                             work lwork rwork lrwork iwork info)
+          (values (make-matrix :rows p :cols p :data u1)
+                  (make-matrix :rows (- m p) :cols (- m p) :data u2)
+                  (make-matrix :rows q :cols q :data v1t)
+                  (make-matrix :rows (- m q) :cols (- m q) :data v2t)
+                  (vector-to-list theta)))))))
+
+
+;;; TODO FIXME
+(defun lisp-zlacpy (UPLO M N A rows-a B rows-b &optional (offx 0) (offy 0))
+  (alexandria:switch (uplo :test #'string=)
+    ("U"
+     (loop :for j :below n :do
+       (loop :for i :below (min j m) :do
+         (setf (aref b (column-major-index rows-b (+ offy i) (+ offx j)))
+               (aref a (column-major-index rows-a i j))))))
+
+    ("L"
+     (loop :for j :below n :do
+       (loop :for i :from j :below m :do
+         (setf (aref b (column-major-index rows-b (+ offy i) (+ offx j)))
+               (aref a (column-major-index rows-a i j))))))
+
+    (otherwise
+     (loop :for j :below n :do
+       (loop :for i :below m :do
+         (setf (aref b (column-major-index rows-b (+ offy i)  (+ offx j)))
+               (aref a (column-major-index rows-a i j))))))))
 
 (defun csd-from-blocks (u1 u2 v1t v2t theta)
   "Calculates the matrices U, SIGMA, and VT of the CSD of a matrix from its intermediate representation, as calculated from ZUNCSD."
@@ -523,25 +573,17 @@ with upper left block with dimension P-by-Q. Returns the intermediate representa
         (q (matrix-rows v1t))
         (m (+ (matrix-rows u1) (matrix-rows u2)))
         (r (length theta)))
-    (let ((u (apply #'make-complex-matrix m m 
-                    (make-list (* m m) :initial-element #C(0.0d0 0.0d0))))
-          (sigma (apply #'make-complex-matrix m m 
-                        (make-list (* m m) :initial-element #C(0.0d0 0.0d0))))
-          (vt (apply #'make-complex-matrix m m 
-                     (make-list (* m m) :initial-element #C(0.0d0 0.0d0)))))
+    (let ((u (make-zero-matrix m m))
+          (sigma (make-zero-matrix m m))
+          (vt (make-zero-matrix m m)))
       ;; Create U block by block
-      (magicl.lapack-cffi::%zlacpy "A" p p (matrix-data u1) p (matrix-data u) m)
-      (let ((u2ptr (fnv:make-fnv-complex-double (- (* (- m p) m) p) :foreign-ptr (ptr-ref u p p))))
-        (sb-ext:cancel-finalization u2ptr)
-        (magicl.lapack-cffi::%zlacpy "A" (- m p) (- m p) (matrix-data u2) (- m p) 
-                                     u2ptr m))
-      
+      (lisp-zlacpy "A" p p (matrix-data u1) p (matrix-data u) m)
+      (lisp-zlacpy "A" (- m p) (- m p) (matrix-data u2) (- m p) (matrix-data u) m p p)
+
       ;; Create VT block by block
-      (magicl.lapack-cffi::%zlacpy "A" q q (matrix-data v1t) q (matrix-data vt) m)
-      (let ((v2ptr (fnv:make-fnv-complex-double (- (* (- m q) m) q) :foreign-ptr (ptr-ref vt q q))))
-        (sb-ext:cancel-finalization v2ptr)
-        (magicl.lapack-cffi::%zlacpy "A" (- m q) (- m q) (matrix-data v2t) (- m q) 
-                                     v2ptr m))
+      (lisp-zlacpy "A" q q (matrix-data v1t) q (matrix-data vt) m)
+      (lisp-zlacpy "A" (- m q) (- m q) (matrix-data v2t) (- m q) (matrix-data vt) m q q)
+
       (let ((diag11 (min p q))
             (diag12 (min p (- m q)))
             (diag21 (min (- m p) q))
@@ -551,21 +593,21 @@ with upper left block with dimension P-by-Q. Returns the intermediate representa
               (iden21 (- diag21 r))
               (iden22 (- diag22 r)))
           (loop for i from 0 to (1- iden11)
-                do (setf (ref sigma i i) #C (1.0d0 0.0d0)))
+                do (setf (ref sigma i i) #C(1.0d0 0.0d0)))
           (loop for i from iden11 to (1- diag11)
                 do (setf (ref sigma i i) (cos (nth (- i iden11) theta))))
           (loop for i from 0 to (1- iden12)
-                do (setf (ref sigma (- p 1 i) (- m 1 i)) #C (-1.0d0 0.0d0)))
+                do (setf (ref sigma (- p 1 i) (- m 1 i)) #C(-1.0d0 0.0d0)))
           (loop for i from iden12 to (1- diag12)
                 do (setf (ref sigma (- p 1 i) (- m 1 i))
                          (- (sin (nth (- r 1 (- i iden12)) theta)))))
           (loop for i from 0 to (1- iden21)
-                do (setf (ref sigma (- m 1 i) (- q 1 i)) #C (1.0d0 0.0d0)))
+                do (setf (ref sigma (- m 1 i) (- q 1 i)) #C(1.0d0 0.0d0)))
           (loop for i from iden21 to (1- diag21)
                 do (setf (ref sigma (- m 1 i) (- q 1 i))
                          (sin (nth (- r 1 (- i iden21)) theta))))
           (loop for i from 0 to (1- iden22)
-                do (setf (ref sigma (+ p i) (+ q i)) #C (1.0d0 0.0d0)))
+                do (setf (ref sigma (+ p i) (+ q i)) #C(1.0d0 0.0d0)))
           (loop for i from iden22 to (1- diag22)
                 do (setf (ref sigma (+ p i) (+ q i)) (cos (nth (- i iden22) theta))))))
       (values u sigma vt))))
@@ -574,10 +616,10 @@ with upper left block with dimension P-by-Q. Returns the intermediate representa
   "Finds the LU decomposition of a square matrix M, in terms of the intermediate representation given by the ZGETRF LAPACK subroutine."
   (let ((rows (matrix-rows m))
         (cols (matrix-cols m))
-        (a (fnv:copy-fnv-complex-double (matrix-data m)))
+        (a (copy-matrix-storage (matrix-data m)))
         (info 0))
     (let ((lda rows)
-          (ipiv (fnv:make-fnv-int32 (min rows cols))))
+          (ipiv (make-lisp-int32 (min rows cols))))
       (magicl.lapack-cffi::%zgetrf rows cols a lda ipiv info)
       (values a ipiv))))
 
@@ -589,10 +631,10 @@ with upper left block with dimension P-by-Q. Returns the intermediate representa
     (assert (= rows cols) () "M is not a square matrix.")
     (multiple-value-bind (a ipiv) (lapack-lu m)
       (dotimes (i rows)
-        (setq d (* d (fnv:fnv-complex-double-ref a (+ (* i rows) i)))))
-      (dotimes (i (fnv:fnv-length ipiv))
-        (if (not (= (1+ i) (fnv:fnv-int32-ref ipiv i)))
-            (setq d (- d))))
+        (setq d (* d (aref a (+ (* i rows) i)))))
+      (dotimes (i (matrix-storage-size ipiv))
+        (unless (= (1+ i) (aref ipiv i))
+          (setq d (- d))))
       (values d))))
 
 (defun inv (m)
@@ -603,12 +645,12 @@ with upper left block with dimension P-by-Q. Returns the intermediate representa
     (multiple-value-bind (a ipiv) (lapack-lu m)
       (let ((lda rows)
             (lwork -1)
-            (work (fnv:make-fnv-complex-double 1))
+            (work (make-lisp-complex-double 1))
             (info 0))
         ;; run it once as a workspace query
         (magicl.lapack-cffi::%zgetri rows a lda ipiv work lwork info)
-        (setf lwork (truncate (realpart (fnv:fnv-complex-double-ref work 0))))
-        (setf work (fnv:make-fnv-complex-double (max 1 lwork)))
+        (setf lwork (truncate (realpart (row-major-aref work 0))))
+        (setf work (make-lisp-complex-double (max 1 lwork)))
         ;; run it again with optimal workspace size
         (magicl.lapack-cffi::%zgetri rows a lda ipiv work lwork info)
         (values (make-matrix :rows rows :cols cols :data a))))))
@@ -618,14 +660,14 @@ with upper left block with dimension P-by-Q. Returns the intermediate representa
   (let ((ideg 6)
         (rows (matrix-rows m))
         (tcoef (coerce 1.0 'double-float))
-        (h (fnv:copy-fnv-complex-double (matrix-data m)))
+        (h (copy-matrix-storage (matrix-data m)))
         (iexph 0)
         (ns 0)
         (iflag 0))
     (let ((lwsp (+ (* 4 rows rows) ideg 1))
-          (ipiv (fnv:make-fnv-int32 rows)))
-      (let ((wsp (fnv:make-fnv-complex-double lwsp)))
-        ;; Requires direct foreign function call due to need to access a pointer 
+          (ipiv (make-lisp-int32 rows)))
+      (let ((wsp (make-lisp-complex-double lwsp)))
+        ;; Requires direct foreign function call due to need to access a pointer
         ;; to an integer (IEXPH).
         (CFFI:WITH-FOREIGN-OBJECTS ((IDEG-REF103 ':INT32) (M-REF104 ':INT32)
                                     (T-REF105 ':DOUBLE) (LDH-REF107 ':INT32)
@@ -639,16 +681,19 @@ with upper left block with dimension P-by-Q. Returns the intermediate representa
           (COMMON-LISP:SETF (CFFI:MEM-REF IEXPH-REF111 :INT32) IEXPH)
           (COMMON-LISP:SETF (CFFI:MEM-REF NS-REF112 :INT32) NS)
           (COMMON-LISP:SETF (CFFI:MEM-REF IFLAG-REF113 :INT32) IFLAG)
-          (magicl.expokit-cffi::%%zgpadm IDEG-REF103 M-REF104 T-REF105 
-                                         (FNV-FOREIGN-POINTER H) LDH-REF107
-                                         (FNV-FOREIGN-POINTER WSP) LWSP-REF109 
-                                         (FNV-FOREIGN-POINTER IPIV)
-                                         IEXPH-REF111 NS-REF112 IFLAG-REF113)
+          (magicl.cffi-types:with-array-pointers ((H-ptr H)
+                                                  (WSP-ptr WSP)
+                                                  (IPIV-ptr IPIV))
+            (magicl.expokit-cffi::%%zgpadm IDEG-REF103 M-REF104 T-REF105
+                                           H-ptr LDH-REF107
+                                           WSP-ptr LWSP-REF109
+                                           IPIV-ptr
+                                           IEXPH-REF111 NS-REF112 IFLAG-REF113))
           (setf iexph (CFFI:MEM-REF IEXPH-REF111 :INT32)))
-        (let ((exph (fnv:make-fnv-complex-double (* rows rows))))
+        (let ((exph (make-lisp-complex-double (* rows rows))))
           (dotimes (i (* rows rows))
-            (setf (fnv:fnv-complex-double-ref exph i) 
-                  (fnv:fnv-complex-double-ref wsp (+ i (1- iexph)))))
+            (setf (row-major-aref exph i)
+                  (row-major-aref wsp (+ i (1- iexph)))))
           (values (make-matrix :rows rows :cols rows :data exph)))))))
 
 (defun eig (m)
@@ -658,18 +703,18 @@ with upper left block with dimension P-by-Q. Returns the intermediate representa
     (assert (= rows cols) () "M is not a square matrix")
     (let ((jobvl "N")
           (jobvr "V")
-          (a (fnv:copy-fnv-complex-double (matrix-data m)))
-          (w (fnv:make-fnv-complex-double rows))
-          (vl (fnv:make-fnv-complex-double rows))
-          (vr (fnv:make-fnv-complex-double (* rows rows)))
+          (a (copy-matrix-storage (matrix-data m)))
+          (w (make-lisp-complex-double rows))
+          (vl (make-lisp-complex-double rows))
+          (vr (make-lisp-complex-double (* rows rows)))
           (lwork -1)
-          (rwork (fnv:make-fnv-double (* 2 rows)))
+          (rwork (make-lisp-double (* 2 rows)))
           (info 0))
-      (let ((work (fnv:make-fnv-complex-double (max 1 lwork))))
+      (let ((work (make-lisp-complex-double (max 1 lwork))))
         ;; run it once as a workspace query
         (magicl.lapack-cffi::%zgeev jobvl jobvr rows a rows w vl 1 vr rows work lwork rwork info)
-        (setf lwork (truncate (realpart (fnv:fnv-complex-double-ref work 0))))
-        (setf work (fnv:make-fnv-complex-double (max 1 lwork)))
+        (setf lwork (truncate (realpart (row-major-aref work 0))))
+        (setf work (make-lisp-complex-double (max 1 lwork)))
         ;; run it again with optimal workspace size
         (magicl.lapack-cffi::%zgeev jobvl jobvr rows a rows w vl 1 vr rows work lwork rwork info)
         (values (vector-to-list w) (make-matrix :rows rows :cols cols :data vr))))))

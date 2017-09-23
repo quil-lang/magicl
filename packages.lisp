@@ -9,9 +9,9 @@
 
 (defpackage #:magicl.cffi-types
   (:use #:common-lisp
-        #:cffi 
-        #:fnv)
-  (:export #:complex-single-float
+        #:cffi)
+  (:export #:with-array-pointers        ; MACRO
+           #:complex-single-float
            #:complex-double-float
            #:fortran-int
            #:fortran-float
@@ -21,30 +21,20 @@
            #:fortran-logical))
 
 (defpackage #:magicl.blas-cffi
-  (:use #:foreign-numeric-vector
-        #:fnv-utils
-        #:magicl.cffi-types)
   #-package-local-nicknames
   (:nicknames #:blas))
 
 (defpackage #:magicl.lapack-cffi
-  (:use #:foreign-numeric-vector
-        #:fnv-utils
-        #:magicl.cffi-types)
   #-package-local-nicknames
   (:nicknames #:lapack))
 
 (defpackage #:magicl.expokit-cffi
-  (:use #:foreign-numeric-vector
-        #:fnv-utils
-        #:magicl.cffi-types)
   #-package-local-nicknames
   (:nicknames #:expokit))
 
 (defpackage #:magicl
   (:use #:common-lisp
-        #:cffi
-        #:foreign-numeric-vector)
+        #:cffi)
   #+package-local-nicknames
   (:local-nicknames (#:blas #:magicl.blas-cffi)
                     (#:lapack #:magicl.lapack-cffi)
