@@ -433,7 +433,9 @@ the CFFI binding file."
                                       :defaults outdir)
                        :direction :output
                        :if-exists :supersede)
-
+      ;; HEADER
+      ;;
+      ;; Print the time.
       (multiple-value-bind 
             (second minute hour date month year day-of-week dst-p tz)
           (get-decoded-time)
@@ -446,11 +448,16 @@ the CFFI binding file."
                 minute
                 second
                 (- tz)))
+      ;; Print the package form.
+      (terpri f)
+      (terpri f)
+      (prin1 `(declaim (optimize (speed 0) safety debug)) f)
       (terpri f)
       (terpri f)
       (prin1 `(in-package ,package-name) f)
       (terpri f)
       (terpri f)
+      ;; Print the bindings.
       (dolist (form bindings)
         (cond
           ((eq 'cffi:defcfun (car form))
