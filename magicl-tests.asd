@@ -11,7 +11,7 @@
                #:fiasco)
   :perform (asdf:test-op (o s)
                          (uiop:symbol-call :magicl-tests
-                                           '#:run-tests))
+                                           '#:run-magicl-tests))
   :pathname "tests/"
   :serial t
   :components ((:file "packages")
