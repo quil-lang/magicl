@@ -4,8 +4,9 @@
 
 (asdf:defsystem #:magicl-tests
   :description "Regression tests for MAGICL."
-  :author "Joseph Lin <joe.lin@rigetti.com>"
-  :depends-on (#:magicl
+  :author "Rigetti Computing"
+  :depends-on (#:uiop
+               #:magicl
                #:magicl-examples
                #:fiasco)
   :perform (asdf:test-op (o s)
@@ -14,4 +15,5 @@
   :pathname "tests/"
   :serial t
   :components ((:file "packages")
+               (:file "suite")
                (:file "high-level-tests")))
