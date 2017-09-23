@@ -4,9 +4,11 @@ _Matrix Algebra proGrams In Common Lisp_ by [Rigetti Computing](http://www.riget
 
 Load it with `(ql:quickload :magicl)`.
 
+Test it with `(asdf:test-system :magicl)`.
+
 ## Requirements
 
-MAGICL has only been tested with recent (> 1.3.19) SBCLs on AMD64.
+MAGICL has only been tested with recent (> 1.3.19) SBCLs and (>= 1.11) CCLs on AMD64.
 
 All UNIX systems require `libffi`. You can usually install this with
 your package manager.
@@ -139,13 +141,9 @@ In order to generate the bindings, you will need to download the Fortran 90 sour
 
 Currently this will write to the source distribution directory of MAGICL, namely the files `blas-cffi.lisp`, `lapack-cffi.lisp`, and `expokit-cffi.lisp`.
 
-## Running Tests
-
-Load MAGICL and do `(asdf:test-system :magicl)`.
-
 ## Quirks and Issues
 
-Currently this library is SBCL-only. The non-portable code is in `with-array-pointers.lisp`.
+Currently this library is SBCL- and CCL-only. The non-portable code is in `with-array-pointers.lisp` and `magicl.lisp`.
 
 
 ## History and Credits

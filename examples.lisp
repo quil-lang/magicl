@@ -25,7 +25,7 @@
 (defun dot (u v)
   (assert (= (length u) (length v)) (u v))
   (let ((n (length u)))
-    (sb-int:with-float-traps-masked (:divide-by-zero :underflow :overflow :inexact :invalid)
+    (with-blapack
       (let ((cx (magicl::copy-matrix-storage u))
             (cy (magicl::copy-matrix-storage v)))
         (format t "x: ~A~%y: ~A~%" cx cy)
@@ -47,7 +47,7 @@
 
 (defun eigenvalue-example ()
   ;; Set the traps
-  (sb-int:with-float-traps-masked (:divide-by-zero :invalid)
+  (with-blapack
 
     ;; An eigenvalue example.  Note that we have no matrix abstraction a
     ;; this point.  We pretend 4-vectors are 2-by-2 matrices.
@@ -262,7 +262,8 @@
                        fn-name
                        c)
                (format t "!!! Error: ~A~%" c)))
-           (format t ";;; End of example ~A~2%" fn-name)))
+           (format t ";;; End of example ~A~2%" fn-name)
+           (finish-output)))
     (mapc #'call-example
           '(dot-example
             eigenvalue-example
