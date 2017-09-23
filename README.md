@@ -6,8 +6,7 @@ Load it with `(ql:quickload :magicl)`.
 
 ## Requirements
 
-MAGICL has only been tested with recent (> 1.3.19) SBCLs on AMD64,
-though there are no internal APIs being used.
+MAGICL has only been tested with recent (> 1.3.19) SBCLs on AMD64.
 
 All UNIX systems require `libffi`. You can usually install this with
 your package manager.
@@ -125,35 +124,41 @@ Library LIBLAPACK: /usr/local/opt/lapack/lib/liblapack.dylib
     [x] ZGGSVD3                 MAGICL.LAPACK-CFFI:%ZGGSVD3
 ```
 
-
-
 ## Generating BLAS and LAPACK Bindings
 
 This library takes the approach of automatically generating the bindings to BLAS and LAPACK without relying on any special tools.
 
-In order to generate the bindings, you will need to download the Fortran 90 source files for BLAS and LAPACK. These can be found [here on netlib](http://www.netlib.org/lapack/). Once downloaded, you can re-generate the files with:
+In order to generate the bindings, you will need to download the Fortran 90 source tarballs for [BLAS/LAPACK](http://www.netlib.org/lapack/) and [Expokit](https://www.maths.uq.edu.au/expokit/download.html). Once downloaded, extract the tarballs into a directory and re-generate the bindings with the following commands:
 
 ```
 (ql:quickload :magicl-gen)
 (in-package :magicl.generate-interface)
 (generate-blapack-files #P"/path/to/lapack-3.7.1/")
+(generate-expokit-files #P"/path/to/expokit/")
 ```
 
-Currently this will write to the source distribution directory of MAGICL, namely the files `blas-cffi.lisp` and `lapack-cffi.lisp`.
+Currently this will write to the source distribution directory of MAGICL, namely the files `blas-cffi.lisp`, `lapack-cffi.lisp`, and `expokit-cffi.lisp`.
+
+## Running Tests
+
+Load MAGICL and do `(asdf:test-system :magicl)`.
 
 ## Quirks and Issues
 
-### Pointer Reification
-
-Internally, MAGICL uses foreign pointers. This means that saving a Lisp executable will usually not save these pointers if you have defined them in any way that makes them accessible.
-
-MAGICL provides the package `reify` which allows one to define ways to reify objects containing these pointers. The high level `matrix` type has defined reification procedures.
-
-If you wish to define a procedure of your own for your own objects, use `reify:set-reification-procedures`. You will need to provide a function to prepare the object for reification, and another to actually reify the object. See the file `high-level.lisp` for an example.
-
-Currently, the `reify` package only works for SBCL.
+Currently this library is SBCL-only. The non-portable code is in `with-array-pointers.lisp`.
 
 
-## History
+## History and Credits
 
-MAGICL started as a fork of [CL-BLAPACK](https://github.com/blindglobe/cl-blapack).
+MAGICL development started at Rigetti Computing by Robert Smith and Joe Lin in 2017.
+
+[CL-BLAPACK](https://github.com/blindglobe/cl-blapack) is a library developed by Ryan Rifin and Evan Monroig. Rigetti Computing created a fork of this library and renamed it MAGICL, and made significant changes that departed from the original design, including:
+
+* Fixing several bugs in the Fortran parsing to make it work with the latest reference BLAS and LAPACK, leading to significant refactoring.
+* Adding support for matrix exponentiation with Expokit.
+* Adding support for loading various BLAS and LAPACK implementations.
+* Removing the use of the FNV library in favor of native Lisp arrays.
+* Adding a high-level interface to various functions.
+* Adding function availability reporting.
+
+The most important common design decision between CL-BLAPACK and MAGICL is allowing direct access to the Fortran library functions by way of automatically generated Lisp bindings from the reference sources.
