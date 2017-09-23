@@ -37,7 +37,7 @@
   ;; replacement for MAKE-FNV-COMPLEX-DOUBLE
   (make-array n :element-type '(complex double-float) :initial-element #C(0.0d0 0.0d0)))
 
-(defstruct matrix
+(defstruct (matrix (:constructor %make-matrix (rows cols data)))
   "Representation of a dense matrix."
   (rows (error "Required argument")
    :type matrix-dimension
@@ -53,10 +53,26 @@
   (declare (type matrix-storage v))
   (length v))
 
+(defun make-matrix (&key rows cols data)
+  (declare (type matrix-dimension rows cols)
+           (type matrix-storage data))
+  (assert (= (matrix-storage-size data)
+             (* rows cols))
+          (rows cols)
+          "The number of rows=~D and cols=~D does not match the storage size=~D"
+          rows
+          cols
+          (matrix-storage-size data))
+  (%make-matrix rows cols data))
+
 (defun copy-matrix-storage (v)
   "Copy a matrix storage vector V suitable for the DATA slot on a MATRIX structure."
   (declare (type matrix-storage v))
   (copy-seq v))
+
+(defun matrix-element-type (m)
+  "Return the element type of the matrix M."
+  (array-element-type (matrix-data m)))
 
 (defun make-complex-foreign-vector (&rest entries)
   "Makes a complex double FNV out ENTRIES, a list of complex numbers."
@@ -168,13 +184,15 @@
 (defun multiply-complex-matrices (ma mb)
   "Multiplies two complex marices MA and MB, returning MA*MB. If MA is M x KA and MB is KB x N,
 it must be that KA = KB, and the resulting matrix is M x N."
-  (let ((ka (matrix-cols ma))
-        (kb (matrix-rows mb)))
+  (assert (equal (matrix-element-type ma) (matrix-element-type mb)))
+  (assert (equal '(complex double-float) (matrix-element-type ma)))
+  (let ((m  (matrix-rows ma))
+        (ka (matrix-cols ma))
+        (kb (matrix-rows mb))
+        (n  (matrix-cols mb)))
     (assert (= ka kb) ()
             "Matrix A has ~D columns while matrix B has ~D rows" ka kb)
-    (let ((n (matrix-cols mb))
-          (m (matrix-rows ma))
-          (a (copy-matrix-storage (matrix-data ma)))
+    (let ((a (copy-matrix-storage (matrix-data ma)))
           (b (copy-matrix-storage (matrix-data mb))))
       (if (= n 1)
           ;; mb is a column vector
@@ -186,7 +204,7 @@ it must be that KA = KB, and the resulting matrix is M x N."
               (let ((trans "N")
                     (alpha #C(1.0d0 0.0d0))
                     (beta #C(0.0d0 0.0d0))
-                    (y (make-lisp-complex-double kb)))
+                    (y (make-lisp-complex-double (* m n))))
                 (magicl.blas-cffi::%zgemv trans m ka alpha a m b 1 beta y 1)
                 (make-matrix :rows m :cols n :data y)))
           ;; use matrix-matrix multiplication
