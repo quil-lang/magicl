@@ -21,14 +21,17 @@
            #:fortran-logical))
 
 (defpackage #:magicl.blas-cffi
+  (:use)
   #-package-local-nicknames
   (:nicknames #:blas))
 
 (defpackage #:magicl.lapack-cffi
+  (:use)
   #-package-local-nicknames
   (:nicknames #:lapack))
 
 (defpackage #:magicl.expokit-cffi
+  (:use)
   #-package-local-nicknames
   (:nicknames #:expokit))
 
