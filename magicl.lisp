@@ -20,7 +20,16 @@
                          ,@body)
          (apply 'ccl:set-fpu-mode ,fpu-mode)))))
 
-#-(or sbcl cmu ccl)
+#+ecl
+(defmacro with-blapack (&body body)
+  `(let ((%trap-bits (si::trap-fpe 'cl:last t)))
+     (unwind-protect
+          (progn
+            (si::trap-fpe %trap-bits nil)
+            ,@body)
+       (si::trap-fpe %trap-bits t))))
+
+#-(or sbcl cmu ccl ecl)
 (defmacro with-blapack (&body body)
   `(progn
     ,@body))

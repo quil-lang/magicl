@@ -32,7 +32,7 @@ WARNING: Do not close over these pointers or otherwise store them outside of the
                  bindings)
           (bindings)
           "Malformed bindings in WITH-ARRAY-POINTERS. Given ~S" bindings)
-  #- (or sbcl ccl)
+  #- (or sbcl ccl ecl)
   (error "WITH-ARRAY-POINTERS unsupported on ~A" (lisp-implementation-type))
 
   (let* ((symbols (mapcar #'first bindings))
@@ -76,4 +76,11 @@ WARNING: Do not close over these pointers or otherwise store them outside of the
                                        `(when (equal '(complex double-float)
                                                      (array-element-type ,e))
                                           (ccl:%incf-ptr ,s 8))))
-                 ,@body)))))))
+                 ,@body)))
+
+           #+ecl
+           (progn
+             (let ,(loop :for s :in symbols
+                         :for e :in evaled-symbols
+                         :collect `(,s (si:make-foreign-data-from-array ,e)))
+               ,@body))))))
