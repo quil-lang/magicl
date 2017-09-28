@@ -11,7 +11,7 @@ Test it with `(asdf:test-system :magicl)`.
 MAGICL has only been tested with recent (> 1.3.19) SBCLs and (>= 1.11) CCLs on AMD64.
 
 All UNIX systems require `libffi`. You can usually install this with
-your package manager.
+your package manager. [^Sometimes when you build Lisp executables, you may need to specify where or how to find `libffi`. For instance, on macOS with `libffi` installed, you will need to set your `PKG_CONFIG_PATH` to `/usr/local/opt/libffi/lib/pkgconfig`.]
 
 All UNIX systems also require [Expokit](https://www.maths.uq.edu.au/expokit/) for matrix exponentiation. Download and setup instructions can be found in the Expokit subsection below.
 
