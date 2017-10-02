@@ -146,9 +146,9 @@ remaining lines."
          (function-line (cdr (member "function" line :test #'string-equal)))
          (return-type (list "none"))
          signature name vars)
-     (if subroutine-line 
+     (if subroutine-line
         (setf signature subroutine-line)
-        (when function-line 
+        (when function-line
             (setf signature function-line
                   return-type (subseq line 0 (- (length line) (length function-line) 1)))))
     (if signature
@@ -224,6 +224,14 @@ remaining lines."
   name
   return-type
   arguments)
+
+(defun lisp-fun-name (ff)
+  "The name of the normal Lisp entry point to the Fortran function FF."
+  (intern (concatenate 'string "%" (string-upcase (fortran-function-name ff))) *package*))
+
+(defun raw-call-name (ff)
+  "The name of the raw CFFI-defined function for the Fortran function FF."
+  (intern (concatenate 'string "%%" (string-upcase (fortran-function-name ff))) *package*))
 
 (defun parse-fortran-file (fortran-file)
   (format *trace-output* "; Reading Fortran file: ~A~%" fortran-file)
@@ -319,8 +327,8 @@ need to be customized."
                              vars))
            (normalized-types (mapcar #'second vars-types))
            (return-type (fortran-function-return-type ff))
-           (raw-call-name (sym (concatenate 'string "%%" (string-upcase name))))
-           (lisp-fun-name (sym (concatenate 'string "%" (string-upcase name)))))
+           (raw-call-name (raw-call-name ff))
+           (lisp-fun-name (lisp-fun-name ff)))
       `(
         ;; CFFI form
         (cffi:defcfun (,fortran-name ,raw-call-name
@@ -334,24 +342,6 @@ need to be customized."
                   :collect (list (sym var) (if (eq norm-type ':fortran-string)
                                                ':string
                                                ':pointer))))
-       
-        ;; Record the following in the SYMBOL-PLIST of the library
-        ;; symbol:
-        ;;
-        ;;     1. The function name as it appears in the Fortran file.
-        ;;
-        ;;     2. The mangled name.
-        ;;
-        ;;     3. The Lisp symbol name refering to the CFFI-defined
-        ;;        function.
-        ;;
-        ;;     4. The "high level" entry point function which handles
-        ;;        the by-ref semantics of Fortran.
-        ,@(when originating-library
-            (list `(cl:pushnew '(,name ,fortran-name ,raw-call-name ,lisp-fun-name)
-                               (cl:getf (cl:symbol-plist ',originating-library) ':magicl)
-                               :test 'cl:equal
-                               :key 'cl:car)))
 
         ;; Lisp function form
         (cl:defun ,lisp-fun-name ,(mapcar #'sym vars)
@@ -411,7 +401,7 @@ need to be customized."
                        :for norm-type :in normalized-types
                        :unless (atom norm-type)
                          :collect `(,ref-var ,var))
-              
+
                 ;; The raw call.
                 (,raw-call-name
                  ,@(loop :for var :in vars
@@ -436,7 +426,7 @@ the CFFI binding file."
       ;; HEADER
       ;;
       ;; Print the time.
-      (multiple-value-bind 
+      (multiple-value-bind
             (second minute hour date month year day-of-week dst-p tz)
           (get-decoded-time)
         (declare (ignore day-of-week dst-p))
@@ -451,7 +441,7 @@ the CFFI binding file."
       ;; Print the package form.
       (terpri f)
       (terpri f)
-      (prin1 `(declaim (optimize (speed 0) safety debug)) f)
+      (prin1 `(declaim (optimize (speed 0) safety debug compilation-speed)) f)
       (terpri f)
       (terpri f)
       (prin1 `(in-package ,package-name) f)
@@ -462,28 +452,14 @@ the CFFI binding file."
         (cond
           ((eq 'cffi:defcfun (car form))
            (let ((name (cadadr form)))
-             (prin1 `(cl:declaim (cl:inline ,name)) f)
-             (terpri f)
-             (terpri f)
+             (declare (ignore name))
              (prin1 form f)
-             (terpri f)
-             (terpri f)
-             (prin1 `(cl:declaim (cl:notinline ,name)) f)
              (terpri f)
              (terpri f)))
           ((eq 'cl:defun (car form))
            (let ((name (cadr form)))
-             (prin1 `(cl:declaim (cl:inline ,name)) f)
-             (terpri f)
-             (terpri f)
+             (declare (ignore name))
              (prin1 form f)
-             (terpri f)
-             (terpri f)
-             (prin1 `(cl:declaim (cl:notinline ,name)) f)
-             (terpri f)
-             (terpri f)
-             (prin1 `(export ',name ',package-name) f)
-             (terpri f)
              (terpri f)
              (terpri f)))
           (t
@@ -493,29 +469,73 @@ the CFFI binding file."
       (write-line ";;; End of file." f)
       nil)))
 
-(defun generate-blas-file ()
-  (let* ((package-name '#:magicl.blas-cffi)
-         (*package* (find-package package-name)))
+(defun generate-file (file-name package-name library-name parsing-function)
+  (let* ((*package* (find-package package-name))
+         (parsed-ffs (funcall parsing-function))
+         (originating-library library-name))
     (generate-bindings-file
-     "blas-cffi"
+     file-name
      package-name
-     (mapcan (lambda (def)
-               (generate-cffi-interface-alternate
-                def
-                :originating-library 'magicl.foreign-libraries:libblas))
-             (parse-blas-files)))))
+     (append
+      ;; Inline decls
+      (list
+       `(cl:declaim (cl:inline ,@(loop :for ff :in parsed-ffs
+                                       :append (list
+                                                (raw-call-name ff)
+                                                (lisp-fun-name ff))))))
+      ;; Function bindings
+      (mapcan (lambda (def)
+                (generate-cffi-interface-alternate
+                 def
+                 :originating-library originating-library))
+              parsed-ffs)
+      ;; Not-Inline decls
+      (list
+       `(cl:declaim (cl:notinline ,@(loop :for ff :in parsed-ffs
+                                          :append (list
+                                                   (raw-call-name ff)
+                                                   (lisp-fun-name ff))))))
+      ;; Record the following in the SYMBOL-PLIST of the library
+      ;; symbol:
+      ;;
+      ;;     1. The function name as it appears in the Fortran file.
+      ;;
+      ;;     2. The mangled name.
+      ;;
+      ;;     3. The Lisp symbol name refering to the CFFI-defined
+      ;;        function.
+      ;;
+      ;;     4. The "high level" entry point function which handles
+      ;;        the by-ref semantics of Fortran.
+
+      (list
+       (let ((entries (loop :for ff :in parsed-ffs
+                            :collect (list (fortran-function-name ff)
+                                           (fortran-mangle-name
+                                            (fortran-function-name ff))
+                                           (raw-call-name ff)
+                                           (lisp-fun-name ff)))))
+         `(setf (cl:getf (cl:symbol-plist ',originating-library) ':magicl)
+                ',entries)))
+
+      ;; Exports
+      (list
+       `(cl:export ',(loop :for ff :in parsed-ffs
+                           :collect (lisp-fun-name ff))
+                   ',package-name)))))
+  )
+
+(defun generate-blas-file ()
+  (generate-file "blas-cffi"
+                 '#:magicl.blas-cffi
+                 'magicl.foreign-libraries:libblas
+                 #'parse-blas-files))
 
 (defun generate-lapack-file ()
-  (let* ((package-name '#:magicl.lapack-cffi)
-         (*package* (find-package package-name)))
-    (generate-bindings-file
-     "lapack-cffi"
-     package-name
-     (mapcan (lambda (def)
-               (generate-cffi-interface-alternate
-                def
-                :originating-library 'magicl.foreign-libraries:liblapack))
-             (parse-lapack-files)))))
+  (generate-file "lapack-cffi"
+                 '#:magicl.lapack-cffi
+                 'magicl.foreign-libraries:liblapack
+                 #'parse-lapack-files))
 
 (defun generate-blapack-files (lapack-dir)
   (let ((*basedir* lapack-dir))
@@ -530,16 +550,10 @@ the CFFI binding file."
     (mapcar #'parse-fortran-file files)))
 
 (defun generate-expokit-file ()
-  (let* ((package-name '#:magicl.expokit-cffi)
-         (*package* (find-package package-name)))
-    (generate-bindings-file
-     "expokit-cffi"
-     package-name
-     (mapcan (lambda (def)
-               (generate-cffi-interface-alternate
-                def
-                :originating-library 'magicl.foreign-libraries:libexpokit))
-             (parse-expokit-files)))))
+  (generate-file "expokit-cffi"
+                 '#:magicl.expokit-cffi
+                 'magicl.foreign-libraries:libexpokit
+                 #'parse-expokit-files))
 
 (defun generate-expokit-files (expokit-dir)
   (let ((*basedir* expokit-dir))
