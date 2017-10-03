@@ -48,6 +48,36 @@
   (data (error "Required argument")
    :type matrix-storage))
 
+(defun pprint-matrix (stream matrix)
+  "Pretty-print a matrix MATRIX to the stream STREAM."
+  (flet ((print-real (x)
+           (format stream "~6,3f" x))
+         (print-complex (z)
+           (format stream "~6,3f ~:[+~;-~]~6,3fj"
+                   (realpart z)
+                   (minusp (imagpart z))
+                   (abs (imagpart z)))))
+    (let* ((rows (matrix-rows matrix))
+           (cols (matrix-cols matrix))
+           (type (array-element-type (matrix-data matrix)))
+           (print-entry (alexandria:eswitch (type :test 'equal)
+                          ('single-float #'print-real)
+                          ('double-float #'print-real)
+                          ('(complex single-float) #'print-complex)
+                          ('(complex double-float) #'print-complex))))
+      (pprint-logical-block (stream nil)
+        (print-unreadable-object (matrix stream :type t)
+          (format stream "~Dx~D of ~A:" rows cols type)
+          (dotimes (r rows)
+            ;(pprint-indent :block 4 stream)
+            (pprint-newline :mandatory stream)
+            (dotimes (c cols)
+              (funcall print-entry (ref matrix r c))
+              (unless (= c (1- cols))
+                (write-string "    " stream)))))))))
+
+(set-pprint-dispatch 'matrix 'pprint-matrix)
+
 (defun matrix-storage-size (v)
   "Compute the size (i.e., number of elements) of the matrix storage vector V."
   (declare (type matrix-storage v))
