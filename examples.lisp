@@ -22,6 +22,11 @@
 ;; have is vectors.  This should show you how the interface works, and
 ;; should make clear why we'd like another layer on top.
 
+(defun print-matrix (m)
+  (princ m)
+  (terpri)
+  (terpri))
+
 (defun dot (u v)
   (assert (= (length u) (length v)) (u v))
   (let ((n (length u)))

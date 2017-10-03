@@ -212,14 +212,6 @@
               new-value
               (coerce new-value type)))))
 
-(defun print-matrix (m)
-  "Print method for matrices."
-  (dotimes (i (matrix-rows m))
-    (dotimes (j (matrix-cols m))
-      (format t "~A " (ref m i j)))
-    (terpri))
-  (terpri))
-
 (defun multiply-complex-matrices (ma mb)
   "Multiplies two complex marices MA and MB, returning MA*MB. If MA is M x KA and MB is KB x N,
 it must be that KA = KB, and the resulting matrix is M x N."
