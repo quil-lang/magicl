@@ -37,7 +37,11 @@
   ;; replacement for MAKE-FNV-COMPLEX-DOUBLE
   (make-array n :element-type '(complex double-float) :initial-element #C(0.0d0 0.0d0)))
 
-(defstruct (matrix (:constructor %make-matrix (rows cols data)))
+(deftype lapack-type ()
+  "The data type symbols used in LAPACK."
+  `(member S D C Z))
+
+(defstruct (matrix (:constructor %make-matrix (rows cols data-type data)))
   "Representation of a dense matrix."
   (rows (error "Required argument")
    :type matrix-dimension
@@ -45,38 +49,11 @@
   (cols (error "Required argument")
    :type matrix-dimension
    :read-only t)
+  (data-type (error "Required argument")
+   :type lapack-type
+   :read-only t)
   (data (error "Required argument")
    :type matrix-storage))
-
-(defun pprint-matrix (stream matrix)
-  "Pretty-print a matrix MATRIX to the stream STREAM."
-  (flet ((print-real (x)
-           (format stream "~6,3f" x))
-         (print-complex (z)
-           (format stream "~6,3f ~:[+~;-~]~6,3fj"
-                   (realpart z)
-                   (minusp (imagpart z))
-                   (abs (imagpart z)))))
-    (let* ((rows (matrix-rows matrix))
-           (cols (matrix-cols matrix))
-           (type (array-element-type (matrix-data matrix)))
-           (print-entry (alexandria:eswitch (type :test 'equal)
-                          ('single-float #'print-real)
-                          ('double-float #'print-real)
-                          ('(complex single-float) #'print-complex)
-                          ('(complex double-float) #'print-complex))))
-      (pprint-logical-block (stream nil)
-        (print-unreadable-object (matrix stream :type t)
-          (format stream "~Dx~D of ~A:" rows cols type)
-          (dotimes (r rows)
-            ;(pprint-indent :block 4 stream)
-            (pprint-newline :mandatory stream)
-            (dotimes (c cols)
-              (funcall print-entry (ref matrix r c))
-              (unless (= c (1- cols))
-                (write-string "    " stream)))))))))
-
-(set-pprint-dispatch 'matrix 'pprint-matrix)
 
 (defun matrix-storage-size (v)
   "Compute the size (i.e., number of elements) of the matrix storage vector V."
@@ -93,7 +70,12 @@
           rows
           cols
           (matrix-storage-size data))
-  (%make-matrix rows cols data))
+  (let ((data-type (alexandria:eswitch ((array-element-type data) :test 'equal)
+                     ('single-float           'S)
+                     ('double-float           'D)
+                     ('(complex single-float) 'C)
+                     ('(complex double-float) 'Z))))
+    (%make-matrix rows cols data-type data)))
 
 (defun copy-matrix-storage (v)
   "Copy a matrix storage vector V suitable for the DATA slot on a MATRIX structure."
@@ -103,6 +85,33 @@
 (defun matrix-element-type (m)
   "Return the element type of the matrix M."
   (array-element-type (matrix-data m)))
+
+(defun pprint-matrix (stream matrix)
+  "Pretty-print a matrix MATRIX to the stream STREAM."
+  (flet ((print-real (x)
+           (format stream "~6,3f" x))
+         (print-complex (z)
+           (format stream "~6,3f ~:[+~;-~]~6,3fj"
+                   (realpart z)
+                   (minusp (imagpart z))
+                   (abs (imagpart z)))))
+    (let* ((rows (matrix-rows matrix))
+           (cols (matrix-cols matrix))
+           (type (matrix-data-type matrix))
+           (print-entry (ecase type
+                          ((S D) #'print-real)
+                          ((C Z) #'print-complex))))
+      (pprint-logical-block (stream nil)
+        (print-unreadable-object (matrix stream :type t)
+          (format stream "[~A] ~Dx~D:" (symbol-name type) rows cols)
+          (dotimes (r rows)
+            (pprint-newline :mandatory stream)
+            (dotimes (c cols)
+              (funcall print-entry (ref matrix r c))
+              (unless (= c (1- cols))
+                (write-string "    " stream)))))))))
+
+(set-pprint-dispatch 'matrix 'pprint-matrix)
 
 (defun make-complex-foreign-vector (&rest entries)
   "Makes a complex double FNV out ENTRIES, a list of complex numbers."

@@ -45,10 +45,15 @@
                     (#:expokit #:magicl.expokit-cffi))
   (:import-from #:magicl.foreign-libraries
                 #:print-availability-report)
-  (:export #:print-availability-report
+  (:export #:S #:D #:C #:Z              ; SYMBOLS
+           #:matrix                     ; TYPE, FUNCTION
+           #:make-matrix                ; FUNCTION
+           #:matrix-rows                ; READER
+           #:matrix-cols                ; READER
+           #:matrix-element-type        ; FUNCTION
+           #:print-availability-report
            #:with-blapack
            #:make-complex-matrix
-           #:print-matrix
            #:qr
            #:ql
            #:rq
@@ -57,10 +62,6 @@
            #:multiply-complex-matrices
            #:scale
            #:ref
-           #:make-matrix
-           #:matrix-rows
-           #:matrix-cols
-           #:matrix-data
            #:csd
            #:lapack-csd
            #:det
