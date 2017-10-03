@@ -17,23 +17,23 @@
   "Representation of a valid matrix index."
   `(integer 0 (,array-total-size-limit)))
 
-(defun make-lisp-int32 (n)
+(defun make-int32-storage (n)
   ;; replacement for MAKE-FNV-INT32
   (make-array n :element-type '(signed-byte 32) :initial-element 0))
 
-(defun make-lisp-float (n)
+(defun make-S-storage (n)
   ;; replacement for MAKE-FNV-FLOAT
   (make-array n :element-type 'single-float :initial-element 0.0f0))
 
-(defun make-lisp-double (n)
+(defun make-D-storage (n)
   ;; replacement for MAKE-FNV-DOUBLE
   (make-array n :element-type 'double-float :initial-element 0.0d0))
 
-(defun make-lisp-complex-float (n)
+(defun make-C-storage (n)
   ;; replacement for MAKE-FNV-COMPLEX-FLOAT
   (make-array n :element-type '(complex single-float) :initial-element #C(0.0f0 0.0f0)))
 
-(defun make-lisp-complex-double (n)
+(defun make-Z-storage (n)
   ;; replacement for MAKE-FNV-COMPLEX-DOUBLE
   (make-array n :element-type '(complex double-float) :initial-element #C(0.0d0 0.0d0)))
 
@@ -116,7 +116,7 @@
 (defun make-complex-foreign-vector (&rest entries)
   "Makes a complex double FNV out ENTRIES, a list of complex numbers."
   (let* ((len (length entries))
-         (v (make-lisp-complex-double len)))
+         (v (make-Z-storage len)))
     (loop :for i :below len
           :for e :in entries
           :do (setf (aref v i) (coerce e '(complex double-float)))
@@ -148,7 +148,7 @@
   (make-matrix
    :rows rows
    :cols cols
-   :data (make-lisp-complex-double (* rows cols))))
+   :data (make-Z-storage (* rows cols))))
 
 (defun diag (m n &rest entries)
   "Creates a matrix with ENTRIES along the diagonal"
@@ -235,7 +235,7 @@ it must be that KA = KB, and the resulting matrix is M x N."
               (let ((trans "N")
                     (alpha #C(1.0d0 0.0d0))
                     (beta #C(0.0d0 0.0d0))
-                    (y (make-lisp-complex-double (* m n))))
+                    (y (make-Z-storage (* m n))))
                 (magicl.blas-cffi::%zgemv trans m ka alpha a m b 1 beta y 1)
                 (make-matrix :rows m :cols n :data y)))
           ;; use matrix-matrix multiplication
@@ -243,7 +243,7 @@ it must be that KA = KB, and the resulting matrix is M x N."
                 (transb "N")
                 (alpha #C(1.0d0 0.0d0))
                 (beta #C(0.0d0 0.0d0))
-                (c (make-lisp-complex-double (* m n))))
+                (c (make-Z-storage (* m n))))
             (magicl.blas-cffi::%zgemm transa transb m n ka alpha a m b kb beta c m)
             (make-matrix :rows m :cols n :data c))))))
 
@@ -352,12 +352,12 @@ it must be that KA = KB, and the resulting matrix is M x N."
         (lwork -1)
         (info 0))
     (let ((lda rows)
-          (tau (make-lisp-complex-double (min rows cols)))
-          (work (make-lisp-complex-double (max 1 lwork))))
+          (tau (make-Z-storage (min rows cols)))
+          (work (make-Z-storage (max 1 lwork))))
       ;; run it once as a workspace query
       (funcall lapack-func rows cols a lda tau work lwork info)
       (setf lwork (round (realpart (aref work 0))))
-      (setf work (make-lisp-complex-double (max 1 lwork)))
+      (setf work (make-Z-storage (max 1 lwork)))
       ;; run it again with optimal workspace size
       (funcall lapack-func rows cols a lda tau work lwork info)
       (values a tau))))
@@ -402,11 +402,11 @@ it must be that KA = KB, and the resulting matrix is M x N."
         (lwork -1)
         (info 0))
     (let ((lda m)
-          (work (make-lisp-complex-double (max 1 lwork))))
+          (work (make-Z-storage (max 1 lwork))))
       ;; run it once as a workspace query
       (funcall lapack-func m n k a lda tau work lwork info)
       (setf lwork (round (realpart (aref work 0))))
-      (setf work (make-lisp-complex-double (max 1 lwork)))
+      (setf work (make-Z-storage (max 1 lwork)))
       ;; run it again with optimal workspace size
       (funcall lapack-func m n k a lda tau work lwork info)
       (make-matrix :rows m :cols n :data a))))
@@ -418,11 +418,11 @@ it must be that KA = KB, and the resulting matrix is M x N."
         (lwork -1)
         (info 0))
     (let ((lda m)
-          (work (make-lisp-complex-double (max 1 lwork))))
+          (work (make-Z-storage (max 1 lwork))))
       ;; run it once as a workspace query
       (magicl.lapack-cffi::%zungqr m n k a lda tau work lwork info)
       (setf lwork (truncate (realpart (aref work 0))))
-      (setf work (make-lisp-complex-double (max 1 lwork)))
+      (setf work (make-Z-storage (max 1 lwork)))
       ;; run it again with optimal workspace size
       (magicl.lapack-cffi::%zungqr m n k a lda tau work lwork info)
       (make-matrix :rows m :cols n :data a))))
@@ -437,23 +437,23 @@ it must be that KA = KB, and the resulting matrix is M x N."
         (lwork -1)
         (info 0))
     (let ((lda rows)
-          (s (make-lisp-double (min rows cols)))
+          (s (make-D-storage (min rows cols)))
           (ldu rows)
           (ldvt cols)
-          (work1 (make-lisp-complex-double (max 1 lwork)))
+          (work1 (make-Z-storage (max 1 lwork)))
           (work nil)
-          (rwork (make-lisp-double (* 5 (min rows cols)))))
-      (let ((u (make-lisp-complex-double (* ldu rows)))
-            (vt (make-lisp-complex-double (* ldvt cols))))
+          (rwork (make-D-storage (* 5 (min rows cols)))))
+      (let ((u (make-Z-storage (* ldu rows)))
+            (vt (make-Z-storage (* ldvt cols))))
         ;; run it once as a workspace query
         (magicl.lapack-cffi::%zgesvd jobu jobvt rows cols a lda s u ldu vt ldvt
                                      work1 lwork rwork info)
         (setf lwork (round (realpart (aref work1 0))))
-        (setf work (make-lisp-complex-double (max 1 lwork)))
+        (setf work (make-Z-storage (max 1 lwork)))
         ;; run it again with optimal workspace size
         (magicl.lapack-cffi::%zgesvd jobu jobvt rows cols a lda s u ldu vt ldvt
                                      work lwork rwork info)
-        (let ((smat (make-lisp-double (* rows cols))))
+        (let ((smat (make-D-storage (* rows cols))))
           (dotimes (i (min rows cols))
             (setf (aref smat (column-major-index rows i i))
                   (aref s i)))
@@ -469,7 +469,7 @@ it must be that KA = KB, and the resulting matrix is M x N."
     (assert (<= 0 cmin cmax cols) () "Invalid column indices")
     (let* ((sliced-rows (- rmax rmin))
            (sliced-cols (- cmax cmin))
-           (v (make-lisp-complex-double (* sliced-rows sliced-cols))))
+           (v (make-Z-storage (* sliced-rows sliced-cols))))
       (dotimes (j sliced-cols)
         (dotimes (i sliced-rows)
           (setf (aref v (+ (* j sliced-rows) i)) ; TODO: use COLUMN-MAJOR-INDEX
@@ -551,9 +551,9 @@ with upper left block with dimension P-by-Q. Returns the intermediate representa
           (ldv1t q)
           (ldv2t (- m q))
           (lwork -1)
-          (work (make-lisp-complex-double 1))
+          (work (make-Z-storage 1))
           (lrwork -1)
-          (rwork (make-lisp-double 1))
+          (rwork (make-D-storage 1))
           (info 0))
       ;; rather than slice up matrix, use full array with pointers to head of blocks
       ;;
@@ -565,12 +565,12 @@ with upper left block with dimension P-by-Q. Returns the intermediate representa
               (x12 (ptr-ref xcopy xcopy-ptr 0 q))
               (x21 (ptr-ref xcopy xcopy-ptr p 0))
               (x22 (ptr-ref xcopy xcopy-ptr p q))
-              (theta (make-lisp-double r))
-              (u1 (make-lisp-complex-double (* ldu1 p)))
-              (u2 (make-lisp-complex-double (* ldu2 (- m p))))
-              (v1t (make-lisp-complex-double (* ldv1t q)))
-              (v2t (make-lisp-complex-double (* ldv2t (- m q))))
-              (iwork (make-lisp-int32 (- m r))))
+              (theta (make-D-storage r))
+              (u1 (make-Z-storage (* ldu1 p)))
+              (u2 (make-Z-storage (* ldu2 (- m p))))
+              (v1t (make-Z-storage (* ldv1t q)))
+              (v2t (make-Z-storage (* ldv2t (- m q))))
+              (iwork (make-int32-storage (- m r))))
           ;; run it once as a workspace query
 
           (%ZUNCSD-XPOINTERS jobu1 jobu2 jobv1t jobv2t
@@ -579,9 +579,9 @@ with upper left block with dimension P-by-Q. Returns the intermediate representa
                              theta u1 ldu1 u2 ldu2 v1t ldv1t v2t ldv2t
                              work lwork rwork lrwork iwork info)
           (setf lwork (truncate (realpart (row-major-aref work 0))))
-          (setf work (make-lisp-complex-double (max 1 lwork)))
+          (setf work (make-Z-storage (max 1 lwork)))
           (setf lrwork (truncate (row-major-aref rwork 0)))
-          (setf rwork (make-lisp-double (max 1 lrwork)))
+          (setf rwork (make-D-storage (max 1 lrwork)))
           ;; run it again with optimal workspace size
           (%ZUNCSD-XPOINTERS jobu1 jobu2 jobv1t jobv2t
                              trans signs m p q
@@ -668,7 +668,7 @@ with upper left block with dimension P-by-Q. Returns the intermediate representa
         (a (copy-matrix-storage (matrix-data m)))
         (info 0))
     (let ((lda rows)
-          (ipiv (make-lisp-int32 (min rows cols))))
+          (ipiv (make-int32-storage (min rows cols))))
       (magicl.lapack-cffi::%zgetrf rows cols a lda ipiv info)
       (values a ipiv))))
 
@@ -694,12 +694,12 @@ with upper left block with dimension P-by-Q. Returns the intermediate representa
     (multiple-value-bind (a ipiv) (lapack-lu m)
       (let ((lda rows)
             (lwork -1)
-            (work (make-lisp-complex-double 1))
+            (work (make-Z-storage 1))
             (info 0))
         ;; run it once as a workspace query
         (magicl.lapack-cffi::%zgetri rows a lda ipiv work lwork info)
         (setf lwork (truncate (realpart (row-major-aref work 0))))
-        (setf work (make-lisp-complex-double (max 1 lwork)))
+        (setf work (make-Z-storage (max 1 lwork)))
         ;; run it again with optimal workspace size
         (magicl.lapack-cffi::%zgetri rows a lda ipiv work lwork info)
         (values (make-matrix :rows rows :cols cols :data a))))))
@@ -714,8 +714,8 @@ with upper left block with dimension P-by-Q. Returns the intermediate representa
         (ns 0)
         (iflag 0))
     (let ((lwsp (+ (* 4 rows rows) ideg 1))
-          (ipiv (make-lisp-int32 rows)))
-      (let ((wsp (make-lisp-complex-double lwsp)))
+          (ipiv (make-int32-storage rows)))
+      (let ((wsp (make-Z-storage lwsp)))
         ;; Requires direct foreign function call due to need to access a pointer
         ;; to an integer (IEXPH).
         (CFFI:WITH-FOREIGN-OBJECTS ((IDEG-REF103 ':INT32) (M-REF104 ':INT32)
@@ -739,7 +739,7 @@ with upper left block with dimension P-by-Q. Returns the intermediate representa
                                            IPIV-ptr
                                            IEXPH-REF111 NS-REF112 IFLAG-REF113))
           (setf iexph (CFFI:MEM-REF IEXPH-REF111 :INT32)))
-        (let ((exph (make-lisp-complex-double (* rows rows))))
+        (let ((exph (make-Z-storage (* rows rows))))
           (dotimes (i (* rows rows))
             (setf (row-major-aref exph i)
                   (row-major-aref wsp (+ i (1- iexph)))))
@@ -753,17 +753,17 @@ with upper left block with dimension P-by-Q. Returns the intermediate representa
     (let ((jobvl "N")
           (jobvr "V")
           (a (copy-matrix-storage (matrix-data m)))
-          (w (make-lisp-complex-double rows))
-          (vl (make-lisp-complex-double rows))
-          (vr (make-lisp-complex-double (* rows rows)))
+          (w (make-Z-storage rows))
+          (vl (make-Z-storage rows))
+          (vr (make-Z-storage (* rows rows)))
           (lwork -1)
-          (rwork (make-lisp-double (* 2 rows)))
+          (rwork (make-D-storage (* 2 rows)))
           (info 0))
-      (let ((work (make-lisp-complex-double (max 1 lwork))))
+      (let ((work (make-Z-storage (max 1 lwork))))
         ;; run it once as a workspace query
         (magicl.lapack-cffi::%zgeev jobvl jobvr rows a rows w vl 1 vr rows work lwork rwork info)
         (setf lwork (truncate (realpart (row-major-aref work 0))))
-        (setf work (make-lisp-complex-double (max 1 lwork)))
+        (setf work (make-Z-storage (max 1 lwork)))
         ;; run it again with optimal workspace size
         (magicl.lapack-cffi::%zgeev jobvl jobvr rows a rows w vl 1 vr rows work lwork rwork info)
         (values (vector-to-list w) (make-matrix :rows rows :cols cols :data vr))))))

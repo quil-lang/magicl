@@ -16,12 +16,6 @@
 
 (in-package #:magicl-examples)
 
-;; This is a demonstration of the features of the CL blapack
-;; interface.  We are working with BLAS/LAPACK (henceforth blapack) at
-;; the FORTRAN level, so there are no such things as matrices.  All we
-;; have is vectors.  This should show you how the interface works, and
-;; should make clear why we'd like another layer on top.
-
 (defun print-matrix (m)
   (princ m)
   (terpri)
@@ -42,8 +36,8 @@
          1)))))
 
 (defun dot-example ()
-  (let ((a (magicl::make-lisp-complex-float 4))
-        (b (magicl::make-lisp-complex-float 4)))
+  (let ((a (magicl::make-C-storage 4))
+        (b (magicl::make-C-storage 4)))
     (dotimes (i 4)
       (setf (aref a i) #C(1.0f0 0.0f0)
             (aref b i) #C(2.0f0 0.0f0)))
@@ -59,33 +53,33 @@
 
     ;; BLAS/LAPACK expects column major order, we are creating the
     ;; (matlab notation) matrix M = [1 2; 2 3].
-    (let ((M (magicl::make-lisp-double 4)))
+    (let ((M (magicl::make-D-storage 4)))
       (setf (aref M 0) 1.0d0
             (aref M 1) 2.0d0
             (aref M 2) 2.0d0
             (aref M 3) 3.0d0)
 
-      (let ((V (magicl::make-lisp-double 4))
-            (D (magicl::make-lisp-double 2))
+      (let ((V (magicl::make-D-storage 4))
+            (D (magicl::make-D-storage 2))
             (lwork 4096)
             (liwork 4096)
             (info 0)
             (eigs-found 0))
 
         (lapack:%dsyevr "V" "A" "U" 2 (magicl::copy-matrix-storage M) 2 0.0d0 0.0d0
-                        0 0 -1.0d0  eigs-found D V 2 (magicl::make-lisp-int32 4)
-                        (magicl::make-lisp-double lwork) lwork
-                        (magicl::make-lisp-int32 liwork) liwork
+                        0 0 -1.0d0  eigs-found D V 2 (magicl::make-int32-storage 4)
+                        (magicl::make-D-storage lwork) lwork
+                        (magicl::make-int32-storage liwork) liwork
                         info)
         (format t "M = ~A~%V=~A~%D=~A~%~%" M V D)
 
         ;; Construct a "matlab-style D" --- is there a better way?
-        (let ((Df (magicl::make-lisp-double 4)))
+        (let ((Df (magicl::make-D-storage 4)))
           (setf (aref Df 0) (aref D 0)
                 (aref Df 3) (aref D 1))
           ;; Reconstruct M as V*Df*V';
-          (let ((Mri (magicl::make-lisp-double 4))
-                (Mr (magicl::make-lisp-double 4)))
+          (let ((Mri (magicl::make-D-storage 4))
+                (Mr (magicl::make-D-storage 4)))
             (blas:%dgemm "N" "N" 2 2 2 1.0d0 V 2 Df 2 0.0d0 Mri 2)
             (blas:%dgemm "N" "T" 2 2 2 1.0d0 Mri 2 V 2 0.0d0 Mr 2)
             (format t "Reconstructed M = ~A~%" Mr)))))))
@@ -166,7 +160,7 @@
   (multiple-value-bind (u sigma vt) (svd a)
     (let* ((rows (matrix-rows a))
            (cols (matrix-cols a))
-           (complex-sigma (magicl::make-lisp-complex-double (* rows cols))))
+           (complex-sigma (magicl::make-Z-storage (* rows cols))))
         (dotimes (j cols)
           (dotimes (i rows)
             ;; TODO: COLUMN-MAJOR-INDEX
