@@ -37,9 +37,35 @@
   ;; replacement for MAKE-FNV-COMPLEX-DOUBLE
   (make-array n :element-type '(complex double-float) :initial-element #C(0.0d0 0.0d0)))
 
-(deftype lapack-type ()
+(deftype lapack-data-type ()
   "The data type symbols used in LAPACK."
   `(member S D C Z))
+
+(deftype lapack-storage-type ()
+  "The storage type of the data for LAPACK."
+  `(member
+    ;; general
+    ge gb gt gg
+    ;; symmetric
+    sy sb sp st
+    ;; Hermitian
+    he hb hp
+    ;; SPD / HPD
+    po pb pp pt
+    ;; triangular
+    tr tb tp tg
+    ;; upper Hessenberg
+    hs hg
+    ;; trapezoidal
+    tz
+    ;; orthogonal
+    or op
+    ;; unitary
+    un up
+    ;; diagonal
+    di
+    ;; bidiagonal
+    bd))
 
 (defstruct (matrix (:constructor %make-matrix (rows cols data-type data)))
   "Representation of a dense matrix."
@@ -50,10 +76,14 @@
    :type matrix-dimension
    :read-only t)
   (data-type (error "Required argument")
-   :type lapack-type
+   :type lapack-data-type
+   :read-only t)
+  (storage-type 'ge
+   :type lapack-storage-type
    :read-only t)
   (data (error "Required argument")
-   :type matrix-storage))
+   :type matrix-storage
+   :read-only t))
 
 (defun matrix-storage-size (v)
   "Compute the size (i.e., number of elements) of the matrix storage vector V."
