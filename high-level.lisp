@@ -18,23 +18,18 @@
   `(integer 0 (,array-total-size-limit)))
 
 (defun make-int32-storage (n)
-  ;; replacement for MAKE-FNV-INT32
   (make-array n :element-type '(signed-byte 32) :initial-element 0))
 
 (defun make-S-storage (n)
-  ;; replacement for MAKE-FNV-FLOAT
   (make-array n :element-type 'single-float :initial-element 0.0f0))
 
 (defun make-D-storage (n)
-  ;; replacement for MAKE-FNV-DOUBLE
   (make-array n :element-type 'double-float :initial-element 0.0d0))
 
 (defun make-C-storage (n)
-  ;; replacement for MAKE-FNV-COMPLEX-FLOAT
   (make-array n :element-type '(complex single-float) :initial-element #C(0.0f0 0.0f0)))
 
 (defun make-Z-storage (n)
-  ;; replacement for MAKE-FNV-COMPLEX-DOUBLE
   (make-array n :element-type '(complex double-float) :initial-element #C(0.0d0 0.0d0)))
 
 (deftype lapack-data-type ()

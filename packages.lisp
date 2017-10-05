@@ -51,6 +51,7 @@
            #:matrix-rows                ; READER
            #:matrix-cols                ; READER
            #:matrix-element-type        ; FUNCTION
+           #:make-zero-matrix           ; FUNCTION
            #:print-availability-report
            #:with-blapack
            #:make-complex-matrix
