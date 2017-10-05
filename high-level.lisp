@@ -277,6 +277,24 @@ it must be that KA = KB, and the resulting matrix is M x N."
             (magicl.blas-cffi::%zgemm transa transb m n ka alpha a m b kb beta c m)
             (make-matrix :rows m :cols n :data c))))))
 
+(defun transpose (m)
+  "Computes the transpose of the matrix M."
+  (check-type m matrix)
+  (let ((mT (make-zero-matrix (matrix-cols m)
+                              (matrix-rows m))))
+    (dotimes (i (matrix-rows m) mT)
+      (dotimes (j (matrix-cols m))
+        (setf (ref mT j i) (ref m i j))))))
+
+(defun conjugate-transpose (m)
+  "Computes the conjugate transpose of the matrix M."
+  (check-type m matrix)
+  (let ((mT (make-zero-matrix (matrix-cols m)
+                              (matrix-rows m))))
+    (dotimes (i (matrix-rows m) mT)
+      (dotimes (j (matrix-cols m))
+        (setf (ref mT j i) (conjugate (ref m i j)))))))
+
 (defun scale (alpha x)
   "Scale a complex double matrix X by a complex double ALPHA, i.e. return ALPHA*X."
   (let* ((zx (copy-matrix-storage (matrix-data x)))

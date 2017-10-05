@@ -55,6 +55,8 @@
            #:print-availability-report
            #:with-blapack
            #:make-complex-matrix
+           #:transpose
+           #:conjugate-transpose
            #:qr
            #:ql
            #:rq
