@@ -80,6 +80,11 @@
    :type matrix-storage
    :read-only t))
 
+;; Allow MATRIX objects to be dumped.
+(defmethod make-load-form ((object matrix) &optional environment)
+  (make-load-form-saving-slots object :slot-names '(rows cols data-type storage-type data)
+                                      :environment environment))
+
 (defun matrix-storage-size (v)
   "Compute the size (i.e., number of elements) of the matrix storage vector V."
   (declare (type matrix-storage v))
