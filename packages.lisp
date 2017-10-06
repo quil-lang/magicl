@@ -45,7 +45,8 @@
                     (#:expokit #:magicl.expokit-cffi))
   (:import-from #:magicl.foreign-libraries
                 #:print-availability-report)
-  (:export #:S #:D #:C #:Z              ; SYMBOLS
+  (:export #:*type-strictness*          ; VARIABLE
+           #:S #:D #:C #:Z              ; SYMBOLS
            #:matrix                     ; TYPE, FUNCTION
            #:make-matrix                ; FUNCTION
            #:matrix-rows                ; READER
