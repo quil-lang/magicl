@@ -23,6 +23,7 @@
    (:file "lapack-cffi")
    (:file "expokit-cffi")
    (:file "high-level")
+   (:file "random")
    (:file "magicl")))
 
 #+#:ignore

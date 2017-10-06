@@ -52,6 +52,8 @@
            #:matrix-cols                ; READER
            #:matrix-element-type        ; FUNCTION
            #:make-zero-matrix           ; FUNCTION
+           #:tabulate                   ; FUNCTION
+           #:make-identity-matrix       ; FUNCTION
            #:print-availability-report
            #:with-blapack
            #:make-complex-matrix
@@ -70,5 +72,11 @@
            #:det
            #:inv
            #:diag
+           #:matrix-diagonal
            #:expm
-           #:eig))
+           #:eig)
+
+  ;; random.lisp
+  (:export #:random-matrix              ; FUNCTION
+           #:random-unitary             ; FUNCTION
+           ))

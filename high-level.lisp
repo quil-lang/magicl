@@ -180,6 +180,17 @@
    :cols cols
    :data (make-Z-storage (* rows cols))))
 
+(defun tabulate (rows cols f)
+  "Generate a matrix of ROWS x COLS by calling the function F(i, j) for 0 <= i < ROWS and 0 <= j < COLS."
+  (let ((m (make-zero-matrix rows cols)))
+    (dotimes (c cols m)
+      (dotimes (r rows)
+        (setf (ref m r c) (funcall f r c))))))
+
+(defun make-identity-matrix (dimension)
+  "Make an identity matrix of dimension DIMENSION."
+  (tabulate dimension dimension (lambda (i j) (if (= i j) 1 0))))
+
 (defun diag (m n &rest entries)
   "Creates a matrix with ENTRIES along the diagonal"
   (let ((entries-size (length entries))
@@ -189,6 +200,11 @@
     (let ((mat (make-zero-matrix m n)))
       (dotimes (i entries-size mat)
         (setf (ref mat i i) (nth i entries))))))
+
+(defun matrix-diagonal (m)
+  "Get the diagonal elements of the matrix M as a list."
+  (loop :for i :below (min (matrix-rows m) (matrix-cols m))
+        :collect (ref m i i)))
 
 (declaim (inline column-major-index)
          (ftype (function (matrix-dimension matrix-index matrix-index) matrix-index)
