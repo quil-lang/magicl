@@ -78,5 +78,6 @@
 
   ;; random.lisp
   (:export #:random-matrix              ; FUNCTION
+           #:random-gaussian-matrix     ; FUNCTION
            #:random-unitary             ; FUNCTION
            ))
