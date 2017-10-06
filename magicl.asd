@@ -5,7 +5,8 @@
 (asdf:defsystem #:magicl
   :license "BSD 3-Clause (See LICENSE.txt)"
   :maintainer "Rigetti Computing"
-  :depends-on (#:cffi
+  :depends-on (#:alexandria
+               #:cffi
                #:cffi-libffi)
   :in-order-to ((asdf:test-op (asdf:test-op #:magicl-tests)))
   :serial t
