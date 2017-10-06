@@ -180,12 +180,51 @@
    :cols cols
    :data (make-Z-storage (* rows cols))))
 
+(defun square-matrix-p (m)
+  "Is M a square matrix?"
+  (= (matrix-rows m)
+     (matrix-cols m)))
+
+(defparameter *default-zero-comparison-epsilon* 1d-10
+  "The default absolute radius about zero considered to still be zero.")
+
+(defun identityp (m)
+  "Is the matrix M an identity matrix up to the epsilon *DEFAULT-ZERO-COMPARISON-EPSILON*?"
+  ;; Sorry, this function is a little bit convoluted.
+  (flet ((within-epsilon (z)
+           (<= (abs z) *default-zero-comparison-epsilon*)))
+    (and (square-matrix-p m)
+         (progn
+           (map-indexes (matrix-rows m)
+                        (matrix-cols m)
+                        (lambda (r c)
+                          (cond
+                            ;; Diagonal is 1.
+                            ((= r c)
+                             (when (not (within-epsilon (- 1.0d0 (ref m r c))))
+                               (return-from identityp nil)))
+                            ;; Everything else is 0.
+                            ((not (within-epsilon (ref m r c)))
+                             (return-from identityp nil)))))
+           t))))
+
+(defun unitaryp (m)
+  "Is the matrix M is unitary up to the epsilon *DEFAULT-ZERO-COMPARISON-EPSILON*."
+  (if (numberp m)
+      (<= (abs (- 1.0 (abs m))) *default-zero-comparison-epsilon*)
+      (identityp (multiply-complex-matrices m (conjugate-transpose m)))))
+
+(defun map-indexes (rows cols f)
+  "Map the binary function F(i, j) across all matrix indexes 0 <= i < ROWS and 0 <= j < COLS. Return NIL."
+  (dotimes (c cols)
+    (dotimes (r rows)
+      (funcall f r c))))
+
 (defun tabulate (rows cols f)
   "Generate a matrix of ROWS x COLS by calling the function F(i, j) for 0 <= i < ROWS and 0 <= j < COLS."
   (let ((m (make-zero-matrix rows cols)))
-    (dotimes (c cols m)
-      (dotimes (r rows)
-        (setf (ref m r c) (funcall f r c))))))
+    (map-indexes rows cols (lambda (r c) (setf (ref m r c) (funcall f r c))))
+    m))
 
 (defun make-identity-matrix (dimension)
   "Make an identity matrix of dimension DIMENSION."

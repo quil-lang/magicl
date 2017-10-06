@@ -52,6 +52,10 @@
            #:matrix-cols                ; READER
            #:matrix-element-type        ; FUNCTION
            #:make-zero-matrix           ; FUNCTION
+           #:square-matrix-p            ; FUNCTION
+           #:identityp                  ; FUNCTION
+           #:unitaryp                   ; FUNCTION
+           #:map-indexes                ; FUNCTION
            #:tabulate                   ; FUNCTION
            #:make-identity-matrix       ; FUNCTION
            #:print-availability-report
