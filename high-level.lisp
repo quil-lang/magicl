@@ -315,7 +315,7 @@ it must be that KA = KB, and the resulting matrix is M x N."
           (if (= m 1)
               ;; ma is a row vector
               ;; use dot product
-              (magicl.blas-cffi::%zdotu ka a 1 b 1)
+              (make-complex-matrix 1 1 (magicl.blas-cffi::%zdotu ka a 1 b 1))
               ;; use matrix-vector multiplication
               (let ((trans "N")
                     (alpha #C(1.0d0 0.0d0))
