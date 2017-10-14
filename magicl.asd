@@ -5,6 +5,7 @@
 (asdf:defsystem #:magicl
   :license "BSD 3-Clause (See LICENSE.txt)"
   :maintainer "Rigetti Computing"
+  :version (:read-file-form "VERSION.txt")
   :depends-on (#:alexandria
                #:cffi
                #:cffi-libffi)
