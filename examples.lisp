@@ -85,23 +85,23 @@
             (format t "Reconstructed M = ~A~%" Mr)))))))
 
 (defun qr-example ()
-  (let ((a (make-complex-matrix 3 2 #C(1 2) #C(-4 3) #C(-3 -3) #C(9 2) 4 #C(0 -2.9d0))))
+  (let ((a (make-complex-matrix 3 2 '(#C(1 2) #C(-4 3) #C(-3 -3) #C(9 2) 4 #C(0 -2.9d0)))))
     (qr-printing a)))
 
 (defun ql-example ()
-  (let ((a (make-complex-matrix 3 2 #C(1 2) #C(-4 3) #C(-3 -3) #C(9 2) 4 #C(0 -2.9d0))))
+  (let ((a (make-complex-matrix 3 2 '(#C(1 2) #C(-4 3) #C(-3 -3) #C(9 2) 4 #C(0 -2.9d0)))))
     (ql-printing a)))
 
 (defun rq-example ()
-  (let ((a (make-complex-matrix 2 3 #C(1 2) #C(-4 3) #C(-3 -3) #C(9 2) 4 #C(0 -2.9d0))))
+  (let ((a (make-complex-matrix 2 3 '(#C(1 2) #C(-4 3) #C(-3 -3) #C(9 2) 4 #C(0 -2.9d0)))))
     (rq-printing a)))
 
 (defun lq-example ()
-  (let ((a (make-complex-matrix 2 3 #C(1 2) #C(-4 3) #C(-3 -3) #C(9 2) 4 #C(0 -2.9d0))))
+  (let ((a (make-complex-matrix 2 3 '(#C(1 2) #C(-4 3) #C(-3 -3) #C(9 2) 4 #C(0 -2.9d0)))))
     (lq-printing a)))
 
 (defun svd-example ()
-  (let ((a (make-complex-matrix 3 2 #C(1 2) #C(-4 3) #C(-3 -3) #C(9 2) 4 #C(0 -2.9d0))))
+  (let ((a (make-complex-matrix 3 2 '(#C(1 2) #C(-4 3) #C(-3 -3) #C(9 2) 4 #C(0 -2.9d0)))))
     (svd-printing a)))
 
 (defun qr-printing (a)
@@ -184,7 +184,7 @@
           (print-matrix a-reconst)))))
 
 (defun csd-example ()
-  (let ((x (make-complex-matrix 2 2 -0.894288 #C(-0.372336 -0.248224) #C(0.372336 -0.248224) -0.894288)))
+  (let ((x (make-complex-matrix 2 2 (list -0.894288 #C(-0.372336 -0.248224) #C(0.372336 -0.248224) -0.894288))))
     (csd-printing x 1 1)))
 
 (defun csd-printing (x p q)
@@ -203,14 +203,14 @@
       (print-matrix x-reconst))))
 
 (defun det-example ()
-  (let* ((x (make-complex-matrix 3 3 2 3 5 #C(1.5 -2) -3 1.5 #C(0 2) 0 #C(0 -3)))
+  (let* ((x (make-complex-matrix 3 3 (list 2 3 5 #C(1.5 -2) -3 1.5 #C(0 2) 0 #C(0 -3))))
          (d (det x)))
     (format t "X~%")
     (print-matrix x)
     (format t "det(X) = ~D~%" d)))
 
 (defun inv-example ()
-  (let* ((x (make-complex-matrix 3 3 2 3 5 #C(1.5 -2) -3 1.5 #C(0 2) 0 #C(0 -3)))
+  (let* ((x (make-complex-matrix 3 3 (list 2 3 5 #C(1.5 -2) -3 1.5 #C(0 2) 0 #C(0 -3))))
          (inv-x (inv x))
          (id (multiply-complex-matrices x inv-x)))
     (format t "X~%")
@@ -221,7 +221,7 @@
     (print-matrix id)))
 
 (defun expm-example ()
-  (let* ((x  (make-complex-matrix 4 4 0 0 0 0 0 0 1.5 0 0 -1.5 0 0.5 0 0 -0.5 0))
+  (let* ((x  (make-complex-matrix 4 4 (list 0 0 0 0 0 0 1.5 0 0 -1.5 0 0.5 0 0 -0.5 0)))
          (expx (expm x))
          (d (det expx)))
     (format t "X~%")
@@ -234,7 +234,7 @@
   (multiple-value-bind (vals vects)
       (eig m)
     (let* ((rows (matrix-rows m))
-           (val-diag (apply #'diag rows rows vals)))
+           (val-diag (funcall #'diag rows rows vals)))
       (format t "M~%")
       (print-matrix m)
       (format t "Eigenvalues LAMBDA~%")
@@ -247,7 +247,7 @@
       (print-matrix (multiply-complex-matrices vects val-diag)))))
 
 (defun eig-example ()
-  (let ((m (make-complex-matrix 3 3 -2 -1 1 -2 1 1 -9 -3 4)))
+  (let ((m (make-complex-matrix 3 3 (list -2 -1 1 -2 1 1 -9 -3 4))))
     (eig-printing m)))
 
 (defun all-examples ()

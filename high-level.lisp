@@ -143,7 +143,7 @@
 
 (set-pprint-dispatch 'matrix 'pprint-matrix)
 
-(defun make-complex-foreign-vector (&rest entries)
+(defun make-complex-foreign-vector (entries)
   "Makes a complex double FNV out ENTRIES, a list of complex numbers."
   (let* ((len (length entries))
          (v (make-Z-storage len)))
@@ -156,11 +156,11 @@
   "Make a list from a fnv."
   (coerce v 'list))
 
-(defun make-complex-vector (&rest entries)
+(defun make-complex-vector (entries)
   "Makes a complex column vector out of ENTRIES, a list of complex numbers."
-  (apply #'make-complex-matrix (length entries) 1 entries))
+  (funcall #'make-complex-matrix (length entries) 1 entries))
 
-(defun make-complex-matrix (m n &rest entries)
+(defun make-complex-matrix (m n entries)
   "Makes an M-by-N matrix assuming ENTRIES is a list of complex numbers in column major order."
   (check-type m matrix-dimension)
   (check-type n matrix-dimension)
@@ -172,7 +172,7 @@
             entries-size m n expected-size)
     (make-matrix :rows m
                  :cols n
-                 :data (apply #'make-complex-foreign-vector entries))))
+                 :data (funcall #'make-complex-foreign-vector entries))))
 
 (defun make-zero-matrix (rows cols)
   (make-matrix
@@ -230,7 +230,7 @@
   "Make an identity matrix of dimension DIMENSION."
   (tabulate dimension dimension (lambda (i j) (if (= i j) 1 0))))
 
-(defun diag (m n &rest entries)
+(defun diag (m n entries)
   "Creates a matrix with ENTRIES along the diagonal"
   (let ((entries-size (length entries))
         (expected-size (min m n)))
@@ -315,7 +315,7 @@ it must be that KA = KB, and the resulting matrix is M x N."
           (if (= m 1)
               ;; ma is a row vector
               ;; use dot product
-              (make-complex-matrix 1 1 (magicl.blas-cffi::%zdotu ka a 1 b 1))
+              (make-complex-matrix 1 1 (list (magicl.blas-cffi::%zdotu ka a 1 b 1)))
               ;; use matrix-vector multiplication
               (let ((trans "N")
                     (alpha #C(1.0d0 0.0d0))

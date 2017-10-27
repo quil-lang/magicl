@@ -23,7 +23,8 @@
 
 (defun random-unitary (n)
   "Generate a uniformly random element of U(n)."
+  (declare (optimize (speed 0) (debug 3)))
   (multiple-value-bind (q r) (qr (random-gaussian-matrix n n))
     (let ((d (matrix-diagonal r)))
       (map-into d (lambda (di) (/ di (sqrt (* di (conjugate di))))) d)
-      (multiply-complex-matrices q (apply #'diag n n d)))))
+      (multiply-complex-matrices q (funcall #'diag n n d)))))
