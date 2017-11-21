@@ -879,6 +879,3 @@ with upper left block with dimension P-by-Q. Returns the intermediate representa
 	     (let ((log-vals (loop for val in vals collect (log val))))
 	       (tabulate (matrix-cols m) (matrix-rows m)  (lambda (i j) (if (= i j) (nth i log-vals) 0))))))
        (multiply-complex-matrices (inv vects) (multiply-complex-matrices new-log-diag vects)))))
-
-;; Return the eigenvectors
-;;(let ((x (magicl:make-complex-matrix 3 3 (list 2 3 5 #C(1.5 -2) -3 1.5 #C(0 2) 0 #C(0 -3))))) (multiple-value-bind (vals vec;;s) (magicl:eig x) (loop for i from 0 to (magicl:matrix-rows vecs) for j from 0 to (magicl:matrix-cols vecs) collect (magicl:;;ref vecs i j))))
