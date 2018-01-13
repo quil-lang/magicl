@@ -873,9 +873,7 @@ with upper left block with dimension P-by-Q. Returns the intermediate representa
 
 (defun logm (m)
   "Finds the matrix logarithm of a given square matrix M assumed to be diagonalizable, with nonzero eigenvalues"
-   (multiple-value-bind (vals vects)
-       (funcall #'eig m)
-     (let ((new-log-diag 
-	     (let ((log-vals (loop for val in vals collect (log val))))
-	       (tabulate (matrix-cols m) (matrix-rows m)  (lambda (i j) (if (= i j) (nth i log-vals) 0))))))
-       (multiply-complex-matrices (inv vects) (multiply-complex-matrices new-log-diag vects)))))
+  (multiple-value-bind (vals vects) (eig m)
+    (let ((new-log-diag
+            (let ((log-vals (mapcar #'log vals))) (diag (matrix-cols m) (matrix-rows m) log-vals))))
+      (multiply-complex-matrices vects (multiply-complex-matrices new-log-diag (inv vects))))))

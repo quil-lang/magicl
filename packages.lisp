@@ -80,7 +80,7 @@
            #:matrix-diagonal
            #:expm
            #:eig
-	   #:logm
+           #:logm
 	   )
 
   ;; random.lisp

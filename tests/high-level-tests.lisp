@@ -27,9 +27,9 @@
 
 (deftest test-logm ()
   "Check that the matrix logarithm is the inverse of the matrix exponential"
-  (let* ((x (magicl:make-complex-matrix 3 3 (list #C(1.0f0 0.0f0) 0 0 0 #C(1.0f0 1.1f0) 0 0 0 #C(2.0f0 0.1f0))))
-	 (eps .00001f0))
+  (let ((x (magicl:random-unitary 4)))
     (loop :for i :from 0 :to (1- (magicl:matrix-cols x))
 	  :for j :from 0 :to (1- (magicl:matrix-rows x))
-	  :collect (let ((diff (- (magicl:ref x i j) (magicl:ref (magicl:logm (magicl:expm x)) i j))))
-			(is (and (< (realpart diff) eps) (< (imagpart diff) eps)))))))
+	  :do (let  ((diff (- (magicl:ref x i j) (magicl:ref (magicl:expm (magicl:logm x)) i j)))
+                      (eps .00001f0))
+                (is (< (abs diff) eps))))))
