@@ -870,3 +870,10 @@ with upper left block with dimension P-by-Q. Returns the intermediate representa
         ;; run it again with optimal workspace size
         (magicl.lapack-cffi::%zgeev jobvl jobvr rows a rows w vl 1 vr rows work lwork rwork info)
         (values (vector-to-list w) (make-matrix :rows rows :cols cols :data vr))))))
+
+(defun logm (m)
+  "Finds the matrix logarithm of a given square matrix M assumed to be diagonalizable, with nonzero eigenvalues"
+  (multiple-value-bind (vals vects) (eig m)
+    (let ((new-log-diag
+            (let ((log-vals (mapcar #'log vals))) (diag (matrix-cols m) (matrix-rows m) log-vals))))
+      (multiply-complex-matrices vects (multiply-complex-matrices new-log-diag (inv vects))))))

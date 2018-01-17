@@ -79,7 +79,9 @@
            #:diag
            #:matrix-diagonal
            #:expm
-           #:eig)
+           #:eig
+           #:logm
+	   )
 
   ;; random.lisp
   (:export #:random-matrix              ; FUNCTION
