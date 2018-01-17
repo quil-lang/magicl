@@ -150,7 +150,7 @@ Currently this library is SBCL- and CCL-only. The non-portable code is in `with-
 
 MAGICL development started at Rigetti Computing by Robert Smith and Joe Lin in 2017.
 
-[CL-BLAPACK](https://github.com/blindglobe/cl-blapack) is a library developed by Ryan Rifin and Evan Monroig. Rigetti Computing created a fork of this library and renamed it MAGICL, and made significant changes that departed from the original design, including:
+[CL-BLAPACK](https://github.com/blindglobe/cl-blapack) is a library developed by Ryan Rifkin and Evan Monroig. Rigetti Computing created a fork of this library and renamed it MAGICL, and made significant changes that departed from the original design, including:
 
 * Fixing several bugs in the Fortran parsing to make it work with the latest reference BLAS and LAPACK, leading to significant refactoring.
 * Adding support for matrix exponentiation with Expokit.
