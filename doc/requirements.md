@@ -31,6 +31,8 @@ brew install libffi
 
 ### Linux
 
+#### Package Manager
+
 On Linux, you can install BLAS and LAPACK (and gfortran) with your favorite package manager.
 All that's expected is that you have `libgfortran.so.3`, `libblas.so`, `liblapack.so`.
 
@@ -39,6 +41,21 @@ For example, on Ubuntu this can be done with:
 ```bash
 apt-get install liblapack-dev libblas-dev libgfortran3
 ```
+
+#### MKL
+
+Intel's Math Kernel Library, or MKL, contains math routines, including BLAS and LAPACK,
+that are specifically optimized for Intel processors. If the versions of BLAS and LAPACK
+mentioned above do not suit your needs, you may consider installing MKL. To install MKL,
+download the package from the [Intel website](https://software.intel.com/en-us/mkl)
+and follow the instructions within the Install_Guide.pdf file.
+The particular library of interest that will be installed is `libmkl_rt.so`.
+
+It is also important to setup the proper environmental variables, especially the `LD_LIBRARY_PATH`
+that specifies where to look for `libmkl_rt.so`; directions can be found
+[here](https://software.intel.com/en-us/mkl-linux-developer-guide-automating-the-process-of-setting-environment-variables).
+
+In order to use MKL in MAGICL, add `:magicl.use-mkl` to your `*features*` before compilation.
 
 ### macOS and OS X
 
@@ -64,18 +81,10 @@ The required libraries are `libBLAS.dylib` and `libLAPACK.dylib`. While the Acce
 they are not a complete. We count more than 500 missing functions provided in the standard LAPACK distribution.
 In order to use the system-provided libraries, add `:magicl.use-accelerate` to your `*features*` before compilation.
 
-### Intel Processors
+#### MKL
 
-Intel's Math Kernel Library, or MKL, contains math routines, including BLAS and LAPACK,
-that are specifically optimized for Intel processors. If the versions of BLAS and LAPACK
-mentioned above do not suit your needs, you may consider installing MKL. To install MKL,
-download the package from the [Intel website](https://software.intel.com/en-us/mkl)
-and follow the instructions within the Install_Guide.pdf file.
-The particular library of interest that will be installed is `libmkl_rt.so`.
-
-It is also important to setup the proper environmental variables, especially the `LD_LIBRARY_PATH`
-that specifies where to look for `libmkl_rt.so`; directions can be found
-[here](https://software.intel.com/en-us/mkl-linux-developer-guide-automating-the-process-of-setting-environment-variables).
+Intel's Math Kernel Library is also available for macOS, and directions for installing
+it can be found here [here](https://software.intel.com/en-us/get-started-with-mkl-for-osx).
 
 In order to use MKL in MAGICL, add `:magicl.use-mkl` to your `*features*` before compilation.
 
