@@ -64,6 +64,21 @@ The required libraries are `libBLAS.dylib` and `libLAPACK.dylib`. While the Acce
 they are not a complete. We count more than 500 missing functions provided in the standard LAPACK distribution.
 In order to use the system-provided libraries, add `:magicl.use-accelerate` to your `*features*` before compilation.
 
+### Intel Processors
+
+Intel's Math Kernel Library, or MKL, contains math routines, including BLAS and LAPACK,
+that are specifically optimized for Intel processors. If the versions of BLAS and LAPACK
+mentioned above do not suit your needs, you may consider installing MKL. To install MKL,
+download the package from the [Intel website](https://software.intel.com/en-us/mkl)
+and follow the instructions within the Install_Guide.pdf file.
+The particular library of interest that will be installed is `libmkl_rt.so`.
+
+It is also important to setup the proper environmental variables, especially the `LD_LIBRARY_PATH`
+that specifies where to look for `libmkl_rt.so`; directions can be found
+[here](https://software.intel.com/en-us/mkl-linux-developer-guide-automating-the-process-of-setting-environment-variables).
+
+In order to use MKL in MAGICL, add `:magicl.use-mkl` to your `*features*` before compilation.
+
 ## Expokit
 
 For all platforms, you will need to build Expokit, a Fortran library for matrix exponentiation. This usually is not included in mainstream software distribution mechanisms. As of right now, support is only available for the "small dense routines", i.e. those using Pade or Chebyshev (see the expokit `README` file for the exact files). 
@@ -106,18 +121,3 @@ You will need to put `expokit.dylib` somwhere your system understands, like `/us
 DYLD_FALLBACK_LIBRARY_PATH="$DYLD_FALLBACK_LIBRARY_PATH:<path-to-expokit.dylib-directory>"
 export DYLD_FALLBACK_LIBRARY_PATH
 ```
-
-## Intel's Math Kernel Library
-
-Intel's Math Kernel Library, or MKL, contains math routines, including BLAS and LAPACK,
-that are specifically optimized for Intel processors. If the versions of BLAS and LAPACK
-mentioned above do not suit your needs, you may consider installing MKL. To install MKL,
-download the package from the [Intel website](https://software.intel.com/en-us/mkl)
-and follow the instructions within the Install_Guide.pdf file.
-The particular library of interest that will be installed is `libmkl_rt.so`.
-
-It is also important to setup the proper environmental variables, especially the `LD_LIBRARY_PATH`
-that specifies where to look for `libmkl_rt.so`; directions can be found
-[here](https://software.intel.com/en-us/mkl-linux-developer-guide-automating-the-process-of-setting-environment-variables).
-
-In order to use MKL in MAGICL, add `:magicl.use-mkl` to your `*features*` before compilation.

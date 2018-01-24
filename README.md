@@ -8,7 +8,7 @@ Test it with `(asdf:test-system :magicl)`.
 
 ## Requirements
 
- * SBCL (> 1.3.19) or (>= 1.11) CCL on AMD64
+ * SBCL (> 1.3.19) or CCL (>= 1.11) on AMD64
  * quicklisp
  * libffi
  * BLAS and LAPACK
@@ -22,8 +22,8 @@ Test it with `(asdf:test-system :magicl)`.
 
 ## Showing Available Functions
 
-As said, some distributions of a library don't actually provide all of the functions
-of a the reference BLAS and LAPACK. One can look at a summary of available and unavailable
+Some distributions of a library don't actually provide all of the functions
+of the reference BLAS and LAPACK. One can look at a summary of available and unavailable
 functions with the function `magicl:print-availability-report`. By default, it will show all
 functions and their availability. There are three arguments to fine-tune this behavior:
 
@@ -59,7 +59,7 @@ Library LIBLAPACK: /usr/local/opt/lapack/lib/liblapack.dylib
 
 ## Generating BLAS and LAPACK Bindings
 
-This library takes the approach of automatically generating the bindings to BLAS and LAPACK without relying on any special tools.
+This library takes the approach of automatically generating the bindings to BLAS, LAPACK, and Expokit without relying on any special tools.
 
 In order to generate the bindings, you will need to download the Fortran 90 source tarballs for
 [BLAS/LAPACK](http://www.netlib.org/lapack/) and [Expokit](https://www.maths.uq.edu.au/expokit/download.html).
