@@ -1,5 +1,7 @@
 # MAGICL
 
+[![Build Status](https://semaphoreci.com/api/v1/projects/16f609aa-4178-4e8a-bc84-b2fba6303cd4/1744040/badge.svg)](https://semaphoreci.com/rigetti/magicl)
+
 _Matrix Algebra proGrams In Common Lisp_ by [Rigetti Computing](http://www.rigetti.com). (née FLAIL: _Finally, Linear Algebra In Lisp!_)
 
 Load it with `(ql:quickload :magicl)`.
@@ -19,6 +21,26 @@ Test it with `(asdf:test-system :magicl)`.
  
  Currently this library is SBCL- and CCL-only.
  The non-portable code is in `with-array-pointers.lisp` and `magicl.lisp`.
+
+## Testing MAGICL
+
+You can run the MAGICL tests from your Lisp REPL with:
+
+```
+(ql:quickload :magicl-tests)
+(asdf:test-system :magicl)
+```
+
+This repository is also set up with Sempahore CI, and uses Docker for
+building MAGICL and running its tests. You can emulate Semaphore's
+behavior by using the following commands:
+
+```bash
+docker build -t magicl-tests
+docker run magicl-tests
+```
+
+Of course, this requires that you have `docker` installed on your machine.
 
 ## Showing Available Functions
 
