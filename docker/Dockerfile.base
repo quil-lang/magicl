@@ -44,9 +44,3 @@ WORKDIR /src/expokit/fortran
 RUN gfortran -fPIC -c expokit.f
 RUN gfortran -shared -o expokit.so expokit.o -lblas -L/usr/lib/libblas.so -llapack -L/usr/lib/liblapack.so
 RUN mv expokit.so /usr/lib
-
-# add source, load systems, and run tests 
-ADD . /src/magicl
-RUN sbcl --noinform --non-interactive --eval '(ql:quickload :magicl)' --quit
-RUN sbcl --noinform --non-interactive --eval '(ql:quickload :magicl-tests)' --quit
-ENTRYPOINT sbcl --noinform --non-interactive --eval '(asdf:test-system :magicl)' --quit
