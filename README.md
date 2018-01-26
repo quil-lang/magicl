@@ -33,14 +33,14 @@ You can run the MAGICL tests from your Lisp REPL with:
 
 This repository is also set up with Sempahore CI, and uses Docker for
 building MAGICL and running its tests. You can emulate Semaphore's
-behavior by using the following commands:
+behavior by using the following commands from the top-level directory:
 
 ```bash
-docker build -t magicl-tests
-docker run magicl-tests
+make -C docker
+make -C docker test
 ```
 
-Of course, this requires that you have `docker` installed on your machine.
+Note, doing this requires that you have `docker` installed on your machine.
 
 ## Showing Available Functions
 
