@@ -1,0 +1,37 @@
+                              NOTICE
+
+Permission to use, copy, modify, and distribute EXPOKIT and its
+supporting documentation for non-commercial purposes, is hereby
+granted without fee, provided that this permission message and
+copyright notice appear in all copies. Approval must be sought for
+commercial purposes.
+
+Neither the Institution (University of Queensland) nor the Authors
+make any representations about the suitability of this software for
+any purpose.  This software is provided ``as is'' without express or
+implied warranty.
+
+The work resulting from EXPOKIT has been published in ACM-Transactions 
+on Mathematical Software, 24(1):130-156, 1998.
+
+The bibtex record of the citation:
+
+@ARTICLE{EXPOKIT,
+        AUTHOR  = {Sidje, R. B.},
+        TITLE   = {{\sc Expokit.} {S}oftware {P}ackage for
+		  {C}omputing {M}atrix {E}xponentials},
+        JOURNAL = {ACM Trans. Math. Softw.},
+        VOLUME  = {24},
+        NUMBER  = {1},
+        PAGES   = {130-156}
+        YEAR    = {1998}
+}
+
+Certain elements of the current software may include inadequacies
+that may be corrected at any time, as they are discovered. The Web 
+always contains the latest updates.
+
+                             Roger B. Sidje
+           Department of Mathematics, University of Queensland 
+     Brisbane, QLD-4072, Australia, (c) 1996-1999 All Rights Reserved
+
