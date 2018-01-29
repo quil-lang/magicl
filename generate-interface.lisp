@@ -1,20 +1,19 @@
 (defpackage #:magicl.generate-interface
-  (:nicknames #:generate-interface)
-  (:use :common-lisp
-        :magicl.cffi-types)
+  (:use #:common-lisp
+        #:magicl.cffi-types)
   (:export #:generate-blapack-files
            #:generate-expokit-files))
 
 (in-package #:magicl.generate-interface)
 
+;;; We maximize safety because this is mostly generating and writing
+;;; out code.
 (declaim (optimize (safety 3) (debug 3) (speed 1)))
-
-;; can we use FSBV?
 
 (defun read-lines (file)
   "Returns a list of strings, one string per line of file."
   (with-open-file (f file :direction :input)
-    (loop for line = (read-line f nil) when line collect line while line)))
+    (loop :for line := (read-line f nil) :when line :collect line :while line)))
 
 (defun comment-line-p (line)
   (member (first line) (list "c" "*") :test #'string=))
