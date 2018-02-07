@@ -1,6 +1,6 @@
 # MAGICL
 
-[![Build Status](https://semaphoreci.com/api/v1/projects/16f609aa-4178-4e8a-bc84-b2fba6303cd4/1744040/badge.svg)](https://semaphoreci.com/rigetti/magicl)
+[![Build Status](https://semaphoreci.com/api/v1/projects/16f609aa-4178-4e8a-bc84-b2fba6303cd4/1743839/badge.svg)](https://semaphoreci.com/rigetti/magicl)
 
 _Matrix Algebra proGrams In Common Lisp_ by [Rigetti Computing](http://www.rigetti.com). (née FLAIL: _Finally, Linear Algebra In Lisp!_)
 
