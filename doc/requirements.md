@@ -100,7 +100,7 @@ To make a shared library out of `expokit.f`, run the following command two comma
 
 ```bash
 gfortran -fPIC -c expokit.f
-gfortran -shared -o expokit.so expokit.o -lblas -L<path-to-libblas.so> -llapack -L<path-to-liblapack.so>
+gfortran -shared -o expokit.so expokit.o
 ```
 
 Replace the placeholder paths to `libblas.so` and `liblapack.so` appropriately. After running these commands, you should see an `expokit.so` file in your current directory.
