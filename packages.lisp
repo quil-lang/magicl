@@ -81,7 +81,8 @@
            #:expm
            #:eig
            #:logm
-	   )
+           #:kron
+           )
 
   ;; random.lisp
   (:export #:random-matrix              ; FUNCTION
