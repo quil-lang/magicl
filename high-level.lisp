@@ -877,3 +877,14 @@ with upper left block with dimension P-by-Q. Returns the intermediate representa
     (let ((new-log-diag
             (let ((log-vals (mapcar #'log vals))) (diag (matrix-cols m) (matrix-rows m) log-vals))))
       (multiply-complex-matrices vects (multiply-complex-matrices new-log-diag (inv vects))))))
+
+(defun kron (a b &rest rest)
+  "Compute the kronecker product of matrices A and B."
+  ;; This can be sped up by explicitly looping
+  (let ((ma (matrix-rows a))
+        (mb (matrix-rows b))
+        (na (matrix-cols a))
+        (nb (matrix-cols b)))
+    (flet ((calc-i-j (i j) (* (ref a (floor i mb) (floor j nb))
+                              (ref b (mod i mb) (mod j nb)))))
+      (reduce #'kron rest :initial-value (tabulate (* ma mb) (* na nb) #'calc-i-j)))))
