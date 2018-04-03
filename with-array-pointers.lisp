@@ -42,7 +42,8 @@ WARNING: Do not close over these pointers or otherwise store them outside of the
         `(progn ,@body)
         `(let ,(mapcar #'list evaled-symbols forms)
            #+sbcl
-           (sb-sys:with-pinned-objects (,@evaled-symbols)
+           (sb-sys:with-pinned-objects (,@(loop :for sym :in evaled-symbols
+                                                :collect `(sb-ext:array-storage-vector ,sym)))
              (let ,(loop :for s :in symbols
                          :for e :in evaled-symbols
                          :collect `(,s (array-pointer ,e)))
