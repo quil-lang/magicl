@@ -5,7 +5,7 @@
 #+(or (not :darwin) (not :magicl.use-accelerate))
 (cffi:define-foreign-library libgfortran
   (:darwin "libgfortran.dylib" :search-path #P"/usr/local/opt/gcc/lib/gcc/7/")
-  (:unix (:or "libgfortran.so.3" "libgfortran.so"))
+  (:unix (:or "libgfortran.so" "libgfortran.so.3"))
   (t (:default "libgfortran")))
 
 (cffi:define-foreign-library libblas
