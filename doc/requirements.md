@@ -33,13 +33,20 @@ brew install libffi
 
 #### Package Manager
 
-On Linux, you can install BLAS and LAPACK (and gfortran) with your favorite package manager.
-All that's expected is that you have `libgfortran.so.3`, `libblas.so`, `liblapack.so`.
+On Linux, you can install BLAS and LAPACK with your favorite package manager.
+All that's expected is that you have `libblas.so` and `liblapack.so`.
 
 For example, on Ubuntu this can be done with:
 
 ```bash
 apt-get install liblapack-dev libblas-dev libgfortran3
+```
+
+You may need `libgfortran` if you built Fortran libraries. You can
+install that with:
+
+```bash
+apt-get install libgfortran3
 ```
 
 #### MKL
@@ -62,10 +69,16 @@ In order to use MKL in MAGICL, add `:magicl.use-mkl` to your `*features*` before
 #### Homebrew
 
 On macOS, Homebrew is the easiest way to get BLAS and LAPACK.
-You can install them (along with `gfortran`, which is also required, and provided as part of `gcc`) with the following:
+You can install them with the following:
 
 ```bash
 brew install gcc lapack
+```
+
+If you need `gfortran`, you can get that with
+
+```bash
+brew install gcc
 ```
 
 By default, `libgfortran` is searched for where Homebrew installs it,
@@ -103,7 +116,23 @@ gfortran -fPIC -c expokit.f
 gfortran -shared -o expokit.so expokit.o
 ```
 
-Replace the placeholder paths to `libblas.so` and `liblapack.so` appropriately. After running these commands, you should see an `expokit.so` file in your current directory.
+After running these commands, you should see an `expokit.so` file in
+your current directory. You will also need `libgfortran.so`, which can
+usually be installed by installing `libgfortran3`.x
+
+The gfortran compiler will build a library that depends on
+`libgfortran.so` which will need to be on the target system of
+deploymeny. You can statically link `libgfortran`, however, by
+replacing the commands above with:
+
+```bash
+gfortran -fPIC -c expokit.f
+gfortran -shared -static-libgfortran -o expokit.so expokit.o
+```
+
+This will remove `libgfortran.{so, dylib}` as a dependency on your
+deployment targets. **However**, most Linux distros don't ship
+`libgfortran.a` built with `-fPIC`, so the above **may fail**.
 
 Finally, add the following command into your `~/.bashrc`:
 
@@ -123,6 +152,15 @@ gfortran -dynamiclib -o expokit.dylib expokit.o -lblas -llapack
 ```
 
 If BLAS and LAPACK aren't in a regular location, then you may need to pass the linked path option `-L<path-to-lib>` for each library to the second command.
+
+Likewise with the above Linux instructions, you can avoid having to
+dynamically link `libgfortran.dylib` by statically linking it. The
+above commands become:
+
+```bash
+gfortran -fPIC -c expokit.f
+gfortran -dynamiclib -static-libgfortran -o expokit.dylib expokit.o -lblas -llapack
+```
 
 You will need to put `expokit.dylib` somwhere your system understands, like `/usr/local/lib/`. One may change the variable `DYLD_FALLBACK_LIBRARY_PATH` in a manner like below if the location shall be custom:
 
