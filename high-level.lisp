@@ -888,3 +888,11 @@ with upper left block with dimension P-by-Q. Returns the intermediate representa
     (flet ((calc-i-j (i j) (* (ref a (floor i mb) (floor j nb))
                               (ref b (mod i mb) (mod j nb)))))
       (reduce #'kron rest :initial-value (tabulate (* ma mb) (* na nb) #'calc-i-j)))))
+
+(defun exptm (m power)
+  "Compute the matrix M raised to power POWER."
+  (assert (= (matrix-rows m) (matrix-cols m)) () "M is not a square matrix")
+  (if (> power 0)
+      (multiply-complex-matrices (exptm m (1- power)) m)
+      (make-identity-matrix (matrix-cols m))))
+

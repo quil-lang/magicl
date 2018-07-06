@@ -82,6 +82,7 @@
            #:eig
            #:logm
            #:kron
+           #:exptm
            )
 
   ;; random.lisp
