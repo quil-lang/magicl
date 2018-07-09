@@ -889,10 +889,34 @@ with upper left block with dimension P-by-Q. Returns the intermediate representa
                               (ref b (mod i mb) (mod j nb)))))
       (reduce #'kron rest :initial-value (tabulate (* ma mb) (* na nb) #'calc-i-j)))))
 
+(defun num-to-bits (num)
+  (loop for i below (integer-length num)
+	collect (if (logbitp i num) 1 0)))
+
+(defun bin-decomp (num)
+  (let ((bits (num-to-bits num)))
+    (loop for i below (length bits)
+          for b in bits
+          when (> b 0)
+          collect (* b (expt 2 i)))))
+
 (defun exptm (m power)
   "Compute the matrix M raised to power POWER."
   (assert (= (matrix-rows m) (matrix-cols m)) () "M is not a square matrix")
-  (if (> power 0)
-      (multiply-complex-matrices (exptm m (1- power)) m)
-      (make-identity-matrix (matrix-cols m))))
+  ;; TODO Permit real-valued powers via #'EXPM
+  (assert (integerp power) () "POWER is not an integer")
 
+  (let* ((decomp (bin-decomp power))
+         ;; We need all squares up to the greatest power of 2 in
+         ;; POWER's binary decomposition.
+         (b (log (car (last decomp)) 2))
+         ;; Calculate all squares of M, (M^1, M^2, M^4, ... M^(2^B))
+         ;; keeping only those that will be needed (which are those in
+         ;; the binary decomposition of POWER).
+         (po2 (loop for i = 1 then (* 2 i)
+                    for powers = m then (multiply-complex-matrices powers powers)
+                    ;; +1 here to account for the first factor M^1.
+                    repeat (1+ b)
+                    when (find i decomp)
+                      collect powers)))
+    (reduce #'multiply-complex-matrices po2)))
