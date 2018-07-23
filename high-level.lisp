@@ -888,3 +888,19 @@ with upper left block with dimension P-by-Q. Returns the intermediate representa
     (flet ((calc-i-j (i j) (* (ref a (floor i mb) (floor j nb))
                               (ref b (mod i mb) (mod j nb)))))
       (reduce #'kron rest :initial-value (tabulate (* ma mb) (* na nb) #'calc-i-j)))))
+
+(defun exptm (m power)
+  (check-type power fixnum)
+  (check-type m matrix)
+  (labels ((recurse (y m power)
+             (cond
+               ;; We are done recursing. Return answer.
+               ((zerop power) y)
+               ;; power is even, so square.
+               ((evenp power) (recurse y (multiply-complex-matrices m m) (ash power -1)))
+               ;; n is odd, so multiply out and make it even.
+               (t (recurse (multiply-complex-matrices m y) m (1- power))))))
+    (if (minusp power)
+        (inv (recurse (make-identity-matrix (matrix-rows m)) m (- power)))
+        (recurse (make-identity-matrix (matrix-rows m)) m power))))
+
