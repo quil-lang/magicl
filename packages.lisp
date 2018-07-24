@@ -62,6 +62,7 @@
            #:print-availability-report
            #:with-blapack
            #:make-complex-matrix
+           #:conjugate-entrywise
            #:transpose
            #:conjugate-transpose
            #:qr
