@@ -775,6 +775,25 @@ with upper left block with dimension P-by-Q. Returns the intermediate representa
       (magicl.lapack-cffi::%zgetrf rows cols a lda ipiv info)
       (values a ipiv))))
 
+(defun solve (a b)
+  "Computes the solution column vector X to the system of linear
+equations A * X = B, where A is a square matrix and B is an NxM
+matrix, the columns of which are different right-hand sides to the
+above equation."
+  (assert (square-matrix-p a))
+  (let* ((n (matrix-rows a))
+         (nrhs (matrix-rows b))
+         (lda n)
+         (ldb nrhs)
+         (info 0)
+         (ipiv (make-int32-storage n)))
+    (let ((a* (copy-matrix-storage (matrix-data a)))
+          (b* (copy-matrix-storage (matrix-data b))))
+      (magicl.lapack-cffi:%zgesv n nrhs a* lda ipiv b* ldb info)
+      (values (make-matrix :rows n :cols n :data a*)
+              (make-matrix :rows (matrix-rows b) :cols (matrix-cols b) :data b*)
+              ipiv))))
+
 (defun det (m)
   "Finds the determinant of a square matrix M."
   (let ((rows (matrix-rows m))
