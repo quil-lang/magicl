@@ -84,6 +84,7 @@
            #:logm
            #:kron
            #:exptm
+           #:solve
            )
 
   ;; random.lisp
