@@ -921,8 +921,8 @@ matrix, the columns of which are different right-hand sides to the
 above equation. 
 
 The three return values are
-  1. The L and U factors from the A = P * L * U factorization;
-  2. The solution X to each of the RHS B; and
+  1. The solution X to each of the RHS B; 
+  2. The L and U factors from the A = P * L * U factorization; and
   3. The pivot indices."
   (check-type a matrix)
   (check-type b matrix)
@@ -936,6 +936,6 @@ The three return values are
     (let ((a* (copy-matrix-storage (matrix-data a)))
           (b* (copy-matrix-storage (matrix-data b))))
       (magicl.lapack-cffi:%zgesv n nrhs a* lda ipiv b* ldb info)
-      (values (make-matrix :rows n :cols n :data a*)
-              (make-matrix :rows (matrix-rows b) :cols (matrix-cols b) :data b*)
+      (values (make-matrix :rows (matrix-rows b) :cols (matrix-cols b) :data b*)
+              (make-matrix :rows n :cols n :data a*)
               ipiv))))
