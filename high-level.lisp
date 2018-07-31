@@ -918,7 +918,12 @@ with upper left block with dimension P-by-Q. Returns the intermediate representa
   "Computes the solution column vector X to the system of linear
 equations A * X = B, where A is a square matrix and B is an NxM
 matrix, the columns of which are different right-hand sides to the
-above equation."
+above equation. 
+
+The three return values are
+  1. The L and U factors from the A = P * L * U factorization;
+  2. The solution X to each of the RHS B; and
+  3. The pivot indices."
   (check-type a matrix)
   (check-type b matrix)
   (assert (square-matrix-p a))
