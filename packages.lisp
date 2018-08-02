@@ -77,6 +77,8 @@
            #:lapack-csd
            #:det
            #:inv
+           #:dagger
+           #:direct-sum
            #:diag
            #:matrix-diagonal
            #:expm

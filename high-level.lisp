@@ -817,6 +817,28 @@ with upper left block with dimension P-by-Q. Returns the intermediate representa
         (magicl.lapack-cffi::%zgetri rows a lda ipiv work lwork info)
         (values (make-matrix :rows rows :cols cols :data a))))))
 
+(declaim (inline dagger))
+(defun dagger (m)
+  "Synonym for CONJUGATE-TRANSPOSE."
+  (conjugate-transpose m))
+
+(defun direct-sum (a b)
+  "Compute the direct sum of A and B."
+  (let* ((arows (matrix-rows a))
+         (acols (matrix-cols a))
+         (brows (matrix-rows b))
+         (bcols (matrix-cols b))
+         (rrows (+ arows brows))
+         (rcols (+ acols bcols))
+         (result (make-zero-matrix rrows rcols)))
+    (loop :for r :below arows :do
+      (loop :for c :below acols :do
+        (setf (ref result r c) (ref a r c))))
+    (loop :for r :from arows :below rrows :do
+      (loop :for c :from acols :below rcols :do
+        (setf (ref result r c) (ref b (- r arows) (- c acols)))))
+    result))
+
 (defun expm (m)
   "Finds the exponential of a square matrix M."
   (let ((ideg 6)
