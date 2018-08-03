@@ -255,13 +255,15 @@ elements in the input matrices."
                                 (ref a i j)
                                 (ref b i j))))))
 
-(defun add-matrix (matrix &rest more-matrices)
-  "Element-wise addition of input matrices."
-  (reduce (lift-binary-function #'+) more-matrices :initial-value matrix))
+(let ((lifted-+ (lift-binary-function #'+))
+      (lifted-- (lift-binary-function #'-)))
+  (defun add-matrix (matrix &rest more-matrices)
+    "Element-wise addition of input matrices."
+    (reduce lifted-+ more-matrices :initial-value matrix))
 
-(defun sub-matrix (matrix &rest more-matrices)
-  "Element-wise subtraction of input matrices."
-  (reduce (lift-binary-function #'-) more-matrices :initial-value matrix))
+  (defun sub-matrix (matrix &rest more-matrices)
+    "Element-wise subtraction of input matrices."
+    (reduce lifted-- more-matrices :initial-value matrix)))
 
 (defun make-identity-matrix (dimension)
   "Make an identity matrix of dimension DIMENSION."
