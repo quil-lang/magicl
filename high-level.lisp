@@ -226,6 +226,43 @@
     (map-indexes rows cols (lambda (r c) (setf (ref m r c) (funcall f r c))))
     m))
 
+(defun lift-unary-function (function)
+  "Produces a unitary function that takes a matrix and returns a
+matrix of the same dimension where each element of the output matrix
+is the result of applying the unitary FUNCTION to the corresponding
+element in the input matrix."
+  (check-type function function)
+  (lambda (matrix)
+    (check-type a matrix)
+    (check-type b matrix)
+    (tabulate (matrix-rows matrix) (matrix-cols matrix)
+              (lambda (i j) (funcall function (ref matrix i j))))))
+
+(defun inc-matrix "Element-wise increment of input matrices." (lift-unary-function #'1+))
+(defun dec-matrix "Element-wise decrement of input matrices." (lift-unary-function #'1-))
+
+(defun lift-binary-function (function)
+  "Produces a binary function that takes a matrix and returns a
+matrix of the same dimension where each element of the output matrix
+is the result of applying the binary FUNCTION to the corresponding
+elements in the input matrices."
+  (check-type function function)
+  (lambda (a b)
+    (check-type a matrix)
+    (check-type b matrix)
+    (tabulate (matrix-rows a) (matrix-cols a)
+              (lambda (i j) (funcall function
+                                (ref a i j)
+                                (ref b i j))))))
+
+(defun add-matrix (matrix &rest more-matrices)
+  "Element-wise addition of input matrices."
+  (reduce (lift-binary-function #'+) more-matrices :initial-value matrix))
+
+(defun sub-matrix (matrix &rest more-matrices)
+  "Element-wise subtraction of input matrices."
+  (reduce (lift-binary-function #'-) more-matrices :initial-value matrix))
+
 (defun make-identity-matrix (dimension)
   "Make an identity matrix of dimension DIMENSION."
   (tabulate dimension dimension (lambda (i j) (if (= i j) 1 0))))
