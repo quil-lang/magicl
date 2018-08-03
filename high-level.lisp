@@ -255,15 +255,42 @@ elements in the input matrices."
                                 (ref a i j)
                                 (ref b i j))))))
 
+(defgeneric add-matrix-generic (a b))
+(defgeneric sub-matrix-generic (a b))
+
 (let ((lifted-+ (lift-binary-function #'+))
       (lifted-- (lift-binary-function #'-)))
-  (defun add-matrix (matrix &rest more-matrices)
-    "Element-wise addition of input matrices."
-    (reduce lifted-+ more-matrices :initial-value matrix))
+  (defmethod add-matrix-generic ((a matrix) (b matrix))
+    (funcall lifted-+ a b))
 
-  (defun sub-matrix (matrix &rest more-matrices)
-    "Element-wise subtraction of input matrices."
-    (reduce lifted-- more-matrices :initial-value matrix)))
+  (defmethod add-matrix-generic ((a number) (b matrix))
+    (let ((mat-a (tabulate (matrix-rows b) (matrix-cols b)
+                           (lambda (i j) (declare (ignore i j)) a))))
+      (add-matrix-generic mat-a b)))
+
+  (defmethod add-matrix-generic ((b matrix) (a number))
+    (add-matrix-generic a b))
+
+  (defmethod sub-matrix-generic ((a matrix) (b matrix))
+    (funcall lifted-- a b))
+
+  (defmethod sub-matrix-generic ((a number) (b matrix))
+    (let ((mat-a (tabulate (matrix-rows b) (matrix-cols b)
+                           (lambda (i j) (declare (ignore i j)) a))))
+      (sub-matrix-generic mat-a b)))
+
+  (defmethod sub-matrix-generic ((b matrix) (a number))
+    (let ((mat-a (tabulate (matrix-rows b) (matrix-cols b)
+                           (lambda (i j) (declare (ignore i j)) a))))
+      (sub-matrix-generic b mat-a))))
+
+(defun add-matrix (matrix &rest more-matrices)
+  "Element-wise addition of input matrices."
+  (reduce #'add-matrix-generic more-matrices :initial-value matrix))
+
+(defun sub-matrix (matrix &rest more-matrices)
+  "Element-wise subtraction of input matrices."
+  (reduce #'sub-matrix-generic more-matrices :initial-value matrix))
 
 (defun make-identity-matrix (dimension)
   "Make an identity matrix of dimension DIMENSION."
