@@ -233,8 +233,7 @@ is the result of applying the unitary FUNCTION to the corresponding
 element in the input matrix."
   (check-type function function)
   (lambda (matrix)
-    (check-type a matrix)
-    (check-type b matrix)
+    (check-type matrix matrix)
     (tabulate (matrix-rows matrix) (matrix-cols matrix)
               (lambda (i j) (funcall function (ref matrix i j))))))
 
