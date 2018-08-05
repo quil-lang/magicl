@@ -237,8 +237,12 @@ element in the input matrix."
     (tabulate (matrix-rows matrix) (matrix-cols matrix)
               (lambda (i j) (funcall function (ref matrix i j))))))
 
-(defun inc-matrix "Element-wise increment of input matrices." (lift-unary-function #'1+))
-(defun dec-matrix "Element-wise decrement of input matrices." (lift-unary-function #'1-))
+(setf (symbol-function 'inc-matrix) (lift-unary-function #'1+))
+(setf (documentation #'inc-matrix 'function)
+      "Returns matrix with each element + 1.")
+(setf (symbol-function 'dec-matrix) (lift-unary-function #'1-))
+(setf (documentation #'dec-matrix 'function)
+      "Returns matrix with each element - 1.")
 
 (defun lift-binary-function (function)
   "Produces a binary function that takes a matrix and returns a
