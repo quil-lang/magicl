@@ -8,19 +8,21 @@ Load it with `(ql:quickload :magicl)`.
 
 Test it with `(asdf:test-system :magicl)`.
 
+(**Note**: The high-level interface is experimental and subject to rapid change.)
+
 ## Requirements
 
  * SBCL (> 1.3.19) or CCL (>= 1.11) on AMD64
  * quicklisp
  * libffi
  * BLAS and LAPACK
- * Expokit
- 
+
+A separate system, `magic-transcendental`, contains transcendental functions, and requires another dependency called Expokit.
+
  Detailed instructions on how to install `libffi`, BLAS/LAPACK, and Expokit can be found
  [here](doc/requirements.md).
- 
- Currently this library is SBCL- and CCL-only.
- The non-portable code is in `with-array-pointers.lisp` and `magicl.lisp`.
+
+ Currently this library is SBCL- and CCL-only. The non-portable code is in `with-array-pointers.lisp` and `magicl.lisp`.
 
 ## Testing MAGICL
 
@@ -31,9 +33,9 @@ You can run the MAGICL tests from your Lisp REPL with:
 (asdf:test-system :magicl)
 ```
 
-This repository is also set up with Sempahore CI, and uses Docker for
-building MAGICL and running its tests. You can emulate Semaphore's
-behavior by using the following commands from the top-level directory:
+Note that the tests use both `magicl` and `magicl-transcendental` and hence requires Expokit.
+
+This repository is also set up with Sempahore CI, and uses Docker for building MAGICL and running its tests. You can emulate Semaphore's behavior by using the following commands from the top-level directory:
 
 ```bash
 make -C docker
@@ -44,10 +46,7 @@ Note, doing this requires that you have `docker` installed on your machine.
 
 ## Showing Available Functions
 
-Some distributions of a library don't actually provide all of the functions
-of the reference BLAS and LAPACK. One can look at a summary of available and unavailable
-functions with the function `magicl:print-availability-report`. By default, it will show all
-functions and their availability. There are three arguments to fine-tune this behavior:
+Some distributions of a library don't actually provide all of the functions of the reference BLAS and LAPACK. One can look at a summary of available and unavailable functions with the function `magicl:print-availability-report`. By default, it will show all functions and their availability. There are three arguments to fine-tune this behavior:
 
 1. Key `:show-available <boolean>` (default `t`): show available functions
 2. Key `:show-unavailable <boolean>` (default `t`): show unavailable functions
@@ -101,8 +100,7 @@ namely the files `blas-cffi.lisp`, `lapack-cffi.lisp`, and `expokit-cffi.lisp`.
 
 MAGICL development started at Rigetti Computing by Robert Smith and Joe Lin in 2017.
 
-[CL-BLAPACK](https://github.com/blindglobe/cl-blapack) is a library developed by Ryan Rifkin and Evan Monroig.
-Rigetti Computing created a fork of this library and renamed it MAGICL, and made significant changes that departed from the original design, including:
+[CL-BLAPACK](https://github.com/blindglobe/cl-blapack) is a library developed by Ryan Rifkin and Evan Monroig. Rigetti Computing created a fork of this library and renamed it MAGICL, and made significant changes that departed from the original design, including:
 
 * Fixing several bugs in the Fortran parsing to make it work with the latest reference BLAS and LAPACK, leading to significant refactoring.
 * Adding support for matrix exponentiation with Expokit.

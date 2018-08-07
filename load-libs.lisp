@@ -24,15 +24,7 @@
   (:unix  "liblapack.so")
   (t (:default "liblapack")))
 
-(cffi:define-foreign-library libexpokit
-  (:darwin "expokit.dylib")
-  (:unix  "expokit.so")
-  (t (:default "expokit")))
-
-(defparameter *cffi-libraries* '(
-                                 libblas
-                                 liblapack
-                                 libexpokit))
+(defvar *cffi-libraries* '(libblas liblapack))
 
 (defun foreign-symbol-available-p (name library)
   "Check that NAME is available from the libarary LIBRARY."
@@ -94,9 +86,3 @@
   (cffi:load-foreign-library 'libblas)
   (cffi:load-foreign-library 'liblapack)
   (setf *blapack-libs-loaded* t))
-
-(defvar *expokit-libs-loaded* nil)
-
-(unless *expokit-libs-loaded*
-  (cffi:load-foreign-library 'libexpokit)
-  (setf *expokit-libs-loaded* nil))
