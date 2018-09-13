@@ -6,7 +6,7 @@
   #+:magicl.use-accelerate
   (:darwin "libBLAS.dylib" :search-path #P"/System/Library/Frameworks/Accelerate.framework/Frameworks/vecLib.framework/Versions/A/")
   #-:magicl.use-accelerate              ; KLUDGE: Look for Homebrew dir first.
-  (:darwin "/usr/local/opt/lapack/lib/libblas.dylib")
+  (:darwin (:or "libblas.dylib" "/usr/local/opt/lapack/lib/libblas.dylib"))
   #+:magicl.use-mkl
   (:unix  "libmkl_rt.so")
   #-:magicl.use-mkl
@@ -17,7 +17,7 @@
   #+:magicl.use-accelerate
   (:darwin "libLAPACK.dylib" :search-path #P"/System/Library/Frameworks/Accelerate.framework/Frameworks/vecLib.framework/Versions/A/")
   #-:magicl.use-accelerate
-  (:darwin "/usr/local/opt/lapack/lib/liblapack.dylib")
+  (:darwin (:or "liblapack.dylib" "/usr/local/opt/lapack/lib/liblapack.dylib"))
   #+:magicl.use-mkl
   (:unix  "libmkl_rt.so")
   #-:magicl.use-mkl
