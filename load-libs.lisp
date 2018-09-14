@@ -5,7 +5,7 @@
 (cffi:define-foreign-library libblas
   #+:magicl.use-accelerate
   (:darwin "libBLAS.dylib" :search-path #P"/System/Library/Frameworks/Accelerate.framework/Frameworks/vecLib.framework/Versions/A/")
-  #-:magicl.use-accelerate              ; KLUDGE: Look for Homebrew dir first.
+  #-:magicl.use-accelerate
   (:darwin (:or "libblas.dylib" "/usr/local/opt/lapack/lib/libblas.dylib"))
   #+:magicl.use-mkl
   (:unix  "libmkl_rt.so")
