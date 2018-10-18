@@ -16,8 +16,12 @@
 (cffi:define-foreign-library liblapack
   #+:magicl.use-accelerate
   (:darwin "libLAPACK.dylib" :search-path #P"/System/Library/Frameworks/Accelerate.framework/Frameworks/vecLib.framework/Versions/A/")
+  ;; If the user has done so, it is likely this is the location where
+  ;; Homebrew installed LAPACK. Prefer it over the system LAPACK
+  ;; because it's more complete. (macOS-provided LAPACK doesn't have a
+  ;; lot of the more obscure subroutines.)
   #-:magicl.use-accelerate
-  (:darwin (:or "liblapack.dylib" "/usr/local/opt/lapack/lib/liblapack.dylib"))
+  (:darwin (:or "/usr/local/opt/lapack/lib/liblapack.dylib" "liblapack.dylib"))
   #+:magicl.use-mkl
   (:unix  "libmkl_rt.so")
   #-:magicl.use-mkl
