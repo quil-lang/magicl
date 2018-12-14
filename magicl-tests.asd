@@ -3,6 +3,7 @@
 ;;;; Author: Joseph Lin
 
 (asdf:defsystem #:magicl-tests
+  :license "BSD 3-Clause (See LICENSE.txt)"
   :description "Regression tests for MAGICL."
   :author "Rigetti Computing"
   :depends-on (#:uiop

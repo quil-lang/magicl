@@ -40,6 +40,8 @@
 (asdf:defsystem #:magicl-transcendental
   :license "BSD 3-Clause (See LICENSE.txt)"
   :maintainer "Rigetti Computing"
+  :author "Rigetti Computing"
+  :description "Transcendental functionality for MAGICL"
   :version (:read-file-form "VERSION.txt")
   :depends-on (#:alexandria
                #:cffi
