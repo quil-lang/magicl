@@ -77,6 +77,8 @@
            #:lapack-csd
            #:det
            #:inv
+           #:dagger
+           #:direct-sum
            #:diag
            #:matrix-diagonal
            #:expm
@@ -85,6 +87,10 @@
            #:kron
            #:exptm
            #:solve
+           #:inc-matrix
+           #:dec-matrix
+           #:add-matrix
+           #:sub-matrix
            )
 
   ;; random.lisp

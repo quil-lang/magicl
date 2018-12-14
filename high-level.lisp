@@ -226,6 +226,75 @@
     (map-indexes rows cols (lambda (r c) (setf (ref m r c) (funcall f r c))))
     m))
 
+(defun lift-unary-function (function)
+  "Produces a unitary function that takes a matrix and returns a
+matrix of the same dimension where each element of the output matrix
+is the result of applying the unitary FUNCTION to the corresponding
+element in the input matrix."
+  (check-type function function)
+  (lambda (matrix)
+    (check-type matrix matrix)
+    (tabulate (matrix-rows matrix) (matrix-cols matrix)
+              (lambda (i j) (funcall function (ref matrix i j))))))
+
+(setf (symbol-function 'inc-matrix) (lift-unary-function #'1+))
+(setf (documentation #'inc-matrix 'function)
+      "Returns matrix with each element + 1.")
+(setf (symbol-function 'dec-matrix) (lift-unary-function #'1-))
+(setf (documentation #'dec-matrix 'function)
+      "Returns matrix with each element - 1.")
+
+(defun lift-binary-function (function)
+  "Produces a binary function that takes a matrix and returns a
+matrix of the same dimension where each element of the output matrix
+is the result of applying the binary FUNCTION to the corresponding
+elements in the input matrices."
+  (check-type function function)
+  (lambda (a b)
+    (check-type a matrix)
+    (check-type b matrix)
+    (tabulate (matrix-rows a) (matrix-cols a)
+              (lambda (i j) (funcall function
+                                (ref a i j)
+                                (ref b i j))))))
+
+(defgeneric add-matrix-generic (a b))
+(defgeneric sub-matrix-generic (a b))
+
+(let ((lifted-+ (lift-binary-function #'+))
+      (lifted-- (lift-binary-function #'-)))
+  (defmethod add-matrix-generic ((a matrix) (b matrix))
+    (funcall lifted-+ a b))
+
+  (defmethod add-matrix-generic ((a number) (b matrix))
+    (let ((mat-a (tabulate (matrix-rows b) (matrix-cols b)
+                           (lambda (i j) (declare (ignore i j)) a))))
+      (add-matrix-generic mat-a b)))
+
+  (defmethod add-matrix-generic ((b matrix) (a number))
+    (add-matrix-generic a b))
+
+  (defmethod sub-matrix-generic ((a matrix) (b matrix))
+    (funcall lifted-- a b))
+
+  (defmethod sub-matrix-generic ((a number) (b matrix))
+    (let ((mat-a (tabulate (matrix-rows b) (matrix-cols b)
+                           (lambda (i j) (declare (ignore i j)) a))))
+      (sub-matrix-generic mat-a b)))
+
+  (defmethod sub-matrix-generic ((b matrix) (a number))
+    (let ((mat-a (tabulate (matrix-rows b) (matrix-cols b)
+                           (lambda (i j) (declare (ignore i j)) a))))
+      (sub-matrix-generic b mat-a))))
+
+(defun add-matrix (matrix &rest more-matrices)
+  "Element-wise addition of input matrices."
+  (reduce #'add-matrix-generic more-matrices :initial-value matrix))
+
+(defun sub-matrix (matrix &rest more-matrices)
+  "Element-wise subtraction of input matrices."
+  (reduce #'sub-matrix-generic more-matrices :initial-value matrix))
+
 (defun make-identity-matrix (dimension)
   "Make an identity matrix of dimension DIMENSION."
   (tabulate dimension dimension (lambda (i j) (if (= i j) 1 0))))
@@ -817,46 +886,28 @@ with upper left block with dimension P-by-Q. Returns the intermediate representa
         (magicl.lapack-cffi::%zgetri rows a lda ipiv work lwork info)
         (values (make-matrix :rows rows :cols cols :data a))))))
 
-(defun expm (m)
-  "Finds the exponential of a square matrix M."
-  (let ((ideg 6)
-        (rows (matrix-rows m))
-        (tcoef (coerce 1.0 'double-float))
-        (h (copy-matrix-storage (matrix-data m)))
-        (iexph 0)
-        (ns 0)
-        (iflag 0))
-    (let ((lwsp (+ (* 4 rows rows) ideg 1))
-          (ipiv (make-int32-storage rows)))
-      (let ((wsp (make-Z-storage lwsp)))
-        ;; Requires direct foreign function call due to need to access a pointer
-        ;; to an integer (IEXPH).
-        (CFFI:WITH-FOREIGN-OBJECTS ((IDEG-REF103 ':INT32) (M-REF104 ':INT32)
-                                    (T-REF105 ':DOUBLE) (LDH-REF107 ':INT32)
-                                    (LWSP-REF109 ':INT32) (IEXPH-REF111 ':INT32)
-                                    (NS-REF112 ':INT32) (IFLAG-REF113 ':INT32))
-          (COMMON-LISP:SETF (CFFI:MEM-REF IDEG-REF103 :INT32) IDEG)
-          (COMMON-LISP:SETF (CFFI:MEM-REF M-REF104 :INT32) ROWS)
-          (COMMON-LISP:SETF (CFFI:MEM-REF T-REF105 :DOUBLE) TCOEF)
-          (COMMON-LISP:SETF (CFFI:MEM-REF LDH-REF107 :INT32) ROWS)
-          (COMMON-LISP:SETF (CFFI:MEM-REF LWSP-REF109 :INT32) LWSP)
-          (COMMON-LISP:SETF (CFFI:MEM-REF IEXPH-REF111 :INT32) IEXPH)
-          (COMMON-LISP:SETF (CFFI:MEM-REF NS-REF112 :INT32) NS)
-          (COMMON-LISP:SETF (CFFI:MEM-REF IFLAG-REF113 :INT32) IFLAG)
-          (magicl.cffi-types:with-array-pointers ((H-ptr H)
-                                                  (WSP-ptr WSP)
-                                                  (IPIV-ptr IPIV))
-            (magicl.expokit-cffi::%%zgpadm IDEG-REF103 M-REF104 T-REF105
-                                           H-ptr LDH-REF107
-                                           WSP-ptr LWSP-REF109
-                                           IPIV-ptr
-                                           IEXPH-REF111 NS-REF112 IFLAG-REF113))
-          (setf iexph (CFFI:MEM-REF IEXPH-REF111 :INT32)))
-        (let ((exph (make-Z-storage (* rows rows))))
-          (dotimes (i (* rows rows))
-            (setf (row-major-aref exph i)
-                  (row-major-aref wsp (+ i (1- iexph)))))
-          (values (make-matrix :rows rows :cols rows :data exph)))))))
+(declaim (inline dagger))
+(defun dagger (m)
+  "Synonym for CONJUGATE-TRANSPOSE."
+  (conjugate-transpose m))
+
+(defun direct-sum (a b)
+  "Compute the direct sum of A and B."
+  (let* ((arows (matrix-rows a))
+         (acols (matrix-cols a))
+         (brows (matrix-rows b))
+         (bcols (matrix-cols b))
+         (rrows (+ arows brows))
+         (rcols (+ acols bcols))
+         (result (make-zero-matrix rrows rcols)))
+    (loop :for r :below arows :do
+      (loop :for c :below acols :do
+        (setf (ref result r c) (ref a r c))))
+    (loop :for r :from arows :below rrows :do
+      (loop :for c :from acols :below rcols :do
+        (setf (ref result r c) (ref b (- r arows) (- c acols)))))
+    result))
+
 
 (defun eig (m)
   "Finds the (right) eigenvectors and corresponding eigenvalues of a square matrix M. Returns as two lists (EIGENVALUES, EIGENVECTORS) where the eigenvalues and eigenvectors are in corresponding order."
@@ -880,13 +931,6 @@ with upper left block with dimension P-by-Q. Returns the intermediate representa
         ;; run it again with optimal workspace size
         (magicl.lapack-cffi::%zgeev jobvl jobvr rows a rows w vl 1 vr rows work lwork rwork info)
         (values (vector-to-list w) (make-matrix :rows rows :cols cols :data vr))))))
-
-(defun logm (m)
-  "Finds the matrix logarithm of a given square matrix M assumed to be diagonalizable, with nonzero eigenvalues"
-  (multiple-value-bind (vals vects) (eig m)
-    (let ((new-log-diag
-            (let ((log-vals (mapcar #'log vals))) (diag (matrix-cols m) (matrix-rows m) log-vals))))
-      (multiply-complex-matrices vects (multiply-complex-matrices new-log-diag (inv vects))))))
 
 (defun kron (a b &rest rest)
   "Compute the kronecker product of matrices A and B."

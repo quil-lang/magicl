@@ -550,7 +550,7 @@ the CFFI binding file."
 
 (defun generate-expokit-file ()
   (generate-file "expokit-cffi"
-                 '#:magicl.expokit-cffi
+                 '#:magicl-transcendental.expokit-cffi
                  'magicl.foreign-libraries:libexpokit
                  #'parse-expokit-files))
 

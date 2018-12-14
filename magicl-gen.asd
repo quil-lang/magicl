@@ -8,5 +8,8 @@
   :serial t
   :components
   ((:file "packages")
+   (:module "transcendental"
+    :serial t
+    :components ((:file "package")))
    (:file "cffi-types")
    (:file "generate-interface")))

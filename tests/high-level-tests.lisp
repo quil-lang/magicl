@@ -30,7 +30,9 @@
   (let ((x (magicl:random-unitary 4)))
     (loop :for i :from 0 :to (1- (magicl:matrix-cols x))
 	  :for j :from 0 :to (1- (magicl:matrix-rows x))
-	  :do (let  ((diff (- (magicl:ref x i j) (magicl:ref (magicl:expm (magicl:logm x)) i j)))
+	  :do (let  ((diff (- (magicl:ref x i j) (magicl:ref (magicl-transcendental:expm
+                                                              (magicl-transcendental:logm x))
+                                                             i j)))
                       (eps .00001f0))
                 (is (< (abs diff) eps))))))
 

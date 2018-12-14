@@ -7,6 +7,7 @@
   :author "Rigetti Computing"
   :depends-on (#:uiop
                #:magicl
+               #:magicl-transcendental
                #:magicl-examples
                #:fiasco)
   :perform (asdf:test-op (o s)
