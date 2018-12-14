@@ -5,8 +5,17 @@
 (in-package #:magicl-transcendental.foreign-libraries)
 
 (cffi:define-foreign-library libexpokit
-  (:darwin "expokit.dylib")
-  (:unix  "expokit.so")
+  (:darwin (:or #.(merge-pathnames "libexpokit.dylib"
+                                   (or *compile-file-truename*
+                                       *load-truename*))
+                "libexpokit.dylib"
+                "expokit.dylib"))
+  (:unix  (:or #.(merge-pathnames "libexpokit.so"
+                                  (or *compile-file-truename*
+                                      *load-truename*))
+               "libexpokit.so"
+               "expokit.so"))
+
   (t (:default "expokit")))
 
 (push 'libexpkit magicl.foreign-libraries::*cffi-libraries*)
