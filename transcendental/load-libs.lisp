@@ -18,7 +18,7 @@
 
   (t (:default "expokit")))
 
-(push 'libexpkit magicl.foreign-libraries::*cffi-libraries*)
+(push 'libexpokit magicl.foreign-libraries::*cffi-libraries*)
 
 (defvar *expokit-libs-loaded* nil)
 
