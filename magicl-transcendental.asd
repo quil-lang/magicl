@@ -34,7 +34,8 @@
              "-o" (nn shared-object)
              (nn object-file)
              #+darwin "-lblas"
-             #+darwin "-llapack")))))
+             #+darwin "-llapack"))
+      (delete-file object-file))))
 
 
 (asdf:defsystem #:magicl-transcendental
