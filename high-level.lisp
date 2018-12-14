@@ -226,6 +226,75 @@
     (map-indexes rows cols (lambda (r c) (setf (ref m r c) (funcall f r c))))
     m))
 
+(defun lift-unary-function (function)
+  "Produces a unitary function that takes a matrix and returns a
+matrix of the same dimension where each element of the output matrix
+is the result of applying the unitary FUNCTION to the corresponding
+element in the input matrix."
+  (check-type function function)
+  (lambda (matrix)
+    (check-type matrix matrix)
+    (tabulate (matrix-rows matrix) (matrix-cols matrix)
+              (lambda (i j) (funcall function (ref matrix i j))))))
+
+(setf (symbol-function 'inc-matrix) (lift-unary-function #'1+))
+(setf (documentation #'inc-matrix 'function)
+      "Returns matrix with each element + 1.")
+(setf (symbol-function 'dec-matrix) (lift-unary-function #'1-))
+(setf (documentation #'dec-matrix 'function)
+      "Returns matrix with each element - 1.")
+
+(defun lift-binary-function (function)
+  "Produces a binary function that takes a matrix and returns a
+matrix of the same dimension where each element of the output matrix
+is the result of applying the binary FUNCTION to the corresponding
+elements in the input matrices."
+  (check-type function function)
+  (lambda (a b)
+    (check-type a matrix)
+    (check-type b matrix)
+    (tabulate (matrix-rows a) (matrix-cols a)
+              (lambda (i j) (funcall function
+                                (ref a i j)
+                                (ref b i j))))))
+
+(defgeneric add-matrix-generic (a b))
+(defgeneric sub-matrix-generic (a b))
+
+(let ((lifted-+ (lift-binary-function #'+))
+      (lifted-- (lift-binary-function #'-)))
+  (defmethod add-matrix-generic ((a matrix) (b matrix))
+    (funcall lifted-+ a b))
+
+  (defmethod add-matrix-generic ((a number) (b matrix))
+    (let ((mat-a (tabulate (matrix-rows b) (matrix-cols b)
+                           (lambda (i j) (declare (ignore i j)) a))))
+      (add-matrix-generic mat-a b)))
+
+  (defmethod add-matrix-generic ((b matrix) (a number))
+    (add-matrix-generic a b))
+
+  (defmethod sub-matrix-generic ((a matrix) (b matrix))
+    (funcall lifted-- a b))
+
+  (defmethod sub-matrix-generic ((a number) (b matrix))
+    (let ((mat-a (tabulate (matrix-rows b) (matrix-cols b)
+                           (lambda (i j) (declare (ignore i j)) a))))
+      (sub-matrix-generic mat-a b)))
+
+  (defmethod sub-matrix-generic ((b matrix) (a number))
+    (let ((mat-a (tabulate (matrix-rows b) (matrix-cols b)
+                           (lambda (i j) (declare (ignore i j)) a))))
+      (sub-matrix-generic b mat-a))))
+
+(defun add-matrix (matrix &rest more-matrices)
+  "Element-wise addition of input matrices."
+  (reduce #'add-matrix-generic more-matrices :initial-value matrix))
+
+(defun sub-matrix (matrix &rest more-matrices)
+  "Element-wise subtraction of input matrices."
+  (reduce #'sub-matrix-generic more-matrices :initial-value matrix))
+
 (defun make-identity-matrix (dimension)
   "Make an identity matrix of dimension DIMENSION."
   (tabulate dimension dimension (lambda (i j) (if (= i j) 1 0))))

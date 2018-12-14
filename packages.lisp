@@ -86,6 +86,10 @@
            #:logm
            #:kron
            #:exptm
+           #:inc-matrix
+           #:dec-matrix
+           #:add-matrix
+           #:sub-matrix
            )
 
   ;; random.lisp
