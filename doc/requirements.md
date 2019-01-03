@@ -1,10 +1,10 @@
 # Requirements
 
  * SBCL (> 1.3.19) or (>= 1.11) CCL on AMD64
+ * gfortran
  * quicklisp
  * [libffi](#libffi)
  * [BLAS and LAPACK](#blas-and-lapack)
- * [Expokit](#expokit)
 
 ## libffi
 
@@ -101,70 +101,3 @@ it can be found here [here](https://software.intel.com/en-us/get-started-with-mk
 
 In order to use MKL in MAGICL, add `:magicl.use-mkl` to your `*features*` before compilation.
 
-## Expokit
-
-For all platforms, you will need to build Expokit, a Fortran library for matrix exponentiation. This usually is not included in mainstream software distribution mechanisms. As of right now, support is only available for the "small dense routines", i.e. those using Pade or Chebyshev (see the expokit `README` file for the exact files). 
-
-You will need to download `expokit.tar.gz` from the [Expokit download page](https://www.maths.uq.edu.au/expokit/download.html). Extract the archive and `cd` into the directory `expokit/fortran/`. There should be a file named `expokit.f`. This is the only file needed to make the shared library.
-
-### Linux
-
-To make a shared library out of `expokit.f`, run the following command two commands: 
-
-```bash
-gfortran -fPIC -c expokit.f
-gfortran -shared -o expokit.so expokit.o
-```
-
-After running these commands, you should see an `expokit.so` file in
-your current directory. You will also need `libgfortran.so`, which can
-usually be installed by installing `libgfortran3`.x
-
-The gfortran compiler will build a library that depends on
-`libgfortran.so` which will need to be on the target system of
-deploymeny. You can statically link `libgfortran`, however, by
-replacing the commands above with:
-
-```bash
-gfortran -fPIC -c expokit.f
-gfortran -shared -static-libgfortran -o expokit.so expokit.o
-```
-
-This will remove `libgfortran.{so, dylib}` as a dependency on your
-deployment targets. **However**, most Linux distros don't ship
-`libgfortran.a` built with `-fPIC`, so the above **may fail**.
-
-Finally, add the following command into your `~/.bashrc`:
-
-```bash
-LD_LIBRARY_PATH="$LD_LIBRARY_PATH:<path-to-expokit.so-directory>"; export LD_LIBRARY_PATH;
-```
-
-where the placeholder should be replaced by the path to the directory that the newly created `expokit.so` file is. Run `source ~/.bashrc` for this to take effect.
-
-### macOS and OS X
-
-On a Mac, the commands are similar to Linux:
-
-```bash
-gfortran -fPIC -c expokit.f
-gfortran -dynamiclib -o expokit.dylib expokit.o -lblas -llapack
-```
-
-If BLAS and LAPACK aren't in a regular location, then you may need to pass the linked path option `-L<path-to-lib>` for each library to the second command.
-
-Likewise with the above Linux instructions, you can avoid having to
-dynamically link `libgfortran.dylib` by statically linking it. The
-above commands become:
-
-```bash
-gfortran -fPIC -c expokit.f
-gfortran -dynamiclib -static-libgfortran -o expokit.dylib expokit.o -lblas -llapack
-```
-
-You will need to put `expokit.dylib` somwhere your system understands, like `/usr/local/lib/`. One may change the variable `DYLD_FALLBACK_LIBRARY_PATH` in a manner like below if the location shall be custom:
-
-```bash
-DYLD_FALLBACK_LIBRARY_PATH="$DYLD_FALLBACK_LIBRARY_PATH:<path-to-expokit.dylib-directory>"
-export DYLD_FALLBACK_LIBRARY_PATH
-```

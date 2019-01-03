@@ -17,10 +17,8 @@ Test it with `(asdf:test-system :magicl)`.
  * libffi
  * BLAS and LAPACK
 
-A separate system, `magic-transcendental`, contains transcendental functions, and requires another dependency called Expokit.
-
- Detailed instructions on how to install `libffi`, BLAS/LAPACK, and Expokit can be found
- [here](doc/requirements.md).
+ Detailed instructions on how to install `libffi` and BLAS/LAPACK can
+ be found [here](doc/requirements.md).
 
  Currently this library is SBCL- and CCL-only. The non-portable code is in `with-array-pointers.lisp` and `magicl.lisp`.
 
@@ -32,8 +30,6 @@ You can run the MAGICL tests from your Lisp REPL with:
 (ql:quickload :magicl-tests)
 (asdf:test-system :magicl)
 ```
-
-Note that the tests use both `magicl` and `magicl-transcendental` and hence requires Expokit.
 
 This repository is also set up with Sempahore CI, and uses Docker for building MAGICL and running its tests. You can emulate Semaphore's behavior by using the following commands from the top-level directory:
 

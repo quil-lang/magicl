@@ -4,7 +4,9 @@
 
 (asdf:defsystem #:magicl
   :license "BSD 3-Clause (See LICENSE.txt)"
+  :description "Matrix Algebra proGrams In Common Lisp"
   :maintainer "Rigetti Computing"
+  :author "Rigetti Computing"
   :version (:read-file-form "VERSION.txt")
   :depends-on (#:alexandria
                #:cffi
