@@ -1,3 +1,18 @@
+The following is an excerpt from an email by Professor Roger Sidje on
+December 20, 2018:
+
+    I am okay that you slice and dice Expokit any way you want for
+    your purposes.
+
+    [Y]ou can also release it (and your derivatives) in any license
+    you want, including the BSD license you mentioned.
+
+    This very permissive Expokit license also means that other
+    versions of Expokit not derived from your copy remain free to be
+    licensed any way too
+
+The original Expokit license notice follows:
+
                               NOTICE
 
 Permission to use, copy, modify, and distribute EXPOKIT and its
