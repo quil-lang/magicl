@@ -1,0 +1,8 @@
+test:
+  tags:
+    - github
+  only:
+    - branches
+  image: rigetti/quicklisp
+  script:
+    - make test
