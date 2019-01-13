@@ -6,14 +6,14 @@ QUICKLISP_SETUP=$(QUICKLISP_HOME)/setup.lisp
 QUICKLISP=$(SBCL) --load $(QUICKLISP_HOME)/setup.lisp \
 	--eval '(push (truename ".") asdf:*central-registry*)'
 
+UNAME_S=$(shell uname -s)
+
 all: test
 
 install-test-deps:
 ifeq ($(UNAME_S),Linux)
 ifeq ($(shell sed -n "s/^ID=//p" /etc/os-release),debian)
-	echo "deb $(ZMQ_REPO) ./" >> /etc/apt/sources.list
-	curl $(ZMQ_REPO)/Release.key | apt-key add -
-	apt-get install -y libblas-dev libffi-dev liblapack-dev pkg-config
+	apt-get install -y libblas-dev libffi-dev liblapack-dev
 else
 	echo "Centos-based platforms unsupported"
 endif
