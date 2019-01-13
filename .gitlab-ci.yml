@@ -5,4 +5,5 @@ test:
     - branches
   image: rigetti/quicklisp
   script:
+    - make install-test-deps
     - make test
