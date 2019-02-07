@@ -128,7 +128,7 @@ in OUTPUT-INDICES, and the associated arrays should have the same size
 along paired indices. "
 
   ;; 
-  (let* ((index-table (funcall #'build-index-table factors))
+  (let* ((index-table (build-index-table factors))
          (output-dims (loop :repeat (length output-indices) :collect (gensym "dim")))
          (summation-indices (loop :for idx :being :the :hash-keys :of index-table
                                     :using (hash-value entries)
