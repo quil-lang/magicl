@@ -22,10 +22,10 @@ e.g.
  (einsum (_ i) (A i j) (B j))
 
 computes the matrix-vector product AB and stores the results in a fresh array."
-  (apply #'%einsum
-           (unless (eq '_ output-array) output-array)
-           output-indices
-           factors))
+  (%einsum
+   (if (and (symbolp output-array) (string= "_" output-array)) nil output-array)
+   output-indices
+   factors))
 
 
 ;;; A FACTOR is a list (A i1 ... ik) where - A is a symbol naming an
@@ -38,8 +38,7 @@ computes the matrix-vector product AB and stores the results in a fresh array."
 
 (defun check-factor-indices (factor)
   "Generate an expression to check whether FACTOR has an appropriate number of indices."
-  (let ((array (first factor))
-        (indices (rest factor)))
+  (destructuring-bind (array &rest indices) factor
     `(unless (= ,(length indices) (array-rank ,array))
        (error "Incompatible dimensions: given array ~A with dimensions ~A and indices ~A"
               ,array
@@ -50,15 +49,14 @@ computes the matrix-vector product AB and stores the results in a fresh array."
 ;;; usage in FACTORS, so that we can answer questions like "where is
 ;;; this index variable used?".
 
-(defun build-index-table (&rest factors)
+(defun build-index-table (factors)
   "Builds a table mapping index variables to their usage in
 FACTORS. Here FACTORS is a list of expressions of the form (A i1 i2 ... ik), 
 where A is a k-dimensional array and i1 i2 ... ik are symbols. The corresponding 
 table entries are i1 -> ((A . 1)), i2 -> ((A . 2),  ..., ik -> ((A . 2))"
   (let ((index-table (make-hash-table)))
     (dolist (factor factors index-table)
-      (let ((array (first factor))
-            (indices (rest factor)))
+      (destructuring-bind (array &rest indices) factor
         (loop :for idx :in indices
               :for pos :from 0              
               :do (check-type idx symbol)
@@ -73,10 +71,10 @@ table entries are i1 -> ((A . 1)), i2 -> ((A . 2),  ..., ik -> ((A . 2))"
 compatibile dimensions along their paired indices. Here IDX is an
 index variable and FACTOR-ENTRIES are its uses as recorded in the
 index table."
-  (labels ((dim-expr (factor)
-             (destructuring-bind (array . pos) factor
-               `(array-dimension ,array ,pos))))
-    `(unless (= ,@ (mapcar #'dim-expr factor-entries))
+  (flet ((dim-expr (factor)
+           (destructuring-bind (array . pos) factor
+             `(array-dimension ,array ,pos))))
+    `(unless (= ,@(mapcar #'dim-expr factor-entries))
        (error "Index variable ~A applied to arrays with incompatible dimensions" ',idx))))
 
 
@@ -90,15 +88,15 @@ index table."
 (defun output-dimensions (output-indices index-table)
   "Compute the dimensions of an output array from a list
 OUTPUT-INDICES and a computed INDEX-TABLE."
-  (labels ((calc-dim (idx)
-             (let ((entries (gethash idx index-table)))
-               (cond ((null entries)
-                      (error "Output index variable ~A does not appear in a factor." idx))
-                     ((< 1 (length entries))
-                      (error "Output index variable ~A appears more than once in factor expression." idx))
-                     (t
-                      (destructuring-bind (array . pos) (first entries)
-                        (array-dimension array pos)))))))
+  (flet ((calc-dim (idx)
+           (let ((entries (gethash idx index-table)))
+             (cond ((null entries)
+                    (error "Output index variable ~A does not appear in a factor." idx))
+                   ((< 1 (length entries))
+                    (error "Output index variable ~A appears more than once in factor expression." idx))
+                   (t
+                    (destructuring-bind (array . pos) (first entries)
+                      (array-dimension array pos)))))))
     (mapcar #'calc-dim output-indices)))
 
 
@@ -116,13 +114,13 @@ OUTPUT-INDICES and a computed INDEX-TABLE."
 ;;; 3. Parts of this could be parallelized.
 
 
-(defun %einsum (output-array output-indices &rest factors)
+(defun %einsum (output-array output-indices factors)
   "Translates an einsum expression into corresponding iterative code
 to perform the summation, updating and returning OUTPUT-ARRAY. If
 OUTPUT-ARRAY is null, a newly allocated array is used.
 
 The einsum expression contains a number of FACTORS, which are
-expressions of the form (A i1 i2 ... il) where A is a k-dimensional
+expressions of the form (A i1 i2 ... ik) where A is a k-dimensional
 array and i1, i2, ..., ik are symbols denoting indices. For the
 expression to be meaningful, each index should appear exactly twice,
 either paired with another index in FACTORS, or paired with an index
@@ -130,13 +128,13 @@ in OUTPUT-INDICES, and the associated arrays should have the same size
 along paired indices. "
 
   ;; 
-  (let* ((index-table (apply #'build-index-table factors))
-         (output-dims (loop :for i :from 0 :below (length output-indices) :collecting (gensym "dim")))
+  (let* ((index-table (funcall #'build-index-table factors))
+         (output-dims (loop :repeat (length output-indices) :collect (gensym "dim")))
          (summation-indices (loop :for idx :being :the :hash-keys :of index-table
-                                  :for entries :being :the :hash-values :of index-table
+                                    :using (hash-value entries)
                                   :when (= 2 (length entries))
                                     :collect idx))
-         (summation-dims (loop :for i :from 0 :below (length summation-indices) :collecting (gensym "dim")))
+         (summation-dims (loop :repeat (length summation-indices) :collect (gensym "dim")))
          (result-array (gensym "result")) ; array to store results
          (sum-var (gensym)))            ; updated in the innermost nested loop
 
@@ -146,38 +144,37 @@ along paired indices. "
     ;; with what goes in the innermost loop (INNER-SUM-TALLY) below,
     ;; and then defining functions to successsively wrap this
     ;; expression accordingly.
-    (labels ((inner-sum-tally ()
-               "Compute the product of factors and update the summand."
-               `(incf ,sum-var (* ,@ (mapcar #'factor-aref-expr factors))))
-             (indices-loop (indices dims expr)
-               "Wrap EXPR in nested loops, one for each element of INDICES."
-               (loop :for idx :in indices
-                     :for dim :in dims
-                     :do (setf expr `(dotimes (,idx ,dim)
-                                         ,expr)))
-               expr)
-             (update-output-array (expr)
-               "Perform EXPR and then update the result array with the resulting sum variable."
-               `(let ((,sum-var 0))
-                    ,expr
-                  (setf (aref ,result-array ,@output-indices) ,sum-var)))
-             (dim-bindings (indices dims expr)
-               "Wrap EXPR in a let expression which introduces variables indicating the dimensions of associated index-variables."
-               (let ((bindings (loop :for idx :in indices
-                                     :for dim :in dims
-                                     :collecting (index-dim-binding idx dim index-table))))
-                 (setf expr `(let ,bindings
-                               ,expr))))
-             (let-result-array (expr)
-               "Evaluate EXPR and return the result erray."
-               `(let ((,result-array ,(or output-array `(make-array (list ,@output-dims) :initial-element 0.0))))
-                  ,expr
-                  ,result-array)))
-
+    (flet ((inner-sum-tally ()
+             "Compute the product of factors and update the summand."
+             `(incf ,sum-var (* ,@(mapcar #'factor-aref-expr factors))))
+           (indices-loop (indices dims expr)
+             "Wrap EXPR in nested loops, one for each element of INDICES."
+             (loop :for idx :in indices
+                   :for dim :in dims
+                   :do (setf expr `(dotimes (,idx ,dim) ,expr)))
+             expr)
+           (update-output-array (expr)
+             "Perform EXPR and then update the result array with the resulting sum variable."
+             `(let ((,sum-var 0))
+                ,expr
+                (setf (aref ,result-array ,@output-indices) ,sum-var)))
+           (dim-bindings (indices dims expr)
+             "Wrap EXPR in a let expression which introduces variables indicating the dimensions of associated index-variables."
+             (let ((bindings (loop :for idx :in indices
+                                   :for dim :in dims
+                                   :collecting (index-dim-binding idx dim index-table))))
+               (setf expr `(let ,bindings
+                             ,expr))))
+           (let-result-array (expr)
+             "Evaluate EXPR and return the result erray."
+             `(let ((,result-array ,(or output-array `(make-array (list ,@output-dims) :initial-element 0.0))))
+                ,expr
+                ,result-array)))
+      
       (let ((safety-checks
               (append (mapcar #'check-factor-indices factors)
                       (loop :for idx :being :the :hash-keys :of index-table
-                            :for entries :being :the :hash-values :of index-table
+                              :using (hash-value entries)
                             :collect (check-index-factors idx entries)))))
         ;; Given our convention above, the following "looks" a lot
         ;; like the code that it generates. In particular, you can
