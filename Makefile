@@ -14,8 +14,10 @@ install-test-deps:
 ifeq ($(UNAME_S),Linux)
 ifeq ($(shell sed -n "s/^ID=//p" /etc/os-release),debian)
 	apt-get install -y libblas-dev libffi-dev liblapack-dev
+else ifneq (,$(wildcard /etc/redhat-release))
+	yum install -y blas-devel libffi-devel lapack-devel
 else
-	echo "Centos-based platforms unsupported"
+	echo "Only Debian and RedHat based platforms are supported"
 endif
 else
 	echo "Non-Linux-based platforms unsupported"
