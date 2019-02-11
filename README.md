@@ -4,12 +4,6 @@
 
 _Matrix Algebra proGrams In Common Lisp_ by [Rigetti Computing](http://www.rigetti.com). (née FLAIL: _Finally, Linear Algebra In Lisp!_)
 
-To begin, clone this repository into `quicklisp/local-projects`.
-
-Once cloned, load it with `(ql:quickload :magicl)`.
-
-Test it with `(asdf:test-system :magicl)`.
-
 (**Note**: The high-level interface is experimental and subject to rapid change.)
 
 ## Requirements
@@ -22,7 +16,19 @@ Test it with `(asdf:test-system :magicl)`.
  Detailed instructions on how to install `libffi` and BLAS/LAPACK can
  be found [here](doc/requirements.md).
 
- Currently this library is SBCL- and CCL-only. The non-portable code is in `with-array-pointers.lisp` and `magicl.lisp`.
+ Currently this library is SBCL- and CCL-only. The non-portable code
+ is in `with-array-pointers.lisp` and `magicl.lisp`.
+
+## Installation
+
+First ensure you have the necessary requirements installed, as
+described in the previous section.
+
+To install MAGICL, clone this repository into your Quicklisp's
+`local-projects` folder. You can quickly check where this is by
+running `sbcl` and evaluating `ql:*local-project-directories*`. Once
+installed, confirm that MAGICL is working properly by running the
+tests, as described in the next section.
 
 ## Testing MAGICL
 
