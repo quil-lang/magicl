@@ -11,7 +11,7 @@
                #:cffi-libffi)
   :serial t
   :components
-  ((:file "packages")
+  ((:file "src/packages")
    (:module "transcendental"
     :serial t
     :components ((:file "package")))
