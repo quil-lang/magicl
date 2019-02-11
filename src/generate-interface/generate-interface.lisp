@@ -521,8 +521,10 @@ the CFFI binding file."
       (list
        `(cl:export ',(loop :for ff :in parsed-ffs
                            :collect (lisp-fun-name ff))
-                   ',package-name)))))
-  )
+                   ',package-name)))
+
+     ;; Specify target directory
+     "src/bindings/")))
 
 (defun generate-blas-file ()
   (generate-file "blas-cffi"
@@ -550,7 +552,7 @@ the CFFI binding file."
 
 (defun generate-expokit-file ()
   (generate-file "expokit-cffi"
-                 '#:magicl-transcendental.expokit-cffi
+                 '#:magicl.expokit-cffi
                  'magicl.foreign-libraries:libexpokit
                  #'parse-expokit-files))
 
