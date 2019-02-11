@@ -4,7 +4,9 @@
 
 _Matrix Algebra proGrams In Common Lisp_ by [Rigetti Computing](http://www.rigetti.com). (née FLAIL: _Finally, Linear Algebra In Lisp!_)
 
-Load it with `(ql:quickload :magicl)`.
+To begin, clone this repository into `quicklisp/local-projects`.
+
+Once cloned, load it with `(ql:quickload :magicl)`.
 
 Test it with `(asdf:test-system :magicl)`.
 
