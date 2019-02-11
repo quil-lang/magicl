@@ -57,5 +57,5 @@
                  (:file "package")
                  (:file "load-libs")
                  (:file "transcendental")))
-   (:file "expokit-cffi")))
+   (:file "src/bindings/expokit-cffi")))
 
