@@ -15,5 +15,5 @@
    (:module "transcendental"
     :serial t
     :components ((:file "package")))
-   (:file "cffi-types")
-   (:file "generate-interface")))
+   (:file "src/cffi-types")
+   (:file "src/generate-interface/generate-interface")))

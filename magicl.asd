@@ -13,13 +13,14 @@
                #:cffi-libffi)
   :in-order-to ((asdf:test-op (asdf:test-op #:magicl-tests)))
   :serial t
+  :pathname "src/"
   :components
   ((:file "packages")
    (:file "load-libs")
    (:file "with-array-pointers")
    (:file "cffi-types")
-   (:file "blas-cffi")
-   (:file "lapack-cffi")
-   (:file "high-level")
-   (:file "random")
+   (:file "bindings/blas-cffi")
+   (:file "bindings/lapack-cffi")
+   (:file "high-level/high-level")
+   (:file "high-level/random")
    (:file "magicl")))
