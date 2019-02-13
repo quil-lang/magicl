@@ -127,7 +127,7 @@ OUTPUT-INDICES and a computed INDEX-TABLE."
 ;;; 3. Parts of this could be parallelized.
 
 
-(defun %einsum (output-array output-indices factors)
+(defun %einsum (output-array output-indices factors &key (dotimes-iterator 'cl:dotimes))
   "Translates an einsum expression into corresponding iterative code
 to perform the summation, updating and returning OUTPUT-ARRAY. If
 OUTPUT-ARRAY is null, a newly allocated array is used.
@@ -138,17 +138,21 @@ array and i1, i2, ..., ik are symbols denoting indices. For the
 expression to be meaningful, each index should appear exactly twice,
 either paired with another index in FACTORS, or paired with an index
 in OUTPUT-INDICES, and the associated arrays should have the same size
-along paired indices. "
+along paired indices.
+
+DOTIMES-ITERATOR is a DOTIMES-like iterator, that can be changed to
+suit different needs (e.g., LPARALLEL:PDOTIMES.)
+"
 
   ;; 
   (let* ((index-table (build-index-table factors))
-         (output-dims (loop :repeat (length output-indices) :collect (gensym "dim")))
+         (output-dims (loop :repeat (length output-indices) :collect (gensym "OUTPUT-DIM")))
          (summation-indices (loop :for idx :being :the :hash-keys :of index-table
                                     :using (hash-value entries)
                                   :when (= 2 (length entries))
                                     :collect idx))
-         (summation-dims (loop :repeat (length summation-indices) :collect (gensym "dim")))
-         (result-array (gensym "result")) ; array to store results
+         (summation-dims (loop :repeat (length summation-indices) :collect (gensym "SUM-DIM")))
+         (result-array (gensym "RESULT")) ; array to store results
          (sum-var (gensym)))            ; updated in the innermost nested loop
 
     ;; The result of all of this is basically a few nested loops
@@ -164,7 +168,7 @@ along paired indices. "
              "Wrap EXPR in nested loops, one for each element of INDICES."
              (loop :for idx :in indices
                    :for dim :in dims
-                   :do (setf expr `(dotimes (,idx ,dim)
+                   :do (setf expr `(,dotimes-iterator (,idx ,dim)
                                      (declare (type vector-index ,idx))
                                      ,expr)))
              expr)
