@@ -4,6 +4,14 @@
 
 (in-package #:magicl)
 
+(deftype vector-length ()
+  "A valid dimension size for an array."
+  `(integer 0 ,array-total-size-limit))
+
+(deftype vector-index ()
+  "A valid index into a vector."
+  `(integer 0 (,array-total-size-limit)))
+
 (defmacro einsum ((output-array . output-indices) &rest factors)
   "Evaluates a sum of products of multidimensional arrays, summing
 over paired indices, storing the results in OUTPUT-ARRAY. 
@@ -156,7 +164,9 @@ along paired indices. "
              "Wrap EXPR in nested loops, one for each element of INDICES."
              (loop :for idx :in indices
                    :for dim :in dims
-                   :do (setf expr `(dotimes (,idx ,dim) ,expr)))
+                   :do (setf expr `(dotimes (,idx ,dim)
+                                     (declare (type vector-index ,idx))
+                                     ,expr)))
              expr)
            (update-output-array (expr)
              "Perform EXPR and then update the result array with the resulting sum variable."
@@ -167,8 +177,9 @@ along paired indices. "
              "Wrap EXPR in a let expression which introduces variables indicating the dimensions of associated index-variables."
              (let ((bindings (loop :for idx :in indices
                                    :for dim :in dims
-                                   :collecting (index-dim-binding idx dim index-table))))
+                                   :collect (index-dim-binding idx dim index-table))))
                (setf expr `(let ,bindings
+                             (declare (type vector-length ,@dims))
                              ,expr))))
            (let-result-array (expr)
              "Evaluate EXPR and return the result erray."
