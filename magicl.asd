@@ -23,4 +23,5 @@
    (:file "bindings/lapack-cffi")
    (:file "high-level/high-level")
    (:file "high-level/random")
+   (:file "high-level/einsum")
    (:file "magicl")))

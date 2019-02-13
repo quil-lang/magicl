@@ -2,6 +2,8 @@
 ;;;;
 ;;;; Author: Erik Davis
 
+(in-package #:magicl)
+
 (defmacro einsum ((output-array . output-indices) &rest factors)
   "Evaluates a sum of products of multidimensional arrays, summing
 over paired indices, storing the results in OUTPUT-ARRAY. 
