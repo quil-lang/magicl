@@ -76,8 +76,11 @@ index table."
   (flet ((dim-expr (factor)
            (destructuring-bind (array . pos) factor
              `(array-dimension ,array ,pos))))
-    `(unless (= ,@(mapcar #'dim-expr factor-entries))
-       (error "Index variable ~A applied to arrays with incompatible dimensions" ',idx))))
+    ;; Only generate code if we have multiple things to test equality
+    ;; for.
+    (when (< 1 (length factor-entries))
+      `(unless (= ,@(mapcar #'dim-expr factor-entries))
+         (error "Index variable ~A applied to arrays with incompatible dimensions" ',idx)))))
 
 
 (defun index-dim-binding (idx idx-dim index-table)
@@ -177,7 +180,9 @@ along paired indices. "
               (append (mapcar #'check-factor-indices factors)
                       (loop :for idx :being :the :hash-keys :of index-table
                               :using (hash-value entries)
-                            :collect (check-index-factors idx entries)))))
+                            :for check-form := (check-index-factors idx entries)
+                            :unless (null check-form)
+                              :collect check-form))))
         ;; Given our convention above, the following "looks" a lot
         ;; like the code that it generates. In particular, you can
         ;; observe that the core computation occurs in two sets of
