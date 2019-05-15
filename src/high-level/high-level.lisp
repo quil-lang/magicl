@@ -100,11 +100,11 @@
           rows
           cols
           (matrix-storage-size data))
-  (let ((data-type (alexandria:eswitch ((array-element-type data) :test 'equal)
-                     ('single-float           'S)
-                     ('double-float           'D)
-                     ('(complex single-float) 'C)
-                     ('(complex double-float) 'Z))))
+  (let ((data-type (etypecase data
+                     ((array single-float)           'S)
+                     ((array double-float)           'D)
+                     ((array (complex single-float)) 'C)
+                     ((array (complex double-float)) 'Z))))
     (%make-matrix rows cols data-type data)))
 
 (defun copy-matrix-storage (v)
@@ -369,8 +369,9 @@ elements in the input matrices."
 (defun multiply-complex-matrices (ma mb)
   "Multiplies two complex marices MA and MB, returning MA*MB. If MA is M x KA and MB is KB x N,
 it must be that KA = KB, and the resulting matrix is M x N."
-  (assert (equal (matrix-element-type ma) (matrix-element-type mb)))
-  (assert (equal '(complex double-float) (matrix-element-type ma)))
+  (assert (subtypep (matrix-element-type ma) (matrix-element-type mb)))
+  (assert (subtypep (matrix-element-type mb) (matrix-element-type ma)))
+  (assert (subtypep (matrix-element-type ma) '(complex double-float)))
   (let ((m  (matrix-rows ma))
         (ka (matrix-cols ma))
         (kb (matrix-rows mb))
