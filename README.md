@@ -93,12 +93,14 @@ Once downloaded, extract the tarballs into a directory and re-generate the bindi
 ```
 (ql:quickload :magicl-gen)
 (in-package :magicl.generate-interface)
-(generate-blapack-files #P"/path/to/lapack-3.7.1/")
+(generate-blas-files #P"/path/to/lapack-3.7.1/")
+(generate-lapack-files* #P"/path/to/lapack-3.7.1/")
 (generate-expokit-files #P"/path/to/expokit/")
 ```
 
-Currently this will write to the source distribution directory of MAGICL,
-namely the files `blas-cffi.lisp`, `lapack-cffi.lisp`, and `expokit-cffi.lisp`.
+Currently this will write to the source distribution directory of
+MAGICL, namely the files `blas-cffi.lisp`, `lapack*-cffi.lisp`, and
+`expokit-cffi.lisp`.
 
 ## History and Credits
 
