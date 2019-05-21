@@ -1,7 +1,9 @@
 (defpackage #:magicl.generate-interface
   (:use #:common-lisp
         #:magicl.cffi-types)
-  (:export #:generate-blapack-files
+  (:export #:generate-blas-files
+           #:generate-lapack-files
+           #:generate-lapack-files*
            #:generate-expokit-files))
 
 (in-package #:magicl.generate-interface)
@@ -277,6 +279,20 @@ remaining lines."
 	   (concatenate 'string (namestring basedir) "SRC/*.f")))))
     (mapcar #'parse-fortran-file files)))
 
+(defun make-lapack-parser* (&optional (basedir *basedir*) (chunks 8))
+  (let* ((files
+          (directory
+           (pathname
+            (concatenate 'string (namestring basedir) "SRC/*.f"))))
+         (chunk-size (ceiling (length files) chunks)))
+    (format *trace-output* "; Creating generator with batch size: ~s~%" chunk-size)
+    (lambda ()
+      (loop
+         repeat chunk-size
+         for file = (pop files)
+         while file
+         collect (parse-fortran-file file)))))
+
 (defun lookup-type (type-string-list)
   (let ((found-type nil)
         (match-length 0))
@@ -524,7 +540,7 @@ the CFFI binding file."
                    ',package-name)))
 
      ;; Specify target directory
-     "src/bindings/")))
+     (merge-pathnames "src/bindings/" *outdir*))))
 
 (defun generate-blas-file ()
   (generate-file "blas-cffi"
@@ -532,16 +548,33 @@ the CFFI binding file."
                  'magicl.foreign-libraries:libblas
                  #'parse-blas-files))
 
+(defun generate-blas-files (lapack-dir)
+  (let ((*basedir* lapack-dir))
+    (generate-blas-file)))
+
 (defun generate-lapack-file ()
   (generate-file "lapack-cffi"
                  '#:magicl.lapack-cffi
                  'magicl.foreign-libraries:liblapack
                  #'parse-lapack-files))
 
-(defun generate-blapack-files (lapack-dir)
-  (let ((*basedir* lapack-dir))
-    (generate-blas-file)
-    (generate-lapack-file)))
+(defun generate-lapack-files (file-name parser)
+  (generate-file file-name
+                 '#:magicl.lapack-cffi
+                 'magicl.foreign-libraries:liblapack
+                 parser))
+
+(defun generate-lapack-files* (lapack-dir)
+  (loop
+     with *basedir* = lapack-dir
+     with number-of-chunks = 8
+     with parser = (make-lapack-parser* *basedir* number-of-chunks)
+     for i from 0 below number-of-chunks
+     for file-name = (format nil "lapack~2,'0d-cffi" i)
+     do (generate-file file-name
+                       '#:magicl.lapack-cffi
+                       'magicl.foreign-libraries:liblapack
+                       parser)))
 
 (defun parse-expokit-files (&optional (basedir *basedir*))
   "Right now, this only parses the dense matrix exponentiation routines, because the sparse ones call an external subroutine which is not handled by the parser."
@@ -553,7 +586,7 @@ the CFFI binding file."
 (defun generate-expokit-file ()
   (generate-file "expokit-cffi"
                  '#:magicl.expokit-cffi
-                 'magicl.foreign-libraries:libexpokit
+                 'magicl-transcendental.foreign-libraries:libexpokit
                  #'parse-expokit-files))
 
 (defun generate-expokit-files (expokit-dir)
