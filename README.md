@@ -39,15 +39,6 @@ You can run the MAGICL tests from your Lisp REPL with:
 (asdf:test-system :magicl)
 ```
 
-This repository is also set up with Sempahore CI, and uses Docker for building MAGICL and running its tests. You can emulate Semaphore's behavior by using the following commands from the top-level directory:
-
-```bash
-make -C docker
-make -C docker test
-```
-
-Note, doing this requires that you have `docker` installed on your machine.
-
 ## Showing Available Functions
 
 Some distributions of a library don't actually provide all of the functions of the reference BLAS and LAPACK. One can look at a summary of available and unavailable functions with the function `magicl:print-availability-report`. By default, it will show all functions and their availability. There are three arguments to fine-tune this behavior:
