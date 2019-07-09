@@ -8,7 +8,7 @@
 ;;; foreign-compatible pointers to the underlying storage of a Lisp
 ;;; SIMPLE-ARRAY.
 ;;;
-;;; Currently only SBCL is supported.
+;;; Currently only SBCL, CCL, and ECL are supported.
 
 (declaim (inline array-pointer))
 
