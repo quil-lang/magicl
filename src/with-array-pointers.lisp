@@ -92,7 +92,8 @@ WARNING: Do not close over these pointers or otherwise store them outside of the
                   :for g := (gensym "VECTOR-STORAGE-")
                   :do (setf form
                             `(excl:with-underlying-simple-vector (,e ,g)
-                               (let ((,s (ff:fslot-address-typed :unsigned-char :lisp ,g)))
-                                 (declare (ignorable ,s))
-                                 ,form)))
+                               (excl:with-pinned-objects (,g)
+                                 (let ((,s (ff:fslot-address-typed :unsigned-char :lisp ,g)))
+                                   (declare (ignorable ,s))
+                                   ,form))))
                   :finally (return form))))))
