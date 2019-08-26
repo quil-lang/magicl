@@ -91,7 +91,7 @@ on search paths to configure this more specifically. Libraries are searched here
 
 Another way to get BLAS and LAPACK on macOS is through the [_Accelerate_](https://developer.apple.com/documentation/accelerate) framework.
 The required libraries are `libBLAS.dylib` and `libLAPACK.dylib`. While the Accelerate framework includes these libraries,
-they are not a complete. We count more than 500 missing functions provided in the standard LAPACK distribution.
+they are not complete. We count more than 500 missing functions provided in the standard LAPACK distribution.
 In order to use the system-provided libraries, add `:magicl.use-accelerate` to your `*features*` before compilation.
 
 #### MKL
