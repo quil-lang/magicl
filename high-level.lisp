@@ -658,6 +658,17 @@ it must be that KA = KB, and the resulting matrix is M x N."
                 (ref m (+ rmin i) (+ cmin j)))))
       (make-matrix :rows sliced-rows :cols sliced-cols :data v))))
 
+(defun matrix-column (m c)
+  "Get the column of M at index C."
+  (slice m
+         0 (matrix-rows m)
+         c (1+ c)))
+
+(defun matrix-row (m r)
+  "Get the row of M at index R."
+  (slice m
+         r (1+ r)
+         0 (matrix-cols m)))
 
 (defun csd (x p q)
   "Find the Cosine-Sine Decomposition of a matrix X given that it is to be partitioned with upper left block of dimension P-by-Q. Returns the CSD elements (VALUES U SIGMA VT) such that X=U*SIGMA*VT."
