@@ -62,9 +62,13 @@
            #:print-availability-report
            #:with-blapack
            #:make-complex-matrix
+           #:make-complex-vector
            #:conjugate-entrywise
            #:transpose
            #:conjugate-transpose
+           #:slice
+           #:matrix-column
+           #:matrix-row
            #:qr
            #:ql
            #:rq

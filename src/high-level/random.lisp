@@ -14,12 +14,12 @@
               (complex (random 1.0d0) (random 1.0d0)))))
 
 (defun random-gaussian-matrix (rows cols)
-  "Create a Z matrix of size ROWS x COLS with normally distributed random complex entries in [0,1) + [0,1)i."
+  "Create a Z matrix of size ROWS x COLS with normally distributed random complex entries."
   (tabulate rows cols
             (lambda (i j)
               (declare (ignore i j))
-              (complex (alexandria:gaussian-random 0.0d0 1.0d0)
-                       (alexandria:gaussian-random 0.0d0 1.0d0)))))
+              (complex (alexandria:gaussian-random)
+                       (alexandria:gaussian-random)))))
 
 (defun random-unitary (n)
   "Generate a uniformly random element of U(n)."
