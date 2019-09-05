@@ -378,29 +378,15 @@ it must be that KA = KB, and the resulting matrix is M x N."
         (n  (matrix-cols mb)))
     (assert (= ka kb) ()
             "Matrix A has ~D columns while matrix B has ~D rows" ka kb)
-    (let ((a (copy-matrix-storage (matrix-data ma)))
-          (b (copy-matrix-storage (matrix-data mb))))
-      (if (= n 1)
-          ;; mb is a column vector
-          (if (= m 1)
-              ;; ma is a row vector
-              ;; use dot product
-              (make-complex-matrix 1 1 (list (magicl.blas-cffi::%zdotu ka a 1 b 1)))
-              ;; use matrix-vector multiplication
-              (let ((trans "N")
-                    (alpha #C(1.0d0 0.0d0))
-                    (beta #C(0.0d0 0.0d0))
-                    (y (make-Z-storage (* m n))))
-                (magicl.blas-cffi::%zgemv trans m ka alpha a m b 1 beta y 1)
-                (make-matrix :rows m :cols n :data y)))
-          ;; use matrix-matrix multiplication
-          (let ((transa "N")
-                (transb "N")
-                (alpha #C(1.0d0 0.0d0))
-                (beta #C(0.0d0 0.0d0))
-                (c (make-Z-storage (* m n))))
-            (magicl.blas-cffi::%zgemm transa transb m n ka alpha a m b kb beta c m)
-            (make-matrix :rows m :cols n :data c))))))
+    (let ((a (matrix-data ma))
+          (b (matrix-data mb))
+          (transa "N")
+          (transb "N")
+          (alpha #C(1.0d0 0.0d0))
+          (beta #C(0.0d0 0.0d0))
+          (c (make-Z-storage (* m n))))
+      (magicl.blas-cffi::%zgemm transa transb m n ka alpha a m b kb beta c m)
+      (make-matrix :rows m :cols n :data c))))
 
 (defun conjugate-entrywise (m)
   "Computes the conjugate of each entry of matrix M."
