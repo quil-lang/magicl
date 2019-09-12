@@ -38,13 +38,24 @@
 
 (defpackage #:magicl
   (:use #:common-lisp
-        #:cffi)
+        #:cffi
+        #:abstract-classes)
   #+package-local-nicknames
   (:local-nicknames (#:blas #:magicl.blas-cffi)
                     (#:lapack #:magicl.lapack-cffi)
                     (#:expokit #:magicl.expokit-cffi))
   (:import-from #:magicl.foreign-libraries
                 #:print-availability-report)
+  (:shadow #:vector
+           #:+
+           #:-
+           #:=
+           #:map
+           #:trace
+           #:every
+           #:some
+           #:notevery
+           #:notany)
   (:export #:*type-strictness*          ; VARIABLE
            #:S #:D #:C #:Z              ; SYMBOLS
            #:matrix                     ; TYPE, FUNCTION
@@ -94,6 +105,47 @@
            #:dec-matrix
            #:add-matrix
            #:sub-matrix
+           
+           ;; New stuff
+
+           ;; abstract-tensor protocol
+           #:specialize-tensor
+           #:generalize-tensor
+           #:shape
+           #:tref
+           #:rank
+           #:size
+           #:element-type
+           #:lisp-array
+
+           ;; Classes
+           #:tensor
+           #:matrix
+
+           ;; Accessors
+           #:nrows
+           #:ncols
+
+           ;; Subtypes
+           #:tensor/single-float
+           #:tensor/double-float
+           #:matrix/single-float
+           #:matrix/double-float
+
+           ;; Constructors
+           #:make-tensor
+           #:empty
+           #:const
+           #:rand
+           #:deye
+           #:arange
+           #:from-array
+           #:from-list
+
+           ;; Operators
+           #:+
+           #:-
+           #:@
            )
 
   ;; random.lisp
