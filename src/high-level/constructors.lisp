@@ -30,15 +30,41 @@
 (defgeneric rand (min max shape &key type distribution)
   (:documentation "Create tensor with elements random in the range [0,limit]")
   (:method (min max shape &key type (distribution :uniform))
-    (error "Rand not implemented yet.")
-    #+ignore
     (progn
       (check-type shape shape)
       (check-type distribution (member :uniform :normal))
-      (let ((rand-function
-              (ecase distribution
-                (:uniform #'random)))))
-      (specialize-tensor (make-tensor shape type)))))
+      (let* ((tensor-class
+               (if (null type)
+                   (compatible-tensor-constructors-from-value min)
+                   (compatible-tensor-constructors type)))
+             (element-type
+               (if (null type)
+                   (upgraded-array-element-type (type-of min))
+                   type))
+             (rand-function
+               (ecase distribution
+                 (:uniform (cond
+                             ((subtypep element-type 'complex)
+                              (lambda ()
+                                (complex
+                                 (cl:+ min (random (cl:- max min)))
+                                 (cl:+ min (random (cl:- max min))))))
+                             (t
+                              (lambda ()
+                                (cl:+ min (random (cl:- max min)))))))
+                 (:normal (cond
+                            ((subtypep element-type 'complex)
+                             (lambda ()
+                               (complex
+                                (alexandria:gaussian-random min max)
+                                (alexandria:gaussian-random min max))))
+                            (t
+                             (lambda ()
+                               (alexandria:gaussian-random min max)))))))
+             (f (lambda (&rest rest)
+                  (declare (ignore rest))
+                  (coerce  (funcall rand-function) element-type))))
+        (specialize-tensor (into! f (make-tensor shape tensor-class element-type)))))))
 
 (defgeneric deye (d shape &key type order)
   (:documentation "Create idenetity matrix scaled by factor d.
@@ -54,12 +80,10 @@ dim is the side length of the square matrix")
              (if (null type)
                  (upgraded-array-element-type (type-of d))
                  type))
-           (tensor (make-tensor shape tensor-class element-type :order order))
-           (f (lambda (&rest pos)
-                (if (cl:every #'= pos (rest pos))
-                    (coerce d element-type)
-                    (coerce 0 type)))))
-      (specialize-tensor (into! f tensor))))) ;; TODO: WHOAH THERE BUCKAROO THAT THERE IS O(N^2) Oh(you messed up)
+           (tensor (make-tensor shape tensor-class element-type :order order)))
+      (loop :for i :below (first shape)
+            :do (setf (tref tensor i i) (coerce d element-type)))
+      (specialize-tensor tensor))))
 
 (defgeneric arange (range &key type order)
   (:documentation "Create a 1d tensor of integers (not the type) from 0 up to but not including the specified range")
@@ -77,19 +101,31 @@ dim is the side length of the square matrix")
                 (coerce index element-type))))
       (specialize-tensor (into! f tensor)))))
 
+(defgeneric from-array (array shape &key type order)
+  (:documentation "Create a tensor from an array")
+  (:method (array shape &key type (order :row-major))
+    (let* ((element-type
+             (if (null type)
+                 (array-element-type array)
+                 type))
+           (tensor-class
+             (if (null type)
+                 (compatible-tensor-constructors element-type)
+                 (compatible-tensor-constructors type))))
+      (adjust-array array (list (reduce #'* shape)) :element-type element-type)
+      (specialize-tensor
+       (make-tensor shape tensor-class element-type
+                    :storage array
+                    :order order)))))
 
-;; TODO: are these args backwards or are the others?
-(defgeneric from-array (shape array)
-  (:documentation "Create a tensor from an array"))
-
-(defgeneric from-list (shape list &key type order)
+(defgeneric from-list (list shape &key type order input-order)
   (:documentation "Create a tensor of the specified shape from a list, putting elements in row-major order.
 NOTE: When type is not specified, the type is inferred from the first element of the list")
-  (:method (shape list &key type (order :column-major))
+  (:method (list shape &key type (order :column-major) (input-order :row-major))
     (check-type shape shape)
     (let ((shape-size (reduce #'* shape))
           (list-size (length list)))
-      (assert (= list-size shape-size)
+      (assert (cl:= list-size shape-size)
               () "Incompatible shape. Must have the same total number of elements. The list has ~a elements and the new shape has ~a elements" list-size shape-size))
     (let* ((tensor-class
              (if (null type)
@@ -99,10 +135,39 @@ NOTE: When type is not specified, the type is inferred from the first element of
              (if (null type)
                  (upgraded-array-element-type (type-of (first list)))
                  type))
-          (tensor (make-tensor shape tensor-class element-type :order order)))
+           (tensor (make-tensor shape tensor-class element-type :order order)))
       (specialize-tensor
        (into!
         (lambda (&rest pos)
-          (coerce (nth (row-major-index pos shape) list) element-type))
+          (coerce (nth
+                   (if (eql input-order :row-major)
+                       (row-major-index pos shape)
+                       (column-major-index pos shape))
+                   list)
+                  element-type))
         tensor)))))
 
+(defgeneric from-diag (list shape &key type order)
+  (:documentation "Create a tensor of the specified shape from a list, placing along the diagonal
+NOTE: When type is not specified, the type is inferred from the first element of the list")
+  (:method (list shape &key type (order :column-major))
+    (check-type shape shape)
+    (assert (cl:= 2 (length shape))
+            () "Shape must be of rank 2.")
+    (assert-square-shape shape)
+    (let ((shape-size (reduce #'* shape))
+          (list-size (length list)))
+      (assert (cl:= (* list-size list-size) shape-size)
+              () "Incompatible shape. Must have the same total number of elements. The list has ~a diagonal elements and the new shape has ~a elements" list-size shape-size))
+    (let* ((tensor-class
+             (if (null type)
+                 (compatible-tensor-constructors-from-value (first list))
+                 (compatible-tensor-constructors type)))
+           (element-type
+             (if (null type)
+                 (upgraded-array-element-type (type-of (first list)))
+                 type))
+           (tensor (make-tensor shape tensor-class element-type :order order)))
+      (loop :for i :below (first shape)
+            :do (setf (tref tensor i i) (coerce (pop list) element-type)))
+      (specialize-tensor tensor))))

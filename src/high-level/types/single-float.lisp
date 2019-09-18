@@ -23,7 +23,7 @@
   matrix/single-float
   vector/single-float)
 
-(defmethod @ ((a matrix/single-float) (b matrix/single-float) &key target (alpha 1.0) (beta 0.0) transa transb)
+(defmethod mult ((a matrix/single-float) (b matrix/single-float) &key target (alpha 1.0) (beta 0.0) transa transb)
     
     ;; (check-type target (or matrix/single-float nil))
     (check-type transa (member nil :n :t :c))

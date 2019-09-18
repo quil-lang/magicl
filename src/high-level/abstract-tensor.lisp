@@ -180,8 +180,7 @@ NOTE: mutates tensor!")
                 target dims)))
       target)))
 
-
-;; REFER to matrix-operations in quilc
+;; TODO: Make this work for more than 2 elements (maybe)
 (defgeneric = (tensor1 tensor2 &optional epsilon)
   (:documentation "Equality check for tensors")
   (:method ((tensor1 abstract-tensor) (tensor2 abstract-tensor) &optional epsilon)

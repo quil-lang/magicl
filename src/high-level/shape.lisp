@@ -15,7 +15,7 @@
 
 (defun square-shape-p (shape)
   (and (valid-shape-p shape)
-       (cl:every #'= shape (rest shape))))
+       (cl:every #'cl:= shape (rest shape))))
 
 ;; Types
 (deftype shape (&optional rank) ;; TODO: rank, maybe

@@ -51,7 +51,7 @@
 
 (defmethod tref ((tensor tensor) &rest pos)
   ;; TODO: Check pos type
-  (assert (= (rank tensor) (list-length pos))
+  (assert (cl:= (rank tensor) (list-length pos))
           () "Invalid index ~a. Must be rank ~a" pos (rank tensor))
   (assert (cl:every #'< pos (shape tensor))
           () "Index ~a out of range" pos)
@@ -61,7 +61,7 @@
     (aref (storage tensor) index)))
 
 (defmethod (setf tref) (new-value (tensor tensor) &rest pos)
-       (assert (= (rank tensor) (list-length pos))
+       (assert (cl:= (rank tensor) (list-length pos))
                () "Invalid index ~a. Must be rank ~a" pos (rank tensor))
        (assert (cl:every #'< pos (shape tensor))
                () "Index ~a out of range" pos)
@@ -153,7 +153,7 @@ WARNING: This method acts differently depending on the order of the tensor. Do n
   (:method ((tensor tensor) shape)
     ;; TODO: check type
     (let ((shape-size (reduce #'* shape)))
-      (assert (= (size tensor) shape-size)
+      (assert (cl:= (size tensor) shape-size)
               () "Incompatible shape. Must have the same total number of elements. The tensor has ~a elements and the new shape has ~a elements" (size tensor) shape-size))
   (setf (slot-value tensor 'shape) shape)
   (setf (slot-value tensor 'rank) (length shape))
