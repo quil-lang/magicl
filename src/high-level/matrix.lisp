@@ -100,7 +100,7 @@
      ,@(loop :for matrix in matrices
              :collect `(assert (square-matrix-p ,matrix)
                                ()
-                               ,"The shape of ~a is ~a, which is not a square" ,(symbol-name matrix) ,matrix))))
+                               ,"The shape of ~a is ~a, which is not a square" ,(symbol-name matrix) (shape ,matrix)))))
 
 ;;; Required abstract-tensor methods
 
@@ -399,7 +399,7 @@ If fast is t then just change order. Fast can cause problems when you want to mu
             (loop for j from 0 to (1- order)
                   do (loop for i from (max 0 (cl:+ (cl:- m order) j)) to (1- m)
                            do (setf (tref target (cl:+ i (cl:- order m)) j) (tref matrix i j)))))
-        target)))))))
+        target))))
 
 ;; TODO: this only makes sense on complex matrices. Only define for complex matrices?
 (defgeneric conjugate-transpose (matrix)

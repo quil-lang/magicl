@@ -7,7 +7,7 @@
 (defconstant +default-tensor-type+ 'double-float)
 
 (defgeneric empty (shape &key type order)
-  (:documentation "Create an empty tensor")
+  (:documentation "Create an empty tensor of specified shape")
   (:method (shape &key (type +default-tensor-type+) order)
     (check-type shape shape)
     (let ((tensor-type (compatible-tensor-constructors type)))
@@ -67,8 +67,7 @@
         (specialize-tensor (into! f (make-tensor shape tensor-class element-type)))))))
 
 (defgeneric deye (d shape &key type order)
-  (:documentation "Create identity matrix scaled by factor d.
-dim is the side length of the square matrix")
+  (:documentation "Create identity matrix scaled by factor D")
   (:method (d shape &key type order)
     (check-type shape shape)
     (assert-square-shape shape)
