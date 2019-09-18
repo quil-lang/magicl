@@ -13,6 +13,9 @@
                #:cffi-libffi
                #:abstract-classes)
   :in-order-to ((asdf:test-op (asdf:test-op #:magicl-tests)))
+  :around-compile (lambda (compile)
+                    (let (#+sbcl (sb-ext:*derive-function-types* t))
+                      (funcall compile)))
   :serial t
   :pathname "src/"
   :components
