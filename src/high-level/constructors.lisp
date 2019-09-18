@@ -67,7 +67,7 @@
         (specialize-tensor (into! f (make-tensor shape tensor-class element-type)))))))
 
 (defgeneric deye (d shape &key type order)
-  (:documentation "Create idenetity matrix scaled by factor d.
+  (:documentation "Create identity matrix scaled by factor d.
 dim is the side length of the square matrix")
   (:method (d shape &key type order)
     (check-type shape shape)
