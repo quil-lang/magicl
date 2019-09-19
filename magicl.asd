@@ -41,6 +41,7 @@
    (:file "high-level/tensor")
    (:file "high-level/matrix")
    (:file "high-level/vector")
+   (:file "high-level/lapack-macros")
    (:file "high-level/types/single-float")
    (:file "high-level/types/double-float")
    (:file "high-level/types/complex-single-float")
