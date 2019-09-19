@@ -123,14 +123,14 @@
     (aref (storage matrix) index)))
 
 (defmethod (setf tref) (new-value (matrix matrix) &rest pos)
-       (assert (cl:= (rank matrix) (list-length pos))
-               () "Invalid index ~a. Must be rank ~a" pos (rank matrix))
-       (assert (cl:every #'< pos (shape matrix))
-               () "Index ~a out of range" pos)
-       (let ((index (ecase (order matrix)
+  (assert (cl:= (rank matrix) (list-length pos))
+          () "Invalid index ~a. Must be rank ~a" pos (rank matrix))
+  (assert (cl:every #'< pos (shape matrix))
+          () "Index ~a out of range" pos)
+  (let ((index (ecase (order matrix)
                  (:row-major (cl:+ (second pos) (* (first pos) (ncols matrix))))
                  (:column-major (cl:+ (first pos) (* (second pos) (nrows matrix)))))))
-         (setf (aref (storage matrix) index) (coerce new-value (element-type matrix)))))
+    (setf (aref (storage matrix) index) (coerce new-value (element-type matrix)))))
 
 (defmethod copy-tensor ((matrix matrix) &rest args)
   (apply #'make-instance (class-of matrix)
@@ -222,7 +222,7 @@
           ((subtypep type '(complex double-float)) (cffi:mem-aptr base :double (* 2 idx)))
           (t (error "Incompatible element type ~a." type)))))))
 
-(defgeneric rown (matrix index)
+(defgeneric row (matrix index)
   (:documentation "Get row vector from a matrix")) ;; TODO: view? slice?
 
 (defgeneric column (matrix index)
@@ -247,7 +247,7 @@
 
 ;; Methods to be specified by the specific matrix classes (maybe)
 (defgeneric mult (a b &key target alpha beta transa transb)
-    (:documentation "Multiply matrix a by matrix b, storing in target or creating a new matrix if target is not specified.
+  (:documentation "Multiply matrix a by matrix b, storing in target or creating a new matrix if target is not specified.
 Target cannot be the same as a or b."))
 
 (defgeneric @ (matrix &rest matrices)
@@ -281,14 +281,14 @@ Target cannot be the same as a or b."))
   (:documentation "Compute the kronecker product of two matrices")
   (:method (a b &rest rest)
     (let ((ma (nrows a))
-        (mb (nrows b))
-        (na (ncols a))
-        (nb (ncols b)))
-    (flet ((calc-i-j (i j) (* (tref a (floor i mb) (floor j nb))
-                              (tref b (mod i mb) (mod j nb)))))
-      (reduce #'kron rest :initial-value (into! #'calc-i-j
-                                                (empty (list (* ma mb) (* na nb))
-                                                       :type '(complex double-float))))))))
+          (mb (nrows b))
+          (na (ncols a))
+          (nb (ncols b)))
+      (flet ((calc-i-j (i j) (* (tref a (floor i mb) (floor j nb))
+                                (tref b (mod i mb) (mod j nb)))))
+        (reduce #'kron rest :initial-value (into! #'calc-i-j
+                                                  (empty (list (* ma mb) (* na nb))
+                                                         :type '(complex double-float))))))))
 
 (defgeneric transpose! (matrix &key fast)
   (:documentation "Transpose a matrix!")
@@ -328,10 +328,10 @@ If fast is t then just change order. Fast can cause problems when you want to mu
                 (:column-major #'column-major-index))))
         (loop :for row :below (nrows matrix)
               :do(loop :for col :from row :below (ncols matrix)
-                        :do (let ((index1 (funcall index-function (list row col) (shape matrix)))
-                                  (index2 (funcall index-function (list col row) (shape matrix))))
-                              (setf (aref (storage new-matrix) index2) (aref (storage matrix) index1)
-                                    (aref (storage new-matrix) index1) (aref (storage matrix) index2)))))
+                       :do (let ((index1 (funcall index-function (list row col) (shape matrix)))
+                                 (index2 (funcall index-function (list col row) (shape matrix))))
+                             (setf (aref (storage new-matrix) index2) (aref (storage matrix) index1)
+                                   (aref (storage new-matrix) index1) (aref (storage matrix) index2)))))
         (setf (slot-value matrix 'ncols) (first (shape matrix)))
         (setf (slot-value matrix 'nrows) (second (shape matrix))))
       new-matrix)))
@@ -349,12 +349,11 @@ If fast is t then just change order. Fast can cause problems when you want to mu
   (:documentation "Get the inverse of the matrix"))
 
 (defgeneric trace (matrix)
-  (:documentation "Get the trace of the matrix (product of diagonals)")
+  (:documentation "Get the trace of the matrix (sum of diagonals)")
   (:method ((matrix matrix))
     (assert-square-matrix matrix)
-    (let ((rows (nrows matrix)))
-      (loop :for i :below rows
-            :sum (tref matrix i i)))))
+    (loop :for i :below (nrows matrix)
+          :sum (tref matrix i i))))
 
 (defgeneric det (matrix)
   (:documentation "Compute the determinant of a square matrix")
@@ -584,7 +583,6 @@ ipiv :: vector")
 
 (defgeneric lapack-lq-q (matrix tau)
   (:documentation "Finds the unitary matrix Q from LQ factorization of the matrix M, given the reflectors and intermediate representation provided by lapack-lq"))
-
 
 ;; TODO:
 ;; Inverse
