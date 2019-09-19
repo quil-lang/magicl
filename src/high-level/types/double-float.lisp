@@ -46,3 +46,5 @@
                            (apply #'tref tensor2 pos))))
        (return-from = nil))))
   t)
+
+(def-lapack-mult matrix/double-float double-float magicl.blas-cffi:%dgemm)

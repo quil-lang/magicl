@@ -88,45 +88,7 @@
   t)
 
 
-(defmethod mult ((a matrix/complex-double-float) (b matrix/complex-double-float) &key target (alpha #C(1d0 0d0)) (beta #C (0d0 0d0)) transa transb)    
-  ;; (check-type target (or matrix/complex-double-float nil))
-  (check-type transa (member nil :n :t :c))
-  (check-type transb (member nil :n :t :c))
-  ;; TODO: make sure we can trans mixed order matrices (hard)
-  ;; Maybe just error with :row-major if :transX is :t or :c
-
-  ;; TODO: You can't just transpose them if they are the wrong order. Mixed order stuff causes issues. possibly needs to be reindexed
-  (let* ((transa (or transa
-                     (if (eq :row-major (order a)) :t :n)))
-         (transb (or transb
-                     (if (eq :row-major (order b)) :t :n)))
-         (m (if (eq :n transa) (nrows a) (ncols a)))
-         (k (if (eq :n transa) (ncols a) (nrows a)))
-         (n (if (eq :n transb) (ncols b) (nrows b)))
-         (brows (if (eq :n transb) (nrows b) (ncols b)))
-         (target (or target
-                     (empty
-                      (list m n)
-                      :type '(complex double-float)))))
-    (assert (eql (order a) (order b))
-            () "Incompatible matrix orders. Fix this")
-    (assert (cl:= k brows)
-            () "Incompatible matrix sizes ~a and ~a." (list m k) (list brows n))
-    (magicl.blas-cffi:%zgemm
-     (string transa)
-     (string transb)
-     m
-     n
-     k
-     alpha
-     (storage a)
-     (nrows a)
-     (storage b)
-     (nrows b)
-     beta
-     (storage target)
-     m)
-    target))
+(def-lapack-mult matrix/complex-double-float (complex double-float) magicl.blas-cffi:%zgemm)
 
 (defmethod lapack-eig ((m matrix/complex-double-float))
   "Finds the (right) eigenvectors and corresponding eigenvalues of a square matrix M. Returns as two lists (EIGENVALUES, EIGENVECTORS) where the eigenvalues and eigenvectors are in corresponding order."
