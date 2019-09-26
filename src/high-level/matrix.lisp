@@ -432,7 +432,6 @@ If fast is t then just change order. Fast can cause problems when you want to mu
   (:method ((matrix matrix))
     (lapack-eig matrix)))
 
-;; TODO: maybe write generic form of this
 (defgeneric lu (matrix)
   (:documentation "Get the LU decomposition of the matrix
 
@@ -441,9 +440,7 @@ matrix :: matrix
 
 VALUES:
 a :: matrix
-ipiv :: vector")
-  (:method ((matrix matrix))
-    (lapack-lu matrix)))
+ipiv :: vector"))
 
 (defgeneric csd (matrix p q)
   (:documentation "Find the Cosine-Sine Decomposition of a matrix X given that it is to be partitioned with upper left block of dimension P-by-Q. Returns the CSD elements (VALUES U SIGMA VT) such that X=U*SIGMA*VT.")
@@ -489,100 +486,19 @@ ipiv :: vector")
         (csd-from-blocks u1 u2 v1t v2t theta)))))
 
 (defgeneric svd (matrix)
-  (:documentation "Find the SVD of a matrix M. Return (VALUES U SIGMA Vt) where M = U*SIGMA*Vt")
-  (:method ((matrix matrix))
-    (lapack-svd matrix)))
+  (:documentation "Find the SVD of a matrix M. Return (VALUES U SIGMA Vt) where M = U*SIGMA*Vt"))
 
 (defgeneric ql (matrix)
-  (:documentation "Finds the QL factorization of the matrix M.")
-  (:method ((m matrix))
-    (let ((rows (nrows m))
-          (cols (ncols m)))
-      (multiple-value-bind (a tau) (lapack-ql m)
-        (let* ((r (upper-triangular a cols))
-               (q (lapack-ql-q a tau)))
-          ;; change signs if diagonal elements of r are negative
-          (dotimes (j cols)
-            (let ((diag-elt (tref r j j)))
-              (assert (zerop (imagpart diag-elt))
-                      () "Diagonal element R_~D~D=~A is not real" j j diag-elt)
-              (setf diag-elt (realpart diag-elt))
-              (when (minusp diag-elt)
-                (dotimes (i rows)
-                  (when (<= j i (1- cols))
-                    (setf (tref r j i) (cl:- (tref r j i))))
-                  (setf (tref q i j) (cl:- (tref q i j)))))))
-          (values q r))))))
+  (:documentation "Finds the QL factorization of the matrix M."))
 
-;; TODO: Let's clean this up
 (defgeneric qr (matrix)
-  (:documentation "Finds the QL factorization of the matrix M.")
-  (:method ((m matrix))
-    (let ((rows (nrows m))
-          (cols (ncols m)))
-      (multiple-value-bind (a tau) (lapack-qr m)
-        (let* ((r (upper-triangular a cols))
-               (q (lapack-qr-q a tau)))
-          ;; change signs if diagonal elements of r are negative
-          (dotimes (j cols)
-            (let ((diag-elt (tref r j j)))
-              (assert (zerop (imagpart diag-elt))
-                      () "Diagonal element R_~D~D=~A is not real" j j diag-elt)
-              (setf diag-elt (realpart diag-elt))
-              (when (minusp diag-elt)
-                (dotimes (i rows)
-                  (when (<= j i (1- cols))
-                    (setf (tref r j i) (cl:- (tref r j i))))
-                  (setf (tref q i j) (cl:- (tref q i j)))))))
-          (values q r))))))
+  (:documentation "Finds the QL factorization of the matrix M."))
 
 (defgeneric rq (matrix)
-  (:documentation "Finds the RQ factorization of the matrix M.")
-  (:method ((matrix matrix))
-    (error "RQ not fully implemented")
-    ;;(lapack-rq matrix)
-    ))
+  (:documentation "Finds the RQ factorization of the matrix M."))
 
 (defgeneric lq (matrix)
-  (:documentation "Finds the LQ factorization of the matrix M.")
-  (:method ((matrix matrix))
-    (error "LQ not fully implemented")
-    ;;(lapack-lq matrix)
-    ))
-
-;; Lapack functions
-
-(defgeneric lapack-eig (matrix))
-
-(defgeneric lapack-lu (matrix))
-
-(defgeneric lapack-csd (matrix p q))
-
-(defgeneric lapack-svd (matrix))
-
-(defgeneric lapack-ql (matrix)
-  (:documentation "Find the LAPACK intermediate representation of ql of a matrix"))
-
-(defgeneric lapack-qr (matrix)
-  (:documentation "Find the LAPACK intermediate representation of qr of a matrix"))
-
-(defgeneric lapack-rq (matrix)
-  (:documentation "Find the LAPACK intermediate representation of rq of a matrix"))
-
-(defgeneric lapack-lq (matrix)
-  (:documentation "Find the LAPACK intermediate representation of lq of a matrix"))
-
-(defgeneric lapack-ql-q (matrix tau)
-  (:documentation "Finds the unitary matrix Q from QL factorization of the matrix M, given the reflectors and intermediate representation provided by lapack-ql"))
-
-(defgeneric lapack-qr-q (matrix tau)
-  (:documentation "Finds the unitary matrix Q from QR factorization of the matrix M, given the reflectors and intermediate representation provided by lapack-qr"))
-
-(defgeneric lapack-rq-q (matrix tau)
-  (:documentation "Finds the unitary matrix Q from RQ factorization of the matrix M, given the reflectors and intermediate representation provided by lapack-rq"))
-
-(defgeneric lapack-lq-q (matrix tau)
-  (:documentation "Finds the unitary matrix Q from LQ factorization of the matrix M, given the reflectors and intermediate representation provided by lapack-lq"))
+  (:documentation "Finds the LQ factorization of the matrix M."))
 
 ;; TODO:
 ;; Inverse

@@ -17,9 +17,17 @@
   (and (valid-shape-p shape)
        (cl:every #'cl:= shape (rest shape))))
 
+(defun valid-index-p (shape)
+  (and (typep shape 'list)
+       (plusp (length shape))
+       (cl:every (lambda (x) (typep x 'alexandria:non-negative-fixnum)) shape)))
+
 ;; Types
-(deftype shape (&optional rank) ;; TODO: rank, maybe
+(deftype shape (&optional rank)
   `(satisfies valid-shape-p))
+
+(deftype index ()
+  `(satisfies valid-index-p))
 
 ;; Assertions
 (defmacro assert-square-shape (&rest shapes)

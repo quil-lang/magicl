@@ -23,7 +23,37 @@
   matrix/complex-single-float
   vector/complex-single-float)
 
+(defmethod = ((tensor1 tensor/complex-single-float) (tensor2 tensor/complex-single-float) &optional (epsilon +double-comparison-threshold-strict+))
+  (unless (equal (shape tensor1) (shape tensor2))
+    (return-from = nil))
+  (map-indexes
+   (shape tensor1)
+   (lambda (&rest pos)
+     (unless (> epsilon
+                (abs (cl:- (apply #'tref tensor1 pos)
+                           (apply #'tref tensor2 pos))))
+       (return-from = nil))))
+  t)
+
+(defmethod = ((tensor1 matrix/complex-single-float) (tensor2 matrix/complex-single-float) &optional (epsilon +double-comparison-threshold-strict+))
+  (unless (equal (shape tensor1) (shape tensor2))
+    (return-from = nil))
+  (map-indexes
+   (shape tensor1)
+   (lambda (&rest pos)
+     (unless (> epsilon
+                (abs (cl:- (apply #'tref tensor1 pos)
+                           (apply #'tref tensor2 pos))))
+       (return-from = nil))))
+  t)
+
 (def-lapack-mult matrix/complex-single-float (complex single-float) magicl.blas-cffi:%cgemm)
+(def-lapack-lu matrix/complex-single-float '(complex single-float) magicl.lapack-cffi:%cgetrf)
+(def-lapack-svd matrix/complex-single-float (complex single-float) magicl.lapack-cffi:%cgesvd single-float)
+(def-lapack-eig matrix/complex-single-float (complex single-float) magicl.lapack-cffi:%cgeev single-float)
+(def-lapack-ql-qr-rq-lq matrix/complex-single-float (complex single-float)
+  magicl.lapack-cffi:%cgeqlf magicl.lapack-cffi:%cgeqrf magicl.lapack-cffi:%cgerqf magicl.lapack-cffi:%cgelqf
+  magicl.lapack-cffi:%cungql magicl.lapack-cffi:%cungqr magicl.lapack-cffi:%cungrq magicl.lapack-cffi:%cunglq)
 
 (defmethod dot ((vector1 vector/complex-single-float) (vector2 vector/complex-single-float))
   (assert (cl:= (size vector1) (size vector2))

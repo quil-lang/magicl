@@ -23,23 +23,34 @@
   matrix/single-float
   vector/single-float)
 
-(def-lapack-mult matrix/single-float single-float magicl.blas-cffi:%sgemm)
+(defmethod = ((tensor1 tensor/single-float) (tensor2 tensor/single-float) &optional (epsilon +double-comparison-threshold-strict+))
+  (unless (equal (shape tensor1) (shape tensor2))
+    (return-from = nil))
+  (map-indexes
+   (shape tensor1)
+   (lambda (&rest pos)
+     (unless (> epsilon
+                (abs (cl:- (apply #'tref tensor1 pos)
+                           (apply #'tref tensor2 pos))))
+       (return-from = nil))))
+  t)
 
-(defmethod lu ((matrix matrix/single-float))
-  (let* ((a-tensor (deep-copy-tensor matrix))
-         (a (storage a-tensor))
-         (m (nrows a-tensor))
-         (n (ncols a-tensor))
-         (lda m)
-         (ipiv-tensor (empty (list (max m n)) :type '(signed-byte 32)))
-         (ipiv (storage ipiv-tensor))
-         (info 0))
-    (when (eql :row-major (order a-tensor)) (transpose! a-tensor))
-    (magicl.lapack-cffi:%sgetrf
-     m
-     n
-     a
-     lda
-     ipiv
-     info)
-    (values a-tensor ipiv-tensor)))
+(defmethod = ((tensor1 matrix/single-float) (tensor2 matrix/single-float) &optional (epsilon +double-comparison-threshold-strict+))
+  (unless (equal (shape tensor1) (shape tensor2))
+    (return-from = nil))
+  (map-indexes
+   (shape tensor1)
+   (lambda (&rest pos)
+     (unless (> epsilon
+                (abs (cl:- (apply #'tref tensor1 pos)
+                           (apply #'tref tensor2 pos))))
+       (return-from = nil))))
+  t)
+
+(def-lapack-mult matrix/single-float single-float magicl.blas-cffi:%sgemm)
+(def-lapack-lu matrix/single-float single-float magicl.lapack-cffi:%sgetrf)
+(def-lapack-svd matrix/single-float single-float magicl.lapack-cffi:%sgesvd)
+(def-lapack-eig matrix/single-float single-float magicl.lapack-cffi:%sgeev)
+(def-lapack-ql-qr-rq-lq matrix/single-float single-float
+  magicl.lapack-cffi:%sgeqlf magicl.lapack-cffi:%sgeqrf magicl.lapack-cffi:%sgerqf magicl.lapack-cffi:%sgelqf
+  magicl.lapack-cffi:%sorgql magicl.lapack-cffi:%sorgqr magicl.lapack-cffi:%sorgrq magicl.lapack-cffi:%sorglq)
