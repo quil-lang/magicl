@@ -5,34 +5,48 @@
 (in-package #:magicl)
 
 (defun row-major-index (pos dims)
-  ;; TODO: check types
+  (check-type pos index)
+  (check-type dims shape)
   (loop :for i in pos
         :for d in dims
         :for acc = i :then (cl:+ i (* d acc))
         :finally (return acc)))
 
 (defun column-major-index (pos dims)
-  ;; TODO: check types
+  (check-type pos index)
+  (check-type dims shape)
   (loop :for i in (reverse pos)
         :for d in (reverse dims)
         :for acc = i :then (cl:+ i (* d acc))
         :finally (return acc)))
 
 (defun from-row-major-index (index dims)
-  ;; TODO: types
-  (reverse (loop :for d in dims
-                 :for acc = index :then (floor acc d)
-                 :collect (rem acc d))))
+  (check-type index fixnum)
+  (check-type dims shape)
+  (reverse
+   (loop :for d :in (reverse dims)
+         :with acc = index
+         :collect
+         (multiple-value-bind (a r)
+             (floor acc d)
+           (setf acc a)
+           r))))
 
 (defun from-column-major-index (index dims)
-  ;; TODO: types
-  (loop :for d in dims
-        :for acc = index :then (floor acc d)
-        :collect (rem acc d)))
+  (check-type index fixnum)
+  (check-type dims shape)
+  (loop :for d :in dims
+        :with acc = index
+        :collect
+        (multiple-value-bind (a r)
+            (floor acc d)
+          (setf acc a)
+          r)))
 
 (defun map-indexes (dims f)
   "Call a function `f` for all indexes in shape `dims`"
-  (declare (type function f))
+  (check-type f function)
+  (check-type dims shape)
   (let ((ihead (make-list (list-length dims))))
     (declare (dynamic-extent ihead))
     (labels ((rec (dims itail)
@@ -48,6 +62,8 @@
 ;; TODO: implement inside of function using
 (defun map-column-indexes (dims f)
   (warn "This function is not implemented correctly. Use at your own risk and tell Cole to implement it correctly")
+  (check-type f function)
+  (check-type dims shape)
   (map-indexes
    dims
    (lambda (index)
