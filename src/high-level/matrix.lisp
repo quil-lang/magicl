@@ -48,8 +48,10 @@
     :documentation "Indexing order of storage (:column-major or :row-major)."))
   (:metaclass abstract-class:abstract-class))
 
-(defun pprint-matrix (stream matrix)
+(defun pprint-matrix (stream matrix &optional colon-p at-sign-p)
   "Pretty-print a matrix MATRIX to the stream STREAM."
+  (declare (ignore colon-p)
+           (ignore at-sign-p))
   (flet ((print-real (x)
            (format stream "~6,3f" x))
          (print-complex (z)
