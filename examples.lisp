@@ -21,68 +21,17 @@
   (terpri)
   (terpri))
 
-(defun dot (u v)
-  (assert (= (length u) (length v)) (u v))
-  (let ((n (length u)))
-    (with-blapack
-      (let ((cx (magicl::copy-matrix-storage u))
-            (cy (magicl::copy-matrix-storage v)))
-        (format t "x: ~A~%y: ~A~%" cx cy)
-        (blas:%zdotc
-         n
-         cx
-         1
-         cy
-         1)))))
-
 (defun dot-example ()
-  (let ((a (magicl::make-C-storage 4))
-        (b (magicl::make-C-storage 4)))
-    (dotimes (i 4)
-      (setf (aref a i) #C(1.0f0 0.0f0)
-            (aref b i) #C(2.0f0 0.0f0)))
+  (let ((a (magicl:const #C(1d0 0d0) '(4)))
+        (b (magicl:const #C(2d0 0d0) '(4))))
     (format t "a^t = ~A~%b^t = ~A~%a^t b = ~A~%~%"
-            a b (blas:%cdotu 4 a 1 b 1))))
+            a b (magicl:dot a b))))
 
 (defun eigenvalue-example ()
-  ;; Set the traps
-  (with-blapack
-
-    ;; An eigenvalue example.  Note that we have no matrix abstraction a
-    ;; this point.  We pretend 4-vectors are 2-by-2 matrices.
-
-    ;; BLAS/LAPACK expects column major order, we are creating the
-    ;; (matlab notation) matrix M = [1 2; 2 3].
-    (let ((M (magicl::make-D-storage 4)))
-      (setf (aref M 0) 1.0d0
-            (aref M 1) 2.0d0
-            (aref M 2) 2.0d0
-            (aref M 3) 3.0d0)
-
-      (let ((V (magicl::make-D-storage 4))
-            (D (magicl::make-D-storage 2))
-            (lwork 4096)
-            (liwork 4096)
-            (info 0)
-            (eigs-found 0))
-
-        (lapack:%dsyevr "V" "A" "U" 2 (magicl::copy-matrix-storage M) 2 0.0d0 0.0d0
-                        0 0 -1.0d0  eigs-found D V 2 (magicl::make-int32-storage 4)
-                        (magicl::make-D-storage lwork) lwork
-                        (magicl::make-int32-storage liwork) liwork
-                        info)
-        (format t "M = ~A~%V=~A~%D=~A~%~%" M V D)
-
-        ;; Construct a "matlab-style D" --- is there a better way?
-        (let ((Df (magicl::make-D-storage 4)))
-          (setf (aref Df 0) (aref D 0)
-                (aref Df 3) (aref D 1))
-          ;; Reconstruct M as V*Df*V';
-          (let ((Mri (magicl::make-D-storage 4))
-                (Mr (magicl::make-D-storage 4)))
-            (blas:%dgemm "N" "N" 2 2 2 1.0d0 V 2 Df 2 0.0d0 Mri 2)
-            (blas:%dgemm "N" "T" 2 2 2 1.0d0 Mri 2 V 2 0.0d0 Mr 2)
-            (format t "Reconstructed M = ~A~%" Mr)))))))
+  (let ((a (magicl:from-list '(1 2 3 4) '(2 2) :type 'double-float)))
+    (multiple-value-bind (val vect)
+        (magicl:eig a)
+      (format t "EVALUES = ~A~%EVECRTORS=~A~%~%" val vect))))
 
 (defun qr-example ()
   (let ((a (magicl:from-list '(#C(1 2) #C(-4 3) #C(-3 -3) #C(9 2) 4 #C(0 -2.9d0)) '(3 2) :type '(complex double-float))))
@@ -172,23 +121,20 @@
           (print-matrix a-reconst)))))
 
 (defun csd-example ()
-  (let ((x (make-complex-matrix 2 2 (list -0.894288 #C(-0.372336 -0.248224) #C(0.372336 -0.248224) -0.894288))))
+  (let ((x (from-list (list -0.894288 #C(0.372336 -0.248224) #C(-0.372336 -0.248224) -0.894288)
+                      '(2 2)
+                      :type '(complex double-float))))
     (csd-printing x 1 1)))
 
 (defun csd-printing (x p q)
   (multiple-value-bind (u sigma vt)
       (csd x p q)
-    (let ((x-reconst (multiply-complex-matrices u (multiply-complex-matrices sigma vt))))
-      (format t "X~%")
-      (print-matrix x)
-      (format t "U~%")
-      (print-matrix u)
-      (format t "SIGMA~%")
-      (print-matrix sigma)
-      (format t "VT~%")
-      (print-matrix vt)
-      (format t "Reconstructed A~%")
-      (print-matrix x-reconst))))
+    (let ((x-reconst (@ u (@ sigma vt))))
+      (format t "X~%~a:~a~%"  (order x) x)
+      (format t "U~%~a~%" u)
+      (format t "SIGMA~%~a~%" sigma)
+      (format t "VT~%~a~%" vt)
+      (format t "Reconstructed A~%~a~%" x-reconst))))
 
 (defun det-example ()
   (let* ((x (make-complex-matrix 3 3 (list 2 3 5 #C(1.5 -2) -3 1.5 #C(0 2) 0 #C(0 -3))))

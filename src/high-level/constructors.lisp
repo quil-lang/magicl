@@ -27,44 +27,27 @@
                 type)))
       (specialize-tensor (make-tensor shape tensor-class element-type :order order :initial-element (coerce const element-type))))))
 
-(defgeneric rand (min max shape &key type distribution)
+(defgeneric rand (shape &key type distribution)
   (:documentation "Create tensor with elements random in the range [0,limit]")
-  (:method (min max shape &key type (distribution :uniform))
+  (:method (shape &key (type +default-tensor-type+) distribution)
     (progn
       (check-type shape shape)
-      (check-type distribution (member :uniform :normal))
-      (let* ((tensor-class
-               (if (null type)
-                   (compatible-tensor-constructors-from-value min)
-                   (compatible-tensor-constructors type)))
-             (element-type
-               (if (null type)
-                   (upgraded-array-element-type (type-of min))
-                   type))
+      (let* ((tensor-class (compatible-tensor-constructors type))
              (rand-function
-               (ecase distribution
-                 (:uniform (cond
-                             ((subtypep element-type 'complex)
-                              (lambda ()
-                                (complex
-                                 (cl:+ min (random (cl:- max min)))
-                                 (cl:+ min (random (cl:- max min))))))
-                             (t
-                              (lambda ()
-                                (cl:+ min (random (cl:- max min)))))))
-                 (:normal (cond
-                            ((subtypep element-type 'complex)
-                             (lambda ()
-                               (complex
-                                (alexandria:gaussian-random min max)
-                                (alexandria:gaussian-random min max))))
-                            (t
-                             (lambda ()
-                               (alexandria:gaussian-random min max)))))))
+               (or distribution
+                   (cond
+                     ((subtypep type 'complex)
+                      (lambda ()
+                        (complex
+                         (random 1d0)
+                         (random 1d0))))
+                     (t
+                      (lambda ()
+                        (random 1d0))))))
              (f (lambda (&rest rest)
                   (declare (ignore rest))
-                  (coerce  (funcall rand-function) element-type))))
-        (specialize-tensor (into! f (make-tensor shape tensor-class element-type)))))))
+                  (coerce  (funcall rand-function) type))))
+        (specialize-tensor (into! f (make-tensor shape tensor-class type)))))))
 
 (defgeneric deye (d shape &key type order)
   (:documentation "Create identity matrix scaled by factor D")

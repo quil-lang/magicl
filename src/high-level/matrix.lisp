@@ -159,7 +159,7 @@
   (:documentation "Generate a uniformly random element of U(n).")
   (:method (shape &key type)
     (assert-square-shape shape)
-    (multiple-value-bind (q r) (qr (rand nil nil shape :type type :distribution :normal))
+    (multiple-value-bind (q r) (qr (rand shape :type type :distribution #'alexandria:gaussian-random))
       (let ((d (diag r)))
         (setf d (cl:map 'list (lambda (di) (/ di (sqrt (* di (conjugate di))))) d))
         (@ q (funcall #'from-diag d shape))))))
@@ -423,17 +423,16 @@ If fast is t then just change order. Fast can cause problems when you want to mu
   (:method ((matrix matrix))
     (conjugate-transpose! matrix)))
 
-;; TODO: either make this generic or call lapack functions
 (defgeneric orthonormalize! (matrix)
   (:documentation "Orthonormalize a matrix, replacing the elements"))
 
 ;;; Fancy linear algebra
-
 (defgeneric eig (matrix)
   (:documentation "Find the (right) eigenvectors and corresponding eigenvalues of a square matrix M. Returns two lists (EIGENVALUES, EIGENVECTORS)")
   (:method ((matrix matrix))
     (lapack-eig matrix)))
 
+;; TODO: Let's figure out a way to document functions that isn't this gross
 (defgeneric lu (matrix)
   (:documentation "Get the LU decomposition of the matrix
 

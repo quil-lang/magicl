@@ -135,6 +135,9 @@
            #:rq
            #:lq
 
+           ;; Vector operators
+           #:dot
+
            ;; LAPACK stuff
            #:lapack-csd
            ))
