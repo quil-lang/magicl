@@ -11,7 +11,6 @@
 
 (defpackage #:magicl-transcendental
   (:use #:common-lisp
-        #:cffi
-        #:magicl)
+        #:cffi)
   (:export #:expm #:logm))
 
