@@ -297,7 +297,7 @@ Target cannot be the same as a or b."))
 If fast is t then just change order. Fast can cause problems when you want to multiply specifying transpose."
     (if fast
         (progn
-          (let ((shape (shape matrix)))
+          (let ((shape (shape matrix))) ; TODO: Change to using nrows/ncols
             (setf (slot-value matrix 'ncols) (first shape))
             (setf (slot-value matrix 'nrows) (second shape))
             (setf (slot-value matrix 'order) (case (order matrix)
@@ -393,7 +393,7 @@ If fast is t then just change order. Fast can cause problems when you want to mu
       (let ((target (empty (list order order) :order (order matrix) :type (element-type matrix))))
         (if (> m n)
             (loop for i from (cl:- m order) to (1- m)
-                  do (loop for j from 0 to (min (+ (cl:- order m) i) (1- n))
+                  do (loop for j from 0 to (min (cl:+ (cl:- order m) i) (1- n))
                            do (setf (tref target (cl:- i (cl:- m order)) j) (tref matrix i j))))
             (loop for j from 0 to (1- order)
                   do (loop for i from (max 0 (cl:+ (cl:- m order) j)) to (1- m)
@@ -442,6 +442,7 @@ VALUES:
 a :: matrix
 ipiv :: vector"))
 
+;; TODO: Make this one generic and move to lapack-macros
 (defgeneric csd (matrix p q)
   (:documentation "Find the Cosine-Sine Decomposition of a matrix X given that it is to be partitioned with upper left block of dimension P-by-Q. Returns the CSD elements (VALUES U SIGMA VT) such that X=U*SIGMA*VT.")
   (:method ((matrix matrix) p q)
@@ -488,17 +489,29 @@ ipiv :: vector"))
 (defgeneric svd (matrix)
   (:documentation "Find the SVD of a matrix M. Return (VALUES U SIGMA Vt) where M = U*SIGMA*Vt"))
 
-(defgeneric ql (matrix)
-  (:documentation "Finds the QL factorization of the matrix M."))
-
 (defgeneric qr (matrix)
-  (:documentation "Finds the QL factorization of the matrix M."))
+  (:documentation "Finds the QL factorization of the matrix M. NOTE: Only square matrices supported")
+  (:method ((matrix matrix))
+    (declare (ignore matrix))
+    (error "QR is not defined for the generic matrix type.")))
+
+(defgeneric ql (matrix)
+  (:documentation "Finds the QL factorization of the matrix M. NOTE: Only square matrices supported")
+  (:method ((matrix matrix))
+    (declare (ignore matrix))
+    (error "QL is not defined for the generic matrix type.")))
 
 (defgeneric rq (matrix)
-  (:documentation "Finds the RQ factorization of the matrix M."))
+  (:documentation "Finds the RQ factorization of the matrix M. NOTE: Only square matrices supported")
+  (:method ((matrix matrix))
+    (declare (ignore matrix))
+    (error "RQ is not defined for the generic matrix type.")))
 
 (defgeneric lq (matrix)
-  (:documentation "Finds the LQ factorization of the matrix M."))
+  (:documentation "Finds the LQ factorization of the matrix M. NOTE: Only square matrices supported")
+  (:method ((matrix matrix))
+    (declare (ignore matrix))
+    (error "LQ is not defined for the generic matrix type.")))
 
 ;; TODO:
 ;; Inverse
