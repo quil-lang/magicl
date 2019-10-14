@@ -930,6 +930,30 @@ with upper left block with dimension P-by-Q. Returns the intermediate representa
         (magicl.lapack-cffi::%zgeev jobvl jobvr rows a rows w vl 1 vr rows work lwork rwork info)
         (values (vector-to-list w) (make-matrix :rows rows :cols cols :data vr))))))
 
+(defun hermitian-eig (m)
+  "Finds the (right) eigenvectors and corresponding eigenvalues of a Hermitian square matrix M. Returns as two lists (EIGENVALUES, EIGENVECTORS) where the eigenvalues and eigenvectors are in corresponding order."
+  (let ((rows (matrix-rows m))
+        (cols (matrix-cols m)))
+    (assert (= rows cols) () "M is not a square matrix")
+    (let ((jobz "V")
+          (uplo "U")
+          (n rows)
+          (a (copy-matrix-storage (matrix-data m)))
+          (lda (matrix-rows m))
+          (w (make-D-storage rows))
+          (work (make-Z-storage 1))
+          (lwork -1)
+          (rwork (make-D-storage (- (* 3 rows) 2)))
+          (info 0))
+      ;; run it once as a workspace query
+      (magicl.lapack-cffi::%zheev jobz uplo n a lda w work lwork rwork info)
+      (setf lwork (truncate (realpart (row-major-aref work 0))))
+      (setf work (make-Z-storage (max 1 lwork)))
+      ;; run it again with optimal workspace size
+      (magicl.lapack-cffi::%zheev jobz uplo n a lda w work lwork rwork info)
+      (values (vector-to-list w) (make-matrix :rows rows :cols cols :data a)))))
+
+
 (defun kron (a b &rest rest)
   "Compute the kronecker product of matrices A and B."
   ;; This can be sped up by explicitly looping

@@ -87,6 +87,7 @@
            #:matrix-diagonal
            #:expm
            #:eig
+           #:hermitian-eig
            #:logm
            #:kron
            #:exptm
