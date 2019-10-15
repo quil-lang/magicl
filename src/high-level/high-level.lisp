@@ -908,7 +908,7 @@ with upper left block with dimension P-by-Q. Returns the intermediate representa
 
 
 (defun eig (m)
-  "Finds the (right) eigenvectors and corresponding eigenvalues of a square matrix M. Returns as two lists (EIGENVALUES, EIGENVECTORS) where the eigenvalues and eigenvectors are in corresponding order."
+  "Finds the (right) eigenvectors and corresponding eigenvalues of a square matrix M. Returns a pair (EIGENVALUES, EIGENVECTORS) of a list and a matrix, where the eigenvalues and eigenvectors are in corresponding order."
   (let ((rows (matrix-rows m))
         (cols (matrix-cols m)))
     (assert (= rows cols) () "M is not a square matrix")
@@ -931,7 +931,7 @@ with upper left block with dimension P-by-Q. Returns the intermediate representa
         (values (vector-to-list w) (make-matrix :rows rows :cols cols :data vr))))))
 
 (defun hermitian-eig (m)
-  "Finds the (right) eigenvectors and corresponding eigenvalues of a Hermitian square matrix M. Returns as two lists (EIGENVALUES, EIGENVECTORS) where the eigenvalues and eigenvectors are in corresponding order."
+  "Finds the (right) eigenvectors and corresponding eigenvalues of a Hermitian square matrix M. Returns a pair (EIGENVALUES, EIGENVECTORS) of a list and a matrix, where the eigenvalues and eigenvectors are in corresponding order."
   (let ((rows (matrix-rows m))
         (cols (matrix-cols m)))
     (assert (= rows cols) () "M is not a square matrix")
