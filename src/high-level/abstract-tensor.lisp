@@ -225,3 +225,11 @@ NOTE: mutates tensor!")
   (:method ((predicate function) (tensor abstract-tensor))
     (not (some predicate tensor))))
 
+(defgeneric coerce-type (tensor type)
+  (:documentation "Coerce element type of TENSOR to TYPE by creating a new tensor")
+  (:method ((tensor abstract-tensor) type)
+    (let ((target (empty (shape tensor) :order (order tensor) :type type)))
+      (map-to (lambda (x) (coerce x type))
+              tensor
+              target)
+      target)))

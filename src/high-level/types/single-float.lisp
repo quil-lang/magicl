@@ -49,6 +49,7 @@
 
 (def-lapack-mult matrix/single-float single-float magicl.blas-cffi:%sgemm)
 (def-lapack-lu matrix/single-float single-float magicl.lapack-cffi:%sgetrf)
+(def-lapack-inv matrix/single-float single-float magicl.lapack-cffi:%sgetrf magicl.lapack-cffi:%sgetri)
 (def-lapack-svd matrix/single-float single-float magicl.lapack-cffi:%sgesvd)
 (def-lapack-eig matrix/single-float single-float magicl.lapack-cffi:%sgeev)
 (def-lapack-ql-qr-rq-lq matrix/single-float single-float

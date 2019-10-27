@@ -347,9 +347,6 @@ If fast is t then just change order. Fast can cause problems when you want to mu
       (loop :for i :below rows
             :collect (tref matrix i i)))))
 
-(defgeneric inverse (matrix)
-  (:documentation "Get the inverse of the matrix"))
-
 (defgeneric trace (matrix)
   (:documentation "Get the trace of the matrix (sum of diagonals)")
   (:method ((matrix matrix))
@@ -423,14 +420,13 @@ If fast is t then just change order. Fast can cause problems when you want to mu
   (:method ((matrix matrix))
     (conjugate-transpose! matrix)))
 
+;; TODO: This should either use QR or just be removed
 (defgeneric orthonormalize! (matrix)
   (:documentation "Orthonormalize a matrix, replacing the elements"))
 
 ;;; Fancy linear algebra
 (defgeneric eig (matrix)
-  (:documentation "Find the (right) eigenvectors and corresponding eigenvalues of a square matrix M. Returns two lists (EIGENVALUES, EIGENVECTORS)")
-  (:method ((matrix matrix))
-    (lapack-eig matrix)))
+  (:documentation "Find the (right) eigenvectors and corresponding eigenvalues of a square matrix M. Returns two lists (EIGENVALUES, EIGENVECTORS)"))
 
 ;; TODO: Let's figure out a way to document functions that isn't this gross
 (defgeneric lu (matrix)
@@ -487,8 +483,17 @@ ipiv :: vector"))
       (multiple-value-bind (u1 u2 v1t v2t theta) (lapack-csd matrix p q)
         (csd-from-blocks u1 u2 v1t v2t theta)))))
 
+(defgeneric inverse (matrix)
+  (:documentation "Get the inverse of the matrix")
+  (:method ((matrix matrix))
+    (declare (ignore matrix))
+    (error "INVERSE is not defined for the generic matrix type.")))
+
 (defgeneric svd (matrix)
-  (:documentation "Find the SVD of a matrix M. Return (VALUES U SIGMA Vt) where M = U*SIGMA*Vt"))
+  (:documentation "Find the SVD of a matrix M. Return (VALUES U SIGMA Vt) where M = U*SIGMA*Vt")
+  (:method ((matrix matrix))
+    (declare (ignore matrix))
+    (error "SVD is not defined for the generic matrix type.")))
 
 (defgeneric qr (matrix)
   (:documentation "Finds the QL factorization of the matrix M. NOTE: Only square matrices supported")
@@ -515,7 +520,6 @@ ipiv :: vector"))
     (error "LQ is not defined for the generic matrix type.")))
 
 ;; TODO:
-;; Inverse
 ;; einsum
 ;; Solve
 ;; exponent

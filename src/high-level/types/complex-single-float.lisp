@@ -48,7 +48,8 @@
   t)
 
 (def-lapack-mult matrix/complex-single-float (complex single-float) magicl.blas-cffi:%cgemm)
-(def-lapack-lu matrix/complex-single-float '(complex single-float) magicl.lapack-cffi:%cgetrf)
+(def-lapack-lu matrix/complex-single-float (complex single-float) magicl.lapack-cffi:%cgetrf)
+(def-lapack-inv matrix/complex-single-float (complex single-float) magicl.lapack-cffi:%cgetrf magicl.lapack-cffi:%cgetri)
 (def-lapack-svd matrix/complex-single-float (complex single-float) magicl.lapack-cffi:%cgesvd single-float)
 (def-lapack-eig matrix/complex-single-float (complex single-float) magicl.lapack-cffi:%cgeev single-float)
 (def-lapack-ql-qr-rq-lq matrix/complex-single-float (complex single-float)

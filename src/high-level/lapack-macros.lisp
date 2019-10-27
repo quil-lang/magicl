@@ -62,7 +62,7 @@
   `(progn
      (defmethod lu ((m ,class))
        (lapack-lu m))
-     
+
      (defmethod lapack-lu ((a ,class))
        (let* ((a-tensor (deep-copy-tensor a))
               (a (storage a-tensor))
@@ -82,6 +82,58 @@
           info)
          (values a-tensor ipiv-tensor)))))
 
+
+;; NOTE: This requires lu to be defined
+(defmacro def-lapack-inv (class type lu-function inv-function)
+  `(progn
+     (defmethod inverse ((m ,class))
+       (lapack-inv m))
+     
+     (defmethod lapack-inv ((a ,class))
+       (when (eql :row-major (order a)) (error "Row major not allowed for this function"))
+       (let* ((a-tensor (deep-copy-tensor a))
+              (a (storage a-tensor))
+              (m (nrows a-tensor))
+              (n (ncols a-tensor))
+              (lda m)
+              (ipiv-tensor (empty (list (max m n)) :type '(signed-byte 32)))
+              (ipiv (storage ipiv-tensor))
+              (info 0))
+         (when (eql :row-major (order a-tensor)) (transpose! a-tensor))
+         (,lu-function
+          m
+          n
+          a
+          lda
+          ipiv
+          info)
+         (let* ((lwork -1)
+                (work1 (make-array (max 1 lwork) :element-type ',type))
+                (work nil)
+                (info 0))
+           ;; Perform work size query with work of length 1
+           (,inv-function
+            n
+            a
+            m
+            ipiv
+            work1
+            lwork
+            info)
+           (setf lwork (round (realpart (aref work1 0))))
+           (setf work (make-array (max 1 lwork) :element-type ',type))
+           ;; Perform actual operation with correct work size
+           (,inv-function
+            n
+            a
+            m
+            ipiv
+            work
+            lwork
+            info))
+         (format t "Info ~a~%" info)
+         (values a-tensor)))))
+
 (defmacro def-lapack-svd (class type svd-function &optional real-type)
   `(progn
      (defmethod svd ((m ,class))
@@ -98,7 +150,7 @@
              (lwork -1)
              (info 0))
          (let ((lda rows)
-               (s (make-array (min rows cols) :element-type ',type))
+               (s (make-array (min rows cols) :element-type ',(or real-type type)))
                (ldu rows)
                (ldvt cols)
                (work1 (make-array (max 1 lwork) :element-type ',type))
@@ -115,7 +167,7 @@
              ;; run it again with optimal workspace size
              (,svd-function jobu jobvt rows cols a lda s u ldu vt ldvt
                             work lwork ,@(when real-type `(rwork)) info)
-             (let ((smat (make-array (* rows cols) :element-type ',type)))
+             (let ((smat (make-array (* rows cols) :element-type ',(or real-type type))))
                (dotimes (i (min rows cols))
                  (setf (aref smat (column-major-index (list i i) (shape m)))
                        (aref s i)))

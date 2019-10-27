@@ -90,6 +90,7 @@
 
 (def-lapack-mult matrix/complex-double-float (complex double-float) magicl.blas-cffi:%zgemm)
 (def-lapack-lu matrix/complex-double-float (complex double-float) magicl.lapack-cffi:%zgetrf)
+(def-lapack-inv matrix/complex-double-float (complex double-float) magicl.lapack-cffi:%zgetrf magicl.lapack-cffi:%zgetri)
 (def-lapack-svd matrix/complex-double-float (complex double-float) magicl.lapack-cffi:%zgesvd double-float)
 (def-lapack-eig matrix/complex-double-float (complex double-float) magicl.lapack-cffi:%zgeev double-float)
 (def-lapack-ql-qr-rq-lq matrix/complex-double-float (complex double-float)

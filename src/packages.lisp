@@ -127,6 +127,7 @@
            #:conjugate-transpose
            #:dagger
            #:eig
+           #:inverse
            #:lu
            #:csd
            #:svd
