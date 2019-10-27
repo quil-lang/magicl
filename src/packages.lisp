@@ -112,6 +112,7 @@
            ;; Matrix operators
            #:square-matrix-p
            #:identity-matrix-p
+           #:unitary-matrix-p
            #:@
            #:kron
            #:scale

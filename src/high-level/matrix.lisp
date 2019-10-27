@@ -84,7 +84,7 @@
     (cl:= (nrows matrix) (ncols matrix))))
 
 (defgeneric identity-matrix-p (matrix &optional epsilon)
-  (:documentation "Whether the given matrix is an idenity matrix")
+  (:documentation "Whether MATRIX is an idenity matrix")
   (:method ((matrix matrix) &optional (epsilon 0d0))
     (unless (square-matrix-p matrix) (return-from identity-matrix-p nil))
     (map-indexes (shape matrix)
@@ -96,6 +96,11 @@
                                           1 0))))
                      (return-from identity-matrix-p nil))))
     t))
+
+(defgeneric unitary-matrix-p (matrix &optional epsilon)
+  (:documentation "Whether MATRIX is a unitary matrix")
+  (:method ((matrix matrix) &optional (epsilon 0d0))
+    (identity-matrix-p (@ matrix (conjugate-transpose matrix)) epsilon)))
 
 (defmacro assert-square-matrix (&rest matrices)
   `(progn
@@ -157,7 +162,7 @@
 
 (defgeneric random-unitary (shape &key type)
   (:documentation "Generate a uniformly random element of U(n).")
-  (:method (shape &key type)
+  (:method (shape &key (type +default-tensor-type+))
     (assert-square-shape shape)
     (multiple-value-bind (q r) (qr (rand shape :type type :distribution #'alexandria:gaussian-random))
       (let ((d (diag r)))
