@@ -131,7 +131,6 @@
             work
             lwork
             info))
-         (format t "Info ~a~%" info)
          (values a-tensor)))))
 
 (defmacro def-lapack-svd (class type svd-function &optional real-type)
