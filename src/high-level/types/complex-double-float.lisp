@@ -153,7 +153,7 @@
           (jobv2t "Y")
           (trans 
             (if (eql :row-major order)
-                "T" ;; TODO: Not quite sure it this works. Give it some thought
+                "T"
                 "F"))
           (signs "D")
           ;; leading dimension is M because full MATRIX array will be used
