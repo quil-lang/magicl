@@ -35,17 +35,17 @@
                      (eps .00001f0))
                 (is (< (abs diff) eps))))))
 
-#+ignore
 (deftest test-kron ()
   "Test a few properties of the kronecker product."
   (let* ((matrix-dim 2)
          (eye2 (magicl:deye 1.0 '(2 2)))
          (eye4 (magicl:kron eye2 eye2))
-         (x (magicl:deye 1.0 '(2 2)))
+         (x (magicl:from-list '(0.0 1.0 1.0 0.0) '(2 2)))
          (xxx (magicl:kron x x x))
          (xxx-cols (magicl:ncols xxx)))
     ;; Check that the kronecker product of two small identities is a larger identity.
     (is (magicl:identity-matrix-p eye4))
+    
     ;; Check that XXX is evaluated correctly.
     (is (loop :for i :below (magicl:nrows xxx)
               :always
@@ -54,11 +54,11 @@
                                 (cl:= 1 (magicl:tref xxx i j))
                                 (cl:= 0 (magicl:tref xxx i j))))))
     ;; Check that IX /= XI.
-    (is (not (equalp (magicl:kron eye2 x) (magicl:kron x eye2))))
+    (is (not (magicl:= (magicl:kron eye2 x) (magicl:kron x eye2))))
     ;; Check that it is correctly working on more than two inputs. XXX /= XXI
-    (is (not (equalp (magicl:kron x x x ) (magicl:kron x x eye2))))
+    (is (not (magicl:= (magicl:kron x x x) (magicl:kron x x eye2))))
     ;; Check that one of the two gives the correct analytic result.
-    (is (equalp (magicl:kron x eye2)
+    (is (magicl:= (magicl:kron x eye2)
                 (magicl:from-list '(0 0 1 0
                                     0 0 0 1
                                     1 0 0 0
