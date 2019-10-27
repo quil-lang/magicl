@@ -112,7 +112,11 @@
     (loop :for i :below (size vector1)
           :sum (* (tref vector1 i) (tref vector2 i)))))
 
-(defgeneric norm (vector)
-  (:documentation "Compute the norm (magnitude) of a vector")
-  (:method ((vector vector))
-    (sqrt (dot vector vector))))
+(defgeneric norm (vector &optional p)
+  (:documentation "Compute the norm of a vector")
+  (:method ((vector vector) &optional (p 2))
+    (expt (reduce #'cl:+
+                  (cl:map (list 'cl:vector (element-type vector))
+                          (lambda (x) (expt x p))
+                          (storage vector)))
+          (/ 1 p))))
