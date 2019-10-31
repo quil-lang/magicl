@@ -119,7 +119,6 @@ NOTE: mutates tensor!")
       (map-to function tensor target)
       target)))
 
-;; TODO: Determine if this makes sense
 (defgeneric into (function abstract-tensor)
   (:documentation "Map indices to elements")
   (:method ((function function) (tensor abstract-tensor))
