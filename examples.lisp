@@ -31,7 +31,7 @@
   (let ((a (magicl:from-list '(1 2 3 4) '(2 2) :type 'double-float)))
     (multiple-value-bind (val vect)
         (magicl:eig a)
-      (format t "EVALUES = ~A~%EVECRTORS=~A~%~%" val vect))))
+      (format t "Eigenvalues = ~A~%Eigenvectors=~A~%~%" val vect))))
 
 (defun qr-example ()
   (let ((a (magicl:from-list '(#C(1 2) #C(-4 3) #C(-3 -3) #C(9 2)) '(2 2) :type '(complex double-float))))

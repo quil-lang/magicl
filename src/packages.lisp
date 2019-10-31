@@ -113,6 +113,8 @@
            #:square-matrix-p
            #:identity-matrix-p
            #:unitary-matrix-p
+           #:row
+           #:column
            #:@
            #:kron
            #:scale

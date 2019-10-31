@@ -230,27 +230,18 @@
           (t (error "Incompatible element type ~a." type)))))))
 
 (defgeneric row (matrix index)
-  (:documentation "Get row vector from a matrix")) ;; TODO: view? slice?
+  (:documentation "Get row vector from a matrix")
+  (:method ((m matrix) index)
+    (slice m
+           (list index 0)
+           (list (1+ index) (ncols m)))))
 
 (defgeneric column (matrix index)
-  (:documentation "Get column vector from a matrix"))
-
-(defgeneric slice (matrix rmin rmax cmin cmax)
-  (:documentation "Get the subarray of M containing all elements M_IJ, where RMIN<=I<RMAX and CMIN<=J<CMAX.")
-  (:method ((m matrix) rmin rmax cmin cmax)
-    (assert (<= 0 rmin rmax (nrows m))
-            () "Invalid row indices (~a,~a)" rmin rmax)
-    (assert (<= 0 cmin cmax (ncols m))
-            () "Invalid column indices (~a,~a)" cmin cmax)
-    (let* ((target-rows (cl:- rmax rmin))
-           (target-cols (cl:- cmax cmin))
-           (target (empty (list target-rows target-cols)
-                          :type (element-type m))))
-      (loop :for i :below target-rows
-            :do (loop :for j :below target-cols
-                      :do (setf (tref target i j)
-                                (tref m (cl:+ rmin i) (cl:+ cmin j)))))
-      target)))
+  (:documentation "Get column vector from a matrix")
+  (:method ((m matrix) index)
+    (slice m
+           (list 0 index)
+           (list (nrows m) (1+ index)))))
 
 ;; Methods to be specified by the specific matrix classes (maybe)
 (defgeneric mult (a b &key target alpha beta transa transb)
