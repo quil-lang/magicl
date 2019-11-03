@@ -175,7 +175,7 @@ NOTE: mutates tensor!")
 (defgeneric + (source1 source2 &optional target)
   (:documentation "Add tensors elementwise, optionally storing the result in TARGET.
 If TARGET is not specified then a new tensor is created with the same element type as the first source tensor")
-  (:method ((source1 abstract-tensor) (source2 abstract-tensor) &key target)
+  (:method ((source1 abstract-tensor) (source2 abstract-tensor) &optional target)
     (assert (equalp (shape source1) (shape source2))
             () "Incompatible shapes. Cannot add tensor of shape ~a to tensor of shape ~a."
             (shape source1) (shape source2))
@@ -192,7 +192,7 @@ If TARGET is not specified then a new tensor is created with the same element ty
 (defgeneric - (source1 source2 &optional target)
   (:documentation "Subtract tensors elementwise, optionally storing the result in TARGET.
 If TARGET is not specified then a new tensor is created with the same element type as the first source tensor")
-  (:method ((source1 abstract-tensor) (source2 abstract-tensor) &key target)
+  (:method ((source1 abstract-tensor) (source2 abstract-tensor) &optional target)
     (assert (equalp (shape source1) (shape source2))
             () "Incompatible shapes. Cannot add tensor of shape ~a to tensor of shape ~a."
             (shape source1) (shape source2))

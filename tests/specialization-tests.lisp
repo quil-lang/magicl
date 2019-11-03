@@ -13,9 +13,9 @@
                   :collect `(is (not (subtypep (type-of ,m) ',type))))))
 
 (deftest test-tensor-shape-specialization ()
-  (let ((vector (empty '(1)))
-        (matrix (empty '(1 2)))
-        (tensor (empty '(1 2 3))))
+  (let ((vector (magicl:empty '(1)))
+        (matrix (magicl:empty '(1 2)))
+        (tensor (magicl:empty '(1 2 3))))
     (is-subtype magicl::vector vector)
     (is-subtype magicl::matrix matrix)
     (is-subtype magicl::tensor tensor)
@@ -28,4 +28,4 @@
         :for class :in +magicl-matrix-classes+
         :do (is (equalp
                  class
-                 (class-name (class-of (empty '(2 2) :type type)))))))
+                 (class-name (class-of (magicl:empty '(2 2) :type type)))))))

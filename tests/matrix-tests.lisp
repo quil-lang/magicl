@@ -4,26 +4,6 @@
 
 (in-package #:magicl-tests)
 
-(defconstant +magicl-types+
-  '(single-float
-    double-float
-    (complex single-float)
-    (complex double-float)
-    (signed-byte 32)))
-
-(defconstant +magicl-float-types+
-  '(single-float
-    double-float
-    (complex single-float)
-    (complex double-float)))
-
-(defconstant +magicl-matrix-classes+
-  '(magicl::matrix/single-float
-    magicl::matrix/double-float
-    magicl::matrix/complex-single-float
-    magicl::matrix/complex-double-float
-    magicl::matrix/int32))
-
 (defmacro is-matrix (&rest rest)
   `(progn ,@(loop :for m :in rest
                   :collect `(is (subtypep (type-of ,m) 'matrix)))))
@@ -36,33 +16,33 @@
   "Test that identity matrices can be identified by IDENTITY-MATRIX-P for all types of matrixes from 1x1 to 64x64"
   (loop :for i :from 1 :to 64
         :do (loop :for type :in +magicl-types+
-                  :do (is (identity-matrix-p (deye 1 (list i i) :type type)))
-                      (is (not (identity-matrix-p (deye 2 (list i i) :type type))))
-                      (is (not (identity-matrix-p (const 0 (list i i) :type type)))))))
+                  :do (is (magicl:identity-matrix-p (magicl:deye 1 (list i i) :type type)))
+                      (is (not (magicl:identity-matrix-p (magicl:deye 2 (list i i) :type type))))
+                      (is (not (magicl:identity-matrix-p (magicl:const 0 (list i i) :type type)))))))
 
 (deftest test-square-matrix-p ()
   "Test that square matrices can be identified by IDENTITY-MATRIX-P for all types of matrixes from 1x1 to 64x64"
   (loop :for i :from 1 :to 64
         :do (loop :for type :in +magicl-types+
-                  :do (is (square-matrix-p (empty (list i i) :type type)))
-                      (is (not (square-matrix-p (empty (list i (* 2 i)) :type type)))))))
+                  :do (is (magicl:square-matrix-p (magicl:empty (list i i) :type type)))
+                      (is (not (magicl:square-matrix-p (magicl:empty (list i (* 2 i)) :type type)))))))
 
 (deftest test-matrix-rank ()
-  (is (cl:= 2 (rank (empty '(4 5))))))
+  (is (cl:= 2 (magicl:rank (magicl:empty '(4 5))))))
 
 ;; Multiplication
 
 (deftest test-matrix-multiplication-errors ()
   (signals simple-error (magicl:@
-                  (empty '(3 3))
-                  (empty '(1 1))))
+                  (magicl:empty '(3 3))
+                  (magicl:empty '(1 1))))
   (signals simple-error (magicl:@
-                  (empty '(1 2))
-                  (empty '(1 2))))
+                  (magicl:empty '(1 2))
+                  (magicl:empty '(1 2))))
   (signals simple-error (magicl:@
-                  (empty '(5 2))
-                  (empty '(2 3))
-                  (empty '(2 3))))
+                  (magicl:empty '(5 2))
+                  (magicl:empty '(2 3))
+                  (magicl:empty '(2 3))))
   t)
 
 (deftest test-complex-matrix-multiplication-results ()

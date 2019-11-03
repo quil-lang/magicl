@@ -18,4 +18,9 @@
   :serial t
   :components ((:file "packages")
                (:file "suite")
+               (:file "constants")
+               (:file "util-tests")
+               (:file "abstract-tensor-tests")
+               (:file "specialization-tests")
+               (:file "matrix-tests")
                (:file "high-level-tests")))
