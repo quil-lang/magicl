@@ -30,14 +30,14 @@
     :documentation "Total number of elements in the matrix")
    (element-type
     :initarg :element-type
-    :initform (error "element-type must be specified when creating a matrix instance") ; TODO: much better error messages
+    :initform (error "ELEMENT-TYPE must be specified when creating a matrix instance")
     :reader element-type
     :type type
     :documentation "The type of the elements in the matrix")
    ;; matrix-specific slots
    (storage
     :initarg :storage
-    :initform (error "storage must be specified when creating a matrix instance")
+    :initform (error "STORAGE must be specified when creating a matrix instance")
     :reader storage
     :documentation "Storage of the matrix, typically in a vector in column major order")
    (order
@@ -45,7 +45,7 @@
     :initform :column-major
     :reader order
     :type (member :row-major :column-major)
-    :documentation "Indexing order of storage (:column-major or :row-major)."))
+    :documentation "Indexing order of storage (:COLUMN-MAJOR or :ROW-MAJOR)."))
   (:metaclass abstract-class:abstract-class))
 
 (defun pprint-matrix (stream matrix &optional colon-p at-sign-p)
@@ -79,7 +79,7 @@
 (set-pprint-dispatch 'matrix 'pprint-matrix)
 
 (defgeneric square-matrix-p (matrix)
-  (:documentation "Whether the given matrix is square")
+  (:documentation "Whether the MATRIX is square")
   (:method ((matrix matrix))
     (cl:= (nrows matrix) (ncols matrix))))
 
@@ -119,7 +119,6 @@
   (list (nrows matrix) (ncols matrix)))
 
 (defmethod tref ((matrix matrix) &rest pos)
-  ;; TODO: Check pos type
   (assert (cl:= (rank matrix) (list-length pos))
           () "Invalid index ~a. Must be rank ~a" pos (rank matrix))
   (assert (cl:every #'< pos (shape matrix))
@@ -168,25 +167,6 @@
       (let ((d (diag r)))
         (setf d (cl:map 'list (lambda (di) (/ di (sqrt (* di (conjugate di))))) d))
         (@ q (funcall #'from-diag d shape))))))
-
-;;; Optimized abstract-tensor methods
-
-;; Broken for column-major
-#+ignore
-(defmethod map! ((function function) (matrix matrix))
-  (setf (slot-value matrix 'storage) (cl:map 'vector function (storage matrix)))
-  matrix)
-
-;; Also broken
-#+ignore
-(defmethod into! ((function function) (matrix matrix))
-  (let ((i 0))
-    (map-indexes
-     (shape matrix)
-     (lambda (&rest dims)
-       (setf (aref (storage matrix) i) (apply function dims))
-       (incf i)))
-    matrix))
 
 ;;; Specfic matrix classes
 
@@ -243,7 +223,6 @@
            (list 0 index)
            (list (nrows m) (1+ index)))))
 
-;; Methods to be specified by the specific matrix classes (maybe)
 (defgeneric mult (a b &key target alpha beta transa transb)
   (:documentation "Multiply matrix a by matrix b, storing in target or creating a new matrix if target is not specified.
 Target cannot be the same as a or b."))
@@ -295,7 +274,7 @@ Target cannot be the same as a or b."))
 If fast is t then just change order. Fast can cause problems when you want to multiply specifying transpose."
     (if fast
         (progn
-          (let ((shape (shape matrix))) ; TODO: Change to using nrows/ncols
+          (let ((shape (shape matrix)))
             (setf (slot-value matrix 'ncols) (first shape))
             (setf (slot-value matrix 'nrows) (second shape))
             (setf (slot-value matrix 'order) (case (order matrix)
@@ -334,7 +313,7 @@ If fast is t then just change order. Fast can cause problems when you want to mu
         (setf (slot-value matrix 'nrows) (second (shape matrix))))
       new-matrix)))
 
-
+;; TODO: allow setf on matrix diag
 (defgeneric diag (matrix)
   (:documentation "Get a list of the diagonal elements of a matrix")
   (:method ((matrix matrix))
@@ -395,7 +374,6 @@ If fast is t then just change order. Fast can cause problems when you want to mu
                            do (setf (tref target (cl:+ i (cl:- order m)) j) (tref matrix i j)))))
         target))))
 
-;; TODO: this only makes sense on complex matrices. Only define for complex matrices?
 (defgeneric conjugate-transpose (matrix)
   (:documentation "Compute the conjugate transpose of a matrix")
   (:method ((matrix matrix))
@@ -420,27 +398,19 @@ If fast is t then just change order. Fast can cause problems when you want to mu
 (defgeneric orthonormalize! (matrix)
   (:documentation "Orthonormalize a matrix, replacing the elements"))
 
-;;; Fancy linear algebra
 (defgeneric eig (matrix)
   (:documentation "Find the (right) eigenvectors and corresponding eigenvalues of a square matrix M. Returns two lists (EIGENVALUES, EIGENVECTORS)"))
 
-;; TODO: Let's figure out a way to document functions that isn't this gross
 (defgeneric lu (matrix)
-  (:documentation "Get the LU decomposition of the matrix
-
-ARGS:
-matrix :: matrix
-
-VALUES:
-a :: matrix
-ipiv :: vector"))
+  (:documentation "Get the LU decomposition of MATRIX, returning "))
 
 ;; TODO: Make this one generic and move to lapack-macros
+;;       This is being blocked by the ZUNCSD shenanigans
 (defgeneric csd (matrix p q)
   (:documentation "Find the Cosine-Sine Decomposition of a matrix X given that it is to be partitioned with upper left block of dimension P-by-Q. Returns the CSD elements (VALUES U SIGMA VT) such that X=U*SIGMA*VT.")
   (:method ((matrix matrix) p q)
     (labels ((csd-from-blocks (u1 u2 v1t v2t theta)
-               "Calculates the matrices U, SIGMA, and VT of the CSD of a matrix from its intermediate representation, as calculated from ZUNCSD."
+               "Calculates the matrices U, SIGMA, and VT of the CSD of a matrix from its intermediate representation, as calculated from LAPACK-CSD."
                (let ((p (nrows u1))
                      (q (nrows v1t))
                      (m (cl:+ (nrows u1) (nrows u2)))

@@ -140,13 +140,9 @@
        ((storage :type (tensor-storage ,type)))
        (:documentation ,(format nil "Tensor with element type of ~a" type)))))
 
-;; Methods to be specified by the specific tensor classes (maybe)
-
-
-
 ;;; Generic tensor methods
 
-;; SHOULD BE BASED ON ORDER (MAYBE)
+;; TODO: SHOULD BE BASED ON ORDER (MAYBE)
 (defgeneric reshape (tensor shape)
   (:documentation "Change the shape of the tensor.
 WARNING: This method acts differently depending on the order of the tensor. Do not expect row-major to act the same as column-major.")

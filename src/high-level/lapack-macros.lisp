@@ -82,7 +82,6 @@
           info)
          (values a-tensor ipiv-tensor)))))
 
-
 ;; NOTE: This requires lu to be defined
 (defmacro def-lapack-inv (class type lu-function inv-function)
   `(progn
@@ -90,48 +89,47 @@
        (lapack-inv m))
      
      (defmethod lapack-inv ((a ,class))
-       (when (eql :row-major (order a)) (error "Row major not allowed for this function"))
-       (let* ((a-tensor (deep-copy-tensor a))
-              (a (storage a-tensor))
-              (m (nrows a-tensor))
-              (n (ncols a-tensor))
-              (lda m)
-              (ipiv-tensor (empty (list (max m n)) :type '(signed-byte 32)))
-              (ipiv (storage ipiv-tensor))
-              (info 0))
+       (let ((a-tensor (deep-copy-tensor a)))
          (when (eql :row-major (order a-tensor)) (transpose! a-tensor))
-         (,lu-function
-          m
-          n
-          a
-          lda
-          ipiv
-          info)
-         (let* ((lwork -1)
-                (work1 (make-array (max 1 lwork) :element-type ',type))
-                (work nil)
+         (let* ((a (storage a-tensor))
+                (m (nrows a-tensor))
+                (n (ncols a-tensor))
+                (lda m)
+                (ipiv-tensor (empty (list (max m n)) :type '(signed-byte 32)))
+                (ipiv (storage ipiv-tensor))
                 (info 0))
-           ;; Perform work size query with work of length 1
-           (,inv-function
+           (,lu-function
+            m
             n
             a
-            m
+            lda
             ipiv
-            work1
-            lwork
             info)
-           (setf lwork (round (realpart (aref work1 0))))
-           (setf work (make-array (max 1 lwork) :element-type ',type))
-           ;; Perform actual operation with correct work size
-           (,inv-function
-            n
-            a
-            m
-            ipiv
-            work
-            lwork
-            info))
-         (values a-tensor)))))
+           (let* ((lwork -1)
+                  (work1 (make-array (max 1 lwork) :element-type ',type))
+                  (work nil)
+                  (info 0))
+             ;; Perform work size query with work of length 1
+             (,inv-function
+              n
+              a
+              m
+              ipiv
+              work1
+              lwork
+              info)
+             (setf lwork (round (realpart (aref work1 0))))
+             (setf work (make-array (max 1 lwork) :element-type ',type))
+             ;; Perform actual operation with correct work size
+             (,inv-function
+              n
+              a
+              m
+              ipiv
+              work
+              lwork
+              info))
+           (values a-tensor))))))
 
 (defmacro def-lapack-svd (class type svd-function &optional real-type)
   `(progn
@@ -140,12 +138,11 @@
      
      (defmethod lapack-svd ((m ,class))
        "Find the SVD of a matrix M. Return (VALUES U SIGMA Vt) where M = U*SIGMA*Vt"
-       (when (eql :row-major (order m)) (error "Row major not allowed for this function"))
        (let ((jobu "A")
              (jobvt "A")
              (rows (nrows m))
              (cols (ncols m))
-             (a (alexandria:copy-array (storage m)))
+             (a (alexandria:copy-array (storage (if (eql :row-major (order m)) (transpose m) m))))
              (lwork -1)
              (info 0))
          (let ((lda rows)
@@ -181,11 +178,11 @@
        (lapack-eig m))
 
      (defmethod lapack-eig ((m ,class))
-       (when (eql :row-major (order m)) (error "Row major not allowed for this function"))
        (assert-square-matrix m)
        (let ((rows (nrows m))
              (cols (ncols m))
              (a-tensor (deep-copy-tensor m)))
+         (when (eql :row-major (order m)) (transpose! a-tensor))
          (let ((jobvl "N")
                (jobvr "V")
                (a (storage a-tensor))
@@ -210,6 +207,7 @@
                             vl 1 vr rows work lwork ,@(when real-type `(rwork)) info)
              (values (coerce ,@(if real-type `(w) `(wr)) 'list) (from-array vr (list rows cols) :order :column-major))))))))
 
+;; TODO: implement row-major checks in these functions
 (defmacro def-lapack-ql-qr-rq-lq (class type
                                   ql-function qr-function rq-function lq-function
                                   ql-q-function qr-q-function rq-q-function lq-q-function)

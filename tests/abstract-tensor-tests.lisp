@@ -4,13 +4,6 @@
 
 (in-package #:magicl-tests)
 
-(defun from-row-major-index (index dims)
-  (check-type index fixnum)
-  (check-type dims magicl:shape)
-  (reverse (loop :for d in dims
-                 :for acc = index :then (floor acc d)
-                 :collect (rem acc d))))
-
 (deftest test-tensor-shape ()
   "Test that the shape is returned correctly for tensors of dimension 1 to 8"
   (let ((dimensions (make-list 1 :initial-element 1)))
@@ -32,4 +25,4 @@
                                   '(3 5)
                                   :type 'double-float)))
     (loop :for i :below 15
-          :do (= i (apply #'magicl:tref tensor (from-row-major-index i '(3 5)))))))
+          :do (= i (apply #'magicl:tref tensor (magicl::from-row-major-index i '(3 5)))))))
