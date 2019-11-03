@@ -4,22 +4,25 @@
 
 (in-package #:magicl-tests)
 
-(defconstant +magicl-types+
+(alexandria:define-constant +magicl-types+
   '(single-float
     double-float
     (complex single-float)
     (complex double-float)
-    (signed-byte 32)))
+    (signed-byte 32))
+  :test #'equal)
 
-(defconstant +magicl-float-types+
+(alexandria:define-constant +magicl-float-types+
   '(single-float
     double-float
     (complex single-float)
-    (complex double-float)))
+    (complex double-float))
+  :test #'equal)
 
-(defconstant +magicl-matrix-classes+
+(alexandria:define-constant +magicl-matrix-classes+
   '(magicl::matrix/single-float
     magicl::matrix/double-float
     magicl::matrix/complex-single-float
     magicl::matrix/complex-double-float
-    magicl::matrix/int32))
+    magicl::matrix/int32)
+  :test #'equal)
