@@ -6,17 +6,14 @@
 
 (deftest test-tensor-shape ()
   "Test that the shape is returned correctly for tensors of dimension 1 to 8"
-  (let ((dimensions (list 1)))
-    (loop :for rank :from 1 :to 8
-          :do (rplacd (last dimensions) (list rank))
-              (is (equal dimensions (magicl:shape (magicl:empty dimensions)))))))
+  (loop :for dimensions :on '(8 7 6 5 4 3 2 1) :do
+    (is (equal dimensions (magicl:shape (magicl:empty dimensions))))))
 
 (deftest test-tensor-rank ()
   "Test that the rank is returned correctly for tensors of dimension 1 to 8"
-  (let ((dimensions (list 1)))
-    (loop :for rank :from 1 :to 8
-          :do (rplacd (last dimensions) (list rank))
-              (is (equal rank (magicl:rank (magicl:empty dimensions)))))))
+  (loop :for dimensions :on '(8 7 6 5 4 3 2 1)
+        :for i :from 8 :downto 1 :do
+    (is (equal i (magicl:rank (magicl:empty dimensions))))))
 
 (deftest test-tensor-tref ()
   (let ((tensor (magicl:from-list '(1  2  3  4  5
