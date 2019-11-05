@@ -50,11 +50,8 @@
 ;;; Required abstract-tensor methods
 
 (defmethod tref ((tensor tensor) &rest pos)
-  ;; TODO: Check pos type
-  (assert (cl:= (rank tensor) (list-length pos))
-          () "Invalid index ~a. Must be rank ~a" pos (rank tensor))
-  (assert (cl:every #'< pos (shape tensor))
-          () "Index ~a out of range" pos)
+  (assert (valid-index-p pos (shape tensor))
+          () "Incompatible position for TENSOR. Position ~a is not within tensor shape ~a" pos (shape tensor))
   (let ((index (case (order tensor)
                  (:row-major (row-major-index pos (shape tensor)))
                  (:column-major (column-major-index pos (shape tensor))))))
@@ -147,7 +144,6 @@
   (:documentation "Change the shape of the tensor.
 WARNING: This method acts differently depending on the order of the tensor. Do not expect row-major to act the same as column-major.")
   (:method ((tensor tensor) shape)
-    ;; TODO: check type
     (let ((shape-size (reduce #'* shape)))
       (assert (cl:= (size tensor) shape-size)
               () "Incompatible shape. Must have the same total number of elements. The tensor has ~a elements and the new shape has ~a elements" (size tensor) shape-size))

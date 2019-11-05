@@ -159,13 +159,12 @@ If ORDER is specified then traverse TENSOR in the specified order (column major 
   (:documentation "Slice a tensor from FROM to TO, returning a new tensor with the contained elements")
   (:method ((tensor abstract-tensor) from to)
     (declare (type sequence from to))
-    (assert (and (cl:= (rank tensor) (length from))
-                 (cl:every (lambda (x) (<= 0 x)) from)
+    (assert (and (valid-index-p from (shape tensor))
                  (cl:every #'< from (shape tensor)))
             () "Incompatible FROM position for TENSOR. Position ~a is not within tensor shape ~a"
             from (shape tensor))
     (assert (and (cl:= (rank tensor) (length to))
-                 (cl:every (lambda (x) (<= 0 x)) to)
+                 (valid-shape-p to)
                  (cl:every #'<= to (shape tensor)))
             () "Incompatible TO position for TENSOR. Position ~a is not within tensor shape ~a"
             to (shape tensor))

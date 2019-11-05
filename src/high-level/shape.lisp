@@ -17,10 +17,11 @@
   (and (valid-shape-p shape)
        (apply #'cl:= shape)))
 
-(defun valid-index-p (shape)
-  (and (typep shape 'list)
-       (plusp (length shape))
-       (cl:every (lambda (x) (typep x 'alexandria:non-negative-fixnum)) shape)))
+(defun valid-index-p (index shape)
+  (and (valid-shape-p shape)
+       (valid-shape-p index)
+       (cl:= (length index) (length shape))
+       (cl:every #'< index shape)))
 
 ;; Types
 (deftype shape (&optional rank)

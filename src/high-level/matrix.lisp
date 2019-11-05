@@ -119,20 +119,16 @@
   (list (nrows matrix) (ncols matrix)))
 
 (defmethod tref ((matrix matrix) &rest pos)
-  (assert (cl:= (rank matrix) (list-length pos))
-          () "Invalid index ~a. Must be rank ~a" pos (rank matrix))
-  (assert (cl:every #'< pos (shape matrix))
-          () "Index ~a out of range" pos)
+  (assert (valid-index-p pos (shape matrix))
+          () "Incompatible position for MATRIX. Position ~a is not within matrix shape ~a" pos (shape matrix))
   (let ((index (ecase (order matrix)
                  (:row-major (cl:+ (second pos) (* (first pos) (ncols matrix))))
                  (:column-major (cl:+ (first pos) (* (second pos) (nrows matrix)))))))
     (aref (storage matrix) index)))
 
 (defmethod (setf tref) (new-value (matrix matrix) &rest pos)
-  (assert (cl:= (rank matrix) (list-length pos))
-          () "Invalid index ~a. Must be rank ~a" pos (rank matrix))
-  (assert (cl:every #'< pos (shape matrix))
-          () "Index ~a out of range" pos)
+  (assert (valid-index-p pos (shape matrix))
+          () "Incompatible position for MATRIX. Position ~a is not within matrix shape ~a" pos (shape matrix))
   (let ((index (ecase (order matrix)
                  (:row-major (cl:+ (second pos) (* (first pos) (ncols matrix))))
                  (:column-major (cl:+ (first pos) (* (second pos) (nrows matrix)))))))
@@ -199,8 +195,9 @@
   (:documentation
    "Accessor method for the pointer to the element in the I-th row and J-th column of a matrix M, assuming zero indexing.")
   (:method ((m matrix) base i j)
+    (assert (valid-index-p pos (shape matrix))
+          () "Incompatible position for MATRIX. Position ~a is not within matrix shape ~a" pos (shape matrix))
     (let ((type (element-type m)))
-      ;; TODO: make sure index is not out of range
       ;; TODO: compensate for order
       (let ((idx (column-major-index (list i j) (shape m))))
         (cond

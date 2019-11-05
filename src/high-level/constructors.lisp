@@ -60,7 +60,7 @@
         (specialize-tensor tensor)))))
 
 (defgeneric arange (range &key type order)
-  (:documentation "Create a 1d tensor of integers (not the type) from 0 up to but not including the specified range")
+  (:documentation "Create a 1d tensor of elements from 0 up to but not including the RANGE")
   (:method (range &key type order)
     (multiple-value-bind (tensor-class element-type)
         (infer-tensor-type type range)
@@ -70,7 +70,8 @@
         (specialize-tensor (into! f tensor))))))
 
 (defgeneric from-array (array shape &key type order)
-  (:documentation "Create a tensor from an array")
+  (:documentation "Create a tensor from an array
+NOTE: When type is not specified, the type is inferred from the type of the array")
   (:method (array shape &key type (order :row-major))
     (let* ((element-type
              (if (null type)

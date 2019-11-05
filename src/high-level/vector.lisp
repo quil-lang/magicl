@@ -60,17 +60,13 @@
   (list (size vector)))
 
 (defmethod tref ((vector vector) &rest pos)
-  (assert (cl:= (rank vector) (list-length pos))
-          () "Invalid index ~a. Must be rank ~a" pos (rank vector))
-  (assert (cl:every #'< pos (shape vector))
-          () "Index ~a out of range" pos)
+  (assert (valid-index-p pos (shape vector))
+          () "Incompatible position for VECTOR. Position ~a is not within vector shape ~a" pos (shape vector))
   (aref (storage vector) (first pos)))
 
 (defmethod (setf tref) (new-value (vector vector) &rest pos)
-  (assert (cl:= (rank vector) (list-length pos))
-          () "Invalid index ~a. Must be rank ~a" pos (rank vector))
-  (assert (cl:every #'< pos (shape vector))
-          () "Index ~a out of range" pos)
+  (assert (valid-index-p pos (shape vector))
+          () "Incompatible position for VECTOR. Position ~a is not within vector shape ~a" pos (shape vector))
   (setf (aref (storage vector) (first pos)) new-value))
 
 (defmacro defvector (name type tensor-name matrix-name)
