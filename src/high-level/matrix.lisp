@@ -166,29 +166,31 @@
 
 ;;; Specfic matrix classes
 
-(defmacro defmatrix (name type tensor-name)
+(defmacro defmatrix (name type &rest compat-classes)
   "Define a new matrix subclass with the specified NAME, element TYPE, and TENSOR-NAME. The tensor name is used to declare that the new matrix class is a specialization of TENSOR-NAME."
   `(progn
      (defclass ,name (matrix)
        ((storage :type (matrix-storage ,type)))
        (:documentation ,(format nil "Matrix with element type of ~a" type)))
-     (defmethod update-instance-for-different-class :before
-         ((old ,tensor-name)
-          (new ,name)
-          &key)
-       (assert (cl:= 2 (rank old)))
-       (with-slots (shape) old
-         (with-slots (nrows ncols) new
-           (setf nrows (first shape)
-                 ncols (second shape)))))
-     (defmethod update-instance-for-different-class :before
-         ((old ,name)
-          (new ,tensor-name)
-          &key)
-       (with-slots (nrows ncols) old
-         (with-slots (shape rank) new
-           (setf shape (list nrows ncols)
-                 rank 2))))))
+     ,@(loop :for class :in compat-classes
+             :collect `(progn
+                         (defmethod update-instance-for-different-class :before
+                             ((old ,class)
+                              (new ,name)
+                              &key)
+                           (assert (cl:= 2 (rank old)))
+                           (with-slots (shape) old
+                             (with-slots (nrows ncols) new
+                               (setf nrows (first shape)
+                                     ncols (second shape)))))
+                         (defmethod update-instance-for-different-class :before
+                             ((old ,name)
+                              (new ,class)
+                              &key)
+                           (with-slots (nrows ncols) old
+                             (with-slots (shape rank) new
+                               (setf shape (list nrows ncols)
+                                     rank 2))))))))
 
 ;; TODO: This should be generic to abstract-tensor
 (defgeneric ptr-ref (m base i j)

@@ -69,35 +69,25 @@
           () "Incompatible position for VECTOR. Position ~a is not within vector shape ~a" pos (shape vector))
   (setf (aref (storage vector) (first pos)) new-value))
 
-(defmacro defvector (name type tensor-name matrix-name)
+(defmacro defvector (name type &rest compat-classes)
   `(progn
      (defclass ,name (vector)
        ((storage :type (vector-storage ,type)))
        (:documentation ,(format nil "Vector with element type of ~a" type)))
-     (defmethod update-instance-for-different-class :before
-         ((old ,tensor-name)
-          (new ,name)
-          &key)
-       (assert (cl:= 1 (rank old))))
-     (defmethod update-instance-for-different-class :before
-         ((old ,matrix-name)
-          (new ,name)
-          &key)
-       (assert (cl:= 1 (rank old))))
-     (defmethod update-instance-for-different-class :before
-         ((old ,name)
-          (new ,tensor-name)
-          &key)
-       (with-slots (shape rank) new
-         (setf shape (shape old)
-               rank 1)))
-     (defmethod update-instance-for-different-class :before
-         ((old ,name)
-          (new ,matrix-name)
-          &key)
-       (with-slots (shape rank) new
-         (setf shape (shape old)
-               rank 1)))))
+     ,@(loop :for class :in compat-classes
+             :collect `(progn
+                         (defmethod update-instance-for-different-class :before
+                             ((old ,class)
+                              (new ,name)
+                              &key)
+                           (assert (cl:= 1 (rank old))))
+                         (defmethod update-instance-for-different-class :before
+                             ((old ,name)
+                              (new ,class)
+                              &key)
+                           (with-slots (shape rank) new
+                             (setf shape (shape old)
+                                   rank 1)))))))
 
 (defgeneric dot (vector1 vector2)
   (:documentation "Compute the dot product of two vectors")
