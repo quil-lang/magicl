@@ -102,6 +102,11 @@
   (:method ((matrix matrix) &optional (epsilon 0d0))
     (identity-matrix-p (@ matrix (conjugate-transpose matrix)) epsilon)))
 
+(defgeneric hermitian-matrix-p (matrix &optional epsilon)
+  (:documentation "Whether MATRIX is a unitary matrix")
+  (:method ((matrix matrix) &optional (epsilon 0d0))
+    (= matrix (conjugate-transpose matrix) epsilon)))
+
 (defmacro assert-square-matrix (&rest matrices)
   `(progn
      ,@(loop :for matrix in matrices

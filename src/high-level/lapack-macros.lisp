@@ -207,6 +207,37 @@
                             vl 1 vr rows work lwork ,@(when real-type `(rwork)) info)
              (values (coerce ,@(if real-type `(w) `(wr)) 'list) (from-array vr (list rows cols) :order :column-major))))))))
 
+(defmacro def-lapack-hermitian-eig (class type eig-function real-type)
+  `(progn
+     (defmethod hermitian-eig ((m ,class))
+       (lapack-hermitian-eig m))
+
+     (defmethod lapack-hermitian-eig ((m ,class))
+       (assert-square-matrix)
+       (assert (hermitian-matrix-p m)
+               () "The matrix M is not a hermitian matrix.")
+       (let ((rows (nrows m))
+             (cols (ncols m))
+             (a-tensor (deep-copy-tensor m)))
+         (when (eql :row-major (order m)) (transpose! a-tensor))
+         (let ((jobz "V")
+               (uplo "U")
+               (n rows)
+               (a (storage a-tensor))
+               (lda rows)
+               (w (make-array rows :element-type ',real-type))
+               (work (make-array 1 :element-type ',type))
+               (lwork -1)
+               (rwork (make-array (- (* 3 rows) 2) :element-type ',real-type))
+               (info 0))
+           ;; run it once as a workspace query
+           (,eig-function jobz uplo n a lda w work lwork rwork info)
+           (setf lwork (truncate (realpart (row-major-aref work 0))))
+           (setf work (make-array (max 1 lwork) :element-type ',type))
+           ;; run it again with optimal workspace size
+           (,eig-function jobz uplo n a lda w work lwork rwork info)
+           (values (coerce w 'list) (from-array a (list rows cols))))))))
+
 ;; TODO: implement row-major checks in these functions
 (defmacro def-lapack-ql-qr-rq-lq (class type
                                   ql-function qr-function rq-function lq-function
