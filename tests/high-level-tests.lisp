@@ -59,13 +59,13 @@
     (is (not (magicl:= (magicl:kron x x x) (magicl:kron x x eye2))))
     ;; Check that one of the two gives the correct analytic result.
     (is (magicl:= (magicl:kron x eye2)
-                (magicl:from-list '(0 0 1 0
-                                    0 0 0 1
-                                    1 0 0 0
-                                    0 1 0 0)
-                                  '(4 4)
-                                  :type '(complex double-float))))
-    ;; Check that it yields teh right dimensions.
+                  (magicl:from-list '(0 0 1 0
+                                      0 0 0 1
+                                      1 0 0 0
+                                      0 1 0 0)
+                                    '(4 4)
+                                    :type '(complex double-float))))
+    ;; Check that it yields the right dimensions.
     (is (cl:= (magicl:nrows xxx) (magicl:ncols xxx) (expt matrix-dim 3)))
     ))
 
