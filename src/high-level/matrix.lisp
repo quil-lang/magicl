@@ -195,8 +195,8 @@
   (:documentation
    "Accessor method for the pointer to the element in the I-th row and J-th column of a matrix M, assuming zero indexing.")
   (:method ((m matrix) base i j)
-    (assert (valid-index-p pos (shape matrix))
-          () "Incompatible position for MATRIX. Position ~a is not within matrix shape ~a" pos (shape matrix))
+    (assert (valid-index-p (list i j) (shape m))
+          () "Incompatible position for MATRIX. Position ~a is not within matrix shape ~a" (list i j) (shape m))
     (let ((type (element-type m)))
       ;; TODO: compensate for order
       (let ((idx (column-major-index (list i j) (shape m))))
