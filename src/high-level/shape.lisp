@@ -15,7 +15,7 @@
 
 (defun square-shape-p (shape)
   (and (valid-shape-p shape)
-       (cl:every #'cl:= shape (rest shape))))
+       (apply #'cl:= shape)))
 
 (defun valid-index-p (shape)
   (and (typep shape 'list)

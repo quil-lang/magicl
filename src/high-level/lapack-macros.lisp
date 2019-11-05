@@ -82,7 +82,7 @@
           info)
          (values a-tensor ipiv-tensor)))))
 
-;; NOTE: This requires lu to be defined
+;; NOTE: This requires lu to be defined for the matrix type
 (defmacro def-lapack-inv (class type lu-function inv-function)
   `(progn
      (defmethod inverse ((m ,class))

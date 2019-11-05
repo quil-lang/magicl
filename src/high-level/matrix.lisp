@@ -171,6 +171,7 @@
 ;;; Specfic matrix classes
 
 (defmacro defmatrix (name type tensor-name)
+  "Define a new matrix subclass with the specified NAME, element TYPE, and TENSOR-NAME. The tensor name is used to declare that the new matrix class is a specialization of TENSOR-NAME."
   `(progn
      (defclass ,name (matrix)
        ((storage :type (matrix-storage ,type)))
@@ -237,7 +238,7 @@ Target cannot be the same as a or b."))
 
 (defgeneric direct-sum (a b)
   (:method ((a matrix) (b matrix))
-    "Compute the direct sum of A and B."
+    "Compute the direct sum of A and B"
     (let* ((arows (nrows a))
            (acols (ncols a))
            (brows (nrows b))
@@ -255,7 +256,7 @@ Target cannot be the same as a or b."))
       result)))
 
 (defgeneric kron (a b &rest rest)
-  (:documentation "Compute the kronecker product of two matrices")
+  (:documentation "Compute the kronecker product of A and B")
   (:method (a b &rest rest)
     (let ((ma (nrows a))
           (mb (nrows b))
@@ -268,7 +269,7 @@ Target cannot be the same as a or b."))
                                                          :type '(complex double-float))))))))
 
 (defgeneric transpose! (matrix &key fast)
-  (:documentation "Transpose a matrix!")
+  (:documentation "Transpose MATRIX, replacing the elements of MATRIX, optionally performing a faster change of order if FAST is specified")
   (:method ((matrix matrix) &key fast)
     "Transpose a matrix by copying values.
 If fast is t then just change order. Fast can cause problems when you want to multiply specifying transpose."
@@ -294,7 +295,7 @@ If fast is t then just change order. Fast can cause problems when you want to mu
     matrix))
 
 (defgeneric transpose (matrix)
-  (:documentation "Create a matrix with the transpose of the input")
+  (:documentation "Create a new matrix containing the transpose of MATRIX")
   (:method ((matrix matrix))
     "Transpose a matrix by copying values.
 If fast is t then just change order. Fast can cause problems when you want to multiply specifying transpose."
@@ -315,7 +316,7 @@ If fast is t then just change order. Fast can cause problems when you want to mu
 
 ;; TODO: allow setf on matrix diag
 (defgeneric diag (matrix)
-  (:documentation "Get a list of the diagonal elements of a matrix")
+  (:documentation "Get a list of the diagonal elements of MATRIX")
   (:method ((matrix matrix))
     (assert-square-matrix matrix)
     (let ((rows (nrows matrix)))
@@ -323,14 +324,14 @@ If fast is t then just change order. Fast can cause problems when you want to mu
             :collect (tref matrix i i)))))
 
 (defgeneric trace (matrix)
-  (:documentation "Get the trace of the matrix (sum of diagonals)")
+  (:documentation "Get the trace of MATRIX (sum of diagonals)")
   (:method ((matrix matrix))
     (assert-square-matrix matrix)
     (loop :for i :below (nrows matrix)
           :sum (tref matrix i i))))
 
 (defgeneric det (matrix)
-  (:documentation "Compute the determinant of a square matrix")
+  (:documentation "Compute the determinant of a square matrix MATRIX")
   (:method ((matrix matrix))
     (assert-square-matrix matrix)
     (let ((d 1))
@@ -385,24 +386,26 @@ If fast is t then just change order. Fast can cause problems when you want to mu
     (map! #'conjugate (transpose! matrix))))
 
 (defgeneric dagger (matrix)
-  (:documentation "Compute the conjugate transpose of a matrix")
+  (:documentation "Compute the conjugate transpose of MATRIX")
   (:method ((matrix matrix))
     (conjugate-transpose matrix)))
 
 (defgeneric dagger! (matrix)
-  (:documentation "Compute the conjugate transpose of a matrix, replacing the elements")
+  (:documentation "Compute the conjugate transpose of MATRIX, replacing the elements")
   (:method ((matrix matrix))
     (conjugate-transpose! matrix)))
 
-;; TODO: This should either use QR or just be removed
-(defgeneric orthonormalize! (matrix)
-  (:documentation "Orthonormalize a matrix, replacing the elements"))
-
 (defgeneric eig (matrix)
-  (:documentation "Find the (right) eigenvectors and corresponding eigenvalues of a square matrix M. Returns two lists (EIGENVALUES, EIGENVECTORS)"))
+  (:documentation "Find the (right) eigenvectors and corresponding eigenvalues of a square matrix M. Returns a list and a tensor (EIGENVALUES, EIGENVECTORS)")
+  (:method ((matrix matrix))
+    (declare (ignore matrix))
+    (error "EIG is not defined for the generic matrix type.")))
 
 (defgeneric lu (matrix)
-  (:documentation "Get the LU decomposition of MATRIX, returning "))
+  (:documentation "Get the LU decomposition of MATRIX. Returns two tensors (LU, IPIV)")
+  (:method ((matrix matrix))
+    (declare (ignore matrix))
+    (error "LU is not defined for the generic matrix type.")))
 
 ;; TODO: Make this one generic and move to lapack-macros
 ;;       This is being blocked by the ZUNCSD shenanigans
@@ -462,33 +465,30 @@ If fast is t then just change order. Fast can cause problems when you want to mu
     (error "SVD is not defined for the generic matrix type.")))
 
 (defgeneric qr (matrix)
-  (:documentation "Finds the QL factorization of the matrix M. NOTE: Only square matrices supported")
+  (:documentation "Finds the QL factorization of the matrix M. Returns two tensors (Q, R)
+NOTE: Only square matrices supported")
   (:method ((matrix matrix))
     (declare (ignore matrix))
     (error "QR is not defined for the generic matrix type.")))
 
 (defgeneric ql (matrix)
-  (:documentation "Finds the QL factorization of the matrix M. NOTE: Only square matrices supported")
+  (:documentation "Finds the QL factorization of the matrix M. Returns two tensors (Q, L)
+NOTE: Only square matrices supported")
   (:method ((matrix matrix))
     (declare (ignore matrix))
     (error "QL is not defined for the generic matrix type.")))
 
 (defgeneric rq (matrix)
-  (:documentation "Finds the RQ factorization of the matrix M. NOTE: Only square matrices supported")
+  (:documentation "Finds the RQ factorization of the matrix M. Returns two tensors (R, Q)
+NOTE: Only square matrices supported")
   (:method ((matrix matrix))
     (declare (ignore matrix))
     (error "RQ is not defined for the generic matrix type.")))
 
 (defgeneric lq (matrix)
-  (:documentation "Finds the LQ factorization of the matrix M. NOTE: Only square matrices supported")
+  (:documentation "Finds the LQ factorization of the matrix M. Returns two tensors (L, Q)
+NOTE: Only square matrices supported")
   (:method ((matrix matrix))
     (declare (ignore matrix))
     (error "LQ is not defined for the generic matrix type.")))
-
-;; TODO:
-;; einsum
-;; Solve
-;; exponent
-;; dot
-;; stack together
 
