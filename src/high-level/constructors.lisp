@@ -8,8 +8,8 @@
 
 (defun infer-tensor-type (type default)
   (if (null type)
-        (compatible-tensor-constructors-from-value default)
-        (values (compatible-tensor-constructors type) type)))
+      (compatible-tensor-constructors-from-value default)
+      (values (compatible-tensor-constructors type) type)))
 
 (defgeneric empty (shape &key type order)
   (:documentation "Create an empty tensor of specified shape")
