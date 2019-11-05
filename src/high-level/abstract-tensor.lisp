@@ -123,18 +123,14 @@ If ORDER is specified then traverse TENSOR in the specified order (column major 
 (defgeneric map (function tensor)
   (:documentation "Map elements of TENSOR, storing the output of FUNCTION on the element into the corresponding element of a new tensor")
   (:method ((function function) (tensor abstract-tensor))
-    (let ((target (copy-tensor tensor)))
-      (map-to function tensor target)
-      target)))
+    (map! function (deep-copy-tensor tensor))))
 
 (defgeneric into (function tensor)
   (:documentation "Map indices of TENSOR, storing the output of FUNCTION on the index into the corresponding element of a new tensor
 
 If ORDER is specified then traverse TENSOR in the specified order (column major or row major).")
   (:method ((function function) (tensor abstract-tensor))
-    (let ((target (copy-tensor tensor)))
-      (into! function target)
-      target)))
+    (into! function (deep-copy-tensor tensor))))
 
 (defgeneric sum (tensor)
   (:documentation "Get the sum of the elements of TENSOR")
@@ -146,9 +142,7 @@ If ORDER is specified then traverse TENSOR in the specified order (column major 
 (defgeneric scale (tensor factor)
   (:documentation "Scale TENSOR by FACTOR, returning a new tensor of the same type as TENSOR")
   (:method ((tensor abstract-tensor) (factor number))
-    (let ((target (copy-tensor tensor)))
-      (map-to (lambda (x) (* x factor)) tensor target)
-      target)))
+    (map! (lambda (x) (* x factor)) (deep-copy-tensor tensor))))
 
 (defgeneric scale! (tensor factor)
   (:documentation "Scale TENSOR by FACTOR, storing back into the tensor")
