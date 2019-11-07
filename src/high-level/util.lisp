@@ -44,7 +44,7 @@
           r)))
 
 (defun map-indexes (dims f)
-  "Call a function `f` for all indexes in shape `dims`, going in row-major order"
+  "Call a function F for all indexes in shape DIMS, going in row-major order"
   (check-type f function)
   (check-type dims shape)
   (let ((ihead (make-list (list-length dims))))
@@ -59,6 +59,7 @@
       (rec dims ihead))))
 
 (defun map-column-indexes (dims f)
+  "Call a function F for all indexes in shape DIMS, going in column-major order"
   (check-type f function)
   (check-type dims shape)
   (map-indexes

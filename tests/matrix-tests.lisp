@@ -34,16 +34,15 @@
 
 (deftest test-matrix-multiplication-errors ()
   (signals simple-error (magicl:@
-                  (magicl:empty '(3 3))
-                  (magicl:empty '(1 1))))
+                         (magicl:empty '(3 3))
+                         (magicl:empty '(1 1))))
   (signals simple-error (magicl:@
-                  (magicl:empty '(1 2))
-                  (magicl:empty '(1 2))))
+                         (magicl:empty '(1 2))
+                         (magicl:empty '(1 2))))
   (signals simple-error (magicl:@
-                  (magicl:empty '(5 2))
-                  (magicl:empty '(2 3))
-                  (magicl:empty '(2 3))))
-  t)
+                         (magicl:empty '(5 2))
+                         (magicl:empty '(2 3))
+                         (magicl:empty '(2 3)))))
 
 (deftest test-complex-matrix-multiplication-results ()
   "Test a few basic complex matrix multiplications"
@@ -60,8 +59,7 @@
     (is (magicl:= x-old x))
 
     ;; Check that doing 2x1 @ 2x2 errors
-    (signals error (magicl:@ x m))
-    t))
+    (signals error (magicl:@ x m))))
 
 (deftest test-random-unitary-properties ()
   "Test calls to RANDOM-UNITARY for all float types and sizes 1x1 to 64x64 to check properties"
@@ -69,10 +67,9 @@
         :do (loop :for i :from 1 :to 64
                   :do (let ((m (magicl:random-unitary (list i i) :type type)))
                         (is (> 5e-5 (abs (cl:-
-                                           (abs (magicl:det m))
-                                           1))))
+                                          (abs (magicl:det m))
+                                          1))))
                         (is (magicl:=
                              (magicl:deye 1 (list i i) :type type)
                              (magicl:@ m (magicl:transpose m))
-                             5e-5)))))
-  t)
+                             5e-5))))))
