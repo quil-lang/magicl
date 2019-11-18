@@ -117,9 +117,10 @@
                           (= (matrix-cols vh) n)))
                  (is (zero-p (sub-matrix matrix (multiply-complex-matrices u (mul-diag-times-gen sigma vh)))))))))
 
-    (let* ((tall-thin-matrix (random-matrix 8 2))
-           (short-fat-matrix (random-matrix 2 8)))
+    (let ((tall-thin-matrix (random-matrix 8 2)))
       (check-complete-svd tall-thin-matrix)
-      (check-reduced-svd tall-thin-matrix)
+      (check-reduced-svd tall-thin-matrix))
+
+    (let ((short-fat-matrix (random-matrix 2 8)))
       (check-complete-svd short-fat-matrix)
       (check-reduced-svd short-fat-matrix))))
