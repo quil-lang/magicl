@@ -66,7 +66,7 @@
     ))
 
 (deftest test-svd ()
-  "Test the complete and reduced SVDs."
+  "Test the full and reduced SVDs."
   (labels ((mul-diag-times-gen (diag matrix)
              "Returns a newly allocated matrix resulting from the product of DIAG (a diagonal real matrix) with MATRIX (a complex matrix)."
              (declare (type matrix diag matrix)
@@ -82,21 +82,20 @@
            (norm-inf (matrix)
              "Return the infinity norm of vec(MATRIX)."
              (let ((data (magicl::matrix-data matrix)))
-               (reduce (lambda (x y) (max x (abs y)))
-                       data :start 1 :initial-value (abs (aref data 0)))))
+               (reduce #'max data :key #'abs)))
 
            (zero-p (matrix &optional (tolerance 1.0e-14))
              "Return T if MATRIX is close to zero (within TOLERANCE)."
              (< (norm-inf matrix) tolerance))
 
-           (check-complete-svd (matrix)
-             "Validate complete SVD of MATRIX."
+           (check-full-svd (matrix)
+             "Validate full SVD of MATRIX."
              (let ((m (matrix-rows matrix))
                    (n (matrix-cols matrix)))
                (multiple-value-bind (u sigma vh)
                    (svd matrix)
                  (is (= (matrix-rows u) (matrix-cols u) m))
-                 (is (= (matrix-rows sigma) m) (= (matrix-cols sigma) n))
+                 (is (and (= (matrix-rows sigma) m) (= (matrix-cols sigma) n)))
                  (is (= (matrix-rows vh) (matrix-cols vh) n))
                  (is (zero-p (sub-matrix matrix (multiply-complex-matrices u (mul-diag-times-gen sigma vh))))))))
 
@@ -107,7 +106,7 @@
                     (k (min m n)))
 
                (multiple-value-bind (u sigma vh)
-                   (svd matrix t)
+                   (svd matrix :reduced t)
                  (is (and (= (matrix-rows u) m)
                           (= (matrix-cols u) k)))
                  (is (= (matrix-rows sigma) (matrix-cols sigma) k))
@@ -116,9 +115,9 @@
                  (is (zero-p (sub-matrix matrix (multiply-complex-matrices u (mul-diag-times-gen sigma vh)))))))))
 
     (let ((tall-thin-matrix (random-matrix 8 2)))
-      (check-complete-svd tall-thin-matrix)
+      (check-full-svd tall-thin-matrix)
       (check-reduced-svd tall-thin-matrix))
 
     (let ((short-fat-matrix (random-matrix 2 8)))
-      (check-complete-svd short-fat-matrix)
+      (check-full-svd short-fat-matrix)
       (check-reduced-svd short-fat-matrix))))

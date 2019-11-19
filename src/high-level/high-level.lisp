@@ -596,7 +596,7 @@ it must be that KA = KB, and the resulting matrix is M x N."
       (magicl.lapack-cffi::%zungqr m n k a lda tau work lwork info)
       (make-matrix :rows m :cols n :data a))))
 
-(defun svd (m &optional reduced)
+(defun svd (m &key reduced)
   "Find the SVD of a matrix M. Return (VALUES U SIGMA Vt) where M = U*SIGMA*Vt. If REDUCED is non-NIL, return the reduced SVD (where either U or V are just partial isometries and not necessarily unitary matrices)."
   (let* ((jobu (if reduced "S" "A"))
          (jobvt (if reduced "S" "A"))
