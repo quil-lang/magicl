@@ -68,7 +68,7 @@
 (deftest test-svd ()
   "Test the complete and reduced SVDs."
   (labels ((mul-diag-times-gen (diag matrix)
-             "Returns a newly allocated matrix resulting from the product of DIAG (a square diagonal real matrix) with MATRIX (a complex matrix)."
+             "Returns a newly allocated matrix resulting from the product of DIAG (a diagonal real matrix) with MATRIX (a complex matrix)."
              (declare (type matrix diag matrix)
                       (values matrix))
              (let* ((m (matrix-rows diag))
@@ -80,12 +80,10 @@
                      (setf (ref result i j) (* dii (ref matrix i j))))))))
 
            (norm-inf (matrix)
-             "Return the infinity norm of MATRIX."
+             "Return the infinity norm of vec(MATRIX)."
              (let ((data (magicl::matrix-data matrix)))
-               (reduce (lambda (x y)
-                         (max x (abs y)))
-                       data
-                       :start 1 :initial-value (abs (aref data 0)))))
+               (reduce (lambda (x y) (max x (abs y)))
+                       data :start 1 :initial-value (abs (aref data 0)))))
 
            (zero-p (matrix &optional (tolerance 1.0e-14))
              "Return T if MATRIX is close to zero (within TOLERANCE)."
@@ -99,7 +97,7 @@
                    (svd matrix)
                  (is (= (matrix-rows u) (matrix-cols u) m))
                  (is (= (matrix-rows sigma) m) (= (matrix-cols sigma) n))
-                 (is (= (matrix-rows vh) (matrix-cols vh)))
+                 (is (= (matrix-rows vh) (matrix-cols vh) n))
                  (is (zero-p (sub-matrix matrix (multiply-complex-matrices u (mul-diag-times-gen sigma vh))))))))
 
            (check-reduced-svd (matrix)
@@ -108,7 +106,7 @@
                     (n (matrix-cols matrix))
                     (k (min m n)))
 
-               (multiple-value-bind (u sigma vh) ; Reduced SVD
+               (multiple-value-bind (u sigma vh)
                    (svd matrix t)
                  (is (and (= (matrix-rows u) m)
                           (= (matrix-cols u) k)))
