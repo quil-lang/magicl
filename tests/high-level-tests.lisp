@@ -121,3 +121,16 @@
     (let ((short-fat-matrix (random-matrix 2 8)))
       (check-full-svd short-fat-matrix)
       (check-reduced-svd short-fat-matrix))))
+
+(deftest test-csd-2x2-basic ()
+  "Test CS decomposition of an equipartitioned 2x2 unitary matrix."
+  (let ((x (magicl:random-unitary 2)))
+    (multiple-value-bind (u1 u2 v1h v2h theta)
+        (magicl::csd-2x2-basic x 1 1)
+      (multiple-value-bind (u1* u2* v1h* v2h* theta*)
+          (lapack-csd x 1 1)
+        (is (< (abs (- (ref u1 0 0) (ref u1* 0 0))) 1.0d-15))
+        (is (< (abs (- (ref u2 0 0) (ref u2* 0 0))) 1.0d-15))
+        (is (< (abs (- (ref v1h 0 0) (ref v1h* 0 0))) 1.0d-15))
+        (is (< (abs (- (ref v2h 0 0) (ref v2h* 0 0))) 1.0d-15))
+        (is (< (abs (- (first theta) (first theta*))) 1.0d-15))))))
