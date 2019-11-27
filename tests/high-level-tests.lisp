@@ -5,6 +5,8 @@
 
 (in-package #:magicl-tests)
 
+(defconstant +double-float-epsilon+ #+sbcl sb-c::double-float-epsilon #-sbcl 1.1102230246251568d-16)
+
 (deftest test-determinant ()
   "Test that DET works."
   (let* ((x (magicl::make-complex-matrix 3 3 (list 6 4 2 1 -2 8 1 5 7)))
@@ -84,7 +86,7 @@
              (let ((data (magicl::matrix-data matrix)))
                (reduce #'max data :key #'abs)))
 
-           (zero-p (matrix &optional (tolerance 1.0e-14))
+           (zero-p (matrix &optional (tolerance (* 1.0d2 +double-float-epsilon+)))
              "Return T if MATRIX is close to zero (within TOLERANCE)."
              (< (norm-inf matrix) tolerance))
 
@@ -124,13 +126,14 @@
 
 (deftest test-csd-2x2-basic ()
   "Test CS decomposition of an equipartitioned 2x2 unitary matrix."
-  (let ((x (magicl:random-unitary 2)))
+  (let ((x (magicl:random-unitary 2))
+        (tol (* 1.0d2 +double-float-epsilon+)))
     (multiple-value-bind (u1 u2 v1h v2h theta)
         (magicl::csd-2x2-basic x 1 1)
       (multiple-value-bind (u1* u2* v1h* v2h* theta*)
           (lapack-csd x 1 1)
-        (is (< (abs (- (ref u1 0 0) (ref u1* 0 0))) 1.0d-15))
-        (is (< (abs (- (ref u2 0 0) (ref u2* 0 0))) 1.0d-15))
-        (is (< (abs (- (ref v1h 0 0) (ref v1h* 0 0))) 1.0d-15))
-        (is (< (abs (- (ref v2h 0 0) (ref v2h* 0 0))) 1.0d-15))
-        (is (< (abs (- (first theta) (first theta*))) 1.0d-15))))))
+        (is (< (abs (- (ref u1 0 0) (ref u1* 0 0))) tol))
+        (is (< (abs (- (ref u2 0 0) (ref u2* 0 0))) tol))
+        (is (< (abs (- (ref v1h 0 0) (ref v1h* 0 0))) tol))
+        (is (< (abs (- (ref v2h 0 0) (ref v2h* 0 0))) tol))
+        (is (< (abs (- (first theta) (first theta*))) tol))))))
