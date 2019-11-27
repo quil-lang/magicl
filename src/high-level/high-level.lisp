@@ -795,34 +795,33 @@ with upper left block with dimension P-by-Q. Returns the intermediate representa
          (a1 (aref data 0))
          (a2 (aref data 1))
          (a3 (aref data 2))
-         (a4 (aref data 3)))
+         (a4 (aref data 3))
 
-    (let ((c (abs a1))
-          (u1 (cis (phase a1)))
-          (s (abs a2))
-          (u2 (cis (phase a2))))
+         (c (abs a1))
+         (u1 (cis (phase a1)))
+         (s (abs a2))
+         (u2 (cis (phase a2))))
 
-      (declare (type (double-float -1.0d0 1.0d0) c s)
-               (type (complex double-float) u1 u2)
-               (dynamic-extent c s u1 u2))
+    (declare (type (double-float -1.0d0 1.0d0) c s)
+             (type (complex double-float) u1 u2)
+             (dynamic-extent c s u1 u2))
 
-      (let ((v2h (conjugate (/ 1.0d0 (- (* c (conjugate u2) a4)
-                                        (* s (conjugate u1) a3))))))
+    (let ((v2h (conjugate (/ 1.0d0 (- (* c (conjugate u2) a4)
+                                      (* s (conjugate u1) a3)))))
+          (mu1 (make-zero-matrix 1 1))
+          (mu2 (make-zero-matrix 1 1))
+          (mv1h (make-zero-matrix 1 1))
+          (mv2h (make-zero-matrix 1 1)))
 
-        (let ((mu1 (make-zero-matrix 1 1))
-              (mu2 (make-zero-matrix 1 1))
-              (mv1h (make-zero-matrix 1 1))
-              (mv2h (make-zero-matrix 1 1)))
+      (macrolet ((matrix-1x1-data (matrix)
+                   `(the (complex-matrix-data 1) (matrix-data ,matrix))))
 
-          (macrolet ((matrix-1x1-data (matrix)
-                       `(the (complex-matrix-data 1) (matrix-data ,matrix))))
+        (setf (aref (matrix-1x1-data mu1) 0) u1
+              (aref (matrix-1x1-data mu2) 0) u2
+              (aref (matrix-1x1-data mv1h) 0) #c(1.0d0 0.0d0)
+              (aref (matrix-1x1-data mv2h) 0) v2h))
 
-            (setf (aref (matrix-1x1-data mu1) 0) u1
-                  (aref (matrix-1x1-data mu2) 0) u2
-                  (aref (matrix-1x1-data mv1h) 0) #c(1.0d0 0.0d0)
-                  (aref (matrix-1x1-data mv2h) 0) v2h))
-
-          (values mu1 mu2 mv1h mv2h (list (atan s c))))))))
+      (values mu1 mu2 mv1h mv2h (list (atan s c))))))
 
 ;;; TODO FIXME
 (defun lisp-zlacpy (UPLO M N A rows-a B rows-b &optional (offx 0) (offy 0))
