@@ -782,16 +782,16 @@ with upper left block with dimension P-by-Q. Returns the intermediate representa
 (defun csd-2x2-basic (unitary-matrix-2x2 p q)
   "Returns the Cosine-Sine decomposition of an equipartitioned UNITARY-MATRIX-2x2. The values of P and Q are assumed to be equal to one and ignored. See the documentation of LAPACK-CSD for details about the returned values."
   ;; This function is meant to be used within LAPACK-CSD in the base case
-  ;; where the unitary matrix is 2x2. It computes the CS decomposition in
-  ;; Lisp and does it faster (more than three times) and with less memory
-  ;; overhead (conses less than half as much) than the LAPACK routine.
+  ;; where the unitary matrix is 2x2 (i.e., it is equivalent to a ZYZ
+  ;; decomposition). It computes the CS decomposition in Lisp faster (more
+  ;; than three times) and with less memory overhead (conses less than half
+  ;; as much) than the corresponding LAPACK wrapper.
   (declare (type matrix unitary-matrix-2x2)
            (values matrix matrix matrix matrix list)
            (ignorable p q)
            (optimize (speed 3) (safety 0) (debug 0) (space 0)))
 
-  (let* ((data (the (complex-matrix-data 4)
-                    (magicl::matrix-data unitary-matrix-2x2)))
+  (let* ((data (matrix-data unitary-matrix-2x2))
          (a1 (aref data 0))
          (a2 (aref data 1))
          (a3 (aref data 2))
@@ -802,7 +802,8 @@ with upper left block with dimension P-by-Q. Returns the intermediate representa
          (s (abs a2))
          (u2 (cis (phase a2))))
 
-    (declare (type (double-float -1.0d0 1.0d0) c s)
+    (declare (type (complex-matrix-data 4) data)
+             (type (double-float -1.0d0 1.0d0) c s)
              (type (complex double-float) u1 u2)
              (dynamic-extent c s u1 u2))
 
