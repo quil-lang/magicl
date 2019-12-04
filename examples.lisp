@@ -1,5 +1,5 @@
 (defpackage #:magicl-examples
-  (:use #:common-lisp #:magicl)
+  (:use #:common-lisp #:magicl #:magicl-transcendental)
   #+package-local-nicknames
   (:local-nicknames (:blas :magicl.blas-cffi)
                     (:lapack :magicl.lapack-cffi)
