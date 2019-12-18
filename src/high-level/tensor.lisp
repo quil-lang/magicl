@@ -50,22 +50,29 @@
 ;;; Required abstract-tensor methods
 
 (defmethod tref ((tensor tensor) &rest pos)
-  (assert (valid-index-p pos (shape tensor))
-          () "Incompatible position for TENSOR. Position ~a is not within tensor shape ~a" pos (shape tensor))
+  (policy-cond:policy-if
+   (> speed safety)
+   (assert (valid-index-p pos (shape tensor))
+           () "Incompatible position for TENSOR. Position ~a is not within tensor shape ~a" pos (shape tensor))
+   nil)
   (let ((index (case (order tensor)
                  (:row-major (row-major-index pos (shape tensor)))
                  (:column-major (column-major-index pos (shape tensor))))))
     (aref (storage tensor) index)))
 
 (defmethod (setf tref) (new-value (tensor tensor) &rest pos)
-       (assert (cl:= (rank tensor) (list-length pos))
-               () "Invalid index ~a. Must be rank ~a" pos (rank tensor))
-       (assert (cl:every #'< pos (shape tensor))
-               () "Index ~a out of range" pos)
-       (let ((index (case (order tensor)
-                      (:row-major (row-major-index pos (shape tensor)))
-                      (:column-major (column-major-index pos (shape tensor))))))
-         (setf (aref (storage tensor) index) new-value)))
+  (policy-cond:policy-if
+   (> speed safety)
+   (progn
+     (assert (cl:= (rank tensor) (list-length pos))
+             () "Invalid index ~a. Must be rank ~a" pos (rank tensor))
+     (assert (cl:every #'< pos (shape tensor))
+             () "Index ~a out of range" pos))
+   nil)
+  (let ((index (case (order tensor)
+                 (:row-major (row-major-index pos (shape tensor)))
+                 (:column-major (column-major-index pos (shape tensor))))))
+    (setf (aref (storage tensor) index) new-value)))
 
 (defmethod copy-tensor ((tensor tensor) &rest args)
   (apply #'make-instance (class-of tensor)
@@ -110,32 +117,32 @@
 
 ;;; Specfic tensor classes
 
-(defgeneric make-tensor (shape class element-type &key initial-element order storage)
-  (:documentation "Make a tensor with elements of the specified type")
-  (:method (shape class element-type &key initial-element order storage)
-    (check-type shape shape)
-    (let ((size (reduce #'* shape)))
-      (make-instance
-       class
-       :rank (length shape)
-       :shape shape
-       :size size
-       :element-type element-type
-       :storage (or
-                 storage
-                 (apply #'make-array
-                        size
-                        :element-type element-type
-                        (if initial-element
-                            (list  :initial-element initial-element)
-                            nil)))
-       :order (or order :column-major)))))
-
 (defmacro deftensor (name type)
   `(progn
      (defclass ,name (tensor)
        ((storage :type (tensor-storage ,type)))
-       (:documentation ,(format nil "Tensor with element type of ~a" type)))))
+       (:documentation ,(format nil "Tensor with element type of ~a" type)))
+     (defmethod make-tensor ((class (eql ',name)) shape &key initial-element order storage)
+       (policy-cond:policy-if
+        (> speed safety)
+        (check-type shape shape)
+        nil)
+       (let ((size (reduce #'* shape)))
+         (make-instance
+          class
+          :rank (length shape)
+          :shape shape
+          :size size
+          :element-type ',type
+          :storage (or
+                    storage
+                    (apply #'make-array
+                           size
+                           :element-type ',type
+                           (if initial-element
+                               (list :initial-element (coerce initial-element ',type))
+                               nil)))
+          :order (or order :column-major))))))
 
 ;;; Generic tensor methods
 
@@ -144,12 +151,15 @@
   (:documentation "Change the shape of the tensor.
 WARNING: This method acts differently depending on the order of the tensor. Do not expect row-major to act the same as column-major.")
   (:method ((tensor tensor) shape)
-    (let ((shape-size (reduce #'* shape)))
-      (assert (cl:= (size tensor) shape-size)
-              () "Incompatible shape. Must have the same total number of elements. The tensor has ~a elements and the new shape has ~a elements" (size tensor) shape-size))
-  (setf (slot-value tensor 'shape) shape)
-  (setf (slot-value tensor 'rank) (length shape))
-  tensor))
+    (policy-cond:policy-if
+     (> speed safety)
+     (let ((shape-size (reduce #'* shape)))
+       (assert (cl:= (size tensor) shape-size)
+               () "Incompatible shape. Must have the same total number of elements. The tensor has ~a elements and the new shape has ~a elements" (size tensor) shape-size))
+     nil)
+    (setf (slot-value tensor 'shape) shape)
+    (setf (slot-value tensor 'rank) (length shape))
+    tensor))
 
 (defgeneric stack (tensorA tensorB dim) ;; Also have specifics for 2d
   (:documentation "Create a new tensor from stacking the tensors in the specififed dimension"))

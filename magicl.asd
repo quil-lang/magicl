@@ -11,7 +11,8 @@
   :depends-on (#:alexandria
                #:cffi
                #:cffi-libffi
-               #:abstract-classes)
+               #:abstract-classes
+               #:policy-cond)
   :in-order-to ((asdf:test-op (asdf:test-op #:magicl-tests)))
   :around-compile (lambda (compile)
                     (let (#+sbcl (sb-ext:*derive-function-types* t))

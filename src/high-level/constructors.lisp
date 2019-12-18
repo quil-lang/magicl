@@ -6,28 +6,70 @@
 
 (defconstant +default-tensor-type+ 'double-float)
 
+(defun infer-tensor-type (type shape val)
+  (intern
+   (format nil "~a/~a"
+           (cond
+             ((cl:= 1 (length shape)) "VECTOR")
+             ((cl:= 2 (length shape)) "MATRIX")
+             (t "TENSOR"))
+           (if type
+               (cond
+                 ((subtypep type 'single-float) "SINGLE-FLOAT")
+                 ((subtypep type 'double-float) "DOUBLE-FLOAT")
+                 ((subtypep type '(complex single-float)) "COMPLEX-SINGLE-FLOAT")
+                 ((subtypep type '(complex double-float)) "COMPLEX-DOUBLE-FLOAT")
+                 ((subtypep type '(signed-byte 32)) "INT32")
+                 (t (error "No compatible tensor constructor for type ~a" type)))
+               (etypecase val
+                 (single-float "SINGLE-FLOAT")
+                 (double-float "DOUBLE-FLOAT")
+                 ((complex single-float) "COMPLEX-SINGLE-FLOAT")
+                 ((complex double-float) "COMPLEX-DOUBLE-FLOAT")
+                 ((signed-byte 32) "INT32"))))
+   "MAGICL"))
+#+ignore
 (defun infer-tensor-type (type default)
   (if (null type)
       (compatible-tensor-constructors-from-value default)
       (values (compatible-tensor-constructors type) type)))
 
+(defgeneric make-tensor (class shape &key initial-element order storage)
+  (:documentation "Make a dense tensor with elements of the specified type"))
+
 (defun empty (shape &key (type +default-tensor-type+) order)
-  "Create an empty tensor of specified shape"
-  (check-type shape shape)
-  (let ((tensor-type (compatible-tensor-constructors type)))
-    (specialize-tensor (make-tensor shape tensor-type type :order order))))
+  "Create an empty tensor
+
+If TYPE is not specified then +DEFAULT-TENSOR-TYPE+ is used.
+ORDER specifies the internal storage represenation ordering of the returned tensor.
+The tensor specialized on the specified SHAPE and TYPE."
+  (policy-cond:with-expectations (> speed safety)
+      ((type shape shape)))
+  (let ((tensor-type (infer-tensor-type type shape nil)))
+    (specialize-tensor (make-tensor tensor-type shape :order order))))
 
 (defun const (const shape &key type order)
-  "Create tensor with all elements equal to a constant value"
-  (check-type shape shape)
-  (multiple-value-bind (tensor-class element-type)
-      (infer-tensor-type type const)
-    (specialize-tensor (make-tensor shape tensor-class element-type :order order :initial-element (coerce const element-type)))))
+  "Create a tensor with the specified SHAPE with each element being set to CONST
 
-(defun rand (shape &key (type +default-tensor-type+) distribution)
-  "Create tensor with random elements"
-  (check-type shape shape)
-  (let* ((tensor-class (compatible-tensor-constructors type))
+If TYPE is not specified then it is inferred from the type of CONST.
+ORDER specifies the internal storage represenation ordering of the returned tensor.
+The tensor is specialized on SHAPE and TYPE."
+  (policy-cond:with-expectations (> speed safety)
+      ((type shape shape)))
+  (let ((tensor-class (infer-tensor-type type shape const)))
+    (specialize-tensor (make-tensor tensor-class shape :order order :initial-element const))))
+
+(defun rand (shape &key (type +default-tensor-type+) order distribution)
+  "Create tensor with random elements from DISTRIBUTION
+
+DISTRIBUTION is a function with no arguments which returns a value for the element.
+If DISTRIBUTION is not specified then CL:RANDOM is used. In the case that TYPE is complex, CL:RANDOM is called for each component.
+If TYPE is not specified then +DEFAULT-TENSOR-TYPE+ is used.
+ORDER specifies the internal storage represenation ordering of the returned tensor.
+The tensor is specialized on SHAPE and TYPE."
+  (policy-cond:with-expectations (> speed safety)
+      ((type shape shape)))
+  (let* ((tensor-class (infer-tensor-type type shape nil))
          (rand-function
            (or distribution
                (cond
@@ -42,77 +84,102 @@
          (f (lambda (&rest rest)
               (declare (ignore rest))
               (coerce  (funcall rand-function) type))))
-    (specialize-tensor (into! f (make-tensor shape tensor-class type)))))
+    (specialize-tensor (into! f (make-tensor tensor-class shape :order order)))))
 
 (defun deye (d shape &key type order)
-  "Create identity matrix scaled by factor D"
-  (check-type shape shape)
-  (assert-square-shape shape)
-  (multiple-value-bind (tensor-class element-type)
-      (infer-tensor-type type d)
-    (let ((tensor (make-tensor shape tensor-class element-type :order order)))
+  "Create a 2-dimensional square tensor with D along the diagonal
+
+SHAPE must have length 2 and be square.
+
+If TYPE is not specified then it is inferred from the type of D.
+ORDER specifies the internal storage represenation ordering of the returned tensor.
+The tensor is specialized on SHAPE and TYPE."
+  (policy-cond:with-expectations (> speed safety)
+      ((type shape shape)
+       (assertion (square-shape-p shape))))
+  (let ((tensor-class (infer-tensor-type type shape d)))
+    (let ((tensor (make-tensor tensor-class shape :order order)))
       (loop :for i :below (first shape)
-            :do (setf (tref tensor i i) (coerce d element-type)))
+            :do (setf (tref tensor i i) d))
       (specialize-tensor tensor))))
 
 (defun arange (range &key type order)
-  "Create a 1d tensor of elements from 0 up to but not including the RANGE"
-  (multiple-value-bind (tensor-class element-type)
-      (infer-tensor-type type range)
-    (let ((tensor (make-tensor (list (floor range)) tensor-class element-type :order order))
+  "Create a 1-dimensional tensor of elements from 0 up to but not including the RANGE
+
+If TYPE is not specified then it is inferred from the type of RANGE.
+ORDER specifies the internal storage represenation ordering of the returned tensor.
+The tensor is specialized on TYPE with shape (floor(RANGE))."
+  (let ((tensor-class (infer-tensor-type type shape range)))
+    (let ((tensor (make-tensor tensor-class (list (floor range)) :order order))
           (f (lambda (index)
                (coerce index element-type))))
       (specialize-tensor (into! f tensor)))))
 
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
 (defun from-array (array shape &key type (order :row-major))
-  "Create a tensor from an array
-NOTE: When type is not specified, the type is inferred from the type of the array"
-  (let* ((element-type
+  "Create a tensor from ARRAY, calling ADJUST-ARRAY on ARRAY to flatten to a 1-dimensional array of length equal to the product of the elements in SHAPE
+
+If TYPE is not specified then it is inferred from the element type of ARRAY.
+ORDER specifies the internal storage represenation ordering of the returned tensor.
+The tensor is specialized on SHAPE and TYPE."
+  (let* ((element-type ;; TODO: copy array properly, accounting for ORDER
            (if (null type)
                (array-element-type array)
                type))
-         (tensor-class (compatible-tensor-constructors element-type)))
+         (tensor-class (infer-tensor-type element-type shape nil)))
     (adjust-array array (list (reduce #'* shape)) :element-type element-type)
     (specialize-tensor
-     (make-tensor shape tensor-class element-type
+     (make-tensor tensor-class shape
                   :storage array
                   :order order))))
 
-(defun from-list (list shape &key type (order :column-major) (input-order :row-major))
-  "Create a tensor of the specified shape from a list, putting elements in row-major order.
-NOTE: When type is not specified, the type is inferred from the first element of the list"
-  (check-type shape shape)
-  (let ((shape-size (reduce #'* shape))
-        (list-size (length list)))
-    (assert (cl:= list-size shape-size)
-            () "Incompatible shape. Must have the same total number of elements. The list has ~a elements and the new shape has ~a elements" list-size shape-size))
-  (multiple-value-bind (tensor-class element-type)
-      (infer-tensor-type type (first list))
-    (let ((tensor (make-tensor shape tensor-class element-type :order order)))
+(defun from-list (list shape &key type order (input-order :row-major))
+  "Create a tensor with the elements of LIST, placing in order INPUT-ORDER
+
+If INPUT-ORDER is not specified then row-major is assumed.
+
+If TYPE is not specified then it is inferred from the type of the first element of LIST.
+ORDER specifies the internal storage represenation ordering of the returned tensor.
+The tensor is specialized on SHAPE and TYPE."
+  (policy-cond:policy-if
+   (> speed safety)
+   (progn
+     (check-type shape shape)
+     (assert (cl:= (length list) (reduce #'* shape))
+             () "Incompatible shape. Must have the same total number of elements. The list has ~a elements and the new shape has ~a elements" list-size shape-size))
+   nil)
+  (let ((tensor-class (infer-tensor-type type shape (first list))))
+    (let ((tensor (make-tensor tensor-class shape :order order)))
       (specialize-tensor
        (into!
         (lambda (&rest pos)
-          (coerce (nth
-                   (if (eql input-order :row-major)
-                       (row-major-index pos shape)
-                       (column-major-index pos shape))
-                   list)
-                  element-type))
+          (nth
+           (if (eql input-order :row-major)
+               (row-major-index pos shape)
+               (column-major-index pos shape))
+           list))
         tensor)))))
 
-(defun from-diag (list shape &key type (order :column-major))
+(defun from-diag (list shape &key type order)
   "Create a tensor of the specified shape from a list, placing along the diagonal
-NOTE: When type is not specified, the type is inferred from the first element of the list"
-  (check-type shape shape)
-  (assert (cl:= 2 (length shape))
-          () "Shape must be of rank 2.")
-  (assert-square-shape shape)
-  (let ((list-size (length list)))
-    (assert (cl:= list-size (first shape))
-            () "Incompatible shape. Must have the same total number of elements. The list has ~a diagonal elements and the new shape has ~a diagonal elements" list-size (first shape)))
-  (multiple-value-bind (tensor-class element-type)
-      (infer-tensor-type type (first list))
-    (let ((tensor (make-tensor shape tensor-class element-type :order order)))
+
+If TYPE is not specified then it is inferred from the type of the first element of LIST.
+ORDER specifies the internal storage represenation ordering of the returned tensor.
+The tensor is specialized on SHAPE and TYPE."
+  (policy-cond:policy-if
+   (> speed safety)
+   (progn
+     (check-type shape shape)
+     (assert (cl:= 2 (length shape))
+             () "Shape must be of rank 2.")
+     (assert-square-shape shape)
+     (let ((list-size (length list)))
+       (assert (cl:= list-size (first shape))
+               () "Incompatible shape. Must have the same total number of elements. The list has ~a diagonal elements and the new shape has ~a diagonal elements" list-size (first shape))))
+   nil)
+  (let ((tensor-class (infer-tensor-type type shape (first list))))
+    (let ((tensor (make-tensor tensor-class shape :order order)))
       (loop :for i :below (first shape)
-            :do (setf (tref tensor i i) (coerce (pop list) element-type)))
+            :do (setf (tref tensor i i) (pop list)))
       (specialize-tensor tensor))))

@@ -6,18 +6,25 @@
 
 (defmacro def-lapack-mult (class type blas-function)
   `(defmethod mult ((a ,class) (b ,class) &key target (alpha ,(coerce 1 type)) (beta ,(coerce 0 type)) (transa :n) (transb :n))
-     (check-type transa (member nil :n :t :c))
-     (check-type transb (member nil :n :t :c))
+     (policy-cond:policy-if
+      (> speed safety)
+      (progn (check-type transa (member nil :n :t :c))
+             (check-type transb (member nil :n :t :c)))
+      nil)
      (let* ((m (if (eq :n transa) (nrows a) (ncols a)))
             (k (if (eq :n transa) (ncols a) (nrows a)))
             (n (if (eq :n transb) (ncols b) (nrows b)))
             (brows (if (eq :n transb) (nrows b) (ncols b))))
-       (assert (cl:= k brows)
-               () "Incompatible matrix sizes ~a and ~a." (list m k) (list brows n))
-       (when target
-         (assert (equal (shape target) (list m n))
-                 () "Incompatible target shape. Target needs shape ~a but has shape ~a"
-                 (shape target) (list m n)))
+       (policy-cond:policy-if
+        (> speed safety)
+        (progn
+          (assert (cl:= k brows)
+                  () "Incompatible matrix sizes ~a and ~a." (list m k) (list brows n))
+          (when target
+            (assert (equal (shape target) (list m n))
+                    () "Incompatible target shape. Target needs shape ~a but has shape ~a"
+                    (shape target) (list m n))))
+        nil)
        (let ((ta
                (if (eql :row-major (order a))
                    (case transa
@@ -178,7 +185,10 @@
        (lapack-eig m))
 
      (defmethod lapack-eig ((m ,class))
-       (assert-square-matrix m)
+       (policy-cond:policy-if
+        (> speed safety)
+        (assert-square-matrix m)
+        nil)
        (let ((rows (nrows m))
              (cols (ncols m))
              (a-tensor (deep-copy-tensor m)))
@@ -213,9 +223,12 @@
        (lapack-hermitian-eig m))
 
      (defmethod lapack-hermitian-eig ((m ,class))
-       (assert-square-matrix)
-       (assert (hermitian-matrix-p m)
-               () "The matrix M is not a hermitian matrix.")
+       (policy-cond:policy-if
+        (> speed safety)
+        (progn (assert-square-matrix)
+               (assert (hermitian-matrix-p m)
+                       () "The matrix M is not a hermitian matrix."))
+        nil)
        (let ((rows (nrows m))
              (cols (ncols m))
              (a-tensor (deep-copy-tensor m)))
@@ -244,7 +257,10 @@
                                   ql-q-function qr-q-function rq-q-function lq-q-function)
   `(progn
      (defmethod qr ((m ,class))
-       (assert-square-matrix m)
+       (policy-cond:policy-if
+        (> speed safety)
+        (assert-square-matrix m)
+        nil)
        (let ((rows (nrows m))
              (cols (ncols m)))
          (multiple-value-bind (a tau) (lapack-qr m)
@@ -264,7 +280,10 @@
              (values q r)))))
      
      (defmethod ql ((m ,class))
-       (assert-square-matrix m)
+       (policy-cond:policy-if
+        (> speed safety)
+        (assert-square-matrix m)
+        nil)
        (let ((rows (nrows m))
              (cols (ncols m)))
          (multiple-value-bind (a tau) (lapack-ql m)
@@ -284,7 +303,10 @@
              (values q l)))))
 
      (defmethod rq ((m ,class))
-       (assert-square-matrix m)
+       (policy-cond:policy-if
+        (> speed safety)
+        (assert-square-matrix m)
+        nil)
        (let ((rows (nrows m))
              (cols (ncols m)))
          (multiple-value-bind (a tau) (lapack-rq m)
@@ -304,7 +326,10 @@
              (values q r)))))
 
      (defmethod lq ((m ,class))
-       (assert-square-matrix m)
+       (policy-cond:policy-if
+        (> speed safety)
+        (assert-square-matrix m)
+        nil)
        (let ((rows (nrows m))
              (cols (ncols m)))
          (multiple-value-bind (a tau) (lapack-lq m)

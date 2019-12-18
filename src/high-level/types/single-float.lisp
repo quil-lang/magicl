@@ -1,6 +1,6 @@
 ;;;; single-float.lisp
 ;;;;
-;;;; Author: Cole Scotts
+;;;; Author: Cole Scott
 
 (in-package #:magicl)
 

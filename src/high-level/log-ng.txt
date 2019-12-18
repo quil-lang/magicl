@@ -1,0 +1,1861 @@
+Number of samples:   11203
+Sample interval:     0.01 seconds
+Total sampling time: 112.03 seconds
+Number of cycles:    0
+Sampled threads:
+ #<SB-THREAD:THREAD "repl-thread" RUNNING {1008AD1BC3}>
+
+           Self        Total        Cumul
+  Nr  Count     %  Count     %  Count     %    Calls  Function
+------------------------------------------------------------------------
+   1    939   8.4    939   8.4    939   8.4        -  SB-KERNEL:UB8-BASH-FILL
+   2    931   8.3    931   8.3   1870  16.7        -  "foreign function _platform_bzero$VARIANT$Haswell"
+   3    275   2.5    275   2.5   2145  19.1        -  SB-INT:SSET-MEMBER
+   4    213   1.9    432   3.9   2358  21.0        -  SB-REGALLOC::VERTICES-BEST-COLOR/GENERAL
+   5    207   1.8    207   1.8   2565  22.9        -  SB-C::NODE-HOME-LAMBDA
+   6    161   1.4    579   5.2   2726  24.3        -  SB-C::CONSTRAINT-PROPAGATE-IN-BLOCK
+   7    137   1.2    137   1.2   2863  25.6        -  SB-INT:DELQ1
+   8    133   1.2    210   1.9   2996  26.7        -  SB-C::MERGE-LETS
+   9    127   1.1    155   1.4   3123  27.9        -  SB-KERNEL:TYPE=
+  10    106   0.9    108   1.0   3229  28.8        -  TRUNCATE
+  11    105   0.9    204   1.8   3334  29.8        -  SB-IMPL::GET-INFO-VALUE
+  12    105   0.9    182   1.6   3439  30.7        -  SB-INT:SSET-ADJOIN
+  13    103   0.9    172   1.5   3542  31.6        -  SB-KERNEL::MAKE-VALUES-TYPE-CACHED
+  14     98   0.9    165   1.5   3640  32.5        -  SB-KERNEL:CSUBTYPEP
+  15     93   0.8     93   0.8   3733  33.3        -  SB-IMPL::PACKED-INFO-VALUE-INDEX
+  16     91   0.8    184   1.6   3824  34.1        -  SB-REGALLOC::CONFLICTS-IN-SC
+  17     91   0.8     91   0.8   3915  34.9        -  SB-REGALLOC::COLOR-VERTEX
+  18     90   0.8    632   5.6   4005  35.7        -  SB-C::VALID-FUN-USE
+  19     87   0.8     87   0.8   4092  36.5        -  (FLET "CLEANUP-FUN-25" :IN SB-KERNEL:SUB-GC)
+  20     85   0.8    323   2.9   4177  37.3        -  SB-KERNEL::%TYPE-INTERSECTION
+  21     85   0.8    145   1.3   4262  38.0        -  (FLET SB-REGALLOC::FROB-SLOT :IN SB-REGALLOC::%CALL-WITH-TARGET-TNS)
+  22     84   0.7    104   0.9   4346  38.8        -  (LABELS SB-IMPL::EQUAL-AUX :IN EQUAL)
+  23     83   0.7    751   6.7   4429  39.5        -  SB-REGALLOC::FIND-VERTEX-COLOR
+  24     82   0.7    101   0.9   4511  40.3        -  SB-VM::ALLOC-TRAMP
+  25     76   0.7     76   0.7   4587  40.9        -  SB-IMPL::GETHASH/EQ
+  26     72   0.6    234   2.1   4659  41.6        -  SB-KERNEL:VALUES-SUBTYPEP
+  27     69   0.6    202   1.8   4728  42.2        -  SB-KERNEL:TYPE-INTERSECTION2
+  28     68   0.6     68   0.6   4796  42.8        -  SB-C::LEXENV-ENCLOSING-CLEANUP
+  29     63   0.6     63   0.6   4859  43.4        -  SB-C::REOPTIMIZE-LVAR
+  30     59   0.5    456   4.1   4918  43.9        -  SB-KERNEL:VALUES-TYPE-INTERSECTION
+  31     55   0.5   3651  32.6   4973  44.4        -  SB-C::IR1-OPTIMIZE-BLOCK
+  32     52   0.5     98   0.9   5025  44.9        -  SB-C::LVAR-TYPE
+  33     51   0.5     59   0.5   5076  45.3        -  SB-C::MAKE-LAMBDA
+  34     50   0.4     50   0.4   5126  45.8        -  SB-REGALLOC::VERTEX-COLOR-POSSIBLE-P
+  35     47   0.4     47   0.4   5173  46.2        -  SB-INT:EQUAL-BUT-NO-CAR-RECURSION
+  36     45   0.4     78   0.7   5218  46.6        -  SB-C::SSET-GROW
+  37     45   0.4     47   0.4   5263  47.0        -  SB-C::MAKE-LEXENV
+  38     43   0.4    213   1.9   5306  47.4        -  SB-C::FLUSH-DEAD-CODE
+  39     43   0.4     43   0.4   5349  47.7        -  SB-C::MAKE-CTRAN
+  40     43   0.4     43   0.4   5392  48.1        -  SB-KERNEL:SINGLE-VALUE-TYPE
+  41     43   0.4     43   0.4   5435  48.5        -  SB-REGALLOC::RECOLOR-VERTEX
+  42     42   0.4   1664  14.9   5477  48.9        -  SB-C::IR1-CONVERT
+  43     42   0.4     42   0.4   5519  49.3        -  SB-KERNEL:%ADJOIN-EQ
+  44     41   0.4     90   0.8   5560  49.6        -  SB-KERNEL:TWO-ARG-*
+  45     40   0.4     54   0.5   5600  50.0        -  SB-C::JOIN-BLOCKS
+  46     39   0.3     62   0.6   5639  50.3        -  SB-C::COPY-CONSET
+  47     37   0.3   2651  23.7   5676  50.7        -  SB-C::IR1-TRANSFORM
+  48     37   0.3    259   2.3   5713  51.0        -  SB-C::CHECK-ARG-TYPE
+  49     37   0.3     38   0.3   5750  51.3        -  SB-KERNEL:TYPE-SINGLETON-P
+  50     37   0.3     37   0.3   5787  51.7        -  SB-IMPL::APPEND2
+  51     36   0.3    117   1.0   5823  52.0        -  SB-KERNEL::VALUES-SPECIFIER-TYPE-R
+  52     36   0.3     96   0.9   5859  52.3        -  SB-C::MAKE-REF
+  53     36   0.3     36   0.3   5895  52.6        -  SB-INT:MEMQ
+  54     34   0.3     34   0.3   5929  52.9        -  SB-C::MAKE-LAMBDA-VAR
+  55     34   0.3     34   0.3   5963  53.2        -  (FLET "CLEANUP-FUN-36" :IN SB-THREAD::CALL-WITH-SYSTEM-MUTEX/WITHOUT-GCING)
+  56     33   0.3     64   0.6   5996  53.5        -  SB-C::NODE-ENDS-BLOCK
+  57     32   0.3   1790  16.0   6028  53.8        -  SB-C::IR1-CONVERT-LAMBDA-BODY
+  58     32   0.3     32   0.3   6060  54.1        -  "foreign function __munmap"
+  59     32   0.3     32   0.3   6092  54.4        -  "foreign function shm_unlink"
+  60     32   0.3     32   0.3   6124  54.7        -  SB-C::%POLICY-QUALITY
+  61     32   0.3     32   0.3   6156  54.9        -  SB-C::CONSET=
+  62     31   0.3     44   0.4   6187  55.2        -  SB-INT:PARSE-LAMBDA-LIST
+  63     31   0.3     42   0.4   6218  55.5        -  SB-C::TN-IS-COPY-OF
+  64     31   0.3     36   0.3   6249  55.8        -  SB-C::OPERAND-RESTRICTION-OK
+  65     30   0.3     58   0.5   6279  56.0        -  SB-KERNEL:MAKE-VALUES-TYPE
+  66     30   0.3     30   0.3   6309  56.3        -  SB-C::REOPTIMIZE-NODE
+  67     29   0.3   4182  37.3   6338  56.6        -  SB-C::IR1-OPTIMIZE
+  68     29   0.3     39   0.3   6367  56.8        -  SB-C::LEAF-SOURCE-NAME
+  69     27   0.2    109   1.0   6394  57.1        -  CEILING
+  70     26   0.2    138   1.2   6420  57.3        -  SB-C::REFERENCE-LEAF
+  71     26   0.2     26   0.2   6446  57.5        -  SB-C::MAKE-LVAR
+  72     26   0.2     26   0.2   6472  57.8        -  SB-C::CONSET-ADJOIN
+  73     25   0.2   3320  29.6   6497  58.0        -  SB-C::IR1-OPTIMIZE-COMBINATION
+  74     25   0.2    237   2.1   6522  58.2        -  SB-C::CONSTRAIN-REF-TYPE
+  75     25   0.2    210   1.9   6547  58.4        -  SB-C::DELETE-REF
+  76     25   0.2    110   1.0   6572  58.7        -  SB-C::IR2-CONVERT-BLOCK
+  77     25   0.2     88   0.8   6597  58.9        -  SB-C::LVAR-FUN-TYPE
+  78     25   0.2     46   0.4   6622  59.1        -  (LABELS SB-IMPL::SXHASH-RECURSE :IN SXHASH)
+  79     25   0.2     25   0.2   6647  59.3        -  SB-C::%EVENT
+  80     24   0.2    702   6.3   6671  59.5        -  SB-C::IR1-CONVERT-COMBINATION-ARGS
+  81     24   0.2    281   2.5   6695  59.8        -  SB-C::CHECK-FIXED-AND-REST
+  82     24   0.2     28   0.2   6719  60.0        -  SB-IMPL::GETHASH/EQUAL
+  83     24   0.2     24   0.2   6743  60.2        -  (LAMBDA (SB-PCL::.ARG0.) :IN "SYS:SRC;PCL;DLISP3.LISP")
+  84     24   0.2     24   0.2   6767  60.4        -  SB-INT:SSET-DELETE
+  85     23   0.2    390   3.5   6790  60.6        -  SB-C::DERIVE-NODE-TYPE
+  86     23   0.2     23   0.2   6813  60.8        -  COPY-STRUCTURE
+  87     23   0.2     23   0.2   6836  61.0        -  SB-C::GET-SOURCE-PATH
+  88     23   0.2     23   0.2   6859  61.2        -  SB-C::NODE-ENCLOSING-CLEANUP
+  89     22   0.2    109   1.0   6881  61.4        -  SB-C::PROCESS-DECLS
+  90     22   0.2     60   0.5   6903  61.6        -  SB-C::FIND-CONSTRAINT
+  91     22   0.2     45   0.4   6925  61.8        -  SB-C::UNLINK-NODE
+  92     22   0.2     41   0.4   6947  62.0        -  SB-IMPL::%MAP-FOR-EFFECT
+  93     22   0.2     39   0.3   6969  62.2        -  SB-C::REPORT-ARG-COUNT-MISMATCH
+  94     22   0.2     24   0.2   6991  62.4        -  SB-KERNEL::NUMBER-UNPARSE-TYPE-METHOD
+  95     21   0.2   1632  14.6   7012  62.6        -  SB-KERNEL:%MAP-FOR-EFFECT-ARITY-1
+  96     21   0.2    171   1.5   7033  62.8        -  SB-REGALLOC::VERTEX-TARGET-VERTICES
+  97     21   0.2     47   0.4   7054  63.0        -  SB-C::PROPAGATE-LIVE-TNS
+  98     21   0.2     31   0.3   7075  63.2        -  SB-C::%COERCE-TO-POLICY
+  99     21   0.2     27   0.2   7096  63.3        -  (LABELS SB-KERNEL::RECURSE :IN SB-KERNEL:%%TYPEP)
+ 100     21   0.2     21   0.2   7117  63.5        -  SB-C::BLOCK-HOME-LAMBDA-OR-NULL
+ 101     21   0.2     21   0.2   7138  63.7        -  SB-KERNEL:%ASSOC-EQ
+ 102     20   0.2     43   0.4   7158  63.9        -  SB-KERNEL::%COERCE-TO-VALUES
+ 103     20   0.2     32   0.3   7178  64.1        -  SB-REGALLOC::RESET-INTERFERENCE-GRAPH-WITHOUT-VERTEX
+ 104     20   0.2     30   0.3   7198  64.3        -  (LABELS SB-IMPL::S :IN NSUBST)
+ 105     20   0.2     25   0.2   7218  64.4        -  SB-KERNEL::%MAKE-NUMERIC-TYPE
+ 106     20   0.2     20   0.2   7238  64.6        -  SB-INT:COPY-SSET
+ 107     19   0.2    176   1.6   7257  64.8        -  SB-C::JOIN-SUCCESSOR-IF-POSSIBLE
+ 108     19   0.2    119   1.1   7276  64.9        -  SB-C::IR1-CONVERT-VAR
+ 109     19   0.2     99   0.9   7295  65.1        -  SB-C::SUBSTITUTE-SINGLE-USE-LVAR
+ 110     19   0.2     33   0.3   7314  65.3        -  SB-C::UNLINK-BLOCKS
+ 111     19   0.2     24   0.2   7333  65.5        -  SB-KERNEL:MAKE-NUMERIC-TYPE
+ 112     19   0.2     19   0.2   7352  65.6        -  (LAMBDA (SB-PCL::.ARG0.) :IN "SYS:SRC;PCL;BRAID.LISP")
+ 113     19   0.2     19   0.2   7371  65.8        -  SB-C::MAKE-BLOCK
+ 114     19   0.2     19   0.2   7390  66.0        -  SB-KERNEL:TYPE-INTERSECTION
+ 115     19   0.2     19   0.2   7409  66.1        -  SB-KERNEL::CANONICALIZE-ARGS-TYPE-ARGS
+ 116     19   0.2     19   0.2   7428  66.3        -  SB-C::NCONC-NEW
+ 117     18   0.2    176   1.6   7446  66.5        -  SB-KERNEL::SIMPLIFY-INTERSECTIONS
+ 118     18   0.2     96   0.9   7464  66.6        -  SB-REGALLOC::INSERT-ONE-EDGE
+ 119     18   0.2     91   0.8   7482  66.8        -  SB-C::CONSTANT-LVAR-P
+ 120     18   0.2     18   0.2   7500  66.9        -  SB-C::MAKE-BLOCK-KEY
+ 121     18   0.2     18   0.2   7518  67.1        -  SB-KERNEL:MAKE-SINGLE-VALUE-TYPE
+ 122     17   0.2   1996  17.8   7535  67.3        -  SB-C::IR1-CONVERT-LAMBDA
+ 123     17   0.2    162   1.4   7552  67.4        -  SB-C::CHANGE-REF-LEAF
+ 124     17   0.2     22   0.2   7569  67.6        -  SB-KERNEL::%MAKE-VALUES-TYPE
+ 125     17   0.2     17   0.2   7586  67.7        -  SB-C::LEAF-HAS-SOURCE-NAME-P
+ 126     17   0.2     17   0.2   7603  67.9        -  (FLET "CLEANUP-FUN-69" :IN SB-THREAD::CALL-WITH-RECURSIVE-SYSTEM-LOCK)
+ 127     17   0.2     17   0.2   7620  68.0        -  SB-IMPL::ALLOC-HASH-CACHE-LINE/4
+ 128     17   0.2     17   0.2   7637  68.2        -  SB-C::%MAKE-CAST
+ 129     17   0.2     17   0.2   7654  68.3        -  SB-REGALLOC::INIT-SB-VECTORS
+ 130     17   0.2     17   0.2   7671  68.5        -  SB-C::MAKE-RETURN
+ 131     16   0.1    108   1.0   7687  68.6        -  SB-C::FIND-OR-CREATE-CONSTRAINT
+ 132     16   0.1     41   0.4   7703  68.8        -  SB-C::LINK-BLOCKS
+ 133     16   0.1     34   0.3   7719  68.9        -  SB-C::COMPILER-VALUES-SPECIFIER-TYPE
+ 134     16   0.1     20   0.2   7735  69.0        -  SB-KERNEL:TWO-ARG--
+ 135     16   0.1     19   0.2   7751  69.2        -  SB-VM::PRIMITIVE-TYPE-AUX
+ 136     16   0.1     16   0.1   7767  69.3        -  SB-C::PRINCIPAL-LVAR-USE
+ 137     15   0.1    323   2.9   7782  69.5        -  SB-C::MAP-COMBINATION-ARG-VAR
+ 138     15   0.1    160   1.4   7797  69.6        -  SB-C::BLOCK-HOME-LAMBDA
+ 139     15   0.1     71   0.6   7812  69.7        -  SB-C::IS-OK-TEMPLATE-USE
+ 140     15   0.1     57   0.5   7827  69.9        -  SB-C::SSET-INTERSECTION
+ 141     15   0.1     18   0.2   7842  70.0        -  SB-KERNEL::INTEGER-/-INTEGER
+ 142     15   0.1     16   0.1   7857  70.1        -  NSUBSTITUTE
+ 143     15   0.1     15   0.1   7872  70.3        -  (LAMBDA (SB-PCL::.ARG0.) :IN "SYS:SRC;PCL;BRAID.LISP")
+ 144     15   0.1     15   0.1   7887  70.4        -  REALPART
+ 145     15   0.1     15   0.1   7902  70.5        -  SB-IMPL::ALLOC-HASH-CACHE-LINE/3
+ 146     14   0.1    201   1.8   7916  70.7        -  SB-C::MAP-COMBINATION-ARGS-AND-TYPES
+ 147     14   0.1     75   0.7   7930  70.8        -  SB-C::IR1-CONVERT-FUNCTOID
+ 148     14   0.1     71   0.6   7944  70.9        -  SB-C::PROPAGATE-COPIES
+ 149     14   0.1     28   0.2   7958  71.0        -  (LABELS SB-C::WALK :IN SB-C::DEBUG-NAME)
+ 150     14   0.1     22   0.2   7972  71.2        -  SB-INT:VALID-FUNCTION-NAME-P
+ 151     14   0.1     19   0.2   7986  71.3        -  SB-IMPL::NLIST-SUBSTITUTE*
+ 152     14   0.1     18   0.2   8000  71.4        -  CL-QUIL.CLIFFORD::INCURRED-PHASE-FROM-ROW-PRODUCT
+ 153     14   0.1     14   0.1   8014  71.5        -  EQL
+ 154     14   0.1     14   0.1   8028  71.7        -  SB-C::LEXENV-POLICY
+ 155     14   0.1     14   0.1   8042  71.8        -  "foreign function arch_set_fp_modes"
+ 156     14   0.1     14   0.1   8056  71.9        -  SB-C::BLOCK-OUT-FOR-SUCCESSOR
+ 157     13   0.1    260   2.3   8069  72.0        -  (LAMBDA (SB-C::ARG SB-C::VAR TYPE) :IN SB-C::PROPAGATE-LET-ARGS)
+ 158     13   0.1     92   0.8   8082  72.1        -  SB-C::MOVE-RETURN-STUFF
+ 159     13   0.1     46   0.4   8095  72.3        -  SB-C::IR1-MERGE-CASTS
+ 160     13   0.1     45   0.4   8108  72.4        -  SB-C::REFERENCE-CONSTANT
+ 161     13   0.1     25   0.2   8121  72.5        -  SB-KERNEL:LIST-SUBSEQ*
+ 162     13   0.1     13   0.1   8134  72.6        -  SB-C::GENERATE-TYPE-CHECKS
+ 163     13   0.1     13   0.1   8147  72.7        -  SB-C::MAKE-GLOBAL-CONFLICTS
+ 164     13   0.1     13   0.1   8160  72.8        -  SB-C::PRINCIPAL-LVAR
+ 165     12   0.1    123   1.1   8172  72.9        -  SB-C::MAKE-LAMBDA-VARS
+ 166     12   0.1     26   0.2   8184  73.1        -  SB-INT:PROPER-LIST-P
+ 167     12   0.1     18   0.2   8196  73.2        -  VALID-SHAPE-P
+ 168     12   0.1     12   0.1   8208  73.3        -  SB-KERNEL:%MEMBER-EQ
+ 169     12   0.1     12   0.1   8220  73.4        -  SB-IMPL::GETHASH3
+ 170     12   0.1     12   0.1   8232  73.5        -  SB-C::MAKE-COMBINATION
+ 171     12   0.1     12   0.1   8244  73.6        -  SB-KERNEL:%MEMBER
+ 172     12   0.1     12   0.1   8256  73.7        -  SB-C::MAYBE-TERMINATE-BLOCK
+ 173     11   0.1   1640  14.6   8267  73.8        -  SB-C::IR1-CONVERT-AUX-BINDINGS
+ 174     11   0.1    230   2.1   8278  73.9        -  SB-KERNEL::ARGS-TYPE-OP
+ 175     11   0.1    211   1.9   8289  74.0        -  SB-C::ASSERT-LVAR-TYPE
+ 176     11   0.1    129   1.2   8300  74.1        -  SB-REGALLOC::RESTRICTED-TN-LOCATIONS
+ 177     11   0.1    117   1.0   8311  74.2        -  SB-C::CALL-WITH-CURRENT-SOURCE-FORM
+ 178     11   0.1     52   0.5   8322  74.3        -  SB-C::ENSURE-SOURCE-PATH
+ 179     11   0.1     28   0.2   8333  74.4        -  SB-KERNEL::%TYPE-UNION
+ 180     11   0.1     28   0.2   8344  74.5        -  CL-QUIL.CLIFFORD::ROW-PRODUCT
+ 181     11   0.1     26   0.2   8355  74.6        -  SB-C::DELETE-LAMBDA-VAR
+ 182     11   0.1     25   0.2   8366  74.7        -  SB-C::INIT-COPY-SETS
+ 183     11   0.1     19   0.2   8377  74.8        -  SB-C::CONFLICT-ANALYZE-1-BLOCK
+ 184     11   0.1     17   0.2   8388  74.9        -  SB-C::%LVAR-DERIVED-TYPE
+ 185     11   0.1     16   0.1   8399  75.0        -  SB-KERNEL:%MAKE-ARRAY
+ 186     11   0.1     11   0.1   8410  75.1        -  LENGTH
+ 187     11   0.1     11   0.1   8421  75.2        -  ASH
+ 188     11   0.1     11   0.1   8432  75.3        -  SB-C::BLOCK-START-NODE
+ 189     10   0.1    752   6.7   8442  75.4        -  SB-C::LOCALL-ANALYZE-COMPONENT
+ 190     10   0.1    140   1.2   8452  75.4        -  SB-REGALLOC::PREPARE-VERTICES
+ 191     10   0.1     78   0.7   8462  75.5        -  SB-REGALLOC::INSERT-BLOCK-LOCAL-CONFLICTS-FOR
+ 192     10   0.1     43   0.4   8472  75.6        -  SB-C::SUBSTITUTE-LVAR
+ 193     10   0.1     17   0.2   8482  75.7        -  SB-C::REMOVE-EQUIVALENT-BLOCKS
+ 194     10   0.1     14   0.1   8492  75.8        -  SB-KERNEL:TWO-ARG-<
+ 195     10   0.1     14   0.1   8502  75.9        -  FIND
+ 196     10   0.1     13   0.1   8512  76.0        -  SB-C::LVAR-FUN-NAME
+ 197     10   0.1     12   0.1   8522  76.1        -  IMAGPART
+ 198     10   0.1     12   0.1   8532  76.2        -  SB-C::FLUSH-FULL-CALL-TAIL-TRANSFERS
+ 199     10   0.1     12   0.1   8542  76.2        -  SB-C::FIND-SAETP
+ 200     10   0.1     10   0.1   8552  76.3        -  SB-C::FUN-TYPE-ARG-LIMITS
+ 201     10   0.1     10   0.1   8562  76.4        -  (SB-VM::OPTIMIZED-DATA-VECTOR-REF (COMPLEX DOUBLE-FLOAT))
+ 202     10   0.1     10   0.1   8572  76.5        -  REMOVE
+ 203     10   0.1     10   0.1   8582  76.6        -  SB-REGALLOC::PARTITION-AND-ORDER-VERTICES
+ 204     10   0.1     10   0.1   8592  76.7        -  (FLET SB-IMPL::POP-RABBIT :IN SB-INT:PROPER-LIST-P)
+ 205     10   0.1     10   0.1   8602  76.8        -  SB-C::INSERT-BLOCK-GLOBAL-CONFLICT
+ 206      9   0.1   1591  14.2   8611  76.9        -  SB-KERNEL:%MAP
+ 207      9   0.1    633   5.7   8620  76.9        -  SB-C::IR1-CONVERT-COMBINATION
+ 208      9   0.1    363   3.2   8629  77.0        -  SB-C::MAYBE-LET-CONVERT
+ 209      9   0.1     66   0.6   8638  77.1        -  SB-C::COMPUTE-BLOCK-IN
+ 210      9   0.1     58   0.5   8647  77.2        -  SB-ASSEM::%ASSEMBLE-SECTIONS
+ 211      9   0.1     30   0.3   8656  77.3        -  SB-C::CONSTANT-FOLD-CALL-P
+ 212      9   0.1     28   0.2   8665  77.3        -  SB-C::CHECK-VARIABLE-NAME-FOR-BINDING
+ 213      9   0.1     18   0.2   8674  77.4        -  SB-C::IR1-OPTIMIZE-FUNCTIONAL-ARGUMENTS
+ 214      9   0.1     12   0.1   8683  77.5        -  SB-KERNEL:TWO-ARG-+
+ 215      9   0.1     12   0.1   8692  77.6        -  SB-ASSEM:EMIT-BYTE
+ 216      9   0.1     10   0.1   8701  77.7        -  SB-ASSEM:EMIT
+ 217      9   0.1     10   0.1   8710  77.7        -  SB-KERNEL::TYPE-UNION2
+ 218      9   0.1      9   0.1   8719  77.8        -  (LAMBDA (SB-PCL::.ARG0. SB-INT:&MORE SB-PCL::.MORE-CONTEXT. SB-PCL::.MORE-COUNT.) :IN "SYS:SRC;PCL;DLISP3.LISP")
+ 219      9   0.1      9   0.1   8728  77.9        -  (LAMBDA (SB-PCL::.ARG0.) :IN "SYS:SRC;PCL;BRAID.LISP")
+ 220      9   0.1      9   0.1   8737  78.0        -  SB-REGALLOC::ADD-LOCATION-CONFLICTS
+ 221      9   0.1      9   0.1   8746  78.1        -  SB-C::MAKE-BIND
+ 222      9   0.1      9   0.1   8755  78.1        -  SB-C::NODE-COMPONENT
+ 223      9   0.1      9   0.1   8764  78.2        -  SB-C::PREPARE-ARG-FOR-DERIVE-TYPE
+ 224      9   0.1      9   0.1   8773  78.3        -  SB-REGALLOC::GROW-SC
+ 225      8   0.1   1632  14.6   8781  78.4        -  SB-C::IR1-CONVERT-PROGN-BODY
+ 226      8   0.1   1497  13.4   8789  78.5        -  SB-C::IR1-CONVERT-INLINE-LAMBDA
+ 227      8   0.1    365   3.3   8797  78.5        -  SB-C::VALIDATE-CALL-TYPE
+ 228      8   0.1    298   2.7   8805  78.6        -  (FLET SB-C::PROCESS-INFO :IN SB-C::IR1-OPTIMIZE-COMBINATION)
+ 229      8   0.1    156   1.4   8813  78.7        -  SB-C::RECOGNIZE-KNOWN-CALL
+ 230      8   0.1    116   1.0   8821  78.7        -  SB-C::PROPAGATE-TO-REFS
+ 231      8   0.1    101   0.9   8829  78.8        -  SB-KERNEL:SPECIFIER-TYPE
+ 232      8   0.1     63   0.6   8837  78.9        -  SB-C::LIFETIME-FLOW-ANALYSIS
+ 233      8   0.1     45   0.4   8845  79.0        -  SB-C::TEMPLATE-ARGS-OK
+ 234      8   0.1     45   0.4   8853  79.0        -  SB-C::FIND-DFO-AUX
+ 235      8   0.1     45   0.4   8861  79.1        -  SB-INT:CHECK-LAMBDA-LIST-NAMES
+ 236      8   0.1     27   0.2   8869  79.2        -  SB-C::INSERT-LET-BODY
+ 237      8   0.1     20   0.2   8877  79.2        -  SB-C::PROCESS-IGNORE-DECL
+ 238      8   0.1     19   0.2   8885  79.3        -  SB-C::ADD-REPRESENTATION-COSTS
+ 239      8   0.1     17   0.2   8893  79.4        -  SB-IMPL::HASH-TABLE-NEW-VECTORS
+ 240      8   0.1     16   0.1   8901  79.5        -  SB-REGALLOC::PACK-LOAD-TNS
+ 241      8   0.1     15   0.1   8909  79.5        -  SB-C::UPDATE-LVAR-DEPENDENCIES
+ 242      8   0.1     13   0.1   8917  79.6        -  SB-C::FIND-IN-BINDINGS
+ 243      8   0.1      9   0.1   8925  79.7        -  SB-C::LVAR-FUN-IS
+ 244      8   0.1      8   0.1   8933  79.7        -  SB-KERNEL:CLASSOID-TYPEP
+ 245      8   0.1      8   0.1   8941  79.8        -  (LAMBDA (SB-PCL::.ARG0. SB-PCL::.ARG1.) :IN "SYS:SRC;PCL;BRAID.LISP")
+ 246      8   0.1      8   0.1   8949  79.9        -  SB-IMPL::ALLOC-HASH-CACHE-LINE/5
+ 247      8   0.1      8   0.1   8957  80.0        -  SB-C::%USE-CTRAN
+ 248      8   0.1      8   0.1   8965  80.0        -  SB-C::LINK-NODE-TO-PREVIOUS-CTRAN
+ 249      8   0.1      8   0.1   8973  80.1        -  SB-KERNEL:%WITH-ARRAY-DATA/FP
+ 250      8   0.1      8   0.1   8981  80.2        -  (LABELS SB-C::PROBABLY-LL-KEYWORD-P :IN SB-INT:PARSE-LAMBDA-LIST)
+ 251      8   0.1      8   0.1   8989  80.2        -  SB-C::USE-LVAR
+ 252      8   0.1      8   0.1   8997  80.3        -  SB-KERNEL:COERCE-TO-VALUES
+ 253      8   0.1      8   0.1   9005  80.4        -  SB-C::MAKE-ALMOST-NULL-LEXENV
+ 254      8   0.1      8   0.1   9013  80.5        -  SB-C::RESET-CURRENT-CONFLICT
+ 255      8   0.1      8   0.1   9021  80.5        -  SB-C::UNCONVERT-TAIL-CALLS
+ 256      8   0.1      8   0.1   9029  80.6        -  SB-C::PROPAGATE-LVAR-ANNOTATIONS
+ 257      8   0.1      8   0.1   9037  80.7        -  SB-IMPL::ALLOC-HASH-CACHE-LINE/2
+ 258      8   0.1      8   0.1   9045  80.7        -  SB-C::AVER-LIVE-COMPONENT
+ 259      7   0.1   2049  18.3   9052  80.8        -  SB-C::TRANSFORM-CALL
+ 260      7   0.1   1643  14.7   9059  80.9        -  SB-C::IR1-CONVERT-SPECIAL-BINDINGS
+ 261      7   0.1    408   3.6   9066  80.9        -  SB-C::PROPAGATE-LET-ARGS
+ 262      7   0.1    332   3.0   9073  81.0        -  SB-C::FIND-BLOCK-TYPE-CONSTRAINTS
+ 263      7   0.1    251   2.2   9080  81.1        -  SB-C::ASSERT-CALL-TYPE
+ 264      7   0.1    158   1.4   9087  81.1        -  SB-KERNEL::FIXED-VALUES-OP
+ 265      7   0.1    100   0.9   9094  81.2        -  SB-KERNEL::SPECIFIER-TYPE-R
+ 266      7   0.1     89   0.8   9101  81.2        -  SB-C::TWO-ARG-DERIVE-TYPE
+ 267      7   0.1     70   0.6   9108  81.3        -  (SB-PCL::FAST-METHOD TREF (MATRIX))
+ 268      7   0.1     52   0.5   9115  81.4        -  (FLET SB-IMPL::INSERT-AT :IN SB-IMPL::GET-PUTHASH-DEFINITIONS)
+ 269      7   0.1     39   0.3   9122  81.4        -  SB-C::FIND-FREE-FUN
+ 270      7   0.1     38   0.3   9129  81.5        -  SB-C::IR1-CONVERT-SRCTRAN
+ 271      7   0.1     38   0.3   9136  81.5        -  SB-C::STRIP-LAMBDA-LIST
+ 272      7   0.1     37   0.3   9143  81.6        -  SB-KERNEL::%UPGRADED-ARRAY-ELEMENT-TYPE
+ 273      7   0.1     36   0.3   9150  81.7        -  SB-C::MAP-NESTED-CLEANUPS
+ 274      7   0.1     34   0.3   9157  81.7        -  (LABELS SB-C::PASS :IN SB-C::SELECT-REPRESENTATIONS)
+ 275      7   0.1     30   0.3   9164  81.8        -  SB-C::ADD-GLOBAL-CONFLICT
+ 276      7   0.1     21   0.2   9171  81.9        -  SB-KERNEL:CTYPEP
+ 277      7   0.1     17   0.2   9178  81.9        -  SB-C::DELETE-LVAR-USE
+ 278      7   0.1     12   0.1   9185  82.0        -  SB-C::FLUSH-DEST
+ 279      7   0.1      9   0.1   9192  82.0        -  (SB-PCL::FAST-METHOD SHAPE (MATRIX))
+ 280      7   0.1      8   0.1   9199  82.1        -  SB-C::PROPAGATE-LVAR-DX
+ 281      7   0.1      7   0.1   9206  82.2        -  SB-KERNEL:%COERCE-CALLABLE-TO-FUN
+ 282      7   0.1      7   0.1   9213  82.2        -  SB-REGALLOC::BLOCK-GTNS
+ 283      7   0.1      7   0.1   9220  82.3        -  SB-IMPL::VECTOR-REPLACE
+ 284      7   0.1      7   0.1   9227  82.4        -  SB-KERNEL:%%TYPEP
+ 285      7   0.1      7   0.1   9234  82.4        -  SB-C::MAKE-TN
+ 286      7   0.1      7   0.1   9241  82.5        -  SB-C::MAKE-GLOBAL-VAR
+ 287      7   0.1      7   0.1   9248  82.5        -  SB-KERNEL:TYPE-UNION
+ 288      7   0.1      7   0.1   9255  82.6        -  SB-C::SINGLE-REF-BLOCK-P
+ 289      7   0.1      7   0.1   9262  82.7        -  SB-INT:MAKE-SSET
+ 290      7   0.1      7   0.1   9269  82.7        -  SB-C::SUBSTITUTE-LET-FUNARGS
+ 291      7   0.1      7   0.1   9276  82.8        -  SB-C::CHECK-VARIABLE-NAME
+ 292      7   0.1      7   0.1   9283  82.9        -  SB-C::INSTRUMENT-COVERAGE
+ 293      7   0.1      7   0.1   9290  82.9        -  SB-C::CHECK-DS-LIST
+ 294      7   0.1      7   0.1   9297  83.0        -  SB-C::LAMBDA-VAR-REF-LVAR
+ 295      7   0.1      7   0.1   9304  83.0        -  SB-C:MAKE-TN-REF
+ 296      7   0.1      7   0.1   9311  83.1        -  SB-C::FLUSH-NODE
+ 297      7   0.1      7   0.1   9318  83.2        -  SB-KERNEL:TYPE-SPECIFIER
+ 298      7   0.1      7   0.1   9325  83.2        -  SB-C::COMPUTE-INITIAL-CONFLICTS
+ 299      7   0.1      7   0.1   9332  83.3        -  SB-C::PONDER-FULL-CALL
+ 300      7   0.1      7   0.1   9339  83.4        -  SB-KERNEL:UB32-BASH-FILL
+ 301      6   0.1    995   8.9   9345  83.4        -  SB-C::IR1-CONVERT-COMBINATION-CHECKING-TYPE
+ 302      6   0.1    893   8.0   9351  83.5        -  SB-C::IR1-CONVERT-GLOBAL-FUNCTOID
+ 303      6   0.1    462   4.1   9357  83.5        -  SB-C::FIND-AND-PROPAGATE-CONSTRAINTS
+ 304      6   0.1    406   3.6   9363  83.6        -  SB-C::CONVERT-CALL-IF-POSSIBLE
+ 305      6   0.1    352   3.1   9369  83.6        -  SB-C::THE-IN-POLICY
+ 306      6   0.1    167   1.5   9375  83.7        -  (LAMBDA (SB-C::ARG TYPE SB-C::LVARS &OPTIONAL SB-C::ANNOTATION) :IN SB-C::ASSERT-CALL-TYPE)
+ 307      6   0.1    127   1.1   9381  83.7        -  SB-KERNEL::%TYPE-INTERSECTION2
+ 308      6   0.1     97   0.9   9387  83.8        -  SB-C::TYPE-ASSERTED-P
+ 309      6   0.1     78   0.7   9393  83.8        -  SB-C::DELETE-LET
+ 310      6   0.1     65   0.6   9399  83.9        -  VALID-INDEX-P
+ 311      6   0.1     64   0.6   9405  84.0        -  (FLET SB-C::PROCESS-IT :IN SB-C::PROCESS-DECLS)
+ 312      6   0.1     58   0.5   9411  84.0        -  SB-C::DELETE-BLOCK
+ 313      6   0.1     44   0.4   9417  84.1        -  SB-REGALLOC::OPTIMIZED-EMIT-SAVES
+ 314      6   0.1     34   0.3   9423  84.1        -  SB-C::DFO-SCAVENGE-DEPENDENCY-GRAPH
+ 315      6   0.1     27   0.2   9429  84.2        -  SB-C::IR1-CONVERT-MAYBE-PREDICATE
+ 316      6   0.1     24   0.2   9435  84.2        -  (FLET SB-C::ENQUEUE :IN SB-C::FIND-AND-PROPAGATE-CONSTRAINTS)
+ 317      6   0.1     21   0.2   9441  84.3        -  SB-IMPL::REHASH
+ 318      6   0.1     18   0.2   9447  84.3        -  SB-C::SSET-UNION
+ 319      6   0.1     17   0.2   9453  84.4        -  SB-C::IR1-CONVERT-COMMON-FUNCTOID
+ 320      6   0.1     16   0.1   9459  84.4        -  SB-ASSEM::%INST
+ 321      6   0.1     12   0.1   9465  84.5        -  SB-C::BLOCK-START-CLEANUP
+ 322      6   0.1     10   0.1   9471  84.5        -  SB-C::LVAR-VALUE
+ 323      6   0.1      9   0.1   9477  84.6        -  (LAMBDA (SB-C::CONSTRAINT) :IN SB-C::CONSTRAIN-REF-TYPE)
+ 324      6   0.1      9   0.1   9483  84.6        -  SB-C::NOTE-UNREFERENCED-FUN-VARS
+ 325      6   0.1      8   0.1   9489  84.7        -  QVM::MATRIX-MULTIPLY
+ 326      6   0.1      8   0.1   9495  84.8        -  SB-KERNEL::NUMERIC-TYPES-INTERSECT
+ 327      6   0.1      8   0.1   9501  84.8        -  SB-IMPL::MERGE-LISTS*
+ 328      6   0.1      7   0.1   9507  84.9        -  POSITION
+ 329      6   0.1      7   0.1   9513  84.9        -  SB-X86-64-ASM::EMIT-PREFIXES
+ 330      6   0.1      7   0.1   9519  85.0        -  NCONC
+ 331      6   0.1      6   0.1   9525  85.0        -  SB-C::CONSET-MEMBER
+ 332      6   0.1      6   0.1   9531  85.1        -  SB-KERNEL:HAIRY-DATA-VECTOR-SET/CHECK-BOUNDS
+ 333      6   0.1      6   0.1   9537  85.1        -  (SB-PCL::EMF SB-MOP:CLASS-SLOTS)
+ 334      6   0.1      6   0.1   9543  85.2        -  SB-VM::ALLOCATE-VECTOR-WITH-WIDETAG
+ 335      6   0.1      6   0.1   9549  85.2        -  SB-IMPL::QUASI-RANDOM-ADDRESS-BASED-HASH
+ 336      6   0.1      6   0.1   9555  85.3        -  "foreign function cos"
+ 337      6   0.1      6   0.1   9561  85.3        -  SB-PCL::FIND-SLOT-CELL
+ 338      6   0.1      6   0.1   9567  85.4        -  SB-KERNEL:HAIRY-DATA-VECTOR-REF/CHECK-BOUNDS
+ 339      6   0.1      6   0.1   9573  85.5        -  NTH
+ 340      6   0.1      6   0.1   9579  85.5        -  SB-KERNEL:TWO-ARG-IOR
+ 341      6   0.1      6   0.1   9585  85.6        -  (SB-VM::OPTIMIZED-DATA-VECTOR-SET (UNSIGNED-BYTE 32))
+ 342      6   0.1      6   0.1   9591  85.6        -  (FLET SB-C::CLEAR-REOPTIMIZE-ARGS :IN SB-C::IR1-OPTIMIZE-COMBINATION)
+ 343      6   0.1      6   0.1   9597  85.7        -  KEYWORDP
+ 344      6   0.1      6   0.1   9603  85.7        -  SB-C::JOIN-COMPONENTS
+ 345      6   0.1      6   0.1   9609  85.8        -  SB-C::TN-WRITES
+ 346      6   0.1      6   0.1   9615  85.8        -  SB-C::MAKE-CONSET
+ 347      6   0.1      6   0.1   9621  85.9        -  SB-C::TN-READS
+ 348      5   0.0   2272  20.3   9626  85.9        -  SB-C::%WITH-IR1-ENVIRONMENT-FROM-NODE
+ 349      5   0.0    846   7.6   9631  86.0        -  (FLET SB-REGALLOC::COLOR-VERTICES :IN SB-REGALLOC::COLOR-INTERFERENCE-GRAPH)
+ 350      5   0.0    255   2.3   9636  86.0        -  SB-C::LTN-ANALYZE-BLOCK
+ 351      5   0.0    236   2.1   9641  86.1        -  SB-C::LTN-ANALYZE-KNOWN-CALL
+ 352      5   0.0    129   1.2   9646  86.1        -  SB-C::GENERATE-CODE
+ 353      5   0.0    101   0.9   9651  86.1        -  (FLET "WITHOUT-INTERRUPTS-BODY-29" :IN SB-THREAD::CALL-WITH-RECURSIVE-LOCK)
+ 354      5   0.0     95   0.8   9656  86.2        -  SB-C::NOTE-REJECTED-TEMPLATES
+ 355      5   0.0     79   0.7   9661  86.2        -  SB-KERNEL::UNION-COMPLEX-SUBTYPEP-ARG2
+ 356      5   0.0     76   0.7   9666  86.3        -  SB-C::FIND-TEMPLATE
+ 357      5   0.0     64   0.6   9671  86.3        -  SB-C::MOVE-RETURN-USES
+ 358      5   0.0     58   0.5   9676  86.4        -  SB-C::INSERT-CAST-BEFORE
+ 359      5   0.0     44   0.4   9681  86.4        -  SB-C::FIND-DFO
+ 360      5   0.0     41   0.4   9686  86.5        -  SB-C::MAYBE-ADD-EQL-VAR-LVAR-CONSTRAINT
+ 361      5   0.0     21   0.2   9691  86.5        -  SB-C::EXTRACT-LETISH-VARS
+ 362      5   0.0     20   0.2   9696  86.5        -  SB-C::INITIALIZE-IR2-BLOCKS-FLOW-INFO
+ 363      5   0.0     17   0.2   9701  86.6        -  REDUCE
+ 364      5   0.0     14   0.1   9706  86.6        -  SB-C::EMIT-VOP
+ 365      5   0.0     14   0.1   9711  86.7        -  SB-C::FIND-CONSTANT
+ 366      5   0.0     13   0.1   9716  86.7        -  (FLET QVM::FAST-MULTIPLY-IN :IN QVM:APPLY-OPERATOR)
+ 367      5   0.0     13   0.1   9721  86.8        -  SB-C::RECOGNIZE-DYNAMIC-EXTENT-LVARS
+ 368      5   0.0     13   0.1   9726  86.8        -  SB-C::%DELETE-LVAR-USE
+ 369      5   0.0     11   0.1   9731  86.9        -  SB-KERNEL:VALUES-TYPE-TYPES
+ 370      5   0.0     10   0.1   9736  86.9        -  SB-C::OK-LVAR-LAMBDA-VAR
+ 371      5   0.0     10   0.1   9741  87.0        -  (SB-PCL::FAST-METHOD SHARED-INITIALIZE (SB-PCL::SLOT-OBJECT T))
+ 372      5   0.0     10   0.1   9746  87.0        -  SB-INT:MAKE-LAMBDA-LIST
+ 373      5   0.0      9   0.1   9751  87.0        -  SB-REGALLOC::ASSIGN-TN-COSTS
+ 374      5   0.0      8   0.1   9756  87.1        -  SB-BIGNUM:BIGNUM-TRUNCATE
+ 375      5   0.0      8   0.1   9761  87.1        -  SB-REGALLOC::VERTICES-BEST-COLOR/SINGLE-VERTEX
+ 376      5   0.0      7   0.1   9766  87.2        -  SB-KERNEL::UNPARSE-ARGS-TYPES
+ 377      5   0.0      7   0.1   9771  87.2        -  SB-C::OPTIMIZE-CONSTANT-LOADS
+ 378      5   0.0      7   0.1   9776  87.3        -  SB-C::MAKE-OPTIONAL-DISPATCH
+ 379      5   0.0      7   0.1   9781  87.3        -  SB-C::COPY-FLOW-ANALYSIS
+ 380      5   0.0      7   0.1   9786  87.4        -  SB-C::TAIL-ANNOTATE
+ 381      5   0.0      6   0.1   9791  87.4        -  COUNT-IF
+ 382      5   0.0      6   0.1   9796  87.4        -  SB-C::LET-COMBINATION
+ 383      5   0.0      5   0.0   9801  87.5        -  "foreign function getrusage"
+ 384      5   0.0      5   0.0   9806  87.5        -  SB-KERNEL:%DOUBLE-FLOAT
+ 385      5   0.0      5   0.0   9811  87.6        -  (SB-VM::OPTIMIZED-DATA-VECTOR-REF T)
+ 386      5   0.0      5   0.0   9816  87.6        -  (LAMBDA (SB-PCL::.ARG0. SB-PCL::.ARG1. SB-INT:&MORE SB-PCL::.MORE-CONTEXT. SB-PCL::.MORE-COUNT.) :IN "SYS:SRC;PCL;DLISP3.LISP")
+ 387      5   0.0      5   0.0   9821  87.7        -  SB-KERNEL:%MAKE-LIST
+ 388      5   0.0      5   0.0   9826  87.7        -  SB-C::CONVERT-LAMBDA-CALL
+ 389      5   0.0      5   0.0   9831  87.8        -  SB-C::MAKE-REPEATED-NAME-CHECK
+ 390      5   0.0      5   0.0   9836  87.8        -  SB-KERNEL::ROUND-NUMERIC-BOUND
+ 391      5   0.0      5   0.0   9841  87.8        -  SB-KERNEL:TWO-ARG-AND
+ 392      5   0.0      5   0.0   9846  87.9        -  SB-C::ADD-TO-DFO
+ 393      5   0.0      5   0.0   9851  87.9        -  "foreign function hypot"
+ 394      5   0.0      5   0.0   9856  88.0        -  SB-KERNEL:TWO-ARG->
+ 395      5   0.0      5   0.0   9861  88.0        -  SB-C::FUN-TYPE-POSITIONAL-COUNT
+ 396      5   0.0      5   0.0   9866  88.1        -  SB-C::NOTE-SINGLE-VALUIFIED-LVAR
+ 397      5   0.0      5   0.0   9871  88.1        -  SB-C::ADD-LVAR-USE
+ 398      4   0.0   1419  12.7   9875  88.1        -  (FLET "LAMBDA0" :IN "SYS:SRC;COMPILER;IR1OPT.LISP")
+ 399      4   0.0    296   2.6   9879  88.2        -  SB-C::IR1-CONVERT-THE
+ 400      4   0.0    290   2.6   9883  88.2        -  SB-C::IR1-CONVERT-HAIRY-LAMBDA
+ 401      4   0.0     95   0.8   9887  88.3        -  SB-C::IR1-CONVERT-BOUND-CAST
+ 402      4   0.0     80   0.7   9891  88.3        -  SB-C::FIND-TEMPLATE-FOR-LTN-POLICY
+ 403      4   0.0     75   0.7   9895  88.3        -  SB-PCL::%CHANGE-CLASS
+ 404      4   0.0     61   0.5   9899  88.4        -  QVM:MAGICL-MATRIX-TO-QUANTUM-OPERATOR
+ 405      4   0.0     56   0.5   9903  88.4        -  SB-C::SELECT-REPRESENTATIONS
+ 406      4   0.0     49   0.4   9907  88.4        -  (FLET SB-IMPL::F :IN SB-IMPL::VECTOR-MAP-INTO/SIMPLE-ARRAY-COMPLEX-DOUBLE-FLOAT)
+ 407      4   0.0     42   0.4   9911  88.5        -  SB-C::VALIDATE-TEST-AND-TEST-NOT
+ 408      4   0.0     39   0.3   9915  88.5        -  SB-C::SUBSTITUTE-LVAR-USES
+ 409      4   0.0     39   0.3   9919  88.5        -  SB-C::PROPAGATE-TO-ARGS
+ 410      4   0.0     36   0.3   9923  88.6        -  SB-KERNEL::ARRAY-UNPARSE-TYPE-METHOD
+ 411      4   0.0     36   0.3   9927  88.6        -  SB-C::DEBUG-NAME
+ 412      4   0.0     31   0.3   9931  88.6        -  (FLET SB-C::BODY-FUN :IN SB-C::CONSTRAIN-REF-TYPE)
+ 413      4   0.0     29   0.3   9935  88.7        -  SB-C::UPDATE-UVL-LIVE-SETS
+ 414      4   0.0     25   0.2   9939  88.7        -  SB-KERNEL::UNION-UNPARSE-TYPE-METHOD
+ 415      4   0.0     25   0.2   9943  88.8        -  SB-C::SELECT-TN-REPRESENTATION
+ 416      4   0.0     25   0.2   9947  88.8        -  SB-C::MAKE-CAST
+ 417      4   0.0     25   0.2   9951  88.8        -  SB-C::PROPAGATE-FUN-CHANGE
+ 418      4   0.0     20   0.2   9955  88.9        -  SB-C::EXPAND-COMPILER-MACRO
+ 419      4   0.0     19   0.2   9959  88.9        -  SB-C::FIND-INITIAL-DFO-AUX
+ 420      4   0.0     17   0.2   9963  88.9        -  SB-KERNEL::TYPE=-ARGS
+ 421      4   0.0     16   0.1   9967  89.0        -  SB-C::%CONSTANTP
+ 422      4   0.0     13   0.1   9971  89.0        -  SB-C::MAYBE-INSTRUMENT-PROGN-LIKE
+ 423      4   0.0     12   0.1   9975  89.0        -  SB-C::PROCESS-ANNOTATIONS
+ 424      4   0.0     11   0.1   9979  89.1        -  SB-C::DCE-ANALYZE-BLOCK
+ 425      4   0.0     11   0.1   9983  89.1        -  SB-INT:DEPRECATED-THING-P
+ 426      4   0.0     10   0.1   9987  89.1        -  SB-C::COVERAGE-MARK-LOWERING-PASS
+ 427      4   0.0      8   0.1   9991  89.2        -  SB-KERNEL::MEMBER-COMPLEX-SUBTYPEP-ARG1-TYPE-METHOD
+ 428      4   0.0      8   0.1   9995  89.2        -  SB-KERNEL::MAP-TYPE
+ 429      4   0.0      8   0.1   9999  89.3        -  TYPE-OF
+ 430      4   0.0      8   0.1  10003  89.3        -  SB-C::MAP-CALLABLE-ARGUMENTS
+ 431      4   0.0      7   0.1  10007  89.3        -  SB-ASSEM::PROCESS-BACK-PATCHES
+ 432      4   0.0      7   0.1  10011  89.4        -  SB-C::CONSET-INTERSECTION
+ 433      4   0.0      6   0.1  10015  89.4        -  (FLET SB-C::SCAN-OPT/KEY :IN SB-INT:PARSE-LAMBDA-LIST)
+ 434      4   0.0      6   0.1  10019  89.4        -  (LAMBDA (SB-C::NAME) :IN SB-C::MAKE-REPEATED-NAME-CHECK)
+ 435      4   0.0      5   0.0  10023  89.5        -  (LAMBDA (SB-IMPL::NAME) :IN "SYS:SRC;COMPILER;GLOBALDB.LISP")
+ 436      4   0.0      5   0.0  10027  89.5        -  SB-IMPL::REMHASH/EQ
+ 437      4   0.0      5   0.0  10031  89.5        -  SB-KERNEL:CTYPE-OF
+ 438      4   0.0      5   0.0  10035  89.6        -  SB-C::LEADING-COMPONENT-BLOCKS
+ 439      4   0.0      4   0.0  10039  89.6        -  SB-C::REMOVE-FROM-DFO
+ 440      4   0.0      4   0.0  10043  89.6        -  (LAMBDA (SB-PCL::.ARG0. SB-PCL::.ARG1. SB-INT:&MORE SB-PCL::.MORE-CONTEXT. SB-PCL::.MORE-COUNT.) :IN "SYS:SRC;PCL;DLISP3.LISP")
+ 441      4   0.0      4   0.0  10047  89.7        -  (FLET "WRAPPER3" :IN VALID-INDEX-P)
+ 442      4   0.0      4   0.0  10051  89.7        -  (LAMBDA (SB-PCL::.PV. SB-PCL::.NEXT-METHOD-CALL. SB-KERNEL:INSTANCE) :IN SB-PCL::MAKE-STD-READER-METHOD-FUNCTION)
+ 443      4   0.0      4   0.0  10055  89.8        -  SB-KERNEL::NEW-TYPE-HASH
+ 444      4   0.0      4   0.0  10059  89.8        -  SB-C::MAKE-IR2-LVAR
+ 445      4   0.0      4   0.0  10063  89.8        -  SB-C::INSERT-VOP
+ 446      4   0.0      4   0.0  10067  89.9        -  SB-C::LAMBDA-BLOCK
+ 447      4   0.0      4   0.0  10071  89.9        -  SB-INT:DELQ
+ 448      4   0.0      4   0.0  10075  89.9        -  (SETF SB-ASSEM::SEGMENT-CURRENT-INDEX)
+ 449      4   0.0      4   0.0  10079  90.0        -  (FLET SB-C::DO-1-USE :IN SB-C::TYPE-ASSERTED-P)
+ 450      4   0.0      4   0.0  10083  90.0        -  CL-QUIL.CLIFFORD::LEVI-CIVITA
+ 451      4   0.0      4   0.0  10087  90.0        -  SB-C::MAKE-IF
+ 452      4   0.0      4   0.0  10091  90.1        -  SB-IMPL::LIST-NREVERSE
+ 453      4   0.0      4   0.0  10095  90.1        -  APPEND
+ 454      4   0.0      4   0.0  10099  90.1        -  SB-C::%LVAR-SINGLE-VALUE-P
+ 455      4   0.0      4   0.0  10103  90.2        -  SB-C::MAKE-ARG-INFO
+ 456      4   0.0      4   0.0  10107  90.2        -  (LAMBDA (SB-C::CLEANUP) :IN SB-C::MAP-BLOCK-NLXES)
+ 457      4   0.0      4   0.0  10111  90.3        -  SB-X86-64-ASM::OPERAND-SIZE
+ 458      4   0.0      4   0.0  10115  90.3        -  (FLET SB-IMPL::FAST-NTHCDR :IN NTHCDR)
+ 459      4   0.0      4   0.0  10119  90.3        -  (SB-C:DEFTRANSFORM COMMON-LISP:+)
+ 460      4   0.0      4   0.0  10123  90.4        -  SB-KERNEL:%BIT-POS-REV/1
+ 461      4   0.0      4   0.0  10127  90.4        -  SB-C::MAKE-BOUND-CAST
+ 462      4   0.0      4   0.0  10131  90.4        -  SB-KERNEL:MAKE-ARRAY-TYPE
+ 463      3   0.0   1158  10.3  10134  90.5        -  SB-REGALLOC::ITERATE-COLOR
+ 464      3   0.0    416   3.7  10137  90.5        -  SB-C::LOCALL-ANALYZE-FUN-1
+ 465      3   0.0    383   3.4  10140  90.5        -  SB-C::IR1-CONVERT-TAGBODY
+ 466      3   0.0    271   2.4  10143  90.5        -  SB-C::IR1-CONVERT-MORE
+ 467      3   0.0    207   1.8  10146  90.6        -  SB-C::GENERATE-OPTIONAL-DEFAULT-ENTRY
+ 468      3   0.0    189   1.7  10149  90.6        -  SB-C::IR1-OPTIMIZE-CAST
+ 469      3   0.0    147   1.3  10152  90.6        -  SB-KERNEL:VALUES-TYPES-EQUAL-OR-INTERSECT
+ 470      3   0.0    121   1.1  10155  90.6        -  SB-C::MAYBE-DELETE-CAST
+ 471      3   0.0     84   0.7  10158  90.7        -  SB-C::FIND-DOMINATORS
+ 472      3   0.0     68   0.6  10161  90.7        -  SB-C::UPDATE-BLOCK-IN
+ 473      3   0.0     62   0.6  10164  90.7        -  SB-C::CAREFUL-EXPAND-MACRO
+ 474      3   0.0     61   0.5  10167  90.8        -  MAP-INTO
+ 475      3   0.0     49   0.4  10170  90.8        -  SB-IMPL::PUTHASH/EQ
+ 476      3   0.0     41   0.4  10173  90.8        -  SB-C::DELETE-CAST
+ 477      3   0.0     39   0.3  10176  90.8        -  SB-C::ANNOTATE-1-VALUE-LVAR
+ 478      3   0.0     38   0.3  10179  90.9        -  SB-REGALLOC::OPTIMIZED-EMIT-SAVES-BLOCK
+ 479      3   0.0     36   0.3  10182  90.9        -  (FLET SB-C::ADD-VAR :IN SB-C::MAKE-LAMBDA-VARS)
+ 480      3   0.0     36   0.3  10185  90.9        -  SB-KERNEL:TYPES-EQUAL-OR-INTERSECT
+ 481      3   0.0     35   0.3  10188  90.9        -  SB-C::STACK-ANALYZE
+ 482      3   0.0     29   0.3  10191  91.0        -  SXHASH
+ 483      3   0.0     27   0.2  10194  91.0        -  SB-C::LOGAND-OPTIMIZER-OPTIMIZER
+ 484      3   0.0     26   0.2  10197  91.0        -  SB-C::DELETE-FILTER
+ 485      3   0.0     22   0.2  10200  91.0        -  SB-C::EMIT-AND-INSERT-VOP
+ 486      3   0.0     22   0.2  10203  91.1        -  SB-C::CTRAN-STARTS-BLOCK
+ 487      3   0.0     18   0.2  10206  91.1        -  SB-C::REFERENCE-ARGS
+ 488      3   0.0     17   0.2  10209  91.1        -  FLOOR
+ 489      3   0.0     16   0.1  10212  91.2        -  SB-C::IR1-OPTIMIZE-IF
+ 490      3   0.0     15   0.1  10215  91.2        -  SB-INT:GLOBAL-FTYPE
+ 491      3   0.0     15   0.1  10218  91.2        -  SB-C::COMBINATION-FUN-SOURCE-NAME
+ 492      3   0.0     15   0.1  10221  91.2        -  SB-C::REGISTER-CONSTRAINT
+ 493      3   0.0     14   0.1  10224  91.3        -  SB-REGALLOC::PACK-WIRED-TN
+ 494      3   0.0     13   0.1  10227  91.3        -  SB-KERNEL::TYPE=-LIST
+ 495      3   0.0     13   0.1  10230  91.3        -  COMPILER-MACRO-FUNCTION
+ 496      3   0.0     12   0.1  10233  91.3        -  SB-C::CHANGE-BLOCK-SUCCESSOR
+ 497      3   0.0     12   0.1  10236  91.4        -  SB-C:COMBINATION-IMPLEMENTATION-STYLE
+ 498      3   0.0     11   0.1  10239  91.4        -  REPLACE
+ 499      3   0.0     10   0.1  10242  91.4        -  SB-C::REFERENCE-TN
+ 500      3   0.0      9   0.1  10245  91.4        -  (LAMBDA (STRING CL-PPCRE::START CL-PPCRE::END) :IN CL-PPCRE::CREATE-SCANNER-AUX)
+ 501      3   0.0      9   0.1  10248  91.5        -  SB-C::OK-COPY-REF
+ 502      3   0.0      9   0.1  10251  91.5        -  SB-C::MAYBE-WEAKEN-CHECK
+ 503      3   0.0      9   0.1  10254  91.5        -  SB-C::FLUSHABLE-COMBINATION-ARGS-P
+ 504      3   0.0      8   0.1  10257  91.6        -  (LABELS SB-C::HANDLE-FUNCTIONAL :IN SB-C::CALL-WITH-BLOCK-EXTERNAL-FUNCTIONALS)
+ 505      3   0.0      8   0.1  10260  91.6        -  SB-IMPL::COLLECT-SETF-TEMPS
+ 506      3   0.0      7   0.1  10263  91.6        -  SB-C::CONSET-DIFFERENCE
+ 507      3   0.0      5   0.0  10266  91.6        -  SB-THREAD::%%WAIT-FOR
+ 508      3   0.0      5   0.0  10269  91.7        -  (FLET SB-KERNEL::BOUND-TEST :IN SB-KERNEL:%%TYPEP)
+ 509      3   0.0      5   0.0  10272  91.7        -  SB-VM::%VECTOR-WIDETAG-AND-N-BITS-SHIFT
+ 510      3   0.0      5   0.0  10275  91.7        -  SB-C::CACHED-BLOCK-PHYSENV
+ 511      3   0.0      5   0.0  10278  91.7        -  SB-C::NOTE-LOSSAGE
+ 512      3   0.0      5   0.0  10281  91.8        -  SB-C::DELETE-NO-OP-VOPS
+ 513      3   0.0      4   0.0  10284  91.8        -  (SB-PCL::FAST-METHOD CHANGE-CLASS (T SYMBOL))
+ 514      3   0.0      4   0.0  10287  91.8        -  (SB-PCL::FAST-METHOD SPECIALIZE-TENSOR (ABSTRACT-TENSOR))
+ 515      3   0.0      4   0.0  10290  91.9        -  SB-C::DCE-ANALYZE-REF
+ 516      3   0.0      4   0.0  10293  91.9        -  SB-C::DECLARATIONS-SUPPRESS-LET-CONVERSION-P
+ 517      3   0.0      4   0.0  10296  91.9        -  SB-C::PRESENT-IN-FORM
+ 518      3   0.0      4   0.0  10299  91.9        -  SB-C::FUNCTIONAL-SOMEWHAT-LETLIKE-P
+ 519      3   0.0      4   0.0  10302  92.0        -  SB-KERNEL:TWO-ARG-=
+ 520      3   0.0      4   0.0  10305  92.0        -  SB-REGALLOC::INIT-LIVE-TNS
+ 521      3   0.0      3   0.0  10308  92.0        -  (LAMBDA (SB-PCL::.ARG0. SB-PCL::.ARG1. SB-PCL::.ARG2. SB-INT:&MORE SB-PCL::.MORE-CONTEXT. SB-PCL::.MORE-COUNT.) :IN "SYS:SRC;PCL;DLISP3.LISP")
+ 522      3   0.0      3   0.0  10311  92.0        -  SB-UNIX::WITH-DEFERRABLE-SIGNALS-UNBLOCKED
+ 523      3   0.0      3   0.0  10314  92.1        -  (LAMBDA (SB-KERNEL:INSTANCE) :IN SB-PCL::MAKE-OPTIMIZED-STD-READER-METHOD-FUNCTION)
+ 524      3   0.0      3   0.0  10317  92.1        -  SB-PCL::%MAKE-STANDARD-INSTANCE
+ 525      3   0.0      3   0.0  10320  92.1        -  (FLET "WRAPPER3" :IN VALID-SHAPE-P)
+ 526      3   0.0      3   0.0  10323  92.1        -  CLASS-OF
+ 527      3   0.0      3   0.0  10326  92.2        -  SB-PCL::CHECK-APPLICABLE-KEYWORDS
+ 528      3   0.0      3   0.0  10329  92.2        -  NTHCDR
+ 529      3   0.0      3   0.0  10332  92.2        -  (FLET "WRAPPER21" :IN TREF)
+ 530      3   0.0      3   0.0  10335  92.3        -  QVM::LOADED-PROGRAM-LENGTH
+ 531      3   0.0      3   0.0  10338  92.3        -  (SB-VM::OPTIMIZED-DATA-VECTOR-REF (UNSIGNED-BYTE 32))
+ 532      3   0.0      3   0.0  10341  92.3        -  SB-C::MAKE-IR2-BLOCK
+ 533      3   0.0      3   0.0  10344  92.3        -  SB-C::MAKE-SET
+ 534      3   0.0      3   0.0  10347  92.4        -  SB-PRETTY::MAKE-LOGICAL-BLOCK
+ 535      3   0.0      3   0.0  10350  92.4        -  (LAMBDA (SB-C::CONSTRAINT) :IN SB-C::INHERIT-CONSTRAINTS)
+ 536      3   0.0      3   0.0  10353  92.4        -  SB-KERNEL:%LAST1
+ 537      3   0.0      3   0.0  10356  92.4        -  SB-C::PROCESS-MUFFLE-DECLS
+ 538      3   0.0      3   0.0  10359  92.5        -  SB-KERNEL:TWO-ARG-GCD
+ 539      3   0.0      3   0.0  10362  92.5        -  SB-C::RESOLVE-KEY-ARGS
+ 540      3   0.0      3   0.0  10365  92.5        -  SB-KERNEL:%BIT-POS-FWD/1
+ 541      3   0.0      3   0.0  10368  92.5        -  SB-C::MAKE-CLEANUP
+ 542      3   0.0      3   0.0  10371  92.6        -  SB-C::MERGE-TAIL-SETS
+ 543      3   0.0      3   0.0  10374  92.6        -  SB-IMPL::%MAKE-DEFAULT-STRING-OSTREAM
+ 544      3   0.0      3   0.0  10377  92.6        -  SB-INT:LOOKS-LIKE-NAME-OF-SPECIAL-VAR-P
+ 545      3   0.0      3   0.0  10380  92.7        -  EQUAL
+ 546      3   0.0      3   0.0  10383  92.7        -  SB-C::CLEAR-INVALID-FUNCTIONALS
+ 547      3   0.0      3   0.0  10386  92.7        -  SB-C::MAKE-VOP
+ 548      3   0.0      3   0.0  10389  92.7        -  SB-INT:PROPER-LIST-OF-LENGTH-P
+ 549      3   0.0      3   0.0  10392  92.8        -  SB-C::DELETE-TN-REF
+ 550      3   0.0      3   0.0  10395  92.8        -  NSUBST
+ 551      3   0.0      3   0.0  10398  92.8        -  SB-C::%MAKE-INTERVAL
+ 552      3   0.0      3   0.0  10401  92.8        -  SB-C::CHECK-IMPORTANT-RESULT
+ 553      3   0.0      3   0.0  10404  92.9        -  SB-INT:LL-KWDS-RESTP
+ 554      3   0.0      3   0.0  10407  92.9        -  SB-IMPL::STRING-SOUT
+ 555      3   0.0      3   0.0  10410  92.9        -  SB-C::DELETE-UNREFERENCED-TNS
+ 556      2   0.0   8361  74.6  10412  92.9        -  SB-C::%COMPILE
+ 557      2   0.0   1204  10.7  10414  93.0        -  SB-REGALLOC::PACK-ITERATIVE
+ 558      2   0.0    783   7.0  10416  93.0        -  SB-C::CONSTRAINT-PROPAGATE
+ 559      2   0.0    563   5.0  10418  93.0        -  SB-C::IR1-CONVERT-LET
+ 560      2   0.0    335   3.0  10420  93.0        -  SB-C::IR1-CONVERT-IF
+ 561      2   0.0    270   2.4  10422  93.0        -  SB-KERNEL::VALUES-TYPE-OP
+ 562      2   0.0    208   1.9  10424  93.0        -  SB-C::IR1-CONVERT-HAIRY-ARGS
+ 563      2   0.0    112   1.0  10426  93.1        -  (SB-PCL::FAST-METHOD CL-QUIL:GATE-MATRIX (CL-QUIL:PERMUTATION-GATE))
+ 564      2   0.0    104   0.9  10428  93.1        -  SB-THREAD::CALL-WITH-RECURSIVE-LOCK
+ 565      2   0.0     89   0.8  10430  93.1        -  SB-C::CONVERT-MORE-ENTRY
+ 566      2   0.0     75   0.7  10432  93.1        -  CL-QUIL.CLIFFORD::APPLY-PAULI-TO-WAVEFUNCTION
+ 567      2   0.0     73   0.7  10434  93.1        -  SB-REGALLOC::PACK-TN
+ 568      2   0.0     63   0.6  10436  93.2        -  SB-C::CONVERT-CALL
+ 569      2   0.0     59   0.5  10438  93.2        -  SB-C::CONVERT-OPTIONAL-ENTRY
+ 570      2   0.0     59   0.5  10440  93.2        -  (SB-PCL::FAST-METHOD INTO! (FUNCTION ABSTRACT-TENSOR))
+ 571      2   0.0     58   0.5  10442  93.2        -  COERCE
+ 572      2   0.0     44   0.4  10444  93.2        -  SB-IMPL::GROW-HASH-TABLE
+ 573      2   0.0     42   0.4  10446  93.2        -  (SB-PCL::EMF UPDATE-INSTANCE-FOR-DIFFERENT-CLASS)
+ 574      2   0.0     41   0.4  10448  93.3        -  SB-C::CONSET-ADD-CONSTRAINT-TO-EQL
+ 575      2   0.0     40   0.4  10450  93.3        -  SB-KERNEL::NUMBER-SIMPLE-INTERSECTION2-TYPE-METHOD
+ 576      2   0.0     38   0.3  10452  93.3        -  SB-C::PHYSENV-ANALYZE
+ 577      2   0.0     38   0.3  10454  93.3        -  (SB-PCL::FAST-METHOD (SETF TREF) (T MATRIX))
+ 578      2   0.0     34   0.3  10456  93.3        -  SB-C::IR2-CONVERT-TEMPLATE
+ 579      2   0.0     29   0.3  10458  93.4        -  GENSYM
+ 580      2   0.0     28   0.2  10460  93.4        -  SB-C::LTN-ANNOTATE-CASTS
+ 581      2   0.0     27   0.2  10462  93.4        -  (SB-PCL::FAST-METHOD (SETF TREF) (T TENSOR))
+ 582      2   0.0     26   0.2  10464  93.4        -  (LABELS SB-IMPL::RECURSE :IN SB-IMPL::%SYMBOL-NAMEIFY)
+ 583      2   0.0     25   0.2  10466  93.4        -  (FLET SB-C::CHECK-NAME :IN SB-INT:CHECK-LAMBDA-LIST-NAMES)
+ 584      2   0.0     25   0.2  10468  93.4        -  SB-C::%LINK-BLOCKS
+ 585      2   0.0     22   0.2  10470  93.5        -  SB-C::MAYBE-REANALYZE-FUNCTIONAL
+ 586      2   0.0     19   0.2  10472  93.5        -  SUBTYPEP
+ 587      2   0.0     18   0.2  10474  93.5        -  SB-C::EMIT-MOVES-AND-COERCIONS
+ 588      2   0.0     16   0.1  10476  93.5        -  (LABELS SB-C::CUT-LVAR :IN SB-C::CUT-TO-WIDTH)
+ 589      2   0.0     16   0.1  10478  93.5        -  SB-C::INHERIT-CONSTRAINTS
+ 590      2   0.0     16   0.1  10480  93.5        -  (MACRO-FUNCTION SETF)
+ 591      2   0.0     15   0.1  10482  93.6        -  QVM:APPLY-MATRIX-OPERATOR
+ 592      2   0.0     15   0.1  10484  93.6        -  (LABELS SB-IMPL::HANDLE-IT :IN SB-KERNEL:OUTPUT-OBJECT)
+ 593      2   0.0     15   0.1  10486  93.6        -  SB-C::FIND-CLEANUP-POINTS
+ 594      2   0.0     14   0.1  10488  93.6        -  SB-C::NODE-PHYSENV
+ 595      2   0.0     14   0.1  10490  93.6        -  (LAMBDA NIL :IN SB-C::EXTRACT-LETISH-VARS)
+ 596      2   0.0     14   0.1  10492  93.7        -  (LABELS SB-IMPL::RECUR :IN SB-IMPL::STABLE-SORT-LIST)
+ 597      2   0.0     13   0.1  10494  93.7        -  SB-C::IR2-CONVERT-REF
+ 598      2   0.0     13   0.1  10496  93.7        -  SB-C::INTERVAL-ADD
+ 599      2   0.0     12   0.1  10498  93.7        -  SB-C::LTN-ANNOTATE-CAST
+ 600      2   0.0     12   0.1  10500  93.7        -  (SB-C:DEFTRANSFORM SB-KERNEL:DATA-VECTOR-REF-WITH-OFFSET)
+ 601      2   0.0     11   0.1  10502  93.7        -  MT19937::%RANDOM-INTEGER
+ 602      2   0.0     11   0.1  10504  93.8        -  SB-C::%INSERT-CAST-BEFORE
+ 603      2   0.0     11   0.1  10506  93.8        -  SB-C::CONTROL-ANALYZE-BLOCK
+ 604      2   0.0     11   0.1  10508  93.8        -  SB-C::TEMPLATE-RESULTS-OK
+ 605      2   0.0      9   0.1  10510  93.8        -  SB-KERNEL:%MEMBER-KEY-EQ
+ 606      2   0.0      9   0.1  10512  93.8        -  SB-C:MAKE-NORMAL-TN
+ 607      2   0.0      9   0.1  10514  93.9        -  (FLET SB-C::BODY-FUN :IN SB-C::INHERIT-CONSTRAINTS)
+ 608      2   0.0      9   0.1  10516  93.9        -  COLUMN-MAJOR-INDEX
+ 609      2   0.0      8   0.1  10518  93.9        -  SB-C::SETUP-ENVIRONMENT-TN-CONFLICTS
+ 610      2   0.0      8   0.1  10520  93.9        -  SB-C::BEST-MODULAR-VERSION
+ 611      2   0.0      8   0.1  10522  93.9        -  SB-C::NAME-LAMBDALIKE
+ 612      2   0.0      8   0.1  10524  93.9        -  SB-C::REOPTIMIZE-CALL
+ 613      2   0.0      8   0.1  10526  94.0        -  SB-REGALLOC::PACK-LOAD-TN
+ 614      2   0.0      7   0.1  10528  94.0        -  SB-PCL::CHECK-NEW-CLASS-NOT-METAOBJECT
+ 615      2   0.0      7   0.1  10530  94.0        -  SB-ASSEM::COMPRESS-OUTPUT
+ 616      2   0.0      7   0.1  10532  94.0        -  MAKE-HASH-TABLE
+ 617      2   0.0      7   0.1  10534  94.0        -  ABS
+ 618      2   0.0      7   0.1  10536  94.0        -  SB-C::ARRAY-IN-BOUNDS-P-CONSTRAINTS
+ 619      2   0.0      7   0.1  10538  94.1        -  (FLET SB-C::BOUND-MUL :IN SB-C::INTERVAL-MUL)
+ 620      2   0.0      7   0.1  10540  94.1        -  SB-C::ASSERT-ARRAY-INDEX-LVAR-TYPE
+ 621      2   0.0      6   0.1  10542  94.1        -  SB-C:TEMPLATE-OR-LOSE
+ 622      2   0.0      6   0.1  10544  94.1        -  SB-KERNEL:VALUES-TYPE-UNION
+ 623      2   0.0      6   0.1  10546  94.1        -  SB-REGALLOC::COMPUTE-LIVE-TNS
+ 624      2   0.0      6   0.1  10548  94.2        -  SB-X86-64-ASM::EMIT-REX-IF-NEEDED
+ 625      2   0.0      6   0.1  10550  94.2        -  (FLET SB-C::DO-1-USE :IN SB-C::CUT-TO-WIDTH)
+ 626      2   0.0      5   0.0  10552  94.2        -  SB-ASSEM::PERFORM-OPERAND-LOWERING
+ 627      2   0.0      5   0.0  10554  94.2        -  SB-ASSEM::%EMIT-ALIGNMENT
+ 628      2   0.0      5   0.0  10556  94.2        -  SB-C::FIND-LOCAL-REFERENCES
+ 629      2   0.0      5   0.0  10558  94.2        -  SB-C::FIND-MOVE-VOP
+ 630      2   0.0      5   0.0  10560  94.3        -  SB-C::DELETE-VOP
+ 631      2   0.0      4   0.0  10562  94.3        -  SB-C::PRESERVE-SINGLE-USE-DEBUG-VAR-P
+ 632      2   0.0      4   0.0  10564  94.3        -  SB-KERNEL:STRING=*
+ 633      2   0.0      4   0.0  10566  94.3        -  QVM::CURRENT-INSTRUCTION
+ 634      2   0.0      4   0.0  10568  94.3        -  SB-KERNEL:CONTAINS-UNKNOWN-TYPE-P
+ 635      2   0.0      4   0.0  10570  94.4        -  (FLET SB-C::ADD-INFO :IN SB-C::MAKE-LAMBDA-VARS)
+ 636      2   0.0      4   0.0  10572  94.4        -  SB-C::LOGAND-DERIVE-UNSIGNED-BOUNDS
+ 637      2   0.0      4   0.0  10574  94.4        -  SB-C::DERIVE-AREF-TYPE
+ 638      2   0.0      4   0.0  10576  94.4        -  (FLET SB-C::FROB :IN SB-C::INIT-VAR-CONSTRAINTS)
+ 639      2   0.0      4   0.0  10578  94.4        -  SB-KERNEL::NUMBER-SIMPLE-SUBTYPEP-TYPE-METHOD
+ 640      2   0.0      4   0.0  10580  94.4        -  (SB-C:DEFTRANSFORM SB-KERNEL:CHECK-BOUND)
+ 641      2   0.0      4   0.0  10582  94.5        -  (LABELS SB-REGALLOC::WALK-TN-REFS :IN SB-REGALLOC::TN-LEXICAL-DEPTH)
+ 642      2   0.0      4   0.0  10584  94.5        -  SB-C::REOPTIMIZE-LAMBDA-VAR
+ 643      2   0.0      4   0.0  10586  94.5        -  VECTOR-PUSH-EXTEND
+ 644      2   0.0      3   0.0  10588  94.5        -  (SETF QVM::MEMORY-VIEW-REF)
+ 645      2   0.0      3   0.0  10590  94.5        -  (SB-PCL::EMF CHANGE-CLASS)
+ 646      2   0.0      3   0.0  10592  94.5        -  QVM::CHECK-CLASSICAL-MEMORY-BOUNDS
+ 647      2   0.0      3   0.0  10594  94.6        -  SB-C::LAMBDA-COMPONENT
+ 648      2   0.0      3   0.0  10596  94.6        -  (LABELS SB-KERNEL:%MAP :IN SB-KERNEL::MAP-TYPE)
+ 649      2   0.0      3   0.0  10598  94.6        -  SB-REGALLOC::%MAKE-VERTEX
+ 650      2   0.0      3   0.0  10600  94.6        -  SB-KERNEL:MAKE-SHORT-VALUES-TYPE
+ 651      2   0.0      3   0.0  10602  94.6        -  SB-C::CONVERT-TO-GLOBAL
+ 652      2   0.0      3   0.0  10604  94.7        -  CL-QUIL.CLIFFORD::READ-BASIS-STATE-FROM-SCRATCH-ROW
+ 653      2   0.0      3   0.0  10606  94.7        -  SB-X86-64-ASM::EMIT-EA
+ 654      2   0.0      3   0.0  10608  94.7        -  SB-KERNEL:%DPB
+ 655      2   0.0      3   0.0  10610  94.7        -  SB-C::DUMP-1-VAR
+ 656      2   0.0      3   0.0  10612  94.7        -  (LAMBDA (SB-X86-64-ASM::SEGMENT SB-X86-64-ASM::CHOOSER SB-X86-64-ASM::POSN SB-X86-64-ASM::DELTA-IF-AFTER) :IN SB-X86-64-ASM::JMP)
+ 657      2   0.0      3   0.0  10614  94.7        -  (:SOURCE-TRANSFORM SB-KERNEL:DATA-VECTOR-REF)
+ 658      2   0.0      3   0.0  10616  94.8        -  SB-IMPL::%MAKE-HASH-TABLE
+ 659      2   0.0      3   0.0  10618  94.8        -  SB-C::%ALLOCATE-CLOSURES-IR2-CONVERT-OPTIMIZER
+ 660      2   0.0      3   0.0  10620  94.8        -  SB-IMPL::%OUTPUT-REASONABLE-INTEGER-IN-BASE
+ 661      2   0.0      3   0.0  10622  94.8        -  SB-C::COMPILER-SPECIFIER-TYPE
+ 662      2   0.0      3   0.0  10624  94.8        -  SB-C::MAY-DELETE-BOUND-CAST
+ 663      2   0.0      2   0.0  10626  94.9        -  (FLET SB-REGALLOC::VOP-DEPTH-COST :IN SB-REGALLOC::ASSIGN-TN-COSTS)
+ 664      2   0.0      2   0.0  10628  94.9        -  QVM::MATMUL2
+ 665      2   0.0      2   0.0  10630  94.9        -  SB-PCL::ENSURE-CACHED-CTOR
+ 666      2   0.0      2   0.0  10632  94.9        -  (SB-PCL::FAST-METHOD QVM:APPLY-GATE (QVM::COMPILED-PERMUTATION-GATE-APPLICATION T T))
+ 667      2   0.0      2   0.0  10634  94.9        -  (LAMBDA (#:WAVEFUNCTION62243))
+ 668      2   0.0      2   0.0  10636  94.9        -  (FLET "WRAPPER9" :IN VALID-INDEX-P)
+ 669      2   0.0      2   0.0  10638  95.0        -  (LAMBDA (SB-PCL::.ARG0. SB-PCL::.ARG1.) :IN "SYS:SRC;PCL;DLISP3.LISP")
+ 670      2   0.0      2   0.0  10640  95.0        -  (SB-PCL::FAST-METHOD QVM:TRANSITION :AROUND (T T))
+ 671      2   0.0      2   0.0  10642  95.0        -  SB-KERNEL:SCALE-DOUBLE-FLOAT
+ 672      2   0.0      2   0.0  10644  95.0        -  FLOAT
+ 673      2   0.0      2   0.0  10646  95.0        -  SB-KERNEL:%SP-STRING-COMPARE
+ 674      2   0.0      2   0.0  10648  95.0        -  (LAMBDA (QVM::NEW-VALUE QVM::MEM QVM::I) :IN QVM::ALLOCATE-MEMORY-FOR-MODEL)
+ 675      2   0.0      2   0.0  10650  95.1        -  "foreign function sin"
+ 676      2   0.0      2   0.0  10652  95.1        -  (LAMBDA (#:WAVEFUNCTION62246))
+ 677      2   0.0      2   0.0  10654  95.1        -  (LAMBDA (SB-PCL::.ARG0. SB-PCL::.ARG1.) :IN "SYS:SRC;PCL;BRAID.LISP")
+ 678      2   0.0      2   0.0  10656  95.1        -  SB-BIGNUM::%NORMALIZE-BIGNUM
+ 679      2   0.0      2   0.0  10658  95.1        -  SB-PCL::TRY-UPDATE-CACHE-LINE
+ 680      2   0.0      2   0.0  10660  95.2        -  (SB-PCL::FAST-METHOD (SETF SB-PCL::SLOT-ACCESSOR-STD-P) (T SB-MOP:EFFECTIVE-SLOT-DEFINITION T))
+ 681      2   0.0      2   0.0  10662  95.2        -  SB-C::MAKE-CONSTRAINT
+ 682      2   0.0      2   0.0  10664  95.2        -  IDENTITY
+ 683      2   0.0      2   0.0  10666  95.2        -  (LABELS SB-C::REGISTER-P :IN SB-C::OPTIMIZE-CONSTANT-LOADS)
+ 684      2   0.0      2   0.0  10668  95.2        -  MACRO-FUNCTION
+ 685      2   0.0      2   0.0  10670  95.2        -  LOGNOT
+ 686      2   0.0      2   0.0  10672  95.3        -  (FLET SB-C::DO-1-USE :IN SB-C::FLUSH-DEAD-CODE)
+ 687      2   0.0      2   0.0  10674  95.3        -  SB-C::NOTE-UNWINNAGE
+ 688      2   0.0      2   0.0  10676  95.3        -  SB-KERNEL:%MEMBER-TEST
+ 689      2   0.0      2   0.0  10678  95.3        -  SB-C::SIMPLIFY-SOURCE-PATH-FORM
+ 690      2   0.0      2   0.0  10680  95.3        -  SB-C::BLOCK-END-CLEANUP
+ 691      2   0.0      2   0.0  10682  95.4        -  SORT
+ 692      2   0.0      2   0.0  10684  95.4        -  SB-C::MAYBE-CONVERT-TO-ASSIGNMENT
+ 693      2   0.0      2   0.0  10686  95.4        -  SB-KERNEL:MAKE-MEMBER-TYPE
+ 694      2   0.0      2   0.0  10688  95.4        -  (FLET SB-C::BODY-FUN :IN SB-C::ADD-EQL-VAR-VAR-CONSTRAINT)
+ 695      2   0.0      2   0.0  10690  95.4        -  SB-KERNEL:TWO-ARG-/
+ 696      2   0.0      2   0.0  10692  95.4        -  (FLET SB-C::ADD-COSTS :IN SB-C::ADD-REPRESENTATION-COSTS)
+ 697      2   0.0      2   0.0  10694  95.5        -  SB-C:MOVE
+ 698      2   0.0      2   0.0  10696  95.5        -  SB-C::SOURCE-TRANSFORM-TRANSITIVE
+ 699      2   0.0      2   0.0  10698  95.5        -  SB-C::CLEAR-CONSTANT-INFO
+ 700      2   0.0      2   0.0  10700  95.5        -  SB-C::MAKE-EXIT
+ 701      2   0.0      2   0.0  10702  95.5        -  SB-IMPL::PICK-TABLE-METHODS
+ 702      2   0.0      2   0.0  10704  95.5        -  SB-KERNEL:TYPE-NEGATION
+ 703      2   0.0      2   0.0  10706  95.6        -  SB-C::LVAR-DELAYED-LEAF
+ 704      2   0.0      2   0.0  10708  95.6        -  SB-C::CONSTRAINT-PROPAGATE-IF
+ 705      2   0.0      2   0.0  10710  95.6        -  SB-C::FUNCTIONAL-DEBUG-NAME
+ 706      2   0.0      2   0.0  10712  95.6        -  SB-C::CLEAR-FLAGS
+ 707      2   0.0      2   0.0  10714  95.6        -  SB-KERNEL::HAS-SUPERCLASSES-COMPLEX-SUBTYPEP-ARG1
+ 708      2   0.0      2   0.0  10716  95.7        -  "foreign function arch_get_fp_modes"
+ 709      2   0.0      2   0.0  10718  95.7        -  SB-C::BLOCK-END-LEXENV
+ 710      2   0.0      2   0.0  10720  95.7        -  SB-C::ASSURE-LEAF-LIVE-P
+ 711      2   0.0      2   0.0  10722  95.7        -  SB-KERNEL::MAYBE-REPARSE-SPECIFIER
+ 712      2   0.0      2   0.0  10724  95.7        -  (FLET "LAMBDA0" :IN "SYS:SRC;COMPILER;CONSTRAINT.LISP")
+ 713      2   0.0      2   0.0  10726  95.7        -  SB-C::MAKE-TAIL-SET
+ 714      2   0.0      2   0.0  10728  95.8        -  SB-C::FIND-IN-BINDINGS-OR-FBINDINGS
+ 715      2   0.0      2   0.0  10730  95.8        -  (FLET "BOD5" :IN SB-REGALLOC::ASSIGN-TN-COSTS)
+ 716      2   0.0      2   0.0  10732  95.8        -  SB-C::PRINCIPAL-LVAR-END
+ 717      2   0.0      2   0.0  10734  95.8        -  (FLET SB-C::DO-1-USE :IN SB-C::FLUSH-DEST)
+ 718      2   0.0      2   0.0  10736  95.8        -  SB-C::FIND-IN-PHYSENV
+ 719      2   0.0      2   0.0  10738  95.9        -  COMPLEX
+ 720      2   0.0      2   0.0  10740  95.9        -  SB-KERNEL:ALWAYS-SUBTYPEP
+ 721      2   0.0      2   0.0  10742  95.9        -  SB-C::DELETE-RETURN
+ 722      2   0.0      2   0.0  10744  95.9        -  SB-VM::TN-REG
+ 723      2   0.0      2   0.0  10746  95.9        -  SB-KERNEL:MODIFIED-NUMERIC-TYPE
+ 724      2   0.0      2   0.0  10748  95.9        -  SB-C::FUNCTIONAL-LETLIKE-P
+ 725      2   0.0      2   0.0  10750  96.0        -  SB-ASSEM::TRACE-INST
+ 726      2   0.0      2   0.0  10752  96.0        -  SB-C::COMBINATION-DEFINED-TYPE
+ 727      2   0.0      2   0.0  10754  96.0        -  SB-C::DELETE-LAMBDA
+ 728      2   0.0      2   0.0  10756  96.0        -  SB-INT:PARSE-BODY
+ 729      2   0.0      2   0.0  10758  96.0        -  SB-C::GET-LAMBDA-PHYSENV
+ 730      2   0.0      2   0.0  10760  96.0        -  (FLET SB-C::DO-1-USE :IN SB-C::LTN-ANNOTATE-CASTS)
+ 731      2   0.0      2   0.0  10762  96.1        -  SB-C::NUMERIC-TYPE-REAL-P
+ 732      2   0.0      2   0.0  10764  96.1        -  SB-C::NOTE-UNREFERENCED-VARS
+ 733      2   0.0      2   0.0  10766  96.1        -  SB-C::CTRAN-DELETED-P
+ 734      2   0.0      2   0.0  10768  96.1        -  SB-INT:ALLOC-XSET
+ 735      2   0.0      2   0.0  10770  96.1        -  SB-C::COMBINATION-LAMBDA
+ 736      2   0.0      2   0.0  10772  96.2        -  SB-C::MAP-LVAR-DEST-CASTS
+ 737      2   0.0      2   0.0  10774  96.2        -  CL-QUIL.CLIFFORD::MULTIPLY-COMPONENTS
+ 738      2   0.0      2   0.0  10776  96.2        -  MAX
+ 739      2   0.0      2   0.0  10778  96.2        -  SB-C::APPLY-TYPE-ANNOTATION
+ 740      1   0.0   8379  74.8  10779  96.2        -  SB-C:COMPILE-IN-LEXENV
+ 741      1   0.0   8377  74.8  10780  96.2        -  (FLET SB-C::WITH-IT :IN SB-C::%WITH-COMPILATION-UNIT)
+ 742      1   0.0   6608  59.0  10781  96.2        -  (SB-PCL::FAST-METHOD QVM:RUN (QVM:CLASSICAL-MEMORY-MIXIN))
+ 743      1   0.0   4997  44.6  10782  96.2        -  SB-C::IR1-OPTIMIZE-PHASE-1
+ 744      1   0.0   2376  21.2  10783  96.3        -  SB-C::%COMPILE-COMPONENT
+ 745      1   0.0    768   6.9  10784  96.3        -  SB-C::%PROCESSING-DECLS
+ 746      1   0.0    506   4.5  10785  96.3        -  SB-C::IR1-CONVERT-LET*
+ 747      1   0.0    337   3.0  10786  96.3        -  SB-C::IR1-CONVERT-MULTIPLE-VALUE-CALL
+ 748      1   0.0    330   2.9  10787  96.3        -  SB-C::LET-CONVERT
+ 749      1   0.0    329   2.9  10788  96.3        -  (SB-PCL::FAST-METHOD QVM:TRANSITION (QVM:PURE-STATE-QVM CL-QUIL:GATE-APPLICATION))
+ 750      1   0.0    327   2.9  10789  96.3        -  SB-C::FUN-NAME-LEAF
+ 751      1   0.0    270   2.4  10790  96.3        -  SB-C::LTN-ANALYZE
+ 752      1   0.0    266   2.4  10791  96.3        -  SB-REGALLOC::MAKE-INTERFERENCE-GRAPH
+ 753      1   0.0    181   1.6  10792  96.3        -  SB-C::IR1-CONVERT-%FUNCALL
+ 754      1   0.0    114   1.0  10793  96.3        -  SB-REGALLOC::INSERT-BLOCK-LOCAL-CONFLICTS
+ 755      1   0.0    110   1.0  10794  96.3        -  SB-C:IR2-CONVERT
+ 756      1   0.0     73   0.7  10795  96.4        -  (LABELS REC :IN MAP-INDEXES)
+ 757      1   0.0     72   0.6  10796  96.4        -  SB-C::IR1-CONVERT-TRULY-THE
+ 758      1   0.0     59   0.5  10797  96.4        -  SB-C::CLEAN-COMPONENT
+ 759      1   0.0     57   0.5  10798  96.4        -  SB-KERNEL:%PUTHASH
+ 760      1   0.0     56   0.5  10799  96.4        -  SB-C::PROPAGATE-FROM-SETS
+ 761      1   0.0     56   0.5  10800  96.4        -  SB-REGALLOC::SELECT-LOCATION
+ 762      1   0.0     53   0.5  10801  96.4        -  (LABELS SB-REGALLOC::ATTEMPT-LOCATION :IN SB-REGALLOC::SELECT-LOCATION)
+ 763      1   0.0     52   0.5  10802  96.4        -  (FLET SB-REGALLOC::PACK-TNS :IN SB-REGALLOC:PACK)
+ 764      1   0.0     52   0.5  10803  96.4        -  SB-C::IR1-CONVERT-SETQ
+ 765      1   0.0     50   0.4  10804  96.4        -  SB-C::IR1-OPTIMIZE-SET
+ 766      1   0.0     49   0.4  10805  96.4        -  SB-C::PROCESS-1-DECL
+ 767      1   0.0     45   0.4  10806  96.5        -  SB-C::DFO-AS-NEEDED
+ 768      1   0.0     41   0.4  10807  96.5        -  SB-KERNEL:TYPE-APPROX-INTERSECTION2
+ 769      1   0.0     38   0.3  10808  96.5        -  SB-C::FIND-INITIAL-DFO
+ 770      1   0.0     36   0.3  10809  96.5        -  (FLET "LAMBDA0" :IN "SYS:SRC;COMPILER;IR1UTIL.LISP")
+ 771      1   0.0     35   0.3  10810  96.5        -  (FLET SB-C::BODY-FUN :IN SB-C::CONSET-ADD-CONSTRAINT-TO-EQL)
+ 772      1   0.0     34   0.3  10811  96.5        -  (SB-PCL::FAST-METHOD UPDATE-INSTANCE-FOR-DIFFERENT-CLASS (STANDARD-OBJECT STANDARD-OBJECT))
+ 773      1   0.0     34   0.3  10812  96.5        -  SB-KERNEL::UNION-SIMPLE-INTERSECTION2-TYPE-METHOD
+ 774      1   0.0     33   0.3  10813  96.5        -  SB-ROTATE-BYTE::%ROTATE-BYTE
+ 775      1   0.0     31   0.3  10814  96.5        -  SB-REGALLOC::PACK-COLORED
+ 776      1   0.0     31   0.3  10815  96.5        -  SB-KERNEL:VALUES-SPECIFIER-TYPE
+ 777      1   0.0     30   0.3  10816  96.5        -  SB-C::CONVERT-MV-CALL
+ 778      1   0.0     30   0.3  10817  96.6        -  CL-QUIL.CLIFFORD::MULTIPLY-INTO-SCRATCH
+ 779      1   0.0     28   0.2  10818  96.6        -  SB-C::SSET-UNION-OF-DIFFERENCE
+ 780      1   0.0     25   0.2  10819  96.6        -  SB-C::CONVERT-MORE-CALL
+ 781      1   0.0     24   0.2  10820  96.6        -  SB-C::ADD-TEST-CONSTRAINTS
+ 782      1   0.0     24   0.2  10821  96.6        -  ROUND
+ 783      1   0.0     22   0.2  10822  96.6        -  (LAMBDA NIL :IN SB-C::PARSE-LETISH)
+ 784      1   0.0     22   0.2  10823  96.6        -  (SB-PCL::FAST-METHOD MAKE-TENSOR (T T T))
+ 785      1   0.0     21   0.2  10824  96.6        -  SB-C::ADD-EQL-VAR-VAR-CONSTRAINT
+ 786      1   0.0     20   0.2  10825  96.6        -  SB-C::IR1-OPTIMIZE-MV-COMBINATION
+ 787      1   0.0     20   0.2  10826  96.6        -  EXPT
+ 788      1   0.0     19   0.2  10827  96.6        -  SB-C::BLOCK-PHYSENV
+ 789      1   0.0     19   0.2  10828  96.7        -  SB-C::+-DERIVE-TYPE-AUX
+ 790      1   0.0     18   0.2  10829  96.7        -  SB-THREAD::CALL-WITH-RECURSIVE-SYSTEM-LOCK
+ 791      1   0.0     18   0.2  10830  96.7        -  SB-LOOP::LOOP-TRANSLATE
+ 792      1   0.0     17   0.2  10831  96.7        -  (SB-PCL::FAST-METHOD QVM:TRANSITION (QVM:PURE-STATE-QVM QVM::COMPILED-GATE-APPLICATION))
+ 793      1   0.0     17   0.2  10832  96.7        -  SB-C::PROCESS-TYPE-DECL
+ 794      1   0.0     16   0.1  10833  96.7        -  SB-C::FIND-COMPILER-MACRO
+ 795      1   0.0     16   0.1  10834  96.7        -  SB-C::FLUSHABLE-COMBINATION-P
+ 796      1   0.0     16   0.1  10835  96.7        -  (FLET "LAMBDA0" :IN "SYS:SRC;COMPILER;IR1OPT.LISP")
+ 797      1   0.0     16   0.1  10836  96.7        -  SB-C::NOTE-BLOCK-DELETION
+ 798      1   0.0     15   0.1  10837  96.7        -  (SB-PCL::FAST-METHOD QVM:MEASURE (QVM:PURE-STATE-QVM T))
+ 799      1   0.0     15   0.1  10838  96.7        -  (LABELS SB-C::SCAVENGE-LAMBDA :IN SB-C::DFO-SCAVENGE-DEPENDENCY-GRAPH)
+ 800      1   0.0     15   0.1  10839  96.8        -  SB-C::DELETE-OPTIONAL-DISPATCH
+ 801      1   0.0     15   0.1  10840  96.8        -  (MACRO-FUNCTION MULTIPLE-VALUE-BIND)
+ 802      1   0.0     14   0.1  10841  96.8        -  SB-C::EMIT-MOVE
+ 803      1   0.0     14   0.1  10842  96.8        -  (LABELS SB-C::LINK-2BLOCKS :IN SB-C::INITIALIZE-IR2-BLOCKS-FLOW-INFO)
+ 804      1   0.0     14   0.1  10843  96.8        -  SB-LOOP::LOOP-HACK-ITERATION
+ 805      1   0.0     13   0.1  10844  96.8        -  SB-C::LVAR-TN
+ 806      1   0.0     12   0.1  10845  96.8        -  SB-C::LIFETIME-PRE-PASS
+ 807      1   0.0     12   0.1  10846  96.8        -  SB-C::CONTROL-ANALYZE
+ 808      1   0.0     11   0.1  10847  96.8        -  SB-C::CONTROL-ANALYZE-1-FUN
+ 809      1   0.0     11   0.1  10848  96.8        -  (FLET SB-C::FROB :IN SB-C::DELETE-OPTIONAL-DISPATCH)
+ 810      1   0.0     11   0.1  10849  96.8        -  (FLET "WRAPPER3" :IN CL-QUIL.CLIFFORD::GLOBAL-PHASE~)
+ 811      1   0.0     10   0.1  10850  96.8        -  SB-KERNEL::HIERARCHICAL-INTERSECTION2
+ 812      1   0.0     10   0.1  10851  96.9        -  SB-KERNEL:TYPE/=
+ 813      1   0.0     10   0.1  10852  96.9        -  SB-C::COERCE-VOP-OPERANDS
+ 814      1   0.0     10   0.1  10853  96.9        -  SB-FORMAT::INTERPRET-DIRECTIVE-LIST
+ 815      1   0.0     10   0.1  10854  96.9        -  CL-QUIL::KQ-GATE-ON-LINES
+ 816      1   0.0      9   0.1  10855  96.9        -  SB-C::ELIMINATE-DEAD-CODE
+ 817      1   0.0      9   0.1  10856  96.9        -  SB-KERNEL::VALUES-UNPARSE-TYPE-METHOD
+ 818      1   0.0      9   0.1  10857  96.9        -  SB-C::COERCE-SOME-OPERANDS
+ 819      1   0.0      9   0.1  10858  96.9        -  SB-INT:CHECK-DEPRECATED-THING
+ 820      1   0.0      9   0.1  10859  96.9        -  SB-C::%ADD-LAMBDA-VARS-TO-CLOSURES
+ 821      1   0.0      9   0.1  10860  96.9        -  SB-C::INTERVAL-MUL
+ 822      1   0.0      8   0.1  10861  96.9        -  SB-C::LTN-ANALYZE-LOCAL-CALL
+ 823      1   0.0      8   0.1  10862  97.0        -  SB-C::FIND-ROTATED-LOOP-HEAD
+ 824      1   0.0      8   0.1  10863  97.0        -  SB-IMPL::GETHASH/EQ/LOCK
+ 825      1   0.0      8   0.1  10864  97.0        -  (SB-C:DEFTRANSFORM LOGAND)
+ 826      1   0.0      8   0.1  10865  97.0        -  SB-C::EMIT-COERCE-VOP
+ 827      1   0.0      8   0.1  10866  97.0        -  SB-C::ASH-DERIVE-TYPE-AUX
+ 828      1   0.0      7   0.1  10867  97.0        -  SB-IMPL::PUTHASH/EQUAL
+ 829      1   0.0      7   0.1  10868  97.0        -  (FLET "LAMBDA0" :IN "SYS:SRC;COMPILER;IR1UTIL.LISP")
+ 830      1   0.0      7   0.1  10869  97.0        -  (LAMBDA (&REST POS) :IN FROM-LIST)
+ 831      1   0.0      6   0.1  10870  97.0        -  SB-C::CANONIZED-DECL-SPEC
+ 832      1   0.0      6   0.1  10871  97.0        -  SB-C::MAKE-CONSTANT
+ 833      1   0.0      6   0.1  10872  97.0        -  (FLET "LAMBDA0" :IN "SYS:SRC;COMPILER;IR1OPT.LISP")
+ 834      1   0.0      6   0.1  10873  97.1        -  SB-C::PRECISE-ADD-COMPLEMENT-CONSTRAINTS
+ 835      1   0.0      6   0.1  10874  97.1        -  SB-C::MOVE-RESULTS-COERCED
+ 836      1   0.0      6   0.1  10875  97.1        -  SB-X86-64-ASM::EMIT-MOV
+ 837      1   0.0      6   0.1  10876  97.1        -  SB-FORMAT::D-FORMAT-DIRECTIVE-INTERPRETER
+ 838      1   0.0      6   0.1  10877  97.1        -  SB-C::CALL-WITH-BLOCK-EXTERNAL-FUNCTIONALS
+ 839      1   0.0      5   0.0  10878  97.1        -  (LAMBDA (#:WAVEFUNCTION719) :IN "/Users/cscott/.cache/common-lisp/sbcl-1.5.6.106-69e90d3fc-macosx-x64/Users/cscott/code/lisp/qvm/src/apply-gate.fasl")
+ 840      1   0.0      5   0.0  10879  97.1        -  SB-C::RECHECK-DYNAMIC-EXTENT-LVARS
+ 841      1   0.0      5   0.0  10880  97.1        -  SB-INT:MAP-XSET
+ 842      1   0.0      5   0.0  10881  97.1        -  SB-KERNEL:%ADJOIN-KEY
+ 843      1   0.0      5   0.0  10882  97.1        -  SB-LOOP::LOOP-DO-FOR
+ 844      1   0.0      5   0.0  10883  97.1        -  (LABELS SB-REGALLOC::TRY :IN SB-REGALLOC::SELECT-LOCATION)
+ 845      1   0.0      5   0.0  10884  97.2        -  (FLET SB-C::DO-1-USE :IN SB-C::SUBSTITUTE-LVAR-USES)
+ 846      1   0.0      4   0.0  10885  97.2        -  SB-PRETTY::MAKE-PRETTY-STREAM
+ 847      1   0.0      4   0.0  10886  97.2        -  (LABELS SB-C::MARK-2BLOCK :IN SB-C::DELETE-UNUSED-IR2-BLOCKS)
+ 848      1   0.0      4   0.0  10887  97.2        -  SB-C::CUT-TO-WIDTH
+ 849      1   0.0      4   0.0  10888  97.2        -  SB-C::NOTE-LEXICAL-BINDING
+ 850      1   0.0      4   0.0  10889  97.2        -  (FLET "WRAPPER6" :IN SB-C::NOTE-BLOCK-DELETION)
+ 851      1   0.0      4   0.0  10890  97.2        -  SB-KERNEL:CLASSOID-PROPER-NAME
+ 852      1   0.0      4   0.0  10891  97.2        -  (SB-C:DEFTRANSFORM ARRAY-DIMENSION)
+ 853      1   0.0      4   0.0  10892  97.2        -  (LABELS SB-C::HERE-P :IN SB-C::CLEAR-IR1-INFO)
+ 854      1   0.0      4   0.0  10893  97.2        -  (FLET "WRAPPER2" :IN SB-C::CONSTANT-FUNCTION-CALL-P)
+ 855      1   0.0      4   0.0  10894  97.2        -  (SB-PCL::FAST-METHOD QVM::RESET-QUANTUM-STATE (QVM:PURE-STATE-QVM))
+ 856      1   0.0      3   0.0  10895  97.3        -  SB-C::DFUN-FROM-FUN
+ 857      1   0.0      3   0.0  10896  97.3        -  SB-PCL::ALLOCATE-STANDARD-INSTANCE
+ 858      1   0.0      3   0.0  10897  97.3        -  SB-PCL::%SET-SLOT-VALUE-CHECKING-TYPE
+ 859      1   0.0      3   0.0  10898  97.3        -  SB-C:MAKE-SC+OFFSET
+ 860      1   0.0      3   0.0  10899  97.3        -  SB-INT:%MACROEXPAND-1
+ 861      1   0.0      3   0.0  10900  97.3        -  (SB-C:DEFTRANSFORM <)
+ 862      1   0.0      3   0.0  10901  97.3        -  SB-C::BLOCKS-EQUIVALENT-P
+ 863      1   0.0      3   0.0  10902  97.3        -  SB-C::LVAR-RESULT-TNS
+ 864      1   0.0      3   0.0  10903  97.3        -  MACROEXPAND-1
+ 865      1   0.0      3   0.0  10904  97.3        -  SB-X86-64-ASM::EMIT-QWORD
+ 866      1   0.0      3   0.0  10905  97.3        -  SB-C::INIT-GLOBAL-CONFLICT-KIND
+ 867      1   0.0      3   0.0  10906  97.3        -  SB-C::FIND-GLOBAL-FUN
+ 868      1   0.0      3   0.0  10907  97.4        -  SB-C::EMIT-MOVE-TEMPLATE
+ 869      1   0.0      3   0.0  10908  97.4        -  (FLET SB-C::BODY-FUN :IN SB-C::CONSTRAINT-PROPAGATE-IN-BLOCK)
+ 870      1   0.0      3   0.0  10909  97.4        -  SB-C::IR1-CONVERT-GO
+ 871      1   0.0      3   0.0  10910  97.4        -  SB-KERNEL:TYPE-DIFFERENCE
+ 872      1   0.0      3   0.0  10911  97.4        -  SB-C::MAP-BLOCK-NLXES
+ 873      1   0.0      3   0.0  10912  97.4        -  SB-C:PRIMITIVE-TYPE
+ 874      1   0.0      3   0.0  10913  97.4        -  (SB-C:DEFTRANSFORM SB-KERNEL:HAIRY-DATA-VECTOR-SET)
+ 875      1   0.0      3   0.0  10914  97.4        -  SB-KERNEL:FIND-CLASSOID
+ 876      1   0.0      3   0.0  10915  97.4        -  SB-X86-64-ASM::EMIT-MOD-REG-R/M-BYTE
+ 877      1   0.0      3   0.0  10916  97.4        -  SB-X86-64-ASM::SIZED-THING
+ 878      1   0.0      3   0.0  10917  97.4        -  CLRHASH
+ 879      1   0.0      3   0.0  10918  97.5        -  SB-C::OPTIONAL-DISPATCH-ENTRY-POINT-FUN
+ 880      1   0.0      3   0.0  10919  97.5        -  (FLET "CLEANUP-FUN-15" :IN SB-C::INTERVAL-ADD)
+ 881      1   0.0      3   0.0  10920  97.5        -  SB-KERNEL:%NEGATE
+ 882      1   0.0      2   0.0  10921  97.5        -  SB-C::CDF-ENCODE-LOCS
+ 883      1   0.0      2   0.0  10922  97.5        -  SB-IMPL::NEW-INSTANCE-HASH-CODE
+ 884      1   0.0      2   0.0  10923  97.5        -  SB-KERNEL:%LDB
+ 885      1   0.0      2   0.0  10924  97.5        -  (:SOURCE-TRANSFORM MAX)
+ 886      1   0.0      2   0.0  10925  97.5        -  QVM:FORCE-MEASUREMENT
+ 887      1   0.0      2   0.0  10926  97.5        -  QVM:ZERO-OUT-CLASSICAL-MEMORY
+ 888      1   0.0      2   0.0  10927  97.5        -  (LAMBDA (SB-PCL::|.P0.| SB-PCL::|.P1.| SB-PCL::|.P2.| SB-PCL::|.P3.| SB-PCL::|.P4.| SB-PCL::|.P5.|) :IN "/Users/cscott/.cache/common-lisp/sbcl-1.5.6.106-69e90d3fc-macosx-x64/Users/cscott/code/lisp/quilc/src/compilers/euler-compile.fasl")
+ 889      1   0.0      2   0.0  10928  97.5        -  SB-C::ASSURE-FUNCTIONAL-LIVE-P
+ 890      1   0.0      2   0.0  10929  97.6        -  SB-ASSEM:EMIT-LABEL
+ 891      1   0.0      2   0.0  10930  97.6        -  SPECIAL-OPERATOR-P
+ 892      1   0.0      2   0.0  10931  97.6        -  WRITE-CHAR
+ 893      1   0.0      2   0.0  10932  97.6        -  (LABELS SB-IMPL::S :IN SUBST)
+ 894      1   0.0      2   0.0  10933  97.6        -  SB-C::WARN-REPEATED-OPTIMIZE-QUALITIES
+ 895      1   0.0      2   0.0  10934  97.6        -  (SB-C:DEFTRANSFORM SB-KERNEL:%LDB)
+ 896      1   0.0      2   0.0  10935  97.6        -  SB-KERNEL::INTERSECTION-UNPARSE-TYPE-METHOD
+ 897      1   0.0      2   0.0  10936  97.6        -  SB-C::LET-VAR-INITIAL-VALUE
+ 898      1   0.0      2   0.0  10937  97.6        -  SB-C::KILL-IF-BRANCH-1
+ 899      1   0.0      2   0.0  10938  97.6        -  SB-C::MAYBE-ADD-EQL-VAR-VAR-CONSTRAINT
+ 900      1   0.0      2   0.0  10939  97.6        -  SB-C::INIT-XEP-ENVIRONMENT
+ 901      1   0.0      2   0.0  10940  97.7        -  SB-C::CONSTRAIN-INTEGER-TYPE
+ 902      1   0.0      2   0.0  10941  97.7        -  (FLET SB-IMPL::F :IN MAP-INTO)
+ 903      1   0.0      2   0.0  10942  97.7        -  SB-C::USE-GOOD-FOR-DX-P
+ 904      1   0.0      2   0.0  10943  97.7        -  SB-LOOP::LOOP-COLLECT-PREPOSITIONAL-PHRASES
+ 905      1   0.0      2   0.0  10944  97.7        -  (SB-C:DEFTRANSFORM SB-KERNEL:%DATA-VECTOR-AND-INDEX)
+ 906      1   0.0      2   0.0  10945  97.7        -  SB-C:MAKE-LOAD-TIME-CONSTANT-TN
+ 907      1   0.0      2   0.0  10946  97.7        -  SB-LOOP::GEN-LOOP-BODY
+ 908      1   0.0      2   0.0  10947  97.7        -  SB-LOOP::LOOP-CONSTANT-FOLD-IF-POSSIBLE
+ 909      1   0.0      2   0.0  10948  97.7        -  SB-IMPL::%WITH-STANDARD-IO-SYNTAX
+ 910      1   0.0      2   0.0  10949  97.7        -  (FLET SB-REGALLOC::FROB-SLOT :IN SB-REGALLOC::%CALL-WITH-TARGET-TNS)
+ 911      1   0.0      2   0.0  10950  97.7        -  SB-KERNEL::%MAKE-FUN-TYPE
+ 912      1   0.0      2   0.0  10951  97.8        -  SB-LOOP::LOOP-MAKE-VAR
+ 913      1   0.0      2   0.0  10952  97.8        -  (SB-C::VOP SB-C:MOVE)
+ 914      1   0.0      2   0.0  10953  97.8        -  (SB-C::VOP SB-VM::DATA-VECTOR-REF-WITH-OFFSET/SIMPLE-ARRAY-UNSIGNED-BYTE-2)
+ 915      1   0.0      2   0.0  10954  97.8        -  SB-C::MAKE-TEMPLATE-RESULT-TNS
+ 916      1   0.0      2   0.0  10955  97.8        -  GET-OUTPUT-STREAM-STRING
+ 917      1   0.0      2   0.0  10956  97.8        -  SB-C:MAKE-REPRESENTATION-TN
+ 918      1   0.0      2   0.0  10957  97.8        -  CL-QUIL.CLIFFORD::ROW
+ 919      1   0.0      2   0.0  10958  97.8        -  (FLET SB-IMPL::F :IN SB-IMPL::VECTOR-MAP-INTO/SIMPLE-BIT-VECTOR)
+ 920      1   0.0      2   0.0  10959  97.8        -  (SB-C::VOP SB-VM::MOVE-FROM-WORD/FIXNUM)
+ 921      1   0.0      2   0.0  10960  97.8        -  SB-KERNEL:FIND-CLASSOID-CELL
+ 922      1   0.0      2   0.0  10961  97.8        -  SB-VM::EXTEND-VECTOR
+ 923      1   0.0      2   0.0  10962  97.8        -  SB-C::SIMPLE-ARRAY-STORAGE-VECTOR-TYPE
+ 924      1   0.0      2   0.0  10963  97.9        -  SB-C::FIND-BLOCKS-FROM-HERE
+ 925      1   0.0      2   0.0  10964  97.9        -  SB-ASSEM::%EMIT-SKIP
+ 926      1   0.0      2   0.0  10965  97.9        -  SB-C::PRINCIPAL-LVAR-REF
+ 927      1   0.0      1   0.0  10966  97.9        -  "foreign function tiny_malloc_from_free_list"
+ 928      1   0.0      1   0.0  10967  97.9        -  (SB-PCL::FAST-METHOD CL-QUIL:GATE-DIMENSION (CL-QUIL:SIMPLE-GATE))
+ 929      1   0.0      1   0.0  10968  97.9        -  (SB-PCL::FAST-METHOD SB-MOP:CLASS-SLOTS :BEFORE (SB-PCL::SLOT-CLASS))
+ 930      1   0.0      1   0.0  10969  97.9        -  SB-BIGNUM:BIGNUM-ASHIFT-LEFT-FIXNUM
+ 931      1   0.0      1   0.0  10970  97.9        -  QVM::ASSERT-IN-BOUNDS
+ 932      1   0.0      1   0.0  10971  97.9        -  SB-KERNEL:CLASSOID-CELL-TYPEP
+ 933      1   0.0      1   0.0  10972  97.9        -  QVM::MEMORY-VIEW-CLASSICAL-MEMORY
+ 934      1   0.0      1   0.0  10973  97.9        -  (SB-PCL::FAST-METHOD CL-QUIL:GATE-APPLICATION-GATE :AROUND (CL-QUIL:GATE-APPLICATION))
+ 935      1   0.0      1   0.0  10974  98.0        -  (SB-PCL::EMF SHARED-INITIALIZE)
+ 936      1   0.0      1   0.0  10975  98.0        -  SB-IMPL::LIST-REVERSE
+ 937      1   0.0      1   0.0  10976  98.0        -  (LAMBDA (QVM::MEM QVM::I) :IN QVM::ALLOCATE-MEMORY-FOR-MODEL)
+ 938      1   0.0      1   0.0  10977  98.0        -  (LAMBDA (SB-PCL::.ARG0. SB-PCL::.ARG1. SB-PCL::.ARG2. SB-INT:&MORE SB-PCL::.MORE-CONTEXT. SB-PCL::.MORE-COUNT.))
+ 939      1   0.0      1   0.0  10978  98.0        -  FIND-CLASS
+ 940      1   0.0      1   0.0  10979  98.0        -  (SB-PCL::FAST-METHOD QVM::CLASSICAL-MEMORIES (QVM:CLASSICAL-MEMORY-MIXIN))
+ 941      1   0.0      1   0.0  10980  98.0        -  (FLET "CLEANUP-FUN-41" :IN SB-THREAD::CALL-WITH-RECURSIVE-LOCK)
+ 942      1   0.0      1   0.0  10981  98.0        -  (SETF QVM:MEMORY-OCTET-REF)
+ 943      1   0.0      1   0.0  10982  98.0        -  (FLET SB-THREAD::WITH-RECURSIVE-LOCK-THUNK :IN SB-PCL::INSTALL-OPTIMIZED-CONSTRUCTOR)
+ 944      1   0.0      1   0.0  10983  98.0        -  "foreign function mach_msg_trap"
+ 945      1   0.0      1   0.0  10984  98.0        -  "foreign function __syscall"
+ 946      1   0.0      1   0.0  10985  98.1        -  SB-KERNEL:ALLOCATE-CONDITION
+ 947      1   0.0      1   0.0  10986  98.1        -  SB-C::LOGIOR-DERIVE-TYPE-AUX
+ 948      1   0.0      1   0.0  10987  98.1        -  LIST
+ 949      1   0.0      1   0.0  10988  98.1        -  SB-PCL::TYPES-FROM-ARGS
+ 950      1   0.0      1   0.0  10989  98.1        -  QVM::GENERATE-INNER-MATRIX-MULTIPLY-CODE
+ 951      1   0.0      1   0.0  10990  98.1        -  SB-C::FIND-ORIGINAL-SOURCE
+ 952      1   0.0      1   0.0  10991  98.1        -  INTEGER-LENGTH
+ 953      1   0.0      1   0.0  10992  98.1        -  SB-C::DEBUG-SOURCE-FOR-INFO
+ 954      1   0.0      1   0.0  10993  98.1        -  (SB-C::VOP SB-VM::FAST-IF-<-C/FIXNUM)
+ 955      1   0.0      1   0.0  10994  98.1        -  LOGCOUNT
+ 956      1   0.0      1   0.0  10995  98.1        -  "foreign function __commpage_gettimeofday_internal"
+ 957      1   0.0      1   0.0  10996  98.2        -  SB-C::MASK-SIGNED-FIELD
+ 958      1   0.0      1   0.0  10997  98.2        -  SB-C::LOGIOR-OPTIMIZER-OPTIMIZER
+ 959      1   0.0      1   0.0  10998  98.2        -  SB-C::MAKE-LVAR-MODIFIED-ANNOTATION
+ 960      1   0.0      1   0.0  10999  98.2        -  SB-C::EXTRACT-FUN-ARGS
+ 961      1   0.0      1   0.0  11000  98.2        -  SB-C::SC-ALLOWED-BY-PRIMITIVE-TYPE
+ 962      1   0.0      1   0.0  11001  98.2        -  SB-X86-64-ASM::GPR-P
+ 963      1   0.0      1   0.0  11002  98.2        -  SB-C:SB-OR-LOSE
+ 964      1   0.0      1   0.0  11003  98.2        -  SB-KERNEL:%FIND-POSITION
+ 965      1   0.0      1   0.0  11004  98.2        -  SB-C::ENSURE-SOURCE-FUN-FORM
+ 966      1   0.0      1   0.0  11005  98.2        -  (LAMBDA (CHAR) :IN CL-PPCRE::CONVERT-CHAR-CLASS-TO-TEST-FUNCTION)
+ 967      1   0.0      1   0.0  11006  98.2        -  SB-C::CHECK-DS-LIST/&REST
+ 968      1   0.0      1   0.0  11007  98.3        -  SB-C::IR1-TRANSLATE-LOCALLY
+ 969      1   0.0      1   0.0  11008  98.3        -  SB-C::VOP-INFO-RESULT-COSTS
+ 970      1   0.0      1   0.0  11009  98.3        -  (SB-C::VOP SB-VM::DATA-VECTOR-REF-WITH-OFFSET/SIMPLE-ARRAY-COMPLEX-DOUBLE-FLOAT)
+ 971      1   0.0      1   0.0  11010  98.3        -  SB-X86-64-ASM::GET-FPR
+ 972      1   0.0      1   0.0  11011  98.3        -  SB-BIGNUM:BIGNUM-ASHIFT-RIGHT
+ 973      1   0.0      1   0.0  11012  98.3        -  (LAMBDA NIL :IN SB-C::PROCESS-DECLS)
+ 974      1   0.0      1   0.0  11013  98.3        -  SB-C::CDF-DECODE-LOCS
+ 975      1   0.0      1   0.0  11014  98.3        -  (FLET SB-X86-64-ASM::ENCODING-BIT3-P :IN SB-X86-64-ASM::EMIT-REX-IF-NEEDED)
+ 976      1   0.0      1   0.0  11015  98.3        -  SB-C::LOGIOR-DERIVE-TYPE-OPTIMIZER
+ 977      1   0.0      1   0.0  11016  98.3        -  STABLE-SORT
+ 978      1   0.0      1   0.0  11017  98.3        -  (LAMBDA (SB-C::CONSTRAINT) :IN SB-C::ADD-EQL-VAR-VAR-CONSTRAINT)
+ 979      1   0.0      1   0.0  11018  98.3        -  SB-KERNEL::ARRAY-TYPES-INTERSECT
+ 980      1   0.0      1   0.0  11019  98.4        -  "MATRIX-P"
+ 981      1   0.0      1   0.0  11020  98.4        -  SB-X86-64-ASM::UNPCKLPD
+ 982      1   0.0      1   0.0  11021  98.4        -  (LAMBDA (#:WAVEFUNCTION64292))
+ 983      1   0.0      1   0.0  11022  98.4        -  SB-C::LEXENV-CONTAINS-LAMBDA
+ 984      1   0.0      1   0.0  11023  98.4        -  (LAMBDA (CL-PPCRE::START-POS) :IN CL-PPCRE::CREATE-MATCHER-AUX)
+ 985      1   0.0      1   0.0  11024  98.4        -  ELT
+ 986      1   0.0      1   0.0  11025  98.4        -  SB-KERNEL:UB8-BASH-COPY
+ 987      1   0.0      1   0.0  11026  98.4        -  (LAMBDA (#:WAVEFUNCTION64449))
+ 988      1   0.0      1   0.0  11027  98.4        -  (LAMBDA (#:WAVEFUNCTION64469))
+ 989      1   0.0      1   0.0  11028  98.4        -  SB-X86-64-ASM::EMIT-REGULAR-SSE-INST
+ 990      1   0.0      1   0.0  11029  98.4        -  (LAMBDA (#:WAVEFUNCTION64508))
+ 991      1   0.0      1   0.0  11030  98.5        -  SB-X86-64-ASM::EMIT-SIB-BYTE
+ 992      1   0.0      1   0.0  11031  98.5        -  VALUES
+ 993      1   0.0      1   0.0  11032  98.5        -  SB-C::HAIRY-DATA-VECTOR-SET-DERIVE-TYPE-OPTIMIZER
+ 994      1   0.0      1   0.0  11033  98.5        -  (LAMBDA (#:WAVEFUNCTION64712))
+ 995      1   0.0      1   0.0  11034  98.5        -  (LAMBDA (#:WAVEFUNCTION64763))
+ 996      1   0.0      1   0.0  11035  98.5        -  SB-C::MULTI-COMPARE
+ 997      1   0.0      1   0.0  11036  98.5        -  SB-PRETTY::MAKE-NEWLINE
+ 998      1   0.0      1   0.0  11037  98.5        -  SB-C::PARSE-TAGBODY
+ 999      1   0.0      1   0.0  11038  98.5        -  SB-ASSEM::MAKE-ALIGNMENT
+1000      1   0.0      1   0.0  11039  98.5        -  SB-C::%%POLICY-QUALITY
+1001      1   0.0      1   0.0  11040  98.5        -  (LAMBDA (#:WAVEFUNCTION64984))
+1002      1   0.0      1   0.0  11041  98.6        -  (LAMBDA (#:WAVEFUNCTION65032))
+1003      1   0.0      1   0.0  11042  98.6        -  SB-X86-64-ASM::XOR
+1004      1   0.0      1   0.0  11043  98.6        -  (FLET SB-C::BOUND :IN SB-C::CONSTRAIN-INTEGER-TYPE)
+1005      1   0.0      1   0.0  11044  98.6        -  (LAMBDA (#:WAVEFUNCTION65121))
+1006      1   0.0      1   0.0  11045  98.6        -  (SB-C:DEFTRANSFORM SB-KERNEL:%CHECK-BOUND)
+1007      1   0.0      1   0.0  11046  98.6        -  (SB-C::VOP SB-VM::FAST-ASH-C/UNSIGNED=>UNSIGNED)
+1008      1   0.0      1   0.0  11047  98.6        -  (SB-PCL::FAST-METHOD CL-QUIL:GATE-DIMENSION (CL-QUIL:PERMUTATION-GATE))
+1009      1   0.0      1   0.0  11048  98.6        -  SB-C::NOTE-SOURCE-PATH
+1010      1   0.0      1   0.0  11049  98.6        -  (LAMBDA (#:WAVEFUNCTION65379))
+1011      1   0.0      1   0.0  11050  98.6        -  (LABELS SB-C::RECURSE :IN SB-C::DX-COMBINATION-P)
+1012      1   0.0      1   0.0  11051  98.6        -  SB-C::DATA-VECTOR-SET-WITH-OFFSET-DERIVE-TYPE-OPTIMIZER
+1013      1   0.0      1   0.0  11052  98.7        -  SB-C::CONSET-EMPTY
+1014      1   0.0      1   0.0  11053  98.7        -  (FLET SB-X86-64-ASM::SPL/BPL/SIL/DIL-P :IN SB-X86-64-ASM::EMIT-REX-IF-NEEDED)
+1015      1   0.0      1   0.0  11054  98.7        -  SB-PCL::PV-WRAPPERS-FROM-ALL-ARGS
+1016      1   0.0      1   0.0  11055  98.7        -  SB-PRETTY::MAYBE-OUTPUT
+1017      1   0.0      1   0.0  11056  98.7        -  (SB-C:DEFTRANSFORM AREF)
+1018      1   0.0      1   0.0  11057  98.7        -  (:SOURCE-TRANSFORM <)
+1019      1   0.0      1   0.0  11058  98.7        -  (FLET SB-IMPL::ZIP :IN SB-IMPL::EXPAND-RMW-MACRO)
+1020      1   0.0      1   0.0  11059  98.7        -  SET-DIFFERENCE
+1021      1   0.0      1   0.0  11060  98.7        -  SB-VM::SLOW-HAIRY-DATA-VECTOR-REF/CHECK-BOUNDS
+1022      1   0.0      1   0.0  11061  98.7        -  (LABELS SB-C::RECURSE :IN SB-C::DS-LAMBDA-LIST-MATCH-P)
+1023      1   0.0      1   0.0  11062  98.7        -  SB-C::CONSTANT-REFERENCE-P
+1024      1   0.0      1   0.0  11063  98.8        -  SB-X86-64-ASM::PLAUSIBLE-SIGNED-IMM32-OPERAND-P
+1025      1   0.0      1   0.0  11064  98.8        -  SB-KERNEL:VALUES-TYPES
+1026      1   0.0      1   0.0  11065  98.8        -  SB-C::IMMEDIATELY-USED-P
+1027      1   0.0      1   0.0  11066  98.8        -  EQUALP
+1028      1   0.0      1   0.0  11067  98.8        -  SB-KERNEL::NUMBER-COMPLEX-SUBTYPEP-ARG1
+1029      1   0.0      1   0.0  11068  98.8        -  SB-C::UPGRADED-ELEMENT-TYPE-SPECIFIER
+1030      1   0.0      1   0.0  11069  98.8        -  (FLET CL-QUIL.CLIFFORD::ELIM-GENERATOR :IN CL-QUIL.CLIFFORD::PUT-TABLEAU-INTO-ROW-ECHELON-FORM)
+1031      1   0.0      1   0.0  11070  98.8        -  (LABELS SB-C::CORE-COALESCE-P :IN SB-C::FIND-CONSTANT)
+1032      1   0.0      1   0.0  11071  98.8        -  SB-X86-64-ASM::GET-GPR
+1033      1   0.0      1   0.0  11072  98.8        -  (SB-IMPL::TYPE-EXPANDER SB-INT:SFUNCTION)
+1034      1   0.0      1   0.0  11073  98.8        -  (SB-C:DEFTRANSFORM *)
+1035      1   0.0      1   0.0  11074  98.8        -  (SB-PCL::FAST-METHOD COMPATIBLE-TENSORS (TENSOR/COMPLEX-DOUBLE-FLOAT))
+1036      1   0.0      1   0.0  11075  98.9        -  (FLET SB-KERNEL::TRY-CACHE :IN SB-KERNEL:CTYPE-OF)
+1037      1   0.0      1   0.0  11076  98.9        -  (LABELS SB-IMPL::%REMHASH/EQ :IN SB-IMPL::GET-REMHASH-DEFINITIONS)
+1038      1   0.0      1   0.0  11077  98.9        -  (FLET SB-KERNEL::%%MAKE-COMPLEX :IN COMPLEX)
+1039      1   0.0      1   0.0  11078  98.9        -  (FLET SB-REGALLOC::REGISTER-TN :IN SB-REGALLOC:PACK)
+1040      1   0.0      1   0.0  11079  98.9        -  (FLET CALL-NEXT-METHOD :IN "/Users/cscott/code/lisp/qvm/src/transition.lisp")
+1041      1   0.0      1   0.0  11080  98.9        -  (LABELS SB-C::MAYBE-ARRAY-TYPE-DIMENSIONS :IN SB-C::ARRAY-TYPE-DIMENSIONS-OR-GIVE-UP)
+1042      1   0.0      1   0.0  11081  98.9        -  (FLET SB-C::DO-1-USE :IN SB-C::UPDATE-LVAR-DEPENDENCIES)
+1043      1   0.0      1   0.0  11082  98.9        -  SB-C::SC-MOVE-ARG-VOPS
+1044      1   0.0      1   0.0  11083  98.9        -  SB-REGALLOC:TARGET-IF-DESIRABLE
+1045      1   0.0      1   0.0  11084  98.9        -  MISMATCH
+1046      1   0.0      1   0.0  11085  98.9        -  SB-C::--DERIVE-TYPE-OPTIMIZER
+1047      1   0.0      1   0.0  11086  99.0        -  SB-C::SETF-AREF-DERIVE-TYPE-OPTIMIZER
+1048      1   0.0      1   0.0  11087  99.0        -  SIGNUM
+1049      1   0.0      1   0.0  11088  99.0        -  SB-INT:FIND-FDEFN
+1050      1   0.0      1   0.0  11089  99.0        -  SB-VM::%INTEGER-VECTOR-WIDETAG-AND-N-BITS-SHIFT
+1051      1   0.0      1   0.0  11090  99.0        -  (LAMBDA (#:NODE) :IN "SYS:SRC;COMPILER;FLOAT-TRAN.LISP")
+1052      1   0.0      1   0.0  11091  99.0        -  (SB-C:DEFTRANSFORM COMMON-LISP:+)
+1053      1   0.0      1   0.0  11092  99.0        -  SB-C::LIST-DERIVE-TYPE-OPTIMIZER
+1054      1   0.0      1   0.0  11093  99.0        -  (SB-C:DEFTRANSFORM SB-KERNEL:HAIRY-DATA-VECTOR-REF)
+1055      1   0.0      1   0.0  11094  99.0        -  SB-THREAD:MAKE-MUTEX
+1056      1   0.0      1   0.0  11095  99.0        -  SB-C::VALUES-DERIVE-TYPE-OPTIMIZER
+1057      1   0.0      1   0.0  11096  99.0        -  (FLET "BOD7" :IN SB-REGALLOC::INIT-LIVE-TNS)
+1058      1   0.0      1   0.0  11097  99.1        -  SB-KERNEL::DELEGATE-COMPLEX-INTERSECTION2
+1059      1   0.0      1   0.0  11098  99.1        -  (SB-VM::OPTIMIZED-DATA-VECTOR-REF BIT)
+1060      1   0.0      1   0.0  11099  99.1        -  SB-C:MAKE-WIRED-TN
+1061      1   0.0      1   0.0  11100  99.1        -  SB-REGALLOC::ORIGINAL-TN
+1062      1   0.0      1   0.0  11101  99.1        -  (SB-C::VOP SB-C:XEP-ALLOCATE-FRAME)
+1063      1   0.0      1   0.0  11102  99.1        -  (SB-VM::OPTIMIZED-DATA-VECTOR-SET T)
+1064      1   0.0      1   0.0  11103  99.1        -  SB-C::NOTE-LOCAL-FUNCTIONAL
+1065      1   0.0      1   0.0  11104  99.1        -  SB-C::INTERVAL-BOUNDED-P
+1066      1   0.0      1   0.0  11105  99.1        -  SB-C::MAY-DELETE-CAST
+1067      1   0.0      1   0.0  11106  99.1        -  SB-C::GIVE-UP-IR1-TRANSFORM
+1068      1   0.0      1   0.0  11107  99.1        -  (LABELS SB-C::DERIVER :IN SB-C::TWO-ARG-DERIVE-TYPE)
+1069      1   0.0      1   0.0  11108  99.2        -  SB-INT:PROMISE-READY-P
+1070      1   0.0      1   0.0  11109  99.2        -  (SB-C:DEFTRANSFORM SB-C::MASK-SIGNED-FIELD)
+1071      1   0.0      1   0.0  11110  99.2        -  (FLET "LAMBDA0" :IN "SYS:SRC;COMPILER;IR1OPT.LISP")
+1072      1   0.0      1   0.0  11111  99.2        -  COPY-SYMBOL
+1073      1   0.0      1   0.0  11112  99.2        -  (:SOURCE-TRANSFORM SB-KERNEL:DATA-VECTOR-SET)
+1074      1   0.0      1   0.0  11113  99.2        -  (LABELS SB-C::SET-SC :IN SB-C::SELECT-REPRESENTATIONS)
+1075      1   0.0      1   0.0  11114  99.2        -  SB-C::FUN-LOCALLY-DEFINED-P
+1076      1   0.0      1   0.0  11115  99.2        -  SB-C::MAKE-RETURN-INFO
+1077      1   0.0      1   0.0  11116  99.2        -  SB-KERNEL::PARSE-<FUNCTION>
+1078      1   0.0      1   0.0  11117  99.2        -  SB-REGALLOC::CLEAN-UP-PACK-STRUCTURES
+1079      1   0.0      1   0.0  11118  99.2        -  CDR
+1080      1   0.0      1   0.0  11119  99.3        -  SB-C::LOOP-ANALYZE
+1081      1   0.0      1   0.0  11120  99.3        -  FUNCALL
+1082      1   0.0      1   0.0  11121  99.3        -  SB-C::LEAF-DEBUG-NAME
+1083      1   0.0      1   0.0  11122  99.3        -  SB-C::MAKE-INTERVAL
+1084      1   0.0      1   0.0  11123  99.3        -  CONS
+1085      1   0.0      1   0.0  11124  99.3        -  (SB-VM::OPTIMIZED-DATA-VECTOR-REF BASE-CHAR)
+1086      1   0.0      1   0.0  11125  99.3        -  (FLET "LAMBDA0" :IN "SYS:SRC;COMPILER;LOCALL.LISP")
+1087      1   0.0      1   0.0  11126  99.3        -  SB-ASSEM::EMIT-ANNOTATION
+1088      1   0.0      1   0.0  11127  99.3        -  (LABELS SB-C::SCAVENGE-POSSIBLY-DELETED-LAMBDA :IN SB-C::DFO-SCAVENGE-DEPENDENCY-GRAPH)
+1089      1   0.0      1   0.0  11128  99.3        -  GETF
+1090      1   0.0      1   0.0  11129  99.3        -  SB-C::+-DERIVE-TYPE-OPTIMIZER
+1091      1   0.0      1   0.0  11130  99.3        -  SB-C::NOTE-FAILED-OPTIMIZATION
+1092      1   0.0      1   0.0  11131  99.4        -  SB-KERNEL:UB2-BASH-COPY
+1093      1   0.0      1   0.0  11132  99.4        -  SB-INT:SYMBOL-FDEFN
+1094      1   0.0      1   0.0  11133  99.4        -  (FLET SB-C::DO-1-USE :IN SB-C::UPDATE-UVL-LIVE-SETS)
+1095      1   0.0      1   0.0  11134  99.4        -  SB-KERNEL:MAKE-FUN-TYPE
+1096      1   0.0      1   0.0  11135  99.4        -  (:SOURCE-TRANSFORM LOGXOR)
+1097      1   0.0      1   0.0  11136  99.4        -  SB-BIGNUM::BIGNUM-BUFFER-INTEGER-LENGTH
+1098      1   0.0      1   0.0  11137  99.4        -  SB-REGALLOC::FIND-SINGLE-WRITER
+1099      1   0.0      1   0.0  11138  99.4        -  SB-C::BRANCH-OPCODE-P
+1100      1   0.0      1   0.0  11139  99.4        -  SB-C::MAYBE-MUMBLE
+1101      1   0.0      1   0.0  11140  99.4        -  (:SOURCE-TRANSFORM LENGTH)
+1102      1   0.0      1   0.0  11141  99.4        -  SB-IMPL::DEFAULT-STRING-OUCH
+1103      1   0.0      1   0.0  11142  99.5        -  (FLET SB-C::POSITIONAL-ANNOTATION :IN SB-C::MAP-COMBINATION-ARGS-AND-TYPES)
+1104      1   0.0      1   0.0  11143  99.5        -  SB-C::MAKE-ENTRY
+1105      1   0.0      1   0.0  11144  99.5        -  (FLET "BOD1" :IN SB-REGALLOC::OPTIMIZED-EMIT-SAVES-BLOCK)
+1106      1   0.0      1   0.0  11145  99.5        -  (FLET SB-IMPL::COPY :IN GET-OUTPUT-STREAM-STRING)
+1107      1   0.0      1   0.0  11146  99.5        -  SB-KERNEL:OUTPUT-UGLY-OBJECT
+1108      1   0.0      1   0.0  11147  99.5        -  CAR
+1109      1   0.0      1   0.0  11148  99.5        -  SB-C::CONSTANT-SPECIAL-FORM-P
+1110      1   0.0      1   0.0  11149  99.5        -  SB-ASSEM::%MARK-USED-LABELS
+1111      1   0.0      1   0.0  11150  99.5        -  SB-C::READS-WITHIN-BLOCK-P
+1112      1   0.0      1   0.0  11151  99.5        -  SB-BIGNUM::COPY-BIGNUM
+1113      1   0.0      1   0.0  11152  99.5        -  SB-KERNEL:%MAKE-SYMBOL
+1114      1   0.0      1   0.0  11153  99.6        -  SB-C::MAKE-MV-COMBINATION
+1115      1   0.0      1   0.0  11154  99.6        -  SB-X86-64-ASM::%EA
+1116      1   0.0      1   0.0  11155  99.6        -  "foreign function _platform_memmove$VARIANT$Haswell"
+1117      1   0.0      1   0.0  11156  99.6        -  "foreign function free"
+1118      1   0.0      1   0.0  11157  99.6        -  SB-VM::COPY-VECTOR-DATA
+1119      1   0.0      1   0.0  11158  99.6        -  (LAMBDA (SB-C::ARG TYPE SB-C::LVARS &OPTIONAL SB-C::ANNOTATION) :IN SB-C::FLUSHABLE-COMBINATION-ARGS-P)
+1120      1   0.0      1   0.0  11159  99.6        -  SB-C::NODE-DELETED
+1121      1   0.0      1   0.0  11160  99.6        -  SB-C::IR1-CONVERT-LAMBDALIKE
+1122      1   0.0      1   0.0  11161  99.6        -  SB-C::INTERNAL-NAME-P
+1123      1   0.0      1   0.0  11162  99.6        -  (SB-VM::OPTIMIZED-DATA-VECTOR-SET (COMPLEX DOUBLE-FLOAT))
+1124      1   0.0      1   0.0  11163  99.6        -  (FLET SB-C::REOPTIMIZE-P :IN SB-C::MAP-COMBINATION-ARG-VAR)
+1125      1   0.0      1   0.0  11164  99.7        -  SB-C::CTRAN-HOME-LAMBDA-OR-NULL
+1126      1   0.0      1   0.0  11165  99.7        -  (SB-C:DEFTRANSFORM LENGTH)
+1127      1   0.0      1   0.0  11166  99.7        -  SB-C::INTERVAL-CONTAINS-P
+1128      1   0.0      1   0.0  11167  99.7        -  SB-C::MAKE-DEBUG-ENVIRONMENT-TNS-LIVE
+1129      0   0.0  11180  99.8  11167  99.7        -  (LABELS FIASCO-SUITES::QVM-TESTS :IN FIASCO-SUITES::QVM-TESTS)
+1130      0   0.0  11180  99.8  11167  99.7        -  (LABELS FIASCO::RUN-TEST-BODY :IN FIASCO::RUN-TEST-BODY-IN-HANDLERS)
+1131      0   0.0  11180  99.8  11167  99.7        -  FIASCO::CALL-WITH-TEST-HANDLERS
+1132      0   0.0  11180  99.8  11167  99.7        -  FIASCO::PRETTY-RUN-TEST
+1133      0   0.0  11180  99.8  11167  99.7        -  (LABELS #:BODY-SYM1 :IN FIASCO-SUITES::QVM-TESTS)
+1134      0   0.0  11180  99.8  11167  99.7        -  FIASCO-SUITES::QVM-TESTS
+1135      0   0.0  11180  99.8  11167  99.7        -  FIASCO:RUN-SUITE-TESTS
+1136      0   0.0  11180  99.8  11167  99.7        -  FIASCO:RUN-TESTS
+1137      0   0.0  11180  99.8  11167  99.7        -  "Unknown component: #x252F55F0"
+1138      0   0.0  11180  99.8  11167  99.7        -  SWANK::EVAL-REGION
+1139      0   0.0  11180  99.8  11167  99.7        -  (LAMBDA NIL :IN SWANK-REPL::REPL-EVAL)
+1140      0   0.0  11180  99.8  11167  99.7        -  SWANK-REPL::TRACK-PACKAGE
+1141      0   0.0  11180  99.8  11167  99.7        -  SWANK::CALL-WITH-RETRY-RESTART
+1142      0   0.0  11180  99.8  11167  99.7        -  SWANK::CALL-WITH-BUFFER-SYNTAX
+1143      0   0.0  11180  99.8  11167  99.7        -  SWANK-REPL::REPL-EVAL
+1144      0   0.0  11180  99.8  11167  99.7        -  SB-INT:SIMPLE-EVAL-IN-LEXENV
+1145      0   0.0  11180  99.8  11167  99.7        -  EVAL
+1146      0   0.0  11180  99.8  11167  99.7        -  SWANK:EVAL-FOR-EMACS
+1147      0   0.0  11180  99.8  11167  99.7        -  SWANK::PROCESS-REQUESTS
+1148      0   0.0  11180  99.8  11167  99.7        -  (LAMBDA NIL :IN SWANK::HANDLE-REQUESTS)
+1149      0   0.0  11180  99.8  11167  99.7        -  SWANK/SBCL::CALL-WITH-BREAK-HOOK
+1150      0   0.0  11180  99.8  11167  99.7        -  (FLET SWANK/BACKEND:CALL-WITH-DEBUGGER-HOOK :IN "/Users/cscott/quicklisp/dists/quicklisp/software/slime-v2.24/swank/sbcl.lisp")
+1151      0   0.0  11180  99.8  11167  99.7        -  SWANK::CALL-WITH-BINDINGS
+1152      0   0.0  11180  99.8  11167  99.7        -  SWANK::HANDLE-REQUESTS
+1153      0   0.0  11180  99.8  11167  99.7        -  (FLET SB-UNIX::BODY :IN SB-THREAD::NEW-LISP-THREAD-TRAMPOLINE)
+1154      0   0.0  11180  99.8  11167  99.7        -  (FLET "WITHOUT-INTERRUPTS-BODY-4" :IN SB-THREAD::NEW-LISP-THREAD-TRAMPOLINE)
+1155      0   0.0  11180  99.8  11167  99.7        -  (FLET SB-THREAD::WITH-MUTEX-THUNK :IN SB-THREAD::NEW-LISP-THREAD-TRAMPOLINE)
+1156      0   0.0  11180  99.8  11167  99.7        -  (FLET "WITHOUT-INTERRUPTS-BODY-1" :IN SB-THREAD::CALL-WITH-MUTEX)
+1157      0   0.0  11180  99.8  11167  99.7        -  SB-THREAD::CALL-WITH-MUTEX
+1158      0   0.0  11180  99.8  11167  99.7        -  SB-THREAD::NEW-LISP-THREAD-TRAMPOLINE
+1159      0   0.0  11180  99.8  11167  99.7        -  "foreign function call_into_lisp"
+1160      0   0.0  11180  99.8  11167  99.7        -  "foreign function new_thread_trampoline"
+1161      0   0.0  11180  99.8  11167  99.7        -  "foreign function _pthread_body"
+1162      0   0.0  11180  99.8  11167  99.7        -  "foreign function _pthread_start"
+1163      0   0.0  11180  99.8  11167  99.7        -  "foreign function thread_start"
+1164      0   0.0   8378  74.8  11167  99.7        -  COMPILE
+1165      0   0.0   8375  74.8  11167  99.7        -  (FLET "LAMBDA0" :IN "SYS:SRC;COMPILER;TARGET-MAIN.LISP")
+1166      0   0.0   7567  67.5  11167  99.7        -  SB-C::COMPILE-COMPONENT
+1167      0   0.0   5171  46.2  11167  99.7        -  (LABELS QVM-TESTS::TEST-HELLA-RANDOM-CLIFFORDS :IN QVM-TESTS::TEST-HELLA-RANDOM-CLIFFORDS)
+1168      0   0.0   5171  46.2  11167  99.7        -  (LABELS #:BODY-SYM0 :IN QVM-TESTS::TEST-HELLA-RANDOM-CLIFFORDS)
+1169      0   0.0   5171  46.2  11167  99.7        -  QVM-TESTS::TEST-HELLA-RANDOM-CLIFFORDS
+1170      0   0.0   5080  45.3  11167  99.7        -  SB-C::IR1-PHASES
+1171      0   0.0   5054  45.1  11167  99.7        -  (SB-PCL::EMF QVM:RUN)
+1172      0   0.0   4494  40.1  11167  99.7        -  QVM::COMPILE-LAMBDA
+1173      0   0.0   4200  37.5  11167  99.7        -  SB-C::IR1-OPTIMIZE-UNTIL-DONE
+1174      0   0.0   3973  35.5  11167  99.7        -  CL-QUIL.CLIFFORD::CLIFFORD-TO-MATRIX
+1175      0   0.0   3160  28.2  11167  99.7        -  (SB-PCL::FAST-METHOD QVM:TRANSITION (QVM:PURE-STATE-QVM QVM::CLIFFORD-APPLICATION))
+1176      0   0.0   3044  27.2  11167  99.7        -  QVM::COMPILE-CLIFFORD
+1177      0   0.0   3044  27.2  11167  99.7        -  (SB-PCL::FAST-METHOD QVM:TRANSITION (QVM::STABILIZER-QVM QVM::CLIFFORD-APPLICATION))
+1178      0   0.0   1492  13.3  11167  99.7        -  (SB-PCL::FAST-METHOD QVM:RUN :BEFORE (QVM:PURE-STATE-QVM))
+1179      0   0.0   1488  13.3  11167  99.7        -  (SB-PCL::FAST-METHOD QVM::COMPILE-LOADED-PROGRAM (QVM:PURE-STATE-QVM))
+1180      0   0.0   1462  13.1  11167  99.7        -  (FLET SB-IMPL::F :IN SB-IMPL::VECTOR-MAP-INTO/SIMPLE-VECTOR)
+1181      0   0.0   1462  13.1  11167  99.7        -  SB-IMPL::VECTOR-MAP-INTO/SIMPLE-VECTOR
+1182      0   0.0   1459  13.0  11167  99.7        -  (SB-PCL::FAST-METHOD QVM::COMPILE-INSTRUCTION (T CL-QUIL:GATE-APPLICATION))
+1183      0   0.0   1346  12.0  11167  99.7        -  SB-REGALLOC:PACK
+1184      0   0.0   1225  10.9  11167  99.7        -  (SB-PCL::FAST-METHOD QVM::COMPILE-OPERATOR (CL-QUIL:SIMPLE-GATE T T))
+1185      0   0.0    972   8.7  11167  99.7        -  (LABELS QVM-TESTS::TEST-SHARED-ARRAY-ALLOCATION/DEALLOCATION :IN QVM-TESTS::TEST-SHARED-ARRAY-ALLOCATION/DEALLOCATION)
+1186      0   0.0    972   8.7  11167  99.7        -  (LABELS #:BODY-SYM0 :IN QVM-TESTS::TEST-SHARED-ARRAY-ALLOCATION/DEALLOCATION)
+1187      0   0.0    972   8.7  11167  99.7        -  QVM-TESTS::TEST-SHARED-ARRAY-ALLOCATION/DEALLOCATION
+1188      0   0.0    964   8.6  11167  99.7        -  (LABELS #:BODY-SYM0 :IN QVM-TESTS::TEST-POSIX-SHARED-MEMORY-ALLOCATION/DEALLOCATION)
+1189      0   0.0    964   8.6  11167  99.7        -  QVM-TESTS::TEST-POSIX-SHARED-MEMORY-ALLOCATION/DEALLOCATION
+1190      0   0.0    963   8.6  11167  99.7        -  (LABELS QVM-TESTS::TEST-POSIX-SHARED-MEMORY-ALLOCATION/DEALLOCATION :IN QVM-TESTS::TEST-POSIX-SHARED-MEMORY-ALLOCATION/DEALLOCATION)
+1191      0   0.0    867   7.7  11167  99.7        -  (LABELS QVM-TESTS::TEST-CLIFFORD-MATRIX-CONVERSIONS :IN QVM-TESTS::TEST-CLIFFORD-MATRIX-CONVERSIONS)
+1192      0   0.0    867   7.7  11167  99.7        -  (LABELS #:BODY-SYM0 :IN QVM-TESTS::TEST-CLIFFORD-MATRIX-CONVERSIONS)
+1193      0   0.0    867   7.7  11167  99.7        -  QVM-TESTS::TEST-CLIFFORD-MATRIX-CONVERSIONS
+1194      0   0.0    857   7.6  11167  99.7        -  SB-REGALLOC::COLOR-INTERFERENCE-GRAPH
+1195      0   0.0    783   7.0  11167  99.7        -  (LABELS QVM-TESTS::TEST-RANDOM-QVM-VS-CHP-LARGE :IN QVM-TESTS::TEST-RANDOM-QVM-VS-CHP-LARGE)
+1196      0   0.0    783   7.0  11167  99.7        -  (LABELS #:BODY-SYM0 :IN QVM-TESTS::TEST-RANDOM-QVM-VS-CHP-LARGE)
+1197      0   0.0    783   7.0  11167  99.7        -  QVM-TESTS::TEST-RANDOM-QVM-VS-CHP-LARGE
+1198      0   0.0    660   5.9  11167  99.7        -  (LABELS QVM-TESTS::TEST-RANDOM-QVM-VS-CHP-MEDIUM :IN QVM-TESTS::TEST-RANDOM-QVM-VS-CHP-MEDIUM)
+1199      0   0.0    660   5.9  11167  99.7        -  (LABELS #:BODY-SYM0 :IN QVM-TESTS::TEST-RANDOM-QVM-VS-CHP-MEDIUM)
+1200      0   0.0    660   5.9  11167  99.7        -  QVM-TESTS::TEST-RANDOM-QVM-VS-CHP-MEDIUM
+1201      0   0.0    504   4.5  11167  99.7        -  SB-C::IR1-CONVERT-BLOCK
+1202      0   0.0    485   4.3  11167  99.7        -  (LAMBDA (SB-C::NEXT SB-C::RESULT SB-C::POST-BINDING-LEXENV) :IN SB-C::IR1-CONVERT-LET)
+1203      0   0.0    425   3.8  11167  99.7        -  (LABELS #:BODY-SYM0 :IN QVM-TESTS::TEST-TWO-QUBIT-TWO-CLIFFORD)
+1204      0   0.0    425   3.8  11167  99.7        -  QVM-TESTS::TEST-TWO-QUBIT-TWO-CLIFFORD
+1205      0   0.0    424   3.8  11167  99.7        -  (LABELS QVM-TESTS::TEST-TWO-QUBIT-TWO-CLIFFORD :IN QVM-TESTS::TEST-TWO-QUBIT-TWO-CLIFFORD)
+1206      0   0.0    397   3.5  11167  99.7        -  QVM-TESTS::TEST-RANGE
+1207      0   0.0    383   3.4  11167  99.7        -  SB-C::LOCALL-ANALYZE-CLAMBDAS-UNTIL-DONE
+1208      0   0.0    364   3.2  11167  99.7        -  SB-C::MAKE-FUNCTIONAL-FROM-TOPLEVEL-LAMBDA
+1209      0   0.0    356   3.2  11167  99.7        -  SB-C::IR1-CONVERT-FUNCTION
+1210      0   0.0    276   2.5  11167  99.7        -  (LABELS QVM-TESTS::TEST-ONE-QUBIT-TWO-CLIFFORD :IN QVM-TESTS::TEST-ONE-QUBIT-TWO-CLIFFORD)
+1211      0   0.0    276   2.5  11167  99.7        -  (LABELS #:BODY-SYM0 :IN QVM-TESTS::TEST-ONE-QUBIT-TWO-CLIFFORD)
+1212      0   0.0    276   2.5  11167  99.7        -  QVM-TESTS::TEST-ONE-QUBIT-TWO-CLIFFORD
+1213      0   0.0    275   2.5  11167  99.7        -  SB-C::MAYBE-EXPAND-LOCAL-INLINE
+1214      0   0.0    270   2.4  11167  99.7        -  (FLET "LAMBDA0" :IN "SYS:SRC;COMPILER;LOCALL.LISP")
+1215      0   0.0    231   2.1  11167  99.7        -  (SB-PCL::FAST-METHOD QVM::COMPILE-OPERATOR (CL-QUIL:PERMUTATION-GATE T T))
+1216      0   0.0    219   2.0  11167  99.7        -  SB-C::IR1-CONVERT-PROGN
+1217      0   0.0    217   1.9  11167  99.7        -  (LABELS QVM-TESTS::TEST-TWO-QUBIT-ONE-CLIFFORD :IN QVM-TESTS::TEST-TWO-QUBIT-ONE-CLIFFORD)
+1218      0   0.0    217   1.9  11167  99.7        -  (LABELS #:BODY-SYM0 :IN QVM-TESTS::TEST-TWO-QUBIT-ONE-CLIFFORD)
+1219      0   0.0    217   1.9  11167  99.7        -  QVM-TESTS::TEST-TWO-QUBIT-ONE-CLIFFORD
+1220      0   0.0    148   1.3  11167  99.7        -  (SB-PCL::FAST-METHOD QVM:APPLY-GATE (CL-QUIL:PARAMETERIZED-GATE T T))
+1221      0   0.0    143   1.3  11167  99.7        -  (LABELS QVM-TESTS::TEST-ONE-QUBIT-ONE-CLIFFORD :IN QVM-TESTS::TEST-ONE-QUBIT-ONE-CLIFFORD)
+1222      0   0.0    143   1.3  11167  99.7        -  (LABELS #:BODY-SYM0 :IN QVM-TESTS::TEST-ONE-QUBIT-ONE-CLIFFORD)
+1223      0   0.0    143   1.3  11167  99.7        -  QVM-TESTS::TEST-ONE-QUBIT-ONE-CLIFFORD
+1224      0   0.0    142   1.3  11167  99.7        -  (SB-PCL::FAST-METHOD QVM:APPLY-GATE (CL-QUIL:PERMUTATION-GATE T T))
+1225      0   0.0    141   1.3  11167  99.7        -  SB-C::IR1-CONVERT-INLINE-EXPANSION
+1226      0   0.0    141   1.3  11167  99.7        -  (FLET "LAMBDA0" :IN "SYS:SRC;COMPILER;IR1OPT.LISP")
+1227      0   0.0    133   1.2  11167  99.7        -  SB-C::COPY-PROPAGATE
+1228      0   0.0    115   1.0  11167  99.7        -  SB-REGALLOC::INSERT-CONFLICT-EDGES
+1229      0   0.0    111   1.0  11167  99.7        -  (LABELS QVM-TESTS::TEST-QUARTER-ROTATION-MEASUREMENTS :IN QVM-TESTS::TEST-QUARTER-ROTATION-MEASUREMENTS)
+1230      0   0.0    111   1.0  11167  99.7        -  (LABELS #:BODY-SYM0 :IN QVM-TESTS::TEST-QUARTER-ROTATION-MEASUREMENTS)
+1231      0   0.0    111   1.0  11167  99.7        -  QVM-TESTS::TEST-QUARTER-ROTATION-MEASUREMENTS
+1232      0   0.0    107   1.0  11167  99.7        -  (LABELS QVM-TESTS::TEST-EIGHTH-ROTATION-MEASUREMENTS :IN QVM-TESTS::TEST-EIGHTH-ROTATION-MEASUREMENTS)
+1233      0   0.0    107   1.0  11167  99.7        -  (LABELS #:BODY-SYM0 :IN QVM-TESTS::TEST-EIGHTH-ROTATION-MEASUREMENTS)
+1234      0   0.0    107   1.0  11167  99.7        -  QVM-TESTS::TEST-EIGHTH-ROTATION-MEASUREMENTS
+1235      0   0.0    107   1.0  11167  99.7        -  (LABELS QVM-TESTS::TEST-THREE-QUARTER-ROTATION-MEASUREMENTS :IN QVM-TESTS::TEST-THREE-QUARTER-ROTATION-MEASUREMENTS)
+1236      0   0.0    107   1.0  11167  99.7        -  (LABELS #:BODY-SYM0 :IN QVM-TESTS::TEST-THREE-QUARTER-ROTATION-MEASUREMENTS)
+1237      0   0.0    107   1.0  11167  99.7        -  QVM-TESTS::TEST-THREE-QUARTER-ROTATION-MEASUREMENTS
+1238      0   0.0    102   0.9  11167  99.7        -  SB-C::LIFETIME-ANALYZE
+1239      0   0.0     95   0.8  11167  99.7        -  (SB-PCL::FAST-METHOD CHANGE-CLASS (STANDARD-OBJECT STANDARD-CLASS))
+1240      0   0.0     87   0.8  11167  99.7        -  SB-KERNEL:SUB-GC
+1241      0   0.0     87   0.8  11167  99.7        -  SB-EXT:GC
+1242      0   0.0     80   0.7  11167  99.7        -  FROM-LIST
+1243      0   0.0     78   0.7  11167  99.7        -  (LABELS QVM-TESTS::TEST-RANDOM-QVM-VS-CHP-SMALL :IN QVM-TESTS::TEST-RANDOM-QVM-VS-CHP-SMALL)
+1244      0   0.0     78   0.7  11167  99.7        -  (LABELS #:BODY-SYM0 :IN QVM-TESTS::TEST-RANDOM-QVM-VS-CHP-SMALL)
+1245      0   0.0     78   0.7  11167  99.7        -  QVM-TESTS::TEST-RANDOM-QVM-VS-CHP-SMALL
+1246      0   0.0     74   0.7  11167  99.7        -  SB-ASSEM:ASSEMBLE-SECTIONS
+1247      0   0.0     72   0.6  11167  99.7        -  SB-C::SUBSTITUTE-LEAF-IF
+1248      0   0.0     72   0.6  11167  99.7        -  (LABELS QVM-TESTS::TEST-HADAMARD-MEASUREMENTS :IN QVM-TESTS::TEST-HADAMARD-MEASUREMENTS)
+1249      0   0.0     72   0.6  11167  99.7        -  (LABELS #:BODY-SYM0 :IN QVM-TESTS::TEST-HADAMARD-MEASUREMENTS)
+1250      0   0.0     72   0.6  11167  99.7        -  QVM-TESTS::TEST-HADAMARD-MEASUREMENTS
+1251      0   0.0     69   0.6  11167  99.7        -  (LABELS QVM-TESTS::TEST-QVM-GARBAGE-COLLECTION :IN QVM-TESTS::TEST-QVM-GARBAGE-COLLECTION)
+1252      0   0.0     69   0.6  11167  99.7        -  (LABELS #:BODY-SYM0 :IN QVM-TESTS::TEST-QVM-GARBAGE-COLLECTION)
+1253      0   0.0     69   0.6  11167  99.7        -  QVM-TESTS::TEST-QVM-GARBAGE-COLLECTION
+1254      0   0.0     67   0.6  11167  99.7        -  CL-QUIL.CLIFFORD::GLOBAL-PHASE~
+1255      0   0.0     66   0.6  11167  99.7        -  SB-C::IR1-FINALIZE
+1256      0   0.0     64   0.6  11167  99.7        -  QVM::FREE-POSIX-SHARED-MEMORY
+1257      0   0.0     60   0.5  11167  99.7        -  SB-C::MAKE-CORE-COMPONENT
+1258      0   0.0     56   0.5  11167  99.7        -  SB-IMPL::VECTOR-MAP-INTO/SIMPLE-ARRAY-COMPLEX-DOUBLE-FLOAT
+1259      0   0.0     52   0.5  11167  99.7        -  CL-QUIL.CLIFFORD:MATRIX-TO-CLIFFORD
+1260      0   0.0     50   0.4  11167  99.7        -  SB-C::SETQ-VAR
+1261      0   0.0     44   0.4  11167  99.7        -  (LAMBDA (CL-QUIL.CLIFFORD::X) :IN CL-QUIL.CLIFFORD::GLOBAL-PHASE~)
+1262      0   0.0     42   0.4  11167  99.7        -  CL-QUIL.CLIFFORD::TABLEAU-WAVEFUNCTION
+1263      0   0.0     37   0.3  11167  99.7        -  SB-C::IR1-CONVERT-LOCALLY
+1264      0   0.0     34   0.3  11167  99.7        -  SB-THREAD::CALL-WITH-SYSTEM-MUTEX/WITHOUT-GCING
+1265      0   0.0     34   0.3  11167  99.7        -  SB-VM::ALLOCATE-IMMOBILE-OBJ
+1266      0   0.0     34   0.3  11167  99.7        -  SB-C:ALLOCATE-CODE-OBJECT
+1267      0   0.0     33   0.3  11167  99.7        -  (FLET "EXECUTION-BODY-1" :IN QVM-TESTS::TEST-UNIT-WAVEFUNCTION-AFTER-MEASUREMENTS)
+1268      0   0.0     33   0.3  11167  99.7        -  (LABELS QVM-TESTS::TEST-UNIT-WAVEFUNCTION-AFTER-MEASUREMENTS :IN QVM-TESTS::TEST-UNIT-WAVEFUNCTION-AFTER-MEASUREMENTS)
+1269      0   0.0     33   0.3  11167  99.7        -  (LABELS #:BODY-SYM0 :IN QVM-TESTS::TEST-UNIT-WAVEFUNCTION-AFTER-MEASUREMENTS)
+1270      0   0.0     33   0.3  11167  99.7        -  QVM-TESTS::TEST-UNIT-WAVEFUNCTION-AFTER-MEASUREMENTS
+1271      0   0.0     32   0.3  11167  99.7        -  (LABELS QVM-TESTS::TEST-UNIT-WAVEFUNCTION-AFTER-CHEEKY-MEASUREMENTS :IN QVM-TESTS::TEST-UNIT-WAVEFUNCTION-AFTER-CHEEKY-MEASUREMENTS)
+1272      0   0.0     32   0.3  11167  99.7        -  (LAMBDA NIL :IN QVM::POSIX-SHARED-MEMORY-FINALIZER)
+1273      0   0.0     32   0.3  11167  99.7        -  (LAMBDA NIL :IN QVM::MAKE-SHARED-ARRAY)
+1274      0   0.0     32   0.3  11167  99.7        -  SB-REGALLOC::RESTORE-TN
+1275      0   0.0     32   0.3  11167  99.7        -  (LABELS #:BODY-SYM0 :IN QVM-TESTS::TEST-UNIT-WAVEFUNCTION-AFTER-CHEEKY-MEASUREMENTS)
+1276      0   0.0     32   0.3  11167  99.7        -  QVM-TESTS::TEST-UNIT-WAVEFUNCTION-AFTER-CHEEKY-MEASUREMENTS
+1277      0   0.0     31   0.3  11167  99.7        -  CONST
+1278      0   0.0     30   0.3  11167  99.7        -  CL-QUIL.CLIFFORD:PAULI-MATRIX-P
+1279      0   0.0     28   0.2  11167  99.7        -  SB-REGALLOC::PACK-SAVE-TN
+1280      0   0.0     27   0.2  11167  99.7        -  SB-C::IR1-CONVERT-%%ALLOCATE-CLOSURES
+1281      0   0.0     27   0.2  11167  99.7        -  QVM::MEASURE-AND-STORE
+1282      0   0.0     27   0.2  11167  99.7        -  (LAMBDA (&REST DIMS) :IN INTO!)
+1283      0   0.0     27   0.2  11167  99.7        -  CL-QUIL.CLIFFORD::FACTORIZE
+1284      0   0.0     26   0.2  11167  99.7        -  CL-QUIL::FUSE-TRIVIALLY
+1285      0   0.0     26   0.2  11167  99.7        -  CL-QUIL::FUSE-GATE-SEQUENCE
+1286      0   0.0     26   0.2  11167  99.7        -  CL-QUIL::FUSE-GATES-IN-EXECUTABLE-CODE
+1287      0   0.0     25   0.2  11167  99.7        -  SB-C::CONVERT-HAIRY-CALL
+1288      0   0.0     25   0.2  11167  99.7        -  CL-QUIL::MERGE-GRID-NODES
+1289      0   0.0     25   0.2  11167  99.7        -  CL-QUIL::ATTEMPT-TRIVIAL-FUSION
+1290      0   0.0     24   0.2  11167  99.7        -  SB-C::IR2-OPTIMIZE
+1291      0   0.0     24   0.2  11167  99.7        -  CL-QUIL::PREMULTIPLY-GATES
+1292      0   0.0     23   0.2  11167  99.7        -  SB-C::DEBUG-INFO-FOR-COMPONENT
+1293      0   0.0     23   0.2  11167  99.7        -  SB-C::CONVERT-HAIRY-FUN-ENTRY
+1294      0   0.0     23   0.2  11167  99.7        -  SB-C::ARRAY-CALL-TYPE-DERIVER
+1295      0   0.0     23   0.2  11167  99.7        -  CL-QUIL:PARSE-QUIL
+1296      0   0.0     21   0.2  11167  99.7        -  SB-C::COMPUTE-1-DEBUG-FUN
+1297      0   0.0     19   0.2  11167  99.7        -  (SB-PCL::FAST-METHOD COMPATIBLE-TENSOR-CONSTRUCTORS (T))
+1298      0   0.0     19   0.2  11167  99.7        -  SB-C::LIFETIME-POST-PASS
+1299      0   0.0     19   0.2  11167  99.7        -  (FLET SB-C::ASSERT-TYPE :IN SB-C::ARRAY-CALL-TYPE-DERIVER)
+1300      0   0.0     19   0.2  11167  99.7        -  (LABELS QVM-TESTS::TEST-SHARED-QVM-GARBAGE-COLLECTION :IN QVM-TESTS::TEST-SHARED-QVM-GARBAGE-COLLECTION)
+1301      0   0.0     19   0.2  11167  99.7        -  (LABELS #:BODY-SYM0 :IN QVM-TESTS::TEST-SHARED-QVM-GARBAGE-COLLECTION)
+1302      0   0.0     19   0.2  11167  99.7        -  QVM-TESTS::TEST-SHARED-QVM-GARBAGE-COLLECTION
+1303      0   0.0     18   0.2  11167  99.7        -  INFER-TENSOR-TYPE
+1304      0   0.0     18   0.2  11167  99.7        -  SB-C::CONVERT-MV-BIND-TO-LET
+1305      0   0.0     15   0.1  11167  99.7        -  SB-ASSEM:FINALIZE-SEGMENT
+1306      0   0.0     15   0.1  11167  99.7        -  FORMAT
+1307      0   0.0     15   0.1  11167  99.7        -  CL-QUIL::FUSE-NODE-FORWARD
+1308      0   0.0     14   0.1  11167  99.7        -  SB-C::COERCE-TO-SMALLEST-ELTYPE
+1309      0   0.0     14   0.1  11167  99.7        -  PRINC
+1310      0   0.0     14   0.1  11167  99.7        -  SB-C::IR2-CONVERT-FULL-CALL
+1311      0   0.0     14   0.1  11167  99.7        -  SB-VM::%FLOATING-POINT-MODES-SETTER
+1312      0   0.0     14   0.1  11167  99.7        -  SB-LOOP::LOOP-ITERATION-DRIVER
+1313      0   0.0     14   0.1  11167  99.7        -  CL-QUIL::TOKENIZE
+1314      0   0.0     14   0.1  11167  99.7        -  CL-QUIL:PARSE-QUIL-INTO-RAW-PROGRAM
+1315      0   0.0     13   0.1  11167  99.7        -  QVM::MAP-COMPLEMENT
+1316      0   0.0     13   0.1  11167  99.7        -  (LAMBDA NIL :IN CL-QUIL::LINE-LEXER)
+1317      0   0.0     13   0.1  11167  99.7        -  CL-QUIL::TOKENIZE-LINE
+1318      0   0.0     13   0.1  11167  99.7        -  SB-IMPL::STABLE-SORT-LIST
+1319      0   0.0     13   0.1  11167  99.7        -  CL-QUIL::DOUBLE~
+1320      0   0.0     13   0.1  11167  99.7        -  (LABELS SB-IMPL::CALL :IN GET-SETF-EXPANSION)
+1321      0   0.0     13   0.1  11167  99.7        -  (SB-PCL::FAST-METHOD MAP! (FUNCTION ABSTRACT-TENSOR))
+1322      0   0.0     12   0.1  11167  99.7        -  SB-KERNEL::PARSE-<SIMPLE-ARRAY>
+1323      0   0.0     12   0.1  11167  99.7        -  SB-C::RECORD-COMPONENT-XREFS
+1324      0   0.0     11   0.1  11167  99.7        -  SB-KERNEL::SIMPLIFY-UNIONS
+1325      0   0.0     11   0.1  11167  99.7        -  SB-C::GTN-ANALYZE
+1326      0   0.0     11   0.1  11167  99.7        -  SB-C::SUB-FIND-SOURCE-PATHS
+1327      0   0.0     11   0.1  11167  99.7        -  SB-C::FIND-SOURCE-PATHS
+1328      0   0.0     11   0.1  11167  99.7        -  (SB-PCL::FAST-METHOD CL-PPCRE:SCAN (FUNCTION T))
+1329      0   0.0     11   0.1  11167  99.7        -  SB-IMPL::%CHECK-DEPRECATED-TYPE
+1330      0   0.0     11   0.1  11167  99.7        -  SB-FORMAT::%FORMAT
+1331      0   0.0     10   0.1  11167  99.7        -  SB-C::*-DERIVE-TYPE-AUX
+1332      0   0.0     10   0.1  11167  99.7        -  (SB-PCL::FAST-METHOD QVM:APPLY-GATE (CL-QUIL:SIMPLE-GATE T T))
+1333      0   0.0     10   0.1  11167  99.7        -  CL-QUIL::FUSE-NODE-BACKWARD
+1334      0   0.0     10   0.1  11167  99.7        -  QVM:MAKE-QVM
+1335      0   0.0      9   0.1  11167  99.7        -  (SETF QVM:MEMORY-REF)
+1336      0   0.0      9   0.1  11167  99.7        -  (SB-PCL::FAST-METHOD QVM:TRANSITION (QVM:PURE-STATE-QVM QVM::COMPILED-MEASUREMENT))
+1337      0   0.0      9   0.1  11167  99.7        -  SB-INT:EVERY/TYPE
+1338      0   0.0      9   0.1  11167  99.7        -  SB-C::SCAVENGE-HOME-DEPENDENCY-GRAPH
+1339      0   0.0      9   0.1  11167  99.7        -  SB-KERNEL::PARSE-ARGS-TYPES
+1340      0   0.0      9   0.1  11167  99.7        -  SB-C::ADD-LAMBDA-VARS-AND-LET-VARS-TO-CLOSURES
+1341      0   0.0      9   0.1  11167  99.7        -  SB-C::TYPE-NEEDS-CONSERVATION-P
+1342      0   0.0      9   0.1  11167  99.7        -  SB-C::BACK-PROPAGATE-ONE-DX-LVAR
+1343      0   0.0      9   0.1  11167  99.7        -  SB-C::BACK-PROPAGATE-DX-LVARS
+1344      0   0.0      9   0.1  11167  99.7        -  (LAMBDA (&REST DIMS) :IN MAP!)
+1345      0   0.0      8   0.1  11167  99.7        -  TYPEP
+1346      0   0.0      8   0.1  11167  99.7        -  SB-C::ANNOTATE-ORDINARY-LVAR
+1347      0   0.0      8   0.1  11167  99.7        -  (LABELS SB-IMPL::PRINT-IT :IN SB-KERNEL:OUTPUT-OBJECT)
+1348      0   0.0      8   0.1  11167  99.7        -  (LABELS SB-IMPL::CHECK-IT :IN SB-KERNEL:OUTPUT-OBJECT)
+1349      0   0.0      8   0.1  11167  99.7        -  SB-C::SETUP-ENVIRONMENT-LIVE-CONFLICTS
+1350      0   0.0      8   0.1  11167  99.7        -  SB-C::FTYPE-FROM-FDEFN
+1351      0   0.0      8   0.1  11167  99.7        -  SB-KERNEL::PARSE-<VALUES>
+1352      0   0.0      8   0.1  11167  99.7        -  SB-INT:MAKE-GENSYM-LIST
+1353      0   0.0      8   0.1  11167  99.7        -  SB-KERNEL::%SIGNAL
+1354      0   0.0      8   0.1  11167  99.7        -  SB-C::VARIFY-LAMBDA-ARG
+1355      0   0.0      8   0.1  11167  99.7        -  SB-C::FIND-LOWEST-COMMON-DOMINATOR
+1356      0   0.0      8   0.1  11167  99.7        -  (FLET "LAMBDA0" :IN "SYS:SRC;COMPILER;IR1UTIL.LISP")
+1357      0   0.0      8   0.1  11167  99.7        -  SB-C::FILTER-LVAR
+1358      0   0.0      8   0.1  11167  99.7        -  SB-C::CONSTANT-FUNCTION-CALL-P
+1359      0   0.0      8   0.1  11167  99.7        -  SB-C::CONSTANT-FOLD-CALL
+1360      0   0.0      8   0.1  11167  99.7        -  (SB-PCL::FAST-METHOD MULT (MATRIX/COMPLEX-DOUBLE-FLOAT MATRIX/COMPLEX-DOUBLE-FLOAT))
+1361      0   0.0      8   0.1  11167  99.7        -  (FLET "EXECUTION-BODY-1" :IN QVM-TESTS::TEST-BELL)
+1362      0   0.0      8   0.1  11167  99.7        -  (LABELS QVM-TESTS::TEST-BELL :IN QVM-TESTS::TEST-BELL)
+1363      0   0.0      8   0.1  11167  99.7        -  SB-EXT:FINALIZE
+1364      0   0.0      8   0.1  11167  99.7        -  CL-QUIL.CLIFFORD::INTERPRET-CHP
+1365      0   0.0      8   0.1  11167  99.7        -  CL-QUIL::RESOLVE-APPLICATIONS
+1366      0   0.0      8   0.1  11167  99.7        -  (LABELS QVM-TESTS::TEST-RANDOM-STABILIZER-VS-CHP :IN QVM-TESTS::TEST-RANDOM-STABILIZER-VS-CHP)
+1367      0   0.0      8   0.1  11167  99.7        -  (LABELS #:BODY-SYM0 :IN QVM-TESTS::TEST-RANDOM-STABILIZER-VS-CHP)
+1368      0   0.0      8   0.1  11167  99.7        -  QVM-TESTS::TEST-RANDOM-STABILIZER-VS-CHP
+1369      0   0.0      8   0.1  11167  99.7        -  (LABELS #:BODY-SYM0 :IN QVM-TESTS::TEST-BELL)
+1370      0   0.0      8   0.1  11167  99.7        -  QVM-TESTS::TEST-BELL
+1371      0   0.0      7   0.1  11167  99.7        -  SB-PCL:ENSURE-CLASS-FINALIZED
+1372      0   0.0      7   0.1  11167  99.7        -  (FLET SB-THREAD::WITH-RECURSIVE-LOCK-THUNK :IN CHANGE-CLASS)
+1373      0   0.0      7   0.1  11167  99.7        -  (FLET SB-KERNEL::COMPLEX*REAL :IN SB-KERNEL:TWO-ARG-*)
+1374      0   0.0      7   0.1  11167  99.7        -  (FLET SB-THREAD::WITH-RECURSIVE-LOCK-THUNK :IN SB-KERNEL::CLASSOID-SIMPLE-INTERSECTION2-TYPE-METHOD)
+1375      0   0.0      7   0.1  11167  99.7        -  SB-KERNEL::CLASSOID-SIMPLE-INTERSECTION2-TYPE-METHOD
+1376      0   0.0      7   0.1  11167  99.7        -  (LABELS SB-C::CHECK-SC :IN SB-C::EMIT-COERCE-VOP)
+1377      0   0.0      7   0.1  11167  99.7        -  SB-C::IR2-CONVERT-FIXED-FULL-CALL
+1378      0   0.0      7   0.1  11167  99.7        -  SB-C:PRIMITIVE-TYPE-OR-LOSE
+1379      0   0.0      7   0.1  11167  99.7        -  SB-C:MAKE-RETURN-PC-PASSING-LOCATION
+1380      0   0.0      7   0.1  11167  99.7        -  SB-C::ASSIGN-IR2-PHYSENV
+1381      0   0.0      7   0.1  11167  99.7        -  (FLET SB-C::HANDLE-ARRAY-IN-BOUNDS-P :IN SB-C::ADD-TEST-CONSTRAINTS)
+1382      0   0.0      7   0.1  11167  99.7        -  (FLET SB-KERNEL::PARSE-LIST :IN SB-KERNEL::PARSE-ARGS-TYPES)
+1383      0   0.0      7   0.1  11167  99.7        -  SB-C::EMIT-CLEANUPS
+1384      0   0.0      7   0.1  11167  99.7        -  (LABELS QVM-TESTS::TEST-RESET-QUBIT :IN QVM-TESTS::TEST-RESET-QUBIT)
+1385      0   0.0      7   0.1  11167  99.7        -  (FLET SB-KERNEL::%WARN :IN "SYS:SRC;CODE;WARM-ERROR.LISP")
+1386      0   0.0      7   0.1  11167  99.7        -  (SB-C:DEFTRANSFORM (SETF AREF))
+1387      0   0.0      7   0.1  11167  99.7        -  (FLET SB-X86-64-ASM::EMIT* :IN "SYS:SRC;COMPILER;X86-64;INSTS.LISP")
+1388      0   0.0      7   0.1  11167  99.7        -  (FLET SB-X86-64-ASM::EMIT* :IN "SYS:SRC;COMPILER;X86-64;INSTS.LISP")
+1389      0   0.0      7   0.1  11167  99.7        -  (SB-C:DEFTRANSFORM AREF)
+1390      0   0.0      7   0.1  11167  99.7        -  SB-C::DELETE-COMPONENT
+1391      0   0.0      7   0.1  11167  99.7        -  SB-C::INSERT-CLEANUP-CODE
+1392      0   0.0      7   0.1  11167  99.7        -  (LABELS #:BODY-SYM0 :IN QVM-TESTS::TEST-RESET-QUBIT)
+1393      0   0.0      7   0.1  11167  99.7        -  QVM-TESTS::TEST-RESET-QUBIT
+1394      0   0.0      6   0.1  11167  99.7        -  SB-C::IR2-CONVERT-REFFER
+1395      0   0.0      6   0.1  11167  99.7        -  SB-C::SOURCE-PATH-FORMS
+1396      0   0.0      6   0.1  11167  99.7        -  SB-C::LTN-DEFAULT-CALL
+1397      0   0.0      6   0.1  11167  99.7        -  CIS
+1398      0   0.0      6   0.1  11167  99.7        -  SB-C::GET-NODE-PHYSENV
+1399      0   0.0      6   0.1  11167  99.7        -  (LABELS SB-IMPL::NEWVALS :IN GET-SETF-EXPANSION)
+1400      0   0.0      5   0.0  11167  99.7        -  (FLET "WITHOUT-INTERRUPTS-BODY-2" :IN SB-THREAD::%CONDITION-WAIT)
+1401      0   0.0      5   0.0  11167  99.7        -  SB-THREAD:CONDITION-WAIT
+1402      0   0.0      5   0.0  11167  99.7        -  LPARALLEL.CONS-QUEUE:POP-CONS-QUEUE/NO-LOCK
+1403      0   0.0      5   0.0  11167  99.7        -  (SB-PCL::FAST-METHOD COMPUTE-APPLICABLE-METHODS (GENERIC-FUNCTION T))
+1404      0   0.0      5   0.0  11167  99.7        -  SB-PCL::CHECK-INITARGS-VALUES
+1405      0   0.0      5   0.0  11167  99.7        -  SB-PCL::CHECK-INITARGS-1
+1406      0   0.0      5   0.0  11167  99.7        -  SB-KERNEL:MAPC-MEMBER-TYPE-MEMBERS
+1407      0   0.0      5   0.0  11167  99.7        -  SB-INT:%MACROEXPAND
+1408      0   0.0      5   0.0  11167  99.7        -  (FLET SB-C::BODY-FUN :IN SB-C::CONSET-ADD-CONSTRAINT-TO-EQL)
+1409      0   0.0      5   0.0  11167  99.7        -  SB-C::MOVE-LVAR-RESULT
+1410      0   0.0      5   0.0  11167  99.7        -  SB-C::EMIT-STEP-P
+1411      0   0.0      5   0.0  11167  99.7        -  SB-C::ADD-ANNOTATION
+1412      0   0.0      5   0.0  11167  99.7        -  SB-KERNEL::UNPARSE-STRING-TYPE
+1413      0   0.0      5   0.0  11167  99.7        -  SB-LOOP::LOOP-SEQUENCER
+1414      0   0.0      5   0.0  11167  99.7        -  SB-C::LOGAND-DERIVE-TYPE-AUX
+1415      0   0.0      5   0.0  11167  99.7        -  SB-C::LIST-IR2-CONVERT-OPTIMIZER
+1416      0   0.0      5   0.0  11167  99.7        -  SB-REGALLOC::EMIT-OPERAND-LOAD
+1417      0   0.0      5   0.0  11167  99.7        -  SB-C::ASSERT-NEW-VALUE-TYPE
+1418      0   0.0      5   0.0  11167  99.7        -  SB-C::DELETE-UNUSED-IR2-BLOCKS
+1419      0   0.0      5   0.0  11167  99.7        -  (LAMBDA (#:|theta|) :IN "/Users/cscott/.cache/common-lisp/sbcl-1.5.6.106-69e90d3fc-macosx-x64/Users/cscott/code/lisp/quilc/src/compilers/euler-compile.fasl")
+1420      0   0.0      5   0.0  11167  99.7        -  MAKE-ARRAY
+1421      0   0.0      5   0.0  11167  99.7        -  ROW-MAJOR-INDEX
+1422      0   0.0      5   0.0  11167  99.7        -  (FLET "EXECUTION-BODY-1" :IN QVM-TESTS::TEST-HADAMARD)
+1423      0   0.0      5   0.0  11167  99.7        -  (LABELS QVM-TESTS::TEST-HADAMARD :IN QVM-TESTS::TEST-HADAMARD)
+1424      0   0.0      5   0.0  11167  99.7        -  QVM-TESTS::TEST-PATH-EVAL-INSTANCE
+1425      0   0.0      5   0.0  11167  99.7        -  (LABELS QVM-TESTS::TEST-MADPI :IN QVM-TESTS::TEST-MADPI)
+1426      0   0.0      5   0.0  11167  99.7        -  CL-QUIL.CLIFFORD::SYMPLECTIC
+1427      0   0.0      5   0.0  11167  99.7        -  CL-QUIL.CLIFFORD:RANDOM-CLIFFORD
+1428      0   0.0      5   0.0  11167  99.7        -  QVM::RANDOM-CLIFFORD-PROGRAM
+1429      0   0.0      5   0.0  11167  99.7        -  CL-QUIL.CLIFFORD::COMPILE-TABLEAU-OPERATION
+1430      0   0.0      5   0.0  11167  99.7        -  CL-QUIL::DOUBLE=
+1431      0   0.0      5   0.0  11167  99.7        -  (SB-PCL::FAST-METHOD TRANSPOSE (MATRIX))
+1432      0   0.0      5   0.0  11167  99.7        -  (SB-PCL::FAST-METHOD CONJUGATE-TRANSPOSE (MATRIX))
+1433      0   0.0      5   0.0  11167  99.7        -  (LABELS #:BODY-SYM0 :IN QVM-TESTS::TEST-MADPI)
+1434      0   0.0      5   0.0  11167  99.7        -  QVM-TESTS::TEST-MADPI
+1435      0   0.0      5   0.0  11167  99.7        -  (LABELS #:BODY-SYM0 :IN QVM-TESTS::TEST-HADAMARD)
+1436      0   0.0      5   0.0  11167  99.7        -  QVM-TESTS::TEST-HADAMARD
+1437      0   0.0      5   0.0  11167  99.7        -  LPARALLEL.CONS-QUEUE:POP-CONS-QUEUE
+1438      0   0.0      5   0.0  11167  99.7        -  LPARALLEL.KERNEL:RECEIVE-RESULT
+1439      0   0.0      5   0.0  11167  99.7        -  LPARALLEL.COGNATE::%PDOTIMES
+1440      0   0.0      4   0.0  11167  99.7        -  MT19937:RANDOM
+1441      0   0.0      4   0.0  11167  99.7        -  SB-PCL::COMPUTE-APPLICABLE-METHODS-USING-TYPES
+1442      0   0.0      4   0.0  11167  99.7        -  SB-KERNEL::UNION-SIMPLE-=-TYPE-METHOD
+1443      0   0.0      4   0.0  11167  99.7        -  SB-C::LVAR-CONSERVATIVE-TYPE
+1444      0   0.0      4   0.0  11167  99.7        -  SB-C::ENSURE-BLOCK-START
+1445      0   0.0      4   0.0  11167  99.7        -  (FLET SB-C::MAYBE-INVERT :IN "SYS:SRC;COMPILER;SRCTRAN.LISP")
+1446      0   0.0      4   0.0  11167  99.7        -  SB-C::JOIN-BLOCKS-IF-POSSIBLE
+1447      0   0.0      4   0.0  11167  99.7        -  SB-C::--DERIVE-TYPE-AUX
+1448      0   0.0      4   0.0  11167  99.7        -  (LAMBDA (ELT) :IN SB-KERNEL::MEMBER-COMPLEX-SUBTYPEP-ARG1-TYPE-METHOD)
+1449      0   0.0      4   0.0  11167  99.7        -  (FLET SB-REGALLOC::PACK-TNS :IN SB-REGALLOC::PACK-ITERATIVE)
+1450      0   0.0      4   0.0  11167  99.7        -  SB-LOOP::LOOP-LOOKUP-KEYWORD
+1451      0   0.0      4   0.0  11167  99.7        -  SB-C::INIT-VAR-CONSTRAINTS
+1452      0   0.0      4   0.0  11167  99.7        -  SB-C::INSERT-NODE-BEFORE
+1453      0   0.0      4   0.0  11167  99.7        -  SB-REGALLOC::TN-LEXICAL-DEPTH
+1454      0   0.0      4   0.0  11167  99.7        -  SB-C::IR2-OPTIMIZE-JUMPS
+1455      0   0.0      4   0.0  11167  99.7        -  (FLET "H1" :IN QVM-TESTS::TEST-HELLA-RANDOM-CLIFFORDS)
+1456      0   0.0      4   0.0  11167  99.7        -  (SB-C::VOP SB-VM::DATA-VECTOR-SET-WITH-OFFSET/SIMPLE-ARRAY-UNSIGNED-BYTE-2-C)
+1457      0   0.0      4   0.0  11167  99.7        -  (LABELS SB-C::BLAST :IN SB-C::CLEAR-IR1-INFO)
+1458      0   0.0      4   0.0  11167  99.7        -  SB-C::CLEAR-IR1-INFO
+1459      0   0.0      4   0.0  11167  99.7        -  SB-C::MASK-SIGNED-FIELD-OPTIMIZER-OPTIMIZER
+1460      0   0.0      4   0.0  11167  99.7        -  CL-QUIL.CLIFFORD::CLIFFORD-STABILIZER-ACTION
+1461      0   0.0      4   0.0  11167  99.7        -  (FLET "EXECUTION-BODY-1" :IN QVM-TESTS::TEST-MEASURE-ALL)
+1462      0   0.0      4   0.0  11167  99.7        -  (LABELS QVM-TESTS::TEST-MEASURE-ALL :IN QVM-TESTS::TEST-MEASURE-ALL)
+1463      0   0.0      4   0.0  11167  99.7        -  QVM::BRING-TO-ZERO-STATE
+1464      0   0.0      4   0.0  11167  99.7        -  (LABELS #:BODY-SYM0 :IN QVM-TESTS::TEST-MEASURE-ALL)
+1465      0   0.0      4   0.0  11167  99.7        -  QVM-TESTS::TEST-MEASURE-ALL
+1466      0   0.0      3   0.0  11167  99.7        -  SB-C::ASSIGN-LAMBDA-VAR-TNS
+1467      0   0.0      3   0.0  11167  99.7        -  (FLET SB-C::XFORM :IN "SYS:SRC;COMPILER;SRCTRAN.LISP")
+1468      0   0.0      3   0.0  11167  99.7        -  QVM::PULL-TEETH-TO-GET-A-GATE
+1469      0   0.0      3   0.0  11167  99.7        -  QVM:MEMORY-BIT-REF
+1470      0   0.0      3   0.0  11167  99.7        -  SB-C::SPLIT-IR2-BLOCKS
+1471      0   0.0      3   0.0  11167  99.7        -  (FLET SB-C::DO-1-USE :IN SB-C::NOTE-NO-STACK-ALLOCATION)
+1472      0   0.0      3   0.0  11167  99.7        -  SB-C::NOTE-NO-STACK-ALLOCATION
+1473      0   0.0      3   0.0  11167  99.7        -  (SB-C::VOP SB-VM::*/COMPLEX-DOUBLE-FLOAT)
+1474      0   0.0      3   0.0  11167  99.7        -  QVM::GENERATE-COMPLEMENT-ITERATION
+1475      0   0.0      3   0.0  11167  99.7        -  SB-X86-64-ASM::EMIT-SSE-INST
+1476      0   0.0      3   0.0  11167  99.7        -  (FLET SB-X86-64-ASM::EMIT* :IN "SYS:SRC;COMPILER;X86-64;INSTS.LISP")
+1477      0   0.0      3   0.0  11167  99.7        -  SB-C::NODE-LTN-POLICY
+1478      0   0.0      3   0.0  11167  99.7        -  (FLET "WRAPPER7" :IN QVM-TESTS::TEST-RANDOM-STABILIZER-VS-CHP)
+1479      0   0.0      3   0.0  11167  99.7        -  (SB-C:DEFTRANSFORM >=)
+1480      0   0.0      3   0.0  11167  99.7        -  SB-IMPL::%WRITE-STRING
+1481      0   0.0      3   0.0  11167  99.7        -  SB-C::TENSION-IF-IF-1
+1482      0   0.0      3   0.0  11167  99.7        -  SB-C::LVAR-CONSTANTS
+1483      0   0.0      3   0.0  11167  99.7        -  SB-C::PROCESS-LVAR-MODIFIED-ANNOTATION
+1484      0   0.0      3   0.0  11167  99.7        -  SB-C::INSERT-STACK-CLEANUPS
+1485      0   0.0      3   0.0  11167  99.7        -  SB-IMPL::EXPAND-RMW-MACRO
+1486      0   0.0      3   0.0  11167  99.7        -  EMPTY
+1487      0   0.0      3   0.0  11167  99.7        -  (LABELS QVM-TESTS::TEST-QUBIT-ORDERING-IN-COMPILED-MODE :IN QVM-TESTS::TEST-QUBIT-ORDERING-IN-COMPILED-MODE)
+1488      0   0.0      3   0.0  11167  99.7        -  (FLET "EXECUTION-BODY-1" :IN QVM-TESTS::TEST-FOURIER)
+1489      0   0.0      3   0.0  11167  99.7        -  (LABELS QVM-TESTS::TEST-FOURIER :IN QVM-TESTS::TEST-FOURIER)
+1490      0   0.0      3   0.0  11167  99.7        -  CL-QUIL.CLIFFORD::RANDOM-CHP-AND-QUIL
+1491      0   0.0      3   0.0  11167  99.7        -  (FLET SB-ASSEM::FILL-IN :IN SB-ASSEM::PROCESS-BACK-PATCHES)
+1492      0   0.0      3   0.0  11167  99.7        -  SB-INT:FUN-NAME-INLINE-EXPANSION
+1493      0   0.0      3   0.0  11167  99.7        -  (SB-C:DEFTRANSFORM SB-KERNEL:DATA-VECTOR-SET-WITH-OFFSET)
+1494      0   0.0      3   0.0  11167  99.7        -  (LABELS #:BODY-NAME-2 :IN SB-PRETTY::CALL-LOGICAL-BLOCK-PRINTER)
+1495      0   0.0      3   0.0  11167  99.7        -  (FLET "WITH-PRETTY-STREAM0" :IN SB-PRETTY::CALL-LOGICAL-BLOCK-PRINTER)
+1496      0   0.0      3   0.0  11167  99.7        -  SB-PRETTY::CALL-LOGICAL-BLOCK-PRINTER
+1497      0   0.0      3   0.0  11167  99.7        -  SB-C::MAYBE-INFER-ITERATION-VAR-TYPE
+1498      0   0.0      3   0.0  11167  99.7        -  SB-C::ANNOTATE-FUN-LVAR
+1499      0   0.0      3   0.0  11167  99.7        -  SB-C::MAYBE-FLOAT-LVAR-P
+1500      0   0.0      3   0.0  11167  99.7        -  SB-IMPL::VECTOR-MAP-INTO/SIMPLE-BIT-VECTOR
+1501      0   0.0      3   0.0  11167  99.7        -  CL-QUIL.CLIFFORD::TRANSVECTIONS
+1502      0   0.0      3   0.0  11167  99.7        -  (LAMBDA (CL-QUIL.CLIFFORD::I CL-QUIL.CLIFFORD::P) :IN CL-QUIL.CLIFFORD::CLIFFORD-STABILIZER-ACTION)
+1503      0   0.0      3   0.0  11167  99.7        -  CL-QUIL.CLIFFORD::MAP-ALL-PAULIS
+1504      0   0.0      3   0.0  11167  99.7        -  CL-QUIL.CLIFFORD::TABLEAU-FUNCTION
+1505      0   0.0      3   0.0  11167  99.7        -  (SB-PCL::FAST-METHOD SLICE (ABSTRACT-TENSOR T T))
+1506      0   0.0      3   0.0  11167  99.7        -  (LABELS #:BODY-SYM0 :IN QVM-TESTS::TEST-FOURIER)
+1507      0   0.0      3   0.0  11167  99.7        -  QVM-TESTS::TEST-FOURIER
+1508      0   0.0      3   0.0  11167  99.7        -  (LABELS #:BODY-SYM0 :IN QVM-TESTS::TEST-QUBIT-ORDERING-IN-COMPILED-MODE)
+1509      0   0.0      3   0.0  11167  99.7        -  QVM-TESTS::TEST-QUBIT-ORDERING-IN-COMPILED-MODE
+1510      0   0.0      2   0.0  11167  99.7        -  (LAMBDA (SB-PCL::|.P0.|))
+1511      0   0.0      2   0.0  11167  99.7        -  SB-C::IR2-CONVERT-LET
+1512      0   0.0      2   0.0  11167  99.7        -  SB-C::IR2-CONVERT-LOCAL-CALL
+1513      0   0.0      2   0.0  11167  99.7        -  (FLET "LAMBDA0" :IN "SYS:SRC;COMPILER;CTYPE.LISP")
+1514      0   0.0      2   0.0  11167  99.7        -  QVM:MAKE-MATRIX
+1515      0   0.0      2   0.0  11167  99.7        -  (SETF QVM:MEMORY-BIT-REF)
+1516      0   0.0      2   0.0  11167  99.7        -  SB-PCL::%SWAP-WRAPPERS-AND-SLOTS
+1517      0   0.0      2   0.0  11167  99.7        -  (SB-PCL::FAST-METHOD SB-PCL::COMPUTE-SLOT-ACCESSOR-INFO (SB-MOP:EFFECTIVE-SLOT-DEFINITION T T))
+1518      0   0.0      2   0.0  11167  99.7        -  (LAMBDA (&REST SB-PCL::ARGS) :IN SB-PCL::INITIALIZE-INTERNAL-SLOT-FUNCTIONS)
+1519      0   0.0      2   0.0  11167  99.7        -  SB-C:COMPILER-NOTIFY
+1520      0   0.0      2   0.0  11167  99.7        -  (SB-PCL::EMF INITIALIZE-INSTANCE)
+1521      0   0.0      2   0.0  11167  99.7        -  (SB-PCL::FAST-METHOD MAKE-INSTANCE (CLASS))
+1522      0   0.0      2   0.0  11167  99.7        -  (FLET SB-C::ADD-BITS :IN SB-C:MAKE-SC+OFFSET)
+1523      0   0.0      2   0.0  11167  99.7        -  (MACRO-FUNCTION QVM:PDOTIMES)
+1524      0   0.0      2   0.0  11167  99.7        -  SB-VM::NOTE-FLOAT-LOCATION
+1525      0   0.0      2   0.0  11167  99.7        -  (LABELS SB-C::REMOVE-CONSTANT :IN SB-C::OPTIMIZE-CONSTANT-LOADS)
+1526      0   0.0      2   0.0  11167  99.7        -  (LABELS SB-C::REMOVE-WRITTEN-TNS :IN SB-C::OPTIMIZE-CONSTANT-LOADS)
+1527      0   0.0      2   0.0  11167  99.7        -  (:SOURCE-TRANSFORM DPB)
+1528      0   0.0      2   0.0  11167  99.7        -  SB-C::IR2-CONVERT-FULL-CALL-ARGS
+1529      0   0.0      2   0.0  11167  99.7        -  SB-PCL::SAUT-EQL
+1530      0   0.0      2   0.0  11167  99.7        -  QVM::GENERATE-PERMUTATION-GATE-APPLICATION-CODE
+1531      0   0.0      2   0.0  11167  99.7        -  SB-INT:ANY/TYPE
+1532      0   0.0      2   0.0  11167  99.7        -  SB-C::IR1-OPTIMIZE-RETURN
+1533      0   0.0      2   0.0  11167  99.7        -  (FLET "PPRINT-BLOCK" :IN SB-PRETTY::PPRINT-FUN-CALL)
+1534      0   0.0      2   0.0  11167  99.7        -  SB-PRETTY::PPRINT-FUN-CALL
+1535      0   0.0      2   0.0  11167  99.7        -  (SB-C::VOP SB-VM::FAST-ASH-C/FIXNUM=>FIXNUM)
+1536      0   0.0      2   0.0  11167  99.7        -  (FLET "CLEANUP-FUN-0" :IN SB-REGALLOC:PACK)
+1537      0   0.0      2   0.0  11167  99.7        -  SB-ASSEM:MAKE-ASMSTREAM
+1538      0   0.0      2   0.0  11167  99.7        -  (SB-PCL::FAST-METHOD CL-QUIL::RESOLVE-APPLICATION (CL-QUIL:UNRESOLVED-APPLICATION))
+1539      0   0.0      2   0.0  11167  99.7        -  SB-C::IR2-CONVERT-BIND
+1540      0   0.0      2   0.0  11167  99.7        -  SB-VM:FLOATING-POINT-MODES
+1541      0   0.0      2   0.0  11167  99.7        -  SB-C::INTERVAL-SUB
+1542      0   0.0      2   0.0  11167  99.7        -  SB-LOOP::LOOP-FOR-ARITHMETIC
+1543      0   0.0      2   0.0  11167  99.7        -  SB-C::IR2-CONVERT-SET
+1544      0   0.0      2   0.0  11167  99.7        -  SB-X86-64-ASM::MATCHING-OPERAND-SIZE
+1545      0   0.0      2   0.0  11167  99.7        -  SB-C::FUN-LVAR-TN
+1546      0   0.0      2   0.0  11167  99.7        -  (MACRO-FUNCTION DOLIST)
+1547      0   0.0      2   0.0  11167  99.7        -  SB-C::COMPUTE-MINIMAL-VARS
+1548      0   0.0      2   0.0  11167  99.7        -  SB-C::ASSIGN-RETURN-LOCATIONS
+1549      0   0.0      2   0.0  11167  99.7        -  SB-C::ASSIGN-RETURNS
+1550      0   0.0      2   0.0  11167  99.7        -  SB-REGALLOC::FIND-OK-TARGET-OFFSET
+1551      0   0.0      2   0.0  11167  99.7        -  (FLET "CLEANUP-FUN-3" :IN SB-C::INTERVAL-ADD)
+1552      0   0.0      2   0.0  11167  99.7        -  SB-C::APPLY-CORE-FIXUPS
+1553      0   0.0      2   0.0  11167  99.7        -  (FLET "CLEANUP-FUN-3" :IN SB-C::INTERVAL-MUL)
+1554      0   0.0      2   0.0  11167  99.7        -  SB-C::MAYBE-DELETE-EXIT
+1555      0   0.0      2   0.0  11167  99.7        -  (FLET "CLEANUP-FUN-1" :IN SB-C:COMPILE-IN-LEXENV)
+1556      0   0.0      2   0.0  11167  99.7        -  SB-C::ANNOTATE-FIXED-VALUES-LVAR
+1557      0   0.0      2   0.0  11167  99.7        -  SB-KERNEL::FUNCTION-COMPLEX-INTERSECTION2-TYPE-METHOD
+1558      0   0.0      2   0.0  11167  99.7        -  (SB-C:DEFTRANSFORM COMMON-LISP:=)
+1559      0   0.0      2   0.0  11167  99.7        -  (FLET SB-C::DO-1-USE :IN SB-C::TENSION-IF-IF-1)
+1560      0   0.0      2   0.0  11167  99.7        -  SB-REGALLOC::SAVE-IF-NECESSARY
+1561      0   0.0      2   0.0  11167  99.7        -  (SB-PCL::FAST-METHOD CL-QUIL.CLIFFORD:GROUP-MUL (CL-QUIL.CLIFFORD:PAULI CL-QUIL.CLIFFORD:PAULI))
+1562      0   0.0      2   0.0  11167  99.7        -  (SB-PCL::EMF CL-QUIL.CLIFFORD:GROUP-MUL)
+1563      0   0.0      2   0.0  11167  99.7        -  (SB-C:DEFTRANSFORM ASH)
+1564      0   0.0      2   0.0  11167  99.7        -  SB-IMPL::CLRHASH-IMPL
+1565      0   0.0      2   0.0  11167  99.7        -  (FLET "H1" :IN QVM-TESTS::TEST-CLIFFORD-MATRIX-CONVERSIONS)
+1566      0   0.0      2   0.0  11167  99.7        -  (FLET SB-IMPL::FROB-DO-BODY :IN "SYS:SRC;CODE;DEFBOOT.LISP")
+1567      0   0.0      2   0.0  11167  99.7        -  (FLET "LAMBDA0" :IN "SYS:SRC;COMPILER;LOCALL.LISP")
+1568      0   0.0      2   0.0  11167  99.7        -  SB-C::MAKE-XEP
+1569      0   0.0      2   0.0  11167  99.7        -  SB-C::REFERENCE-ENTRY-POINT
+1570      0   0.0      2   0.0  11167  99.7        -  (LABELS QVM-TESTS::TEST-MEMORY-NAME-CLOSURE-BUG :IN QVM-TESTS::TEST-MEMORY-NAME-CLOSURE-BUG)
+1571      0   0.0      2   0.0  11167  99.7        -  QVM:MEMORY-REF
+1572      0   0.0      2   0.0  11167  99.7        -  QVM::RESET-CLASSICAL-MEMORY
+1573      0   0.0      2   0.0  11167  99.7        -  (SB-PCL::FAST-METHOD UPDATE-INSTANCE-FOR-DIFFERENT-CLASS :BEFORE (TENSOR/COMPLEX-DOUBLE-FLOAT MATRIX/COMPLEX-DOUBLE-FLOAT))
+1574      0   0.0      2   0.0  11167  99.7        -  (SB-PCL::FAST-METHOD ALLOCATE-INSTANCE (STANDARD-CLASS))
+1575      0   0.0      2   0.0  11167  99.7        -  SB-C::LTN-ANALYZE-SET
+1576      0   0.0      2   0.0  11167  99.7        -  SB-PCL::TRY-UPDATE-CACHE
+1577      0   0.0      2   0.0  11167  99.7        -  SB-PCL::FILL-CACHE
+1578      0   0.0      2   0.0  11167  99.7        -  SB-PCL::CACHING-MISS
+1579      0   0.0      2   0.0  11167  99.7        -  (FLET "EXECUTION-BODY-1" :IN QVM-TESTS::TEST-CONTROLLED-CONTROLLED-X)
+1580      0   0.0      2   0.0  11167  99.7        -  (LABELS QVM-TESTS::TEST-CONTROLLED-CONTROLLED-X :IN QVM-TESTS::TEST-CONTROLLED-CONTROLLED-X)
+1581      0   0.0      2   0.0  11167  99.7        -  (FLET "EXECUTION-BODY-1" :IN QVM-TESTS::TEST-DAGGER-INVERSION)
+1582      0   0.0      2   0.0  11167  99.7        -  (LABELS QVM-TESTS::TEST-DAGGER-INVERSION :IN QVM-TESTS::TEST-DAGGER-INVERSION)
+1583      0   0.0      2   0.0  11167  99.7        -  (FLET "EXECUTION-BODY-1" :IN QVM-TESTS::TEST-MULTIPLY-FORKED-RX)
+1584      0   0.0      2   0.0  11167  99.7        -  (LABELS QVM-TESTS::TEST-MULTIPLY-FORKED-RX :IN QVM-TESTS::TEST-MULTIPLY-FORKED-RX)
+1585      0   0.0      2   0.0  11167  99.7        -  QVM:LOAD-PROGRAM
+1586      0   0.0      2   0.0  11167  99.7        -  SB-UNIX:NANOSLEEP
+1587      0   0.0      2   0.0  11167  99.7        -  (LABELS QVM-TESTS::TEST-CUSTOM-ALLOCATOR :IN QVM-TESTS::TEST-CUSTOM-ALLOCATOR)
+1588      0   0.0      2   0.0  11167  99.7        -  CL-QUIL.CLIFFORD::.+
+1589      0   0.0      2   0.0  11167  99.7        -  (SB-PCL::FAST-METHOD MAP (FUNCTION ABSTRACT-TENSOR))
+1590      0   0.0      2   0.0  11167  99.7        -  (LAMBDA (CL-QUIL.CLIFFORD::TOP-LEFT CL-QUIL.CLIFFORD::BOTTOM-RIGHT) :IN CL-QUIL.CLIFFORD::FACTOR-Z)
+1591      0   0.0      2   0.0  11167  99.7        -  (LABELS #:BODY-SYM0 :IN QVM-TESTS::TEST-CUSTOM-ALLOCATOR)
+1592      0   0.0      2   0.0  11167  99.7        -  QVM-TESTS::TEST-CUSTOM-ALLOCATOR
+1593      0   0.0      2   0.0  11167  99.7        -  (LABELS #:BODY-SYM0 :IN QVM-TESTS::TEST-MULTIPLY-FORKED-RX)
+1594      0   0.0      2   0.0  11167  99.7        -  QVM-TESTS::TEST-MULTIPLY-FORKED-RX
+1595      0   0.0      2   0.0  11167  99.7        -  (LABELS #:BODY-SYM0 :IN QVM-TESTS::TEST-DAGGER-INVERSION)
+1596      0   0.0      2   0.0  11167  99.7        -  QVM-TESTS::TEST-DAGGER-INVERSION
+1597      0   0.0      2   0.0  11167  99.7        -  (LABELS #:BODY-SYM0 :IN QVM-TESTS::TEST-CONTROLLED-CONTROLLED-X)
+1598      0   0.0      2   0.0  11167  99.7        -  QVM-TESTS::TEST-CONTROLLED-CONTROLLED-X
+1599      0   0.0      2   0.0  11167  99.7        -  (LABELS #:BODY-SYM0 :IN QVM-TESTS::TEST-MEMORY-NAME-CLOSURE-BUG)
+1600      0   0.0      2   0.0  11167  99.7        -  QVM-TESTS::TEST-MEMORY-NAME-CLOSURE-BUG
+1601      0   0.0      1   0.0  11167  99.7        -  "foreign function tiny_malloc_should_clear"
+1602      0   0.0      1   0.0  11167  99.7        -  "foreign function szone_malloc_should_clear"
+1603      0   0.0      1   0.0  11167  99.7        -  "foreign function malloc_zone_malloc"
+1604      0   0.0      1   0.0  11167  99.7        -  "foreign function malloc"
+1605      0   0.0      1   0.0  11167  99.7        -  FOREIGN-ALLOC
+1606      0   0.0      1   0.0  11167  99.7        -  QVM:MAKE-CLASSICAL-MEMORY
+1607      0   0.0      1   0.0  11167  99.7        -  QVM::ALLOCATE-MEMORY-FOR-MODEL
+1608      0   0.0      1   0.0  11167  99.7        -  (SB-PCL::FAST-METHOD INITIALIZE-INSTANCE :AFTER (QVM:CLASSICAL-MEMORY-SUBSYSTEM))
+1609      0   0.0      1   0.0  11167  99.7        -  SB-C::ARRAY-HEADER-P-DERIVE-TYPE-OPTIMIZER
+1610      0   0.0      1   0.0  11167  99.7        -  (:SOURCE-TRANSFORM LDB)
+1611      0   0.0      1   0.0  11167  99.7        -  COS
+1612      0   0.0      1   0.0  11167  99.7        -  (SB-PCL::EMF MAKE-TENSOR)
+1613      0   0.0      1   0.0  11167  99.7        -  SIN
+1614      0   0.0      1   0.0  11167  99.7        -  (LABELS SB-IMPL::SLOWER-MAP :IN SB-KERNEL:%MAP)
+1615      0   0.0      1   0.0  11167  99.7        -  (FLET "EXECUTION-BODY-1" :IN QVM-TESTS::TEST-SIMPLE-MEASUREMENTS)
+1616      0   0.0      1   0.0  11167  99.7        -  (LABELS QVM-TESTS::TEST-SIMPLE-MEASUREMENTS :IN QVM-TESTS::TEST-SIMPLE-MEASUREMENTS)
+1617      0   0.0      1   0.0  11167  99.7        -  (LABELS QVM-TESTS::TEST-SIMPLE-CHEEKY-MEASUREMENTS :IN QVM-TESTS::TEST-SIMPLE-CHEEKY-MEASUREMENTS)
+1618      0   0.0      1   0.0  11167  99.7        -  (LABELS QVM-TESTS::TEST-SIMPLE-CHEEKY-MEASUREMENTS-WITH-SWAP :IN QVM-TESTS::TEST-SIMPLE-CHEEKY-MEASUREMENTS-WITH-SWAP)
+1619      0   0.0      1   0.0  11167  99.7        -  (FLET "EXECUTION-BODY-1" :IN QVM-TESTS::TEST-FULL-ROTATION)
+1620      0   0.0      1   0.0  11167  99.7        -  (LABELS QVM-TESTS::TEST-FULL-ROTATION :IN QVM-TESTS::TEST-FULL-ROTATION)
+1621      0   0.0      1   0.0  11167  99.7        -  (FLET "EXECUTION-BODY-1" :IN QVM-TESTS::TEST-SWAP)
+1622      0   0.0      1   0.0  11167  99.7        -  (LABELS QVM-TESTS::TEST-SWAP :IN QVM-TESTS::TEST-SWAP)
+1623      0   0.0      1   0.0  11167  99.7        -  SB-PCL::INSTALL-OPTIMIZED-CONSTRUCTOR
+1624      0   0.0      1   0.0  11167  99.7        -  (LAMBDA (&REST SB-PCL::ARGS) :IN SB-PCL::INSTALL-INITIAL-CONSTRUCTOR)
+1625      0   0.0      1   0.0  11167  99.7        -  (LABELS QVM-EXAMPLES::QFT :IN QVM-EXAMPLES:QFT-CIRCUIT)
+1626      0   0.0      1   0.0  11167  99.7        -  QVM-EXAMPLES:QFT-CIRCUIT
+1627      0   0.0      1   0.0  11167  99.7        -  QVM-TESTS::FOURIER-TEST-PROGRAM
+1628      0   0.0      1   0.0  11167  99.7        -  (LABELS QVM-TESTS::TEST-JUMP :IN QVM-TESTS::TEST-JUMP)
+1629      0   0.0      1   0.0  11167  99.7        -  (LABELS QVM-TESTS::TEST-JUMP-UNLESS :IN QVM-TESTS::TEST-JUMP-UNLESS)
+1630      0   0.0      1   0.0  11167  99.7        -  (LABELS QVM-TESTS::TEST-HALT :IN QVM-TESTS::TEST-HALT)
+1631      0   0.0      1   0.0  11167  99.7        -  (LABELS QVM-TESTS::TEST-FLIP-CIRCUIT :IN QVM-TESTS::TEST-FLIP-CIRCUIT)
+1632      0   0.0      1   0.0  11167  99.7        -  (LABELS QVM-TESTS::TEST-MEASURE-CHAIN-COMPILATION :IN QVM-TESTS::TEST-MEASURE-CHAIN-COMPILATION)
+1633      0   0.0      1   0.0  11167  99.7        -  (FLET "EXECUTION-BODY-1" :IN QVM-TESTS::TEST-CONTROLLED-X)
+1634      0   0.0      1   0.0  11167  99.7        -  (LABELS QVM-TESTS::TEST-CONTROLLED-X :IN QVM-TESTS::TEST-CONTROLLED-X)
+1635      0   0.0      1   0.0  11167  99.7        -  (LABELS QVM-TESTS::TEST-EMPTY-PROGRAM-NOISY-QVM :IN QVM-TESTS::TEST-EMPTY-PROGRAM-NOISY-QVM)
+1636      0   0.0      1   0.0  11167  99.7        -  (LABELS SB-C::FLOOD :IN SB-C::CLOSE-OVER)
+1637      0   0.0      1   0.0  11167  99.7        -  FROM-DIAG
+1638      0   0.0      1   0.0  11167  99.7        -  QVM-TESTS::MAKE-1Q-MIXTURE
+1639      0   0.0      1   0.0  11167  99.7        -  (LABELS QVM-TESTS::TEST-DENSITY-QVM-1Q-PURITY :IN QVM-TESTS::TEST-DENSITY-QVM-1Q-PURITY)
+1640      0   0.0      1   0.0  11167  99.7        -  "foreign function clock_get_time"
+1641      0   0.0      1   0.0  11167  99.7        -  "foreign function sb_nanosleep"
+1642      0   0.0      1   0.0  11167  99.7        -  SB-PCL::GET-SECONDARY-DISPATCH-FUNCTION1
+1643      0   0.0      1   0.0  11167  99.7        -  SB-PCL::CACHE-MISS-VALUES-INTERNAL
+1644      0   0.0      1   0.0  11167  99.7        -  SB-PCL::CACHE-MISS-VALUES
+1645      0   0.0      1   0.0  11167  99.7        -  SB-PCL::INITIAL-DFUN
+1646      0   0.0      1   0.0  11167  99.7        -  (LABELS QVM-TESTS::TEST-STABILIZER-ZERO-STATE :IN QVM-TESTS::TEST-STABILIZER-ZERO-STATE)
+1647      0   0.0      1   0.0  11167  99.7        -  MAKE-CONDITION
+1648      0   0.0      1   0.0  11167  99.7        -  SB-KERNEL:COERCE-TO-CONDITION
+1649      0   0.0      1   0.0  11167  99.7        -  SB-C::ENSURE-BLOCK-HAS-IR2-BLOCK
+1650      0   0.0      1   0.0  11167  99.7        -  SB-C::FIXUP-IR2-BLOCKS-FOR-SPLIT-BLOCK
+1651      0   0.0      1   0.0  11167  99.7        -  SB-C::IR2-CHANGE-NODE-SUCCESSOR
+1652      0   0.0      1   0.0  11167  99.7        -  SB-C::SET-TAIL-LOCAL-CALL-SUCCESSOR
+1653      0   0.0      1   0.0  11167  99.7        -  SB-C::CAREFUL-CALL
+1654      0   0.0      1   0.0  11167  99.7        -  (LAMBDA (QVM::AMPS QVM::AREFS) :IN QVM::GENERATE-GATE-APPLICATION-CODE-WITH-MATRIX)
+1655      0   0.0      1   0.0  11167  99.7        -  QVM::GENERATE-EXTRACTION-CODE
+1656      0   0.0      1   0.0  11167  99.7        -  (LAMBDA (QVM::ADDR) :IN QVM::GENERATE-GATE-APPLICATION-CODE-WITH-MATRIX)
+1657      0   0.0      1   0.0  11167  99.7        -  QVM::GENERATE-GATE-APPLICATION-CODE-WITH-MATRIX
+1658      0   0.0      1   0.0  11167  99.7        -  CL-QUIL::SUCCEEDING-NODE-ON-QUBIT
+1659      0   0.0      1   0.0  11167  99.7        -  SB-C::IR1-CONVERT-QUOTE
+1660      0   0.0      1   0.0  11167  99.7        -  SB-C::FIX-CORE-SOURCE-INFO
+1661      0   0.0      1   0.0  11167  99.7        -  "foreign function gettimeofday"
+1662      0   0.0      1   0.0  11167  99.7        -  GET-UNIVERSAL-TIME
+1663      0   0.0      1   0.0  11167  99.7        -  SB-C::MAKE-SOURCE-INFO
+1664      0   0.0      1   0.0  11167  99.7        -  SB-VM::ALLOCATION
+1665      0   0.0      1   0.0  11167  99.7        -  (SB-C::VOP SB-C:MAKE-CLOSURE)
+1666      0   0.0      1   0.0  11167  99.7        -  SB-C::VECTOR-LENGTH-DERIVE-TYPE-OPTIMIZER
+1667      0   0.0      1   0.0  11167  99.7        -  SB-C:MAKE-STACK-POINTER-TN
+1668      0   0.0      1   0.0  11167  99.7        -  SB-C::INTEGER-LENGTH-DERIVE-TYPE-OPTIMIZER
+1669      0   0.0      1   0.0  11167  99.7        -  (:SOURCE-TRANSFORM FUNCALL)
+1670      0   0.0      1   0.0  11167  99.7        -  (LABELS QVM-TESTS::TEST-STABILIZER-NONCLIFFORD :IN QVM-TESTS::TEST-STABILIZER-NONCLIFFORD)
+1671      0   0.0      1   0.0  11167  99.7        -  (LAMBDA (CL-PPCRE::START-POS) :IN CL-PPCRE::CREATE-MATCHER-AUX)
+1672      0   0.0      1   0.0  11167  99.7        -  SB-C::MAKE-XEP-LAMBDA-EXPRESSION
+1673      0   0.0      1   0.0  11167  99.7        -  SB-C::STEP-FORM-P
+1674      0   0.0      1   0.0  11167  99.7        -  (LABELS SB-C::CHECK-SUSPICIOUS :IN SB-INT:PARSE-LAMBDA-LIST)
+1675      0   0.0      1   0.0  11167  99.7        -  SB-C::COMPILED-DEBUG-FUN-OFFSET
+1676      0   0.0      1   0.0  11167  99.7        -  SB-PCL::SPECIALIZER-APPLICABLE-USING-TYPE-P
+1677      0   0.0      1   0.0  11167  99.7        -  (SB-C::VOP SB-VM::FAST-LOGIOR/FIXNUM=>FIXNUM)
+1678      0   0.0      1   0.0  11167  99.7        -  SB-KERNEL::ARRAY-SIMPLE-INTERSECTION2-TYPE-METHOD
+1679      0   0.0      1   0.0  11167  99.7        -  (:SOURCE-TRANSFORM LOGIOR)
+1680      0   0.0      1   0.0  11167  99.7        -  PPRINT-DISPATCH
+1681      0   0.0      1   0.0  11167  99.7        -  SB-C::PROPAGATE-REF-DX
+1682      0   0.0      1   0.0  11167  99.7        -  SB-C::COMPACT-VECTOR
+1683      0   0.0      1   0.0  11167  99.7        -  SB-KERNEL:WITH-SIMPLE-CONDITION-RESTARTS
+1684      0   0.0      1   0.0  11167  99.7        -  SB-INT:ADJUST-LIST
+1685      0   0.0      1   0.0  11167  99.7        -  (FLET SB-ASSEM::FROB :IN SB-ASSEM::COMPACT-SEGMENT-BUFFER)
+1686      0   0.0      1   0.0  11167  99.7        -  SB-ASSEM::COMPACT-SEGMENT-BUFFER
+1687      0   0.0      1   0.0  11167  99.7        -  CL-QUIL:LOOKUP-STANDARD-GATE
+1688      0   0.0      1   0.0  11167  99.7        -  (:SOURCE-TRANSFORM >)
+1689      0   0.0      1   0.0  11167  99.7        -  (FLET SB-C::DO-1-USE :IN SB-C::MAYBE-DELETE-CAST)
+1690      0   0.0      1   0.0  11167  99.7        -  SB-PRETTY::ENQUEUE-NEWLINE
+1691      0   0.0      1   0.0  11167  99.7        -  PPRINT-NEWLINE
+1692      0   0.0      1   0.0  11167  99.7        -  (FLET "PPRINT-BLOCK" :IN PPRINT-FILL)
+1693      0   0.0      1   0.0  11167  99.7        -  PPRINT-FILL
+1694      0   0.0      1   0.0  11167  99.7        -  SB-C::ASSERT-DEFINITION-TYPE
+1695      0   0.0      1   0.0  11167  99.7        -  (LABELS CL-QUIL::CHASE-NODE :IN CL-QUIL::PROGRAM-GRID-NODES)
+1696      0   0.0      1   0.0  11167  99.7        -  CL-QUIL::PROGRAM-GRID-NODES
+1697      0   0.0      1   0.0  11167  99.7        -  DEYE
+1698      0   0.0      1   0.0  11167  99.7        -  (SB-C:DEFTRANSFORM <=)
+1699      0   0.0      1   0.0  11167  99.7        -  SB-C::CLOSE-OVER
+1700      0   0.0      1   0.0  11167  99.7        -  (SB-PCL::EMF CL-PPCRE:SCAN)
+1701      0   0.0      1   0.0  11167  99.7        -  (FLET "CLEANUP-FUN-3" :IN SB-C::INTERVAL-SUB)
+1702      0   0.0      1   0.0  11167  99.7        -  (FLET "H1" :IN QVM-TESTS::TEST-RANDOM-QVM-VS-CHP-LARGE)
+1703      0   0.0      1   0.0  11167  99.7        -  CL-QUIL::FIND-TRANSFORM
+1704      0   0.0      1   0.0  11167  99.7        -  (SB-PCL::FAST-METHOD CL-QUIL:TRANSFORM :BEFORE (SYMBOL T))
+1705      0   0.0      1   0.0  11167  99.7        -  (SB-PCL::EMF CL-QUIL:TRANSFORM)
+1706      0   0.0      1   0.0  11167  99.7        -  (SB-PCL::FAST-METHOD CL-QUIL:TRANSFORM :AROUND (SYMBOL CL-QUIL:TRANSFORMABLE))
+1707      0   0.0      1   0.0  11167  99.7        -  SB-C::HANDLE-NESTED-DYNAMIC-EXTENT-LVARS
+1708      0   0.0      1   0.0  11167  99.7        -  SB-PCL::GET-PV
+1709      0   0.0      1   0.0  11167  99.7        -  (LAMBDA (SB-PCL::METHOD-ARGS SB-PCL::NEXT-METHODS) :IN SB-PCL::METHOD-FUNCTION-FROM-FAST-FUNCTION)
+1710      0   0.0      1   0.0  11167  99.7        -  QVM::MAKE-STABILIZER-QVM
+1711      0   0.0      1   0.0  11167  99.7        -  SB-PRETTY::FORCE-PRETTY-OUTPUT
+1712      0   0.0      1   0.0  11167  99.7        -  SB-C::FIND-MODULAR-VERSION
+1713      0   0.0      1   0.0  11167  99.7        -  SB-C::SUMMARIZE-COMPILATION-UNIT
+1714      0   0.0      1   0.0  11167  99.7        -  (FLET "CLEANUP-FUN-9" :IN SB-C::%WITH-COMPILATION-UNIT)
+1715      0   0.0      1   0.0  11167  99.7        -  SB-INT:LEGAL-FUN-NAME-OR-TYPE-ERROR
+1716      0   0.0      1   0.0  11167  99.7        -  (SB-C::VOP SB-VM::FAST-*/FIXNUM=>FIXNUM)
+1717      0   0.0      1   0.0  11167  99.7        -  (FLET SB-LOOP::IN-GROUP-P :IN SB-LOOP::LOOP-COLLECT-PREPOSITIONAL-PHRASES)
+1718      0   0.0      1   0.0  11167  99.7        -  (SB-C:DEFTRANSFORM VALUES)
+1719      0   0.0      1   0.0  11167  99.7        -  (SB-C::VOP SB-VM::FAST-LOGXOR-C/FIXNUM=>FIXNUM)
+1720      0   0.0      1   0.0  11167  99.7        -  SB-C::SOURCE-PATH-TLF-NUMBER
+1721      0   0.0      1   0.0  11167  99.7        -  SB-C::MAKE-IR2-COMPONENT
+1722      0   0.0      1   0.0  11167  99.7        -  SB-KERNEL::NUMBER-SIMPLE-=-TYPE-METHOD
+1723      0   0.0      1   0.0  11167  99.7        -  SB-LOOP::LOOP-BIND-BLOCK
+1724      0   0.0      1   0.0  11167  99.7        -  SB-REGALLOC::CHECK-OK-TARGET
+1725      0   0.0      1   0.0  11167  99.7        -  SB-KERNEL::TRANSLATE-FUN-TYPE
+1726      0   0.0      1   0.0  11167  99.7        -  CL-QUIL.CLIFFORD::PUT-TABLEAU-INTO-ROW-ECHELON-FORM
+1727      0   0.0      1   0.0  11167  99.7        -  SB-X86-64-ASM::EMIT-SIGNED-DWORD
+1728      0   0.0      1   0.0  11167  99.7        -  QVM-TESTS::TEST-QUICKRUN
+1729      0   0.0      1   0.0  11167  99.7        -  SB-EXT:TYPEXPAND-1
+1730      0   0.0      1   0.0  11167  99.7        -  SB-C::DEFINITION-TYPE
+1731      0   0.0      1   0.0  11167  99.7        -  SB-C::FINALIZE-XEP-DEFINITION
+1732      0   0.0      1   0.0  11167  99.7        -  (FLET SB-C::PROCESS-VAR :IN SB-C::PROCESS-TYPE-DECL)
+1733      0   0.0      1   0.0  11167  99.7        -  SB-C::IR2-CONVERT-IF
+1734      0   0.0      1   0.0  11167  99.7        -  SB-C::ARRAY-TYPE-DIMENSIONS-OR-GIVE-UP
+1735      0   0.0      1   0.0  11167  99.7        -  (SB-C:DEFTRANSFORM SB-C::VECTOR-LENGTH)
+1736      0   0.0      1   0.0  11167  99.7        -  SB-C::PROPAGATE-LVAR-ANNOTATIONS-TO-REFS
+1737      0   0.0      1   0.0  11167  99.7        -  SB-KERNEL::MEMBER-COMPLEX-INTERSECTION2-TYPE-METHOD
+1738      0   0.0      1   0.0  11167  99.7        -  SB-C::FLUSH-COMBINATION
+1739      0   0.0      1   0.0  11167  99.7        -  SB-C::EMIT-ARG-MOVES
+1740      0   0.0      1   0.0  11167  99.7        -  SB-VM::STATICALLY-LINK-CODE-OBJ
+1741      0   0.0      1   0.0  11167  99.7        -  (FLET SB-C::FINISH-FIXUPS :IN "SYS:SRC;COMPILER;GENERIC;TARGET-CORE.LISP")
+1742      0   0.0      1   0.0  11167  99.7        -  SB-KERNEL:VECTOR-TO-VECTOR*
+1743      0   0.0      1   0.0  11167  99.7        -  (SB-C::VOP SB-VM::DATA-VECTOR-SET-WITH-OFFSET/SIMPLE-BIT-VECTOR)
+1744      0   0.0      1   0.0  11167  99.7        -  (SB-C::VOP SB-VM::DATA-VECTOR-SET-WITH-OFFSET/SIMPLE-ARRAY-UNSIGNED-BYTE-2)
+1745      0   0.0      1   0.0  11167  99.7        -  SB-C::INTERVAL->=
+1746      0   0.0      1   0.0  11167  99.7        -  (SB-C:DEFTRANSFORM LOGAND)
+1747      0   0.0      1   0.0  11167  99.7        -  SB-KERNEL:%DEPOSIT-FIELD
+1748      0   0.0      1   0.0  11167  99.7        -  SB-C:WRITE-VAR-INTEGER
+1749      0   0.0      1   0.0  11167  99.7        -  (SB-C:DEFTRANSFORM SB-KERNEL:%ARRAY-DIMENSION)
+1750      0   0.0      1   0.0  11167  99.7        -  (SB-C::VOP SB-VM::LIST-OR-LIST*)
+1751      0   0.0      1   0.0  11167  99.7        -  SB-C::TYPE-APPROXIMATE-INTERVAL
+1752      0   0.0      1   0.0  11167  99.7        -  (SB-C:DEFTRANSFORM >=)
+1753      0   0.0      1   0.0  11167  99.7        -  SB-C::BEST-SUB-SOURCE-PATH
+1754      0   0.0      1   0.0  11167  99.7        -  SB-C::LOGXOR-DERIVE-UNSIGNED-BOUNDS
+1755      0   0.0      1   0.0  11167  99.7        -  SB-C::LOGXOR-DERIVE-TYPE-AUX
+1756      0   0.0      1   0.0  11167  99.7        -  SB-C::IR2-CONVERT-CONDITIONAL
+1757      0   0.0      1   0.0  11167  99.7        -  SB-C::%ARRAY-DATA-DERIVE-TYPE-OPTIMIZER
+1758      0   0.0      1   0.0  11167  99.7        -  SB-ASSEM:EMIT-CHOOSER
+1759      0   0.0      1   0.0  11167  99.7        -  (FLET SB-THREAD::WITH-RECURSIVE-LOCK-THUNK :IN SB-KERNEL::CLASSOID-SIMPLE-SUBTYPEP-TYPE-METHOD)
+1760      0   0.0      1   0.0  11167  99.7        -  SB-C::FUN-NAME-DX-ARGS
+1761      0   0.0      1   0.0  11167  99.7        -  SB-FORMAT::TOKENIZE-CONTROL-STRING
+1762      0   0.0      1   0.0  11167  99.7        -  SB-REGALLOC::VERTICES-BEST-COLOR/SINGLE-COLOR
+1763      0   0.0      1   0.0  11167  99.7        -  SB-KERNEL::CLASSOID-SIMPLE-SUBTYPEP-TYPE-METHOD
+1764      0   0.0      1   0.0  11167  99.7        -  SB-IMPL::VECTOR-SUBSEQ-DISPATCH/SIMPLE-ARRAY-UNSIGNED-BYTE-2
+1765      0   0.0      1   0.0  11167  99.7        -  CL-QUIL.CLIFFORD::BASE4-LIST
+1766      0   0.0      1   0.0  11167  99.7        -  CL-QUIL.CLIFFORD:PAULI-TO-INDEX
+1767      0   0.0      1   0.0  11167  99.7        -  (LAMBDA (CL-QUIL.CLIFFORD::E) :IN CL-QUIL.CLIFFORD:APPLY-CLIFFORD)
+1768      0   0.0      1   0.0  11167  99.7        -  SB-KERNEL:FIND-OR-CREATE-FDEFN
+1769      0   0.0      1   0.0  11167  99.7        -  SB-VM::FDEFN-ENTRY-ADDRESS
+1770      0   0.0      1   0.0  11167  99.7        -  (FLET SB-C:FIXUP :IN "SYS:SRC;COMPILER;GENERIC;TARGET-CORE.LISP")
+1771      0   0.0      1   0.0  11167  99.7        -  (LAMBDA (SB-C::DX-CLEANUP) :IN SB-C::UPDATE-UVL-LIVE-SETS)
+1772      0   0.0      1   0.0  11167  99.7        -  SB-C::PROCESS-HANDLE-CONDITIONS-DECL
+1773      0   0.0      1   0.0  11167  99.7        -  SB-C::PROCESS-EXTENT-DECL
+1774      0   0.0      1   0.0  11167  99.7        -  SB-C::SAME-LEAF-REF-P
+1775      0   0.0      1   0.0  11167  99.7        -  SB-C::FIND-LOOP-BLOCKS
+1776      0   0.0      1   0.0  11167  99.7        -  (:SOURCE-TRANSFORM COMMON-LISP:+)
+1777      0   0.0      1   0.0  11167  99.7        -  SB-C::MODULAR-VERSION-INFO
+1778      0   0.0      1   0.0  11167  99.7        -  SB-C::%DATA-VECTOR-AND-INDEX-DERIVE-TYPE-OPTIMIZER
+1779      0   0.0      1   0.0  11167  99.7        -  SB-REGALLOC::SAVE-SINGLE-WRITER-TN
+1780      0   0.0      1   0.0  11167  99.7        -  SB-VM:EMIT-LONG-NOP
+1781      0   0.0      1   0.0  11167  99.7        -  SB-LOOP::LOOP-DECLARE-VAR
+1782      0   0.0      1   0.0  11167  99.7        -  (SB-C::VOP SB-VM::%ARRAY-DIMENSION-C)
+1783      0   0.0      1   0.0  11167  99.7        -  SB-C::CONSTANT-LVAR-USES-P
+1784      0   0.0      1   0.0  11167  99.7        -  SB-C:EMIT-CONSTANT
+1785      0   0.0      1   0.0  11167  99.7        -  (FLET "CLEANUP-FUN-0" :IN SB-C::%COMPILE)
+1786      0   0.0      1   0.0  11167  99.7        -  SB-C::RECORD-MACROEXPANSION
+1787      0   0.0      1   0.0  11167  99.7        -  SB-IMPL::MACROEXPAND-FOR-SETF
+1788      0   0.0      1   0.0  11167  99.7        -  CL-QUIL.CLIFFORD::S.*
+1789      0   0.0      1   0.0  11167  99.7        -  CL-QUIL.CLIFFORD::TRANSVECTION
+1790      0   0.0      1   0.0  11167  99.7        -  CL-QUIL.CLIFFORD:N-QUBIT-PAULI-BASIS-MATRICES
+1791      0   0.0      1   0.0  11167  99.7        -  FOREIGN-STRING-FREE
+1792      0   0.0      1   0.0  11167  99.7        -  (FLET "CLEANUP-FUN-88" :IN BLAS::%%ZGEMM)
+1793      0   0.0      1   0.0  11167  99.7        -  (FLET "WITH-PINNED-OBJECTS-THUNK76" :IN BLAS:%ZGEMM)
+1794      0   0.0      1   0.0  11167  99.7        -  BLAS:%ZGEMM
+1795      0   0.0      1   0.0  11167  99.7        -  (SB-PCL::FAST-METHOD DEEP-COPY-TENSOR (MATRIX))
+1796      0   0.0      1   0.0  11167  99.7        -  (LAMBDA (CL-QUIL.CLIFFORD::TOP-LEFT CL-QUIL.CLIFFORD::BOTTOM-RIGHT) :IN CL-QUIL.CLIFFORD::FACTOR-X)
+1797      0   0.0      1   0.0  11167  99.7        -  SB-C::SETUP-ENVIRONMENT-TN-CONFLICT
+1798      0   0.0      1   0.0  11167  99.7        -  (LAMBDA (CL-QUIL.CLIFFORD::TOP-RIGHT CL-QUIL.CLIFFORD::BOTTOM-LEFT) :IN CL-QUIL.CLIFFORD::FACTOR-Z)
+1799      0   0.0      1   0.0  11167  99.7        -  (LABELS SB-C::TEST-NUMBER :IN SB-C::INTERVAL-INTERSECTION/DIFFERENCE)
+1800      0   0.0      1   0.0  11167  99.7        -  SB-C::INTERVAL-INTERSECTION/DIFFERENCE
+1801      0   0.0      1   0.0  11167  99.7        -  SB-C::INTERVAL-INTERSECT-P
+1802      0   0.0      1   0.0  11167  99.7        -  SB-C::INTERVAL-/=
+1803      0   0.0      1   0.0  11167  99.7        -  (SB-C:DEFTRANSFORM COMMON-LISP:=)
+1804      0   0.0      1   0.0  11167  99.7        -  (LAMBDA NIL :IN SB-IMPL::VALIDATE-VARS)
+1805      0   0.0      1   0.0  11167  99.7        -  (LABELS #:BODY-SYM0 :IN QVM-TESTS::TEST-STABILIZER-NONCLIFFORD)
+1806      0   0.0      1   0.0  11167  99.7        -  QVM-TESTS::TEST-STABILIZER-NONCLIFFORD
+1807      0   0.0      1   0.0  11167  99.7        -  (LABELS #:BODY-SYM0 :IN QVM-TESTS::TEST-STABILIZER-ZERO-STATE)
+1808      0   0.0      1   0.0  11167  99.7        -  QVM-TESTS::TEST-STABILIZER-ZERO-STATE
+1809      0   0.0      1   0.0  11167  99.7        -  (LABELS #:BODY-SYM0 :IN QVM-TESTS::TEST-DENSITY-QVM-1Q-PURITY)
+1810      0   0.0      1   0.0  11167  99.7        -  QVM-TESTS::TEST-DENSITY-QVM-1Q-PURITY
+1811      0   0.0      1   0.0  11167  99.7        -  (LABELS #:BODY-SYM0 :IN QVM-TESTS::TEST-EMPTY-PROGRAM-NOISY-QVM)
+1812      0   0.0      1   0.0  11167  99.7        -  QVM-TESTS::TEST-EMPTY-PROGRAM-NOISY-QVM
+1813      0   0.0      1   0.0  11167  99.7        -  (LABELS #:BODY-SYM0 :IN QVM-TESTS::TEST-FORKED-RX)
+1814      0   0.0      1   0.0  11167  99.7        -  QVM-TESTS::TEST-FORKED-RX
+1815      0   0.0      1   0.0  11167  99.7        -  (LABELS #:BODY-SYM0 :IN QVM-TESTS::TEST-CONTROLLED-X)
+1816      0   0.0      1   0.0  11167  99.7        -  QVM-TESTS::TEST-CONTROLLED-X
+1817      0   0.0      1   0.0  11167  99.7        -  (LABELS #:BODY-SYM0 :IN QVM-TESTS::TEST-MEASURE-CHAIN-COMPILATION)
+1818      0   0.0      1   0.0  11167  99.7        -  QVM-TESTS::TEST-MEASURE-CHAIN-COMPILATION
+1819      0   0.0      1   0.0  11167  99.7        -  (LABELS #:BODY-SYM0 :IN QVM-TESTS::TEST-FLIP-CIRCUIT)
+1820      0   0.0      1   0.0  11167  99.7        -  QVM-TESTS::TEST-FLIP-CIRCUIT
+1821      0   0.0      1   0.0  11167  99.7        -  (LABELS #:BODY-SYM0 :IN QVM-TESTS::TEST-HALT)
+1822      0   0.0      1   0.0  11167  99.7        -  QVM-TESTS::TEST-HALT
+1823      0   0.0      1   0.0  11167  99.7        -  (LABELS #:BODY-SYM0 :IN QVM-TESTS::TEST-JUMP-UNLESS)
+1824      0   0.0      1   0.0  11167  99.7        -  QVM-TESTS::TEST-JUMP-UNLESS
+1825      0   0.0      1   0.0  11167  99.7        -  (LABELS #:BODY-SYM0 :IN QVM-TESTS::TEST-JUMP)
+1826      0   0.0      1   0.0  11167  99.7        -  QVM-TESTS::TEST-JUMP
+1827      0   0.0      1   0.0  11167  99.7        -  (LABELS #:BODY-SYM0 :IN QVM-TESTS::TEST-SWAP)
+1828      0   0.0      1   0.0  11167  99.7        -  QVM-TESTS::TEST-SWAP
+1829      0   0.0      1   0.0  11167  99.7        -  (LABELS #:BODY-SYM0 :IN QVM-TESTS::TEST-INVERSION)
+1830      0   0.0      1   0.0  11167  99.7        -  QVM-TESTS::TEST-INVERSION
+1831      0   0.0      1   0.0  11167  99.7        -  (LABELS #:BODY-SYM0 :IN QVM-TESTS::TEST-FULL-ROTATION)
+1832      0   0.0      1   0.0  11167  99.7        -  QVM-TESTS::TEST-FULL-ROTATION
+1833      0   0.0      1   0.0  11167  99.7        -  (LABELS #:BODY-SYM0 :IN QVM-TESTS::TEST-SIMPLE-CHEEKY-MEASUREMENTS-WITH-SWAP)
+1834      0   0.0      1   0.0  11167  99.7        -  QVM-TESTS::TEST-SIMPLE-CHEEKY-MEASUREMENTS-WITH-SWAP
+1835      0   0.0      1   0.0  11167  99.7        -  (LABELS #:BODY-SYM0 :IN QVM-TESTS::TEST-SIMPLE-MEASUREMENTS-WITH-SWAP)
+1836      0   0.0      1   0.0  11167  99.7        -  QVM-TESTS::TEST-SIMPLE-MEASUREMENTS-WITH-SWAP
+1837      0   0.0      1   0.0  11167  99.7        -  (LABELS #:BODY-SYM0 :IN QVM-TESTS::TEST-SIMPLE-CHEEKY-MEASUREMENTS)
+1838      0   0.0      1   0.0  11167  99.7        -  QVM-TESTS::TEST-SIMPLE-CHEEKY-MEASUREMENTS
+1839      0   0.0      1   0.0  11167  99.7        -  (LABELS #:BODY-SYM0 :IN QVM-TESTS::TEST-SIMPLE-MEASUREMENTS)
+1840      0   0.0      1   0.0  11167  99.7        -  QVM-TESTS::TEST-SIMPLE-MEASUREMENTS
+1841      0   0.0      1   0.0  11167  99.7        -  QVM:COPY-WAVEFUNCTION
+1842      0   0.0      1   0.0  11167  99.7        -  (LABELS QVM-TESTS::TEST-COPY-WAVEFUNCTION :IN QVM-TESTS::TEST-COPY-WAVEFUNCTION)
+1843      0   0.0      1   0.0  11167  99.7        -  (LABELS #:BODY-SYM0 :IN QVM-TESTS::TEST-COPY-WAVEFUNCTION)
+1844      0   0.0      1   0.0  11167  99.7        -  QVM-TESTS::TEST-COPY-WAVEFUNCTION
+1845      0   0.0      1   0.0  11167  99.7        -  (LABELS #:BODY-SYM0 :IN QVM-TESTS::TEST-EXHANGE)
+1846      0   0.0      1   0.0  11167  99.7        -  QVM-TESTS::TEST-EXHANGE
+1847      0   0.0      1   0.0  11167  99.7        -  (LABELS QVM-TESTS::TEST-BIT-OFFSETTING-BIT :IN QVM-TESTS::TEST-BIT-OFFSETTING-BIT)
+1848      0   0.0      1   0.0  11167  99.7        -  (LABELS #:BODY-SYM0 :IN QVM-TESTS::TEST-BIT-OFFSETTING-BIT)
+1849      0   0.0      1   0.0  11167  99.7        -  QVM-TESTS::TEST-BIT-OFFSETTING-BIT
+------------------------------------------------------------------------
+         13   0.1                                     elsewhere

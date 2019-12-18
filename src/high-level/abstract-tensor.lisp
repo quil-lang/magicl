@@ -61,8 +61,11 @@ If TARGET is specified then the contents of the tensor are copied into the array
 In the event TARGET is not specified, the result may return an array sharing memory with the input tensor.")
   (:method :before (tensor &optional target)
     (unless (null target)
-      (assert (and (= (rank tensor) (array-rank target))
-                   (equal (shape tensor) (array-dimensions target))))))
+      (policy-cond:policy-if
+       (> speed safety)
+       (assert (and (= (rank tensor) (array-rank target))
+                    (equal (shape tensor) (array-dimensions target))))
+       nil)))
   (:method ((tensor abstract-tensor) &optional target)
     (let  ((arr (or target (make-array (shape tensor) :element-type (element-type tensor)))))
       (map-indexes
@@ -112,9 +115,12 @@ If ORDER is specified then traverse TENSOR in the specified order (column major 
 (defgeneric map-to (function source target)
   (:documentation "Map elements of SOURCE by replacing the corresponding element of TARGET the output of FUNCTION on the source element")
   (:method ((function function) (source abstract-tensor) (target abstract-tensor))
-    (assert (equalp (shape source) (shape target))
-            () "Incompatible shapes. Cannot map tensor of shape ~a to tensor of shape ~a."
-            (shape source) (shape target))
+    (policy-cond:policy-if
+     (> speed safety)
+     (assert (equalp (shape source) (shape target))
+             () "Incompatible shapes. Cannot map tensor of shape ~a to tensor of shape ~a."
+             (shape source) (shape target))
+     nil)
     (map-indexes
      (shape source)
      (lambda (&rest dims)
@@ -153,18 +159,22 @@ If ORDER is specified then traverse TENSOR in the specified order (column major 
   (:documentation "Slice a tensor from FROM to TO, returning a new tensor with the contained elements")
   (:method ((tensor abstract-tensor) from to)
     (declare (type sequence from to))
-    (assert (and (valid-index-p from (shape tensor))
-                 (cl:every #'< from (shape tensor)))
-            () "Incompatible FROM position for TENSOR. Position ~a is not within tensor shape ~a"
-            from (shape tensor))
-    (assert (and (cl:= (rank tensor) (length to))
-                 (valid-shape-p to)
-                 (cl:every #'<= to (shape tensor)))
-            () "Incompatible TO position for TENSOR. Position ~a is not within tensor shape ~a"
-            to (shape tensor))
-    (assert (cl:every #'<= from to)
-            () "Incomaptible TO and FROM positions. ~a is not less than or equal to ~a"
-            from to)
+    (policy-cond:policy-if
+     (> speed safety)
+     (progn
+       (assert (and (valid-index-p from (shape tensor))
+                    (cl:every #'< from (shape tensor)))
+               () "Incompatible FROM position for TENSOR. Position ~a is not within tensor shape ~a"
+               from (shape tensor))
+       (assert (and (cl:= (rank tensor) (length to))
+                    (valid-shape-p to)
+                    (cl:every #'<= to (shape tensor)))
+               () "Incompatible TO position for TENSOR. Position ~a is not within tensor shape ~a"
+               to (shape tensor))
+       (assert (cl:every #'<= from to)
+               () "Incomaptible TO and FROM positions. ~a is not less than or equal to ~a"
+               from to))
+     nil)
     (let* ((dims (mapcar #'cl:- to from))
            (target (empty dims
                     :order (order tensor)
@@ -179,9 +189,12 @@ If ORDER is specified then traverse TENSOR in the specified order (column major 
   (:documentation "Add tensors elementwise, optionally storing the result in TARGET.
 If TARGET is not specified then a new tensor is created with the same element type as the first source tensor")
   (:method ((source1 abstract-tensor) (source2 abstract-tensor) &optional target)
-    (assert (equalp (shape source1) (shape source2))
-            () "Incompatible shapes. Cannot add tensor of shape ~a to tensor of shape ~a."
-            (shape source1) (shape source2))
+    (policy-cond:policy-if
+     (> speed safety)
+     (assert (equalp (shape source1) (shape source2))
+             () "Incompatible shapes. Cannot add tensor of shape ~a to tensor of shape ~a."
+             (shape source1) (shape source2))
+     nil)
     (let ((target (or target (copy-tensor source1))))
       (map-indexes
        (shape source1)
@@ -196,9 +209,12 @@ If TARGET is not specified then a new tensor is created with the same element ty
   (:documentation "Subtract tensors elementwise, optionally storing the result in TARGET.
 If TARGET is not specified then a new tensor is created with the same element type as the first source tensor")
   (:method ((source1 abstract-tensor) (source2 abstract-tensor) &optional target)
-    (assert (equalp (shape source1) (shape source2))
-            () "Incompatible shapes. Cannot add tensor of shape ~a to tensor of shape ~a."
-            (shape source1) (shape source2))
+    (policy-cond:policy-if
+     (> speed safety)
+     (assert (equalp (shape source1) (shape source2))
+             () "Incompatible shapes. Cannot add tensor of shape ~a to tensor of shape ~a."
+             (shape source1) (shape source2))
+     nil)
     (let ((target (or target (copy-tensor source1))))
       (map-indexes
        (shape source1)

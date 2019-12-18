@@ -60,13 +60,19 @@
   (list (size vector)))
 
 (defmethod tref ((vector vector) &rest pos)
-  (assert (valid-index-p pos (shape vector))
-          () "Incompatible position for VECTOR. Position ~a is not within vector shape ~a" pos (shape vector))
+  (policy-cond:policy-if
+   (> speed safety)
+   (assert (valid-index-p pos (shape vector))
+           () "Incompatible position for VECTOR. Position ~a is not within vector shape ~a" pos (shape vector))
+   nil)
   (aref (storage vector) (first pos)))
 
 (defmethod (setf tref) (new-value (vector vector) &rest pos)
-  (assert (valid-index-p pos (shape vector))
-          () "Incompatible position for VECTOR. Position ~a is not within vector shape ~a" pos (shape vector))
+  (policy-cond:policy-if
+   (> speed safety)
+   (assert (valid-index-p pos (shape vector))
+           () "Incompatible position for VECTOR. Position ~a is not within vector shape ~a" pos (shape vector))
+   nil)
   (setf (aref (storage vector) (first pos)) new-value))
 
 (defmacro defvector (name type &rest compat-classes)
@@ -74,13 +80,37 @@
      (defclass ,name (vector)
        ((storage :type (vector-storage ,type)))
        (:documentation ,(format nil "Vector with element type of ~a" type)))
+     (defmethod make-tensor ((class (eql ',name)) shape &key initial-element order storage)
+       (policy-cond:policy-if
+        (> speed safety)
+        (progn
+          (check-type shape shape)
+          (assert (cl:= 1 (length shape))
+                  () "Vector shape must be of length 2"))
+        nil)
+       (let ((size (reduce #'* shape)))
+         (make-instance
+          class
+          :size size
+          :element-type ',type
+          :storage (or
+                    storage
+                    (apply #'make-array
+                           size
+                           :element-type ',type
+                           (if initial-element
+                               (list :initial-element (coerce initial-element ',type))
+                               nil))))))
      ,@(loop :for class :in compat-classes
              :collect `(progn
                          (defmethod update-instance-for-different-class :before
                              ((old ,class)
                               (new ,name)
                               &key)
-                           (assert (cl:= 1 (rank old))))
+                           (policy-cond:policy-if
+                            (> speed safety)
+                            (assert (cl:= 1 (rank old)))
+                            nil))
                          (defmethod update-instance-for-different-class :before
                              ((old ,name)
                               (new ,class)
@@ -92,9 +122,12 @@
 (defgeneric dot (vector1 vector2)
   (:documentation "Compute the dot product of two vectors")
   (:method ((vector1 vector) (vector2 vector))
-    (assert (cl:= (size vector1) (size vector2))
-            () "Vectors must have the same size. The first vector is size ~a and the second vector is size ~a."
-            (size vector1) (size vector2))
+    (policy-cond:policy-if
+     (> speed safety)
+     (assert (cl:= (size vector1) (size vector2))
+             () "Vectors must have the same size. The first vector is size ~a and the second vector is size ~a."
+             (size vector1) (size vector2))
+     nil)
     (loop :for i :below (size vector1)
           :sum (* (tref vector1 i) (tref vector2 i)))))
 

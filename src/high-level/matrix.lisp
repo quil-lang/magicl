@@ -8,6 +8,7 @@
 (deftype matrix-storage (&optional type)
   `(simple-array ,type (*)))
 
+(declaim (inline nrows ncols size element-type storage order))
 (defclass matrix (abstract-tensor)
   (;; abstract-tensor slots
    (nrows
@@ -26,7 +27,7 @@
     :initarg :size
     :initform 0
     :reader size
-    :type (alexandria:positive-fixnum)
+    :type alexandria:positive-fixnum
     :documentation "Total number of elements in the matrix")
    (element-type
     :initarg :element-type
@@ -39,6 +40,7 @@
     :initarg :storage
     :initform (error "STORAGE must be specified when creating a matrix instance")
     :reader storage
+    :type matrix-storage
     :documentation "Storage of the matrix, typically in a vector in column major order")
    (order
     :initarg :order
@@ -47,6 +49,102 @@
     :type (member :row-major :column-major)
     :documentation "Indexing order of storage (:COLUMN-MAJOR or :ROW-MAJOR)."))
   (:metaclass abstract-class:abstract-class))
+(declaim (inline nrows ncols size element-type storage order))
+
+;;; Specfic matrix classes
+
+(defmacro defmatrix (name type &rest compat-classes)
+  "Define a new matrix subclass with the specified NAME, element TYPE, and TENSOR-NAME. The tensor name is used to declare that the new matrix class is a specialization of TENSOR-NAME."
+  `(progn
+     (defclass ,name (matrix)
+       ((storage :type (matrix-storage ,type)))
+       (:documentation ,(format nil "Matrix with element type of ~a" type))
+       (:metaclass abstract-class:final-class))
+     (defmethod make-tensor ((class (eql ',name)) shape &key initial-element order storage)
+       (policy-cond:policy-if
+        (< speed safety)
+        (progn
+          (check-type shape shape)
+          (assert (cl:= 2 (length shape))
+                  () "Matrix shape must be of length 2"))
+        nil)
+       (let ((size (reduce #'* shape)))
+         (make-instance
+          class
+          :nrows (first shape)
+          :ncols (second shape)
+          :size size
+          :element-type ',type
+          :storage (or
+                    storage
+                    (apply #'make-array
+                           size
+                           :element-type ',type
+                           (if initial-element
+                               (list :initial-element (coerce initial-element ',type))
+                               nil)))
+          :order (or order :column-major))))
+     ,@(loop :for class :in compat-classes
+             :collect `(progn
+                         (defmethod update-instance-for-different-class :before
+                             ((old ,class)
+                              (new ,name)
+                              &key)
+                           (policy-cond:policy-if
+                            (< speed safety)
+                            (assert (cl:= 2 (rank old)))
+                            nil)
+                           (with-slots (shape) old
+                             (with-slots (nrows ncols) new
+                               (setf nrows (first shape)
+                                     ncols (second shape)))))
+                         (defmethod update-instance-for-different-class :before
+                             ((old ,name)
+                              (new ,class)
+                              &key)
+                           (with-slots (nrows ncols) old
+                             (with-slots (shape rank) new
+                               (setf shape (list nrows ncols)
+                                     rank 2))))))
+     ;; NOTE: TREF and (SETF TREF) are needed here to allow aref to specialize on simple-array
+     (defmethod tref ((matrix ,name) &rest pos)
+       #f
+       (declare (dynamic-extent pos)
+                (inline slot-value))
+       (policy-cond:with-expectations
+           (> speed safety)
+           ((assertion (valid-index-p pos (shape matrix)))
+            (type alexandria:non-negative-fixnum (first pos) (second pos)))
+         (let ((row (first pos))
+               (col (second pos))
+               (numrows (slot-value matrix 'nrows))
+               (numcols (slot-value matrix 'ncols))
+               (vec (slot-value matrix 'storage)))
+           (declare (type fixnum row col numrows numcols)
+                    (type (simple-array ,type) vec))
+           (let ((index (ecase (slot-value matrix 'order)
+                          (:row-major (cl:+ col (the fixnum (* row numcols))))
+                          (:column-major (cl:+ row (the fixnum (* col numrows)))))))
+             (declare (type alexandria:array-index index))
+             (aref vec index)))))
+     (defmethod (setf tref) (new-value (matrix ,name) &rest pos)
+  (declare (dynamic-extent pos))
+  (policy-cond:with-expectations
+      (> speed safety)
+      ((assertion (valid-index-p pos (shape matrix)))
+       (type alexandria:non-negative-fixnum (first pos) (second pos)))
+    (let ((row (first pos))
+          (col (second pos))
+          (numrows (nrows matrix))
+          (numcols (ncols matrix))
+          (vec (storage matrix)))
+      (declare (type fixnum row col numrows numcols)
+               (type (simple-array ,type) vec))
+      (let ((index (ecase (order matrix)
+                     (:row-major (cl:+ col (the fixnum (* row numcols))))
+                     (:column-major (cl:+ row (the fixnum (* col numrows)))))))
+        (declare (type alexandria:array-index index))
+        (setf (aref vec index) (coerce new-value ',type))))))))
 
 (defun pprint-matrix (stream matrix &optional colon-p at-sign-p)
   "Pretty-print a matrix MATRIX to the stream STREAM."
@@ -121,23 +219,53 @@
   2)
 
 (defmethod shape ((matrix matrix))
-  (list (nrows matrix) (ncols matrix)))
+  (list (slot-value matrix 'nrows) (slot-value matrix 'ncols)))
+
+#+ignore
+(defmethod test1 ((matrix matrix/complex-double-float))
+  #f
+  (declare (inline slot-value))
+  (slot-value matrix 'size))
 
 (defmethod tref ((matrix matrix) &rest pos)
-  (assert (valid-index-p pos (shape matrix))
-          () "Incompatible position for MATRIX. Position ~a is not within matrix shape ~a" pos (shape matrix))
-  (let ((index (ecase (order matrix)
-                 (:row-major (cl:+ (second pos) (* (first pos) (ncols matrix))))
-                 (:column-major (cl:+ (first pos) (* (second pos) (nrows matrix)))))))
-    (aref (storage matrix) index)))
+  #f
+  (declare (dynamic-extent pos)
+           (inline slot-value))
+  (policy-cond:with-expectations
+      (> speed safety)
+      ((assertion (valid-index-p pos (shape matrix)))
+       (type alexandria:non-negative-fixnum (first pos) (second pos)))
+    (let ((row (first pos))
+          (col (second pos))
+          (numrows (slot-value matrix 'nrows))
+          (numcols (slot-value matrix 'ncols))
+          (vec (slot-value matrix 'storage)))
+      (declare (type fixnum row col numrows numcols)
+               (type simple-array vec))
+      (let ((index (ecase (slot-value matrix 'order)
+                     (:row-major (cl:+ col (the fixnum (* row numcols))))
+                     (:column-major (cl:+ row (the fixnum (* col numrows)))))))
+        (declare (type alexandria:array-index index))
+        (aref vec index)))))
 
 (defmethod (setf tref) (new-value (matrix matrix) &rest pos)
-  (assert (valid-index-p pos (shape matrix))
-          () "Incompatible position for MATRIX. Position ~a is not within matrix shape ~a" pos (shape matrix))
-  (let ((index (ecase (order matrix)
-                 (:row-major (cl:+ (second pos) (* (first pos) (ncols matrix))))
-                 (:column-major (cl:+ (first pos) (* (second pos) (nrows matrix)))))))
-    (setf (aref (storage matrix) index) (coerce new-value (element-type matrix)))))
+  (declare (dynamic-extent pos))
+  (policy-cond:with-expectations
+      (> speed safety)
+      ((assertion (valid-index-p pos (shape matrix)))
+       (type alexandria:non-negative-fixnum (first pos) (second pos)))
+    (let ((row (first pos))
+          (col (second pos))
+          (numrows (nrows matrix))
+          (numcols (ncols matrix))
+          (vec (storage matrix)))
+      (declare (type fixnum row col numrows numcols)
+               (type simple-array vec))
+      (let ((index (ecase (order matrix)
+                     (:row-major (cl:+ col (the fixnum (* row numcols))))
+                     (:column-major (cl:+ row (the fixnum (* col numrows)))))))
+        (declare (type alexandria:array-index index))
+        (setf (aref vec index) (coerce new-value (element-type matrix)))))))
 
 (defmethod copy-tensor ((matrix matrix) &rest args)
   (apply #'make-instance (class-of matrix)
@@ -163,47 +291,25 @@
 (defgeneric random-unitary (shape &key type)
   (:documentation "Generate a uniformly random element of U(n).")
   (:method (shape &key (type +default-tensor-type+))
-    (assert-square-shape shape)
+    (policy-cond:policy-if
+     (< speed safety)
+     (assert-square-shape shape)
+     nil)
     (multiple-value-bind (q r) (qr (rand shape :type type :distribution #'alexandria:gaussian-random))
       (let ((d (diag r)))
         (setf d (cl:map 'list (lambda (di) (/ di (sqrt (* di (conjugate di))))) d))
         (@ q (funcall #'from-diag d shape))))))
-
-;;; Specfic matrix classes
-
-(defmacro defmatrix (name type &rest compat-classes)
-  "Define a new matrix subclass with the specified NAME, element TYPE, and TENSOR-NAME. The tensor name is used to declare that the new matrix class is a specialization of TENSOR-NAME."
-  `(progn
-     (defclass ,name (matrix)
-       ((storage :type (matrix-storage ,type)))
-       (:documentation ,(format nil "Matrix with element type of ~a" type)))
-     ,@(loop :for class :in compat-classes
-             :collect `(progn
-                         (defmethod update-instance-for-different-class :before
-                             ((old ,class)
-                              (new ,name)
-                              &key)
-                           (assert (cl:= 2 (rank old)))
-                           (with-slots (shape) old
-                             (with-slots (nrows ncols) new
-                               (setf nrows (first shape)
-                                     ncols (second shape)))))
-                         (defmethod update-instance-for-different-class :before
-                             ((old ,name)
-                              (new ,class)
-                              &key)
-                           (with-slots (nrows ncols) old
-                             (with-slots (shape rank) new
-                               (setf shape (list nrows ncols)
-                                     rank 2))))))))
 
 ;; TODO: This should be generic to abstract-tensor
 (defgeneric ptr-ref (m base i j)
   (:documentation
    "Accessor method for the pointer to the element in the I-th row and J-th column of a matrix M, assuming zero indexing.")
   (:method ((m matrix) base i j)
-    (assert (valid-index-p (list i j) (shape m))
-          () "Incompatible position for MATRIX. Position ~a is not within matrix shape ~a" (list i j) (shape m))
+    (policy-cond:policy-if
+     (< speed safety)
+     (assert (valid-index-p (list i j) (shape m))
+             () "Incompatible position for MATRIX. Position ~a is not within matrix shape ~a" (list i j) (shape m))
+     nil)
     (let ((type (element-type m)))
       ;; TODO: compensate for order
       (let ((idx (column-major-index (list i j) (shape m))))
@@ -217,6 +323,7 @@
 (defgeneric row (matrix index)
   (:documentation "Get row vector from a matrix")
   (:method ((m matrix) index)
+    (check-type index alexandria:non-negative-fixnum)
     (slice m
            (list index 0)
            (list (1+ index) (ncols m)))))
@@ -322,7 +429,10 @@ If fast is t then just change order. Fast can cause problems when you want to mu
 (defgeneric diag (matrix)
   (:documentation "Get a list of the diagonal elements of MATRIX")
   (:method ((matrix matrix))
-    (assert-square-matrix matrix)
+    (policy-cond:policy-if
+     (< speed safety)
+     (assert-square-matrix matrix)
+     nil)
     (let ((rows (nrows matrix)))
       (loop :for i :below rows
             :collect (tref matrix i i)))))
@@ -330,14 +440,20 @@ If fast is t then just change order. Fast can cause problems when you want to mu
 (defgeneric trace (matrix)
   (:documentation "Get the trace of MATRIX (sum of diagonals)")
   (:method ((matrix matrix))
-    (assert-square-matrix matrix)
+    (policy-cond:policy-if
+     (< speed safety)
+     (assert-square-matrix matrix)
+     nil)
     (loop :for i :below (nrows matrix)
           :sum (tref matrix i i))))
 
 (defgeneric det (matrix)
   (:documentation "Compute the determinant of a square matrix MATRIX")
   (:method ((matrix matrix))
-    (assert-square-matrix matrix)
+    (policy-cond:policy-if
+     (< speed safety)
+     (assert-square-matrix matrix)
+     nil)
     (let ((d 1))
       (multiple-value-bind (a ipiv) (lu matrix)
         (dotimes (i (nrows matrix))
@@ -352,7 +468,10 @@ If fast is t then just change order. Fast can cause problems when you want to mu
   (:method ((matrix matrix) &optional (order (ncols matrix)))
     (let ((m (nrows matrix))
           (n (ncols matrix)))
-      (assert (<= order (max (nrows matrix) (ncols matrix))) () "ORDER, given as ~D, is greater than the maximum dimension of A, ~D." order (max m n))
+      (policy-cond:policy-if
+       (< speed safety)
+       (assert (<= order (max (nrows matrix) (ncols matrix))) () "ORDER, given as ~D, is greater than the maximum dimension of A, ~D." order (max m n))
+       nil)
       (let ((target (empty (list order order) :order (order matrix) :type (element-type matrix))))
         (if (> m n)
             (loop for i from 0 to (1- order)
@@ -368,7 +487,10 @@ If fast is t then just change order. Fast can cause problems when you want to mu
   (:method ((matrix matrix) &optional (order (ncols matrix)))
     (let ((m (nrows matrix))
           (n (ncols matrix)))
-      (assert (<= order (max (nrows matrix) (ncols matrix))) () "ORDER, given as ~D, is greater than the maximum dimension of A, ~D." order (max m n))
+      (policy-cond:policy-if
+       (< speed safety)
+       (assert (<= order (max (nrows matrix) (ncols matrix))) () "ORDER, given as ~D, is greater than the maximum dimension of A, ~D." order (max m n))
+       nil)
       (let ((target (empty (list order order) :order (order matrix) :type (element-type matrix))))
         (if (> m n)
             (loop for i from (cl:- m order) to (1- m)
