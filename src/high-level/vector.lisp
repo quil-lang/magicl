@@ -23,10 +23,13 @@
                    (abs (imagpart z)))))
     (let* ((size (size vector))
            (type (element-type vector))
-           (print-entry #'print-real)) ;; TODO: Check for complex type
+           (print-entry
+             (cond
+               ((subtypep type 'complex) #'print-complex)
+               (t #'print-real))))
       (pprint-logical-block (stream nil)
         (print-unreadable-object (vector stream :type t)
-          (format stream "~D:" size)
+          (format stream "(~D):" size)
           (dotimes (e size)
             (pprint-newline :mandatory stream)
             (funcall print-entry (tref vector e))))))))

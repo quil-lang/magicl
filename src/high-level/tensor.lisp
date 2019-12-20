@@ -86,29 +86,18 @@
            (setf (aref (,(intern (format nil "~a-STORAGE" name)) tensor) index)
                  new-value))))))
 
-;;; Optimized abstract-tensor methods
+(defun pprint-tensor (stream tensor &optional colon-p at-sign-p)
+  "Pretty-print a matrix MATRIX to the stream STREAM."
+  (declare (ignore colon-p)
+           (ignore at-sign-p))
+  (pprint-logical-block (stream nil)
+    (print-unreadable-object (tensor stream :type t)
+      (format stream "(~{~D~^x~})" (shape tensor)))))
 
-;; TODO: This does not work in column-major order
-#+ignore
-(defmethod map! ((f function) (tensor tensor))
-  (setf (slot-value tensor 'storage) (cl:map 'vector f (storage tensor)))
-  tensor)
-
-;; TODO: this might be putting them in wrong. investigate
-;;     NOTE: Might need map-column-indexes
-#+ignore
-(defmethod into! ((f function) (tensor tensor))
-  (let ((i 0))
-    (map-indexes
-     (shape tensor)
-     (lambda (&rest dims)
-       (setf (aref (storage tensor) i) (apply f dims))
-       (incf i)))
-    tensor))
+(set-pprint-dispatch 'tensor 'pprint-tensor)
 
 ;;; Generic tensor methods
 
-;; TODO: SHOULD BE BASED ON ORDER (MAYBE)
 (defgeneric reshape (tensor shape)
   (:documentation "Change the shape of the tensor.
 WARNING: This method acts differently depending on the order of the tensor. Do not expect row-major to act the same as column-major.")

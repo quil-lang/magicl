@@ -123,7 +123,6 @@
              (declare (type alexandria:array-index index))
              (setf (aref vec index) (coerce new-value ',type))))))))
 
-#+ignore
 (defun pprint-matrix (stream matrix &optional colon-p at-sign-p)
   "Pretty-print a matrix MATRIX to the stream STREAM."
   (declare (ignore colon-p)
@@ -144,7 +143,7 @@
                (t #'print-real))))
       (pprint-logical-block (stream nil)
         (print-unreadable-object (matrix stream :type t)
-          (format stream "~Dx~D:" rows cols)
+          (format stream "(~Dx~D):" rows cols)
           (dotimes (r rows)
             (pprint-newline :mandatory stream)
             (dotimes (c cols)
@@ -152,7 +151,6 @@
               (unless (cl:= c (1- cols))
                 (write-string "    " stream)))))))))
 
-#+ignore
 (set-pprint-dispatch 'matrix 'pprint-matrix)
 
 (defgeneric square-matrix-p (matrix)
