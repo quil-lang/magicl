@@ -7,93 +7,85 @@
 (deftype tensor-storage (&optional type)
   `(simple-array ,type (*)))
 
-(defclass tensor (abstract-tensor)
-  (;; abstract-tensor slots
-   (rank
-    :initarg :rank
-    :initform 1
-    :reader rank
-    :type alexandria:non-negative-fixnum
-    :documentation "The rank (number of dimensions) of the tensor")
-   (shape
-    :initarg :shape
-    :initform '(0)
-    :reader shape
-    :type list
-    :documentation "The shape of the tensor. eg. '(2 3) for a 2x3 tensor")
-   (size
-    :initarg :size
-    :initform 0
-    :reader size
-    :type (alexandria:non-negative-fixnum)
-    :documentation "Total number of elements in the tensor")
-   (element-type
-    :initarg :element-type
-    :initform (error "Missing element-type") ; TODO: much better error messages
-    :reader element-type
-    :type type
-    :documentation "The type of the elements in the tensor")
-   ;; tensor-specific slots
-   (storage
-    :initarg :storage
-    :initform (error "Missing storage")
-    :reader storage
-    :documentation "Storage of the tensor, typically in a vector in column major order")
-   (order
-    :initarg :order
-    :initform :column-major
-    :reader order
-    :type (member :row-major :column-major)
-    :documentation "Indexing order of storage (:column-major or :row-major)."))
-  (:metaclass abstract-class:abstract-class))
+(defstruct (tensor (:include abstract-tensor)
+                   (:constructor nil)
+                   (:copier nil))
+  (rank 0 :type alexandria:non-negative-fixnum :read-only t)
+  (shape '(0) :type list :read-only t)
+  (size 0 :type alexandria:positive-fixnum :read-only t)
+  (order :column-major :type (member :row-major :column-major)))
+#+sbcl (declaim (sb-ext:freeze-type tensor))
 
-;;; Required abstract-tensor methods
+(defmethod rank ((a tensor))
+  (tensor-rank a))
 
-(defmethod tref ((tensor tensor) &rest pos)
-  (policy-cond:policy-if
-   (> speed safety)
-   (assert (valid-index-p pos (shape tensor))
-           () "Incompatible position for TENSOR. Position ~a is not within tensor shape ~a" pos (shape tensor))
-   nil)
-  (let ((index (case (order tensor)
-                 (:row-major (row-major-index pos (shape tensor)))
-                 (:column-major (column-major-index pos (shape tensor))))))
-    (aref (storage tensor) index)))
+(defmethod shape ((a tensor))
+  (tensor-shape a))
 
-(defmethod (setf tref) (new-value (tensor tensor) &rest pos)
-  (policy-cond:policy-if
-   (> speed safety)
-   (progn
-     (assert (cl:= (rank tensor) (list-length pos))
-             () "Invalid index ~a. Must be rank ~a" pos (rank tensor))
-     (assert (cl:every #'< pos (shape tensor))
-             () "Index ~a out of range" pos))
-   nil)
-  (let ((index (case (order tensor)
-                 (:row-major (row-major-index pos (shape tensor)))
-                 (:column-major (column-major-index pos (shape tensor))))))
-    (setf (aref (storage tensor) index) new-value)))
+;;; Specfic tensor classes
+(defmacro deftensor (name type)
+  `(progn
+     (defstruct (,name (:include tensor)
+                       (:constructor ,(intern (format nil "MAKE-~a" name))
+                           (rank shape size order storage)))
+       (storage nil :type (tensor-storage ,type)))
+     #+sbcl (declaim (sb-ext:freeze-type ,name))
+     
+     (defmethod storage ((m ,name))
+       (,(intern (format nil "~a-STORAGE" name)) m))
 
-(defmethod copy-tensor ((tensor tensor) &rest args)
-  (apply #'make-instance (class-of tensor)
-         :rank (rank tensor)
-         :shape (shape tensor)
-         :size (size tensor)
-         :element-type (element-type tensor)
-         :storage (make-array (size tensor)
-                              :element-type (element-type tensor))
-         :order (order tensor)
-         args))
+     (defmethod element-type ((m ,name))
+       (declare (ignore m))
+       ',type)
+     
+     (defmethod make-tensor ((class (eql ',name)) shape &key initial-element order storage)
+       (policy-cond:policy-if
+        (< speed safety)
+        (check-type shape shape)
+        nil)
+       (let ((size (reduce #'* shape)))
+         (funcall #',(intern (format nil "MAKE-~a" name))
+                  (length shape)
+                  shape
+                  size
+                  (or order :column-major)
+                  (or
+                   storage
+                   (apply #'make-array
+                          size
+                          :element-type ',type
+                          (if initial-element
+                              (list :initial-element (coerce initial-element ',type))
+                              nil))))))
 
-(defmethod deep-copy-tensor ((tensor tensor) &rest args)
-  (apply #'make-instance (class-of tensor)
-         :rank (rank tensor)
-         :shape (shape tensor)
-         :size (size tensor)
-         :element-type (element-type tensor)
-         :storage (alexandria:copy-array (storage tensor))
-         :order (order tensor)
-         args))
+     ;; TODO: This does not allow for args. Make this allow for args.
+     (defmethod copy-tensor ((m ,name) &rest args)
+       (,(intern (format nil "COPY-~a" name)) m))
+
+     (defmethod deep-copy-tensor ((m ,name) &rest args)
+       (let ((new-m (,(intern (format nil "COPY-~a" name)) m)))
+         (setf (,(intern (format nil "~a-STORAGE" name)) new-m)
+               (alexandria:copy-array (,(intern (format nil "~a-STORAGE" name)) m)))
+         new-m))
+
+     (defmethod tref ((tensor ,name) &rest pos)
+       (policy-cond:with-expectations
+           (> speed safety)
+           ((assertion (valid-index-p pos (shape tensor))))
+         (let ((index (case (tensor-order tensor)
+                        (:row-major (row-major-index pos (tensor-shape tensor)))
+                        (:column-major (column-major-index pos (tensor-shape tensor))))))
+           (aref (,(intern (format nil "~a-STORAGE" name)) tensor) index))))
+
+     (defmethod (setf tref) (new-value (tensor ,name) &rest pos)
+       (policy-cond:with-expectations
+           (> speed safety)
+           ((assertion (valid-index-p pos (shape tensor))))
+         (let ((index (case (tensor-order tensor)
+                        (:row-major (row-major-index pos (tensor-shape tensor)))
+                        (:column-major (column-major-index pos (tensor-shape tensor))))))
+           (setf (aref (,(intern (format nil "~a-STORAGE" name)) tensor) index)
+                 new-value))))))
 
 ;;; Optimized abstract-tensor methods
 
@@ -115,35 +107,6 @@
        (incf i)))
     tensor))
 
-;;; Specfic tensor classes
-
-(defmacro deftensor (name type)
-  `(progn
-     (defclass ,name (tensor)
-       ((storage :type (tensor-storage ,type)))
-       (:documentation ,(format nil "Tensor with element type of ~a" type)))
-     (defmethod make-tensor ((class (eql ',name)) shape &key initial-element order storage)
-       (policy-cond:policy-if
-        (> speed safety)
-        (check-type shape shape)
-        nil)
-       (let ((size (reduce #'* shape)))
-         (make-instance
-          class
-          :rank (length shape)
-          :shape shape
-          :size size
-          :element-type ',type
-          :storage (or
-                    storage
-                    (apply #'make-array
-                           size
-                           :element-type ',type
-                           (if initial-element
-                               (list :initial-element (coerce initial-element ',type))
-                               nil)))
-          :order (or order :column-major))))))
-
 ;;; Generic tensor methods
 
 ;; TODO: SHOULD BE BASED ON ORDER (MAYBE)
@@ -152,7 +115,7 @@
 WARNING: This method acts differently depending on the order of the tensor. Do not expect row-major to act the same as column-major.")
   (:method ((tensor tensor) shape)
     (policy-cond:policy-if
-     (> speed safety)
+     (< speed safety)
      (let ((shape-size (reduce #'* shape)))
        (assert (cl:= (size tensor) shape-size)
                () "Incompatible shape. Must have the same total number of elements. The tensor has ~a elements and the new shape has ~a elements" (size tensor) shape-size))

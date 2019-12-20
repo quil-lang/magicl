@@ -6,20 +6,10 @@
 
 (in-package #:magicl)
 
-(defclass abstract-tensor ()
-  ()
-  (:documentation "Abstract tensor class as super class of tensor classes")
-  (:metaclass abstract-class:abstract-class))
-
-(defgeneric specialize-tensor (tensor)
-  (:documentation "Specialize a tensor to the most specfic applicable tensor class"))
-
-(defgeneric generalize-tensor (tensor)
-  (:documentation "Generalize a tensor to the least specific applicable tensor class"))
+(defstruct (abstract-tensor))
 
 ;;; abstract-tensor protocol
-
-;; Must be implemented by subclasses
+;;; Must be implemented by subclasses
 
 (defgeneric shape (tensor)
   (:documentation "The shape (dimensions) of the tensor. eg. '(2 3) for a 2x3 tensor"))
@@ -36,7 +26,8 @@
 (defgeneric deep-copy-tensor (tensor &rest args)
   (:documentation "Create a new tensor with the same properties as the given tensor, copying storage"))
 
-;; Stuff with somewhat sensible defaults
+;;; abstract-tensor generic methods
+;;; Can be optimized by subclasses
 
 (defgeneric rank (tensor)
   (:documentation "Rank (number of dimensions) of the tensor")
@@ -62,7 +53,7 @@ In the event TARGET is not specified, the result may return an array sharing mem
   (:method :before (tensor &optional target)
     (unless (null target)
       (policy-cond:policy-if
-       (> speed safety)
+       (< speed safety)
        (assert (and (= (rank tensor) (array-rank target))
                     (equal (shape tensor) (array-dimensions target))))
        nil)))
@@ -116,7 +107,7 @@ If ORDER is specified then traverse TENSOR in the specified order (column major 
   (:documentation "Map elements of SOURCE by replacing the corresponding element of TARGET the output of FUNCTION on the source element")
   (:method ((function function) (source abstract-tensor) (target abstract-tensor))
     (policy-cond:policy-if
-     (> speed safety)
+     (< speed safety)
      (assert (equalp (shape source) (shape target))
              () "Incompatible shapes. Cannot map tensor of shape ~a to tensor of shape ~a."
              (shape source) (shape target))
@@ -160,7 +151,7 @@ If ORDER is specified then traverse TENSOR in the specified order (column major 
   (:method ((tensor abstract-tensor) from to)
     (declare (type sequence from to))
     (policy-cond:policy-if
-     (> speed safety)
+     (< speed safety)
      (progn
        (assert (and (valid-index-p from (shape tensor))
                     (cl:every #'< from (shape tensor)))
@@ -190,7 +181,7 @@ If ORDER is specified then traverse TENSOR in the specified order (column major 
 If TARGET is not specified then a new tensor is created with the same element type as the first source tensor")
   (:method ((source1 abstract-tensor) (source2 abstract-tensor) &optional target)
     (policy-cond:policy-if
-     (> speed safety)
+     (< speed safety)
      (assert (equalp (shape source1) (shape source2))
              () "Incompatible shapes. Cannot add tensor of shape ~a to tensor of shape ~a."
              (shape source1) (shape source2))
@@ -210,7 +201,7 @@ If TARGET is not specified then a new tensor is created with the same element ty
 If TARGET is not specified then a new tensor is created with the same element type as the first source tensor")
   (:method ((source1 abstract-tensor) (source2 abstract-tensor) &optional target)
     (policy-cond:policy-if
-     (> speed safety)
+     (< speed safety)
      (assert (equalp (shape source1) (shape source2))
              () "Incompatible shapes. Cannot add tensor of shape ~a to tensor of shape ~a."
              (shape source1) (shape source2))

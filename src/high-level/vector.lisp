@@ -7,27 +7,10 @@
 (deftype vector-storage (&optional type)
   `(simple-array ,type (*)))
 
-(defclass vector (abstract-tensor)
-  (;; abstract-tensor slots
-   (size
-    :initarg :size
-    :initform 0
-    :reader size
-    :type (alexandria:positive-fixnum)
-    :documentation "Total number of elements in the vector")
-   (element-type
-    :initarg :element-type
-    :initform (error "element-type must be specified when creating a vector instance") ; TODO: much better error messages
-    :reader element-type
-    :type type
-    :documentation "The type of the elements in the vector")
-   ;; vector-specific slots
-   (storage
-    :initarg :storage
-    :initform (error "storage must be specified when creating a vector instance")
-    :reader storage
-    :documentation "Storage of the vector, typically in a vector in column major order"))
-  (:metaclass abstract-class:abstract-class))
+(defstruct (vector (:include abstract-tensor)
+                   (:constructor nil)
+                   (:copier nil))
+  (size 0 :type alexandria:positive-fixnum :read-only t))
 
 (defun pprint-vector (stream vector)
   "Pretty-print a vector VECTOR to the stream STREAM."
@@ -57,73 +40,61 @@
   1)
 
 (defmethod shape ((vector vector))
-  (list (size vector)))
+  (list (vector-size vector)))
 
 (defmethod tref ((vector vector) &rest pos)
-  (policy-cond:policy-if
-   (> speed safety)
-   (assert (valid-index-p pos (shape vector))
-           () "Incompatible position for VECTOR. Position ~a is not within vector shape ~a" pos (shape vector))
-   nil)
-  (aref (storage vector) (first pos)))
+  (policy-cond:with-expectations
+      (> speed safety)
+      ((assertion (valid-index-p pos (shape vector))))
+    (aref (storage vector) (first pos))))
 
 (defmethod (setf tref) (new-value (vector vector) &rest pos)
-  (policy-cond:policy-if
-   (> speed safety)
-   (assert (valid-index-p pos (shape vector))
-           () "Incompatible position for VECTOR. Position ~a is not within vector shape ~a" pos (shape vector))
-   nil)
-  (setf (aref (storage vector) (first pos)) new-value))
+  (policy-cond:with-expectations
+      (> speed safety)
+      ((assertion (valid-index-p pos (shape vector))))    
+    (setf (aref (storage vector) (first pos)) new-value)))
 
 (defmacro defvector (name type &rest compat-classes)
   `(progn
-     (defclass ,name (vector)
-       ((storage :type (vector-storage ,type)))
-       (:documentation ,(format nil "Vector with element type of ~a" type)))
+     (defstruct (,name (:include vector)
+                       (:constructor ,(intern (format nil "MAKE-~a" name))
+                           (size storage)))
+       (storage nil :type (vector-storage ,type)))
+     #+sbcl (declaim (sb-ext:freeze-type ,name))
+
+     (defmethod storage ((v ,name))
+       (,(intern (format nil "~a-STORAGE" name)) v))
+
+     (defmethod element-type ((v ,name))
+       (declare (ignore v))
+       ',type)
+
      (defmethod make-tensor ((class (eql ',name)) shape &key initial-element order storage)
+       (declare (ignore order))
        (policy-cond:policy-if
-        (> speed safety)
+        (< speed safety)
         (progn
           (check-type shape shape)
           (assert (cl:= 1 (length shape))
                   () "Vector shape must be of length 2"))
         nil)
        (let ((size (reduce #'* shape)))
-         (make-instance
-          class
-          :size size
-          :element-type ',type
-          :storage (or
-                    storage
-                    (apply #'make-array
-                           size
-                           :element-type ',type
-                           (if initial-element
-                               (list :initial-element (coerce initial-element ',type))
-                               nil))))))
-     ,@(loop :for class :in compat-classes
-             :collect `(progn
-                         (defmethod update-instance-for-different-class :before
-                             ((old ,class)
-                              (new ,name)
-                              &key)
-                           (policy-cond:policy-if
-                            (> speed safety)
-                            (assert (cl:= 1 (rank old)))
-                            nil))
-                         (defmethod update-instance-for-different-class :before
-                             ((old ,name)
-                              (new ,class)
-                              &key)
-                           (with-slots (shape rank) new
-                             (setf shape (shape old)
-                                   rank 1)))))))
+         (funcall #',(intern (format nil "MAKE-~a" name))
+                  size
+                  (or
+                   storage
+                   (apply #'make-array
+                          size
+                          :element-type ',type
+                          (if initial-element
+                              (list :initial-element (coerce initial-element ',type))
+                              nil))))))))
 
 (defgeneric dot (vector1 vector2)
   (:documentation "Compute the dot product of two vectors")
   (:method ((vector1 vector) (vector2 vector))
     (policy-cond:policy-if
-     (> speed safety)
+     (< speed safety)
      (assert (cl:= (size vector1) (size vector2))
              () "Vectors must have the same size. The first vector is size ~a and the second vector is size ~a."
              (size vector1) (size vector2))

@@ -6,63 +6,56 @@
 
 (defmacro def-lapack-mult (class type blas-function)
   `(defmethod mult ((a ,class) (b ,class) &key target (alpha ,(coerce 1 type)) (beta ,(coerce 0 type)) (transa :n) (transb :n))
-     (policy-cond:policy-if
-      (> speed safety)
-      (progn (check-type transa (member nil :n :t :c))
-             (check-type transb (member nil :n :t :c)))
-      nil)
-     (let* ((m (if (eq :n transa) (nrows a) (ncols a)))
-            (k (if (eq :n transa) (ncols a) (nrows a)))
-            (n (if (eq :n transb) (ncols b) (nrows b)))
-            (brows (if (eq :n transb) (nrows b) (ncols b))))
-       (policy-cond:policy-if
-        (> speed safety)
-        (progn
-          (assert (cl:= k brows)
-                  () "Incompatible matrix sizes ~a and ~a." (list m k) (list brows n))
-          (when target
-            (assert (equal (shape target) (list m n))
-                    () "Incompatible target shape. Target needs shape ~a but has shape ~a"
-                    (shape target) (list m n))))
-        nil)
-       (let ((ta
-               (if (eql :row-major (order a))
-                   (case transa
-                     (:n :t)
-                     (:t :n)
-                     (:c (error "Specifying TRANSA to be :C is not allowed if A is ROW-MAJOR")))
-                   transa))
-             (tb (if (eql :row-major (order b))
-                     (case transb
-                       (:n :t)
-                       (:t :n)
-                       (:c (error "Specifying TRANSB to be :C is not allowed if B is ROW-MAJOR")))
-                     transb))
-             (target (or target
-                         (empty
-                          (list m n)
-                          :type ',type))))
-         (,blas-function
-          (ecase ta
-            (:t "T")
-            (:c "C")
-            (:n "N"))
-          (ecase tb
-            (:t "T")
-            (:c "C")
-            (:n "N"))
-          m
-          n
-          k
-          alpha
-          (storage a)
-          (if (eql :n ta) m k)
-          (storage b)
-          (if (eql :n tb) k n)
-          beta
-          (storage target)
-          m)
-         target))))
+     (policy-cond:with-expectations
+         (> speed safety)
+         ((type (member nil :n :t :c) transa)
+          (type (member nil :n :t :c) transb))
+       (let* ((m (if (eq :n transa) (nrows a) (ncols a)))
+              (k (if (eq :n transa) (ncols a) (nrows a)))
+              (n (if (eq :n transb) (ncols b) (nrows b)))
+              (brows (if (eq :n transb) (nrows b) (ncols b))))
+         (policy-cond:with-expectations
+             (> speed safety)
+             ((assertion (cl:= k brows))
+              (assertion (or (not target) (equal (shape target) (list m n)))))
+           (let ((ta
+                   (if (eql :row-major (order a))
+                       (case transa
+                         (:n :t)
+                         (:t :n)
+                         (:c (error "Specifying TRANSA to be :C is not allowed if A is ROW-MAJOR")))
+                       transa))
+                 (tb (if (eql :row-major (order b))
+                         (case transb
+                           (:n :t)
+                           (:t :n)
+                           (:c (error "Specifying TRANSB to be :C is not allowed if B is ROW-MAJOR")))
+                         transb))
+                 (target (or target
+                             (empty
+                              (list m n)
+                              :type ',type))))
+             (,blas-function
+              (ecase ta
+                (:t "T")
+                (:c "C")
+                (:n "N"))
+              (ecase tb
+                (:t "T")
+                (:c "C")
+                (:n "N"))
+              m
+              n
+              k
+              alpha
+              (storage a)
+              (if (eql :n ta) m k)
+              (storage b)
+              (if (eql :n tb) k n)
+              beta
+              (storage target)
+              m)
+             target))))))
 
 (defmacro def-lapack-lu (class type lu-function)
   (declare (ignore type))
@@ -186,7 +179,7 @@
 
      (defmethod lapack-eig ((m ,class))
        (policy-cond:policy-if
-        (> speed safety)
+        (< speed safety)
         (assert-square-matrix m)
         nil)
        (let ((rows (nrows m))
@@ -224,7 +217,7 @@
 
      (defmethod lapack-hermitian-eig ((m ,class))
        (policy-cond:policy-if
-        (> speed safety)
+        (< speed safety)
         (progn (assert-square-matrix)
                (assert (hermitian-matrix-p m)
                        () "The matrix M is not a hermitian matrix."))
@@ -258,7 +251,7 @@
   `(progn
      (defmethod qr ((m ,class))
        (policy-cond:policy-if
-        (> speed safety)
+        (< speed safety)
         (assert-square-matrix m)
         nil)
        (let ((rows (nrows m))
@@ -281,7 +274,7 @@
      
      (defmethod ql ((m ,class))
        (policy-cond:policy-if
-        (> speed safety)
+        (< speed safety)
         (assert-square-matrix m)
         nil)
        (let ((rows (nrows m))
@@ -304,7 +297,7 @@
 
      (defmethod rq ((m ,class))
        (policy-cond:policy-if
-        (> speed safety)
+        (< speed safety)
         (assert-square-matrix m)
         nil)
        (let ((rows (nrows m))
@@ -327,7 +320,7 @@
 
      (defmethod lq ((m ,class))
        (policy-cond:policy-if
-        (> speed safety)
+        (< speed safety)
         (assert-square-matrix m)
         nil)
        (let ((rows (nrows m))
