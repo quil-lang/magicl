@@ -14,7 +14,6 @@
   (shape '(0) :type list :read-only t)
   (size 0 :type alexandria:positive-fixnum :read-only t)
   (order :column-major :type (member :row-major :column-major)))
-#+sbcl (declaim (sb-ext:freeze-type tensor))
 
 (defmethod rank ((a tensor))
   (tensor-rank a))
