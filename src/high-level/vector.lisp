@@ -12,6 +12,53 @@
                    (:copier nil))
   (size 0 :type alexandria:positive-fixnum :read-only t))
 
+(defmacro defvector (name type &rest compat-classes)
+  (let ((constructor-sym (intern (format nil "MAKE-~a" name)))
+        (copy-sym (intern (format nil "COPY-~a" name)))
+        (storage-sym (intern (format nil "~a-STORAGE" name))))
+    `(progn
+       (defstruct (,name (:include vector)
+                         (:constructor ,constructor-sym
+                             (size storage))
+                         (:copier ,copy-sym))
+         (storage nil :type (vector-storage ,type)))
+       #+sbcl (declaim (sb-ext:freeze-type ,name))
+
+       (defmethod storage ((v ,name))
+         (,storage-sym v))
+
+       (defmethod element-type ((v ,name))
+         (declare (ignore v))
+         ',type)
+
+       (defmethod make-tensor ((class (eql ',name)) shape &key initial-element order storage)
+         (declare (ignore order))
+         (policy-cond:policy-if
+          (< speed safety)
+          (progn
+            (check-type shape shape)
+            (assert (cl:= 1 (length shape))
+                    () "Vector shape must be of length 1"))
+          nil)
+         (let ((size (reduce #'* shape)))
+           (funcall #',constructor-sym
+                    size
+                    (or
+                     storage
+                     (apply #'make-array
+                            size
+                            :element-type ',type
+                            (if initial-element
+                                (list :initial-element (coerce initial-element ',type))
+                                nil))))))
+
+       (defmethod tref ((vector ,name) &rest pos)
+         (aref (,storage-sym vector) (first pos)))
+
+       (defmethod (setf tref) (new-value (vector ,name) &rest pos)
+         (setf (aref (,storage-sym vector) (first pos)) new-value)))))
+
+
 (defun pprint-vector (stream vector)
   "Pretty-print a vector VECTOR to the stream STREAM."
   (flet ((print-real (x)
@@ -45,53 +92,15 @@
 (defmethod shape ((vector vector))
   (list (vector-size vector)))
 
-(defmethod tref ((vector vector) &rest pos)
-  (policy-cond:with-expectations
-      (> speed safety)
-      ((assertion (valid-index-p pos (shape vector))))
-    (aref (storage vector) (first pos))))
-
-(defmethod (setf tref) (new-value (vector vector) &rest pos)
-  (policy-cond:with-expectations
-      (> speed safety)
-      ((assertion (valid-index-p pos (shape vector))))    
-    (setf (aref (storage vector) (first pos)) new-value)))
-
-(defmacro defvector (name type &rest compat-classes)
-  `(progn
-     (defstruct (,name (:include vector)
-                       (:constructor ,(intern (format nil "MAKE-~a" name))
-                           (size storage)))
-       (storage nil :type (vector-storage ,type)))
-     #+sbcl (declaim (sb-ext:freeze-type ,name))
-
-     (defmethod storage ((v ,name))
-       (,(intern (format nil "~a-STORAGE" name)) v))
-
-     (defmethod element-type ((v ,name))
-       (declare (ignore v))
-       ',type)
-
-     (defmethod make-tensor ((class (eql ',name)) shape &key initial-element order storage)
-       (declare (ignore order))
-       (policy-cond:policy-if
-        (< speed safety)
-        (progn
-          (check-type shape shape)
-          (assert (cl:= 1 (length shape))
-                  () "Vector shape must be of length 2"))
-        nil)
-       (let ((size (reduce #'* shape)))
-         (funcall #',(intern (format nil "MAKE-~a" name))
-                  size
-                  (or
-                   storage
-                   (apply #'make-array
-                          size
-                          :element-type ',type
-                          (if initial-element
-                              (list :initial-element (coerce initial-element ',type))
-                              nil))))))))
+(defmethod (setf shape) (new-value (vector vector))
+  (policy-cond:policy-if
+   (< speed safety)
+   (progn
+     (check-type new-value shape)
+     (assert (cl:= 1 (length new-value))
+             () "Vector shape must be of length 1"))
+   nil)
+  (setf (vector-size vector) (first new-value)))
 
 (defgeneric dot (vector1 vector2)
   (:documentation "Compute the dot product of two vectors")

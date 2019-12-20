@@ -7,7 +7,7 @@
 (defconstant +default-tensor-type+ 'double-float)
 
 (defun infer-tensor-type (type shape val)
-  (intern
+  (find-symbol
    (format nil "~a/~a"
            (cond
              ((cl:= 1 (length shape)) "VECTOR")

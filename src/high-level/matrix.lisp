@@ -29,99 +29,94 @@
 (defmethod order ((m matrix))
   (matrix-order m))
 
-
 ;;; Specfic matrix classes
 (defmacro defmatrix (name type &rest compat-classes)
   "Define a new matrix subclass with the specified NAME, element TYPE, and TENSOR-NAME. The tensor name is used to declare that the new matrix class is a specialization of TENSOR-NAME."
-  `(progn
-     (defstruct (,name (:include matrix)
-                       (:constructor ,(intern (format nil "MAKE-~a" name))
-                           (nrows ncols size order storage)))
-       (storage nil :type (matrix-storage ,type)))
-     #+sbcl (declaim (sb-ext:freeze-type ,name))
+  (let ((constructor-sym (intern (format nil "MAKE-~a" name)))
+        (copy-sym (intern (format nil "COPY-~a" name)))
+        (storage-sym (intern (format nil "~a-STORAGE" name))))
+    `(progn
+       (defstruct (,name (:include matrix)
+                         (:constructor ,constructor-sym
+                             (nrows ncols size order storage))
+                         (:copier ,copy-sym))
+         (storage nil :type (matrix-storage ,type)))
+       #+sbcl (declaim (sb-ext:freeze-type ,name))
 
-     (defmethod storage ((m ,name))
-       (,(intern (format nil "~a-STORAGE" name)) m))
+       (defmethod storage ((m ,name))
+         (,storage-sym m))
 
-     (defmethod element-type ((m ,name))
-       (declare (ignore m))
-       ',type)
+       (defmethod element-type ((m ,name))
+         (declare (ignore m))
+         ',type)
 
-     (defmethod make-tensor ((class (eql ',name)) shape &key initial-element order storage)
-       (policy-cond:policy-if
-        (< speed safety)
-        (progn
-          (check-type shape shape)
-          (assert (cl:= 2 (length shape))
-                  () "Matrix shape must be of length 2"))
-        nil)
-       (let ((size (reduce #'* shape)))
-         (funcall #',(intern (format nil "MAKE-~a" name))
-                  (first shape)
-                  (second shape)
-                  size
-                  (or order :column-major)
-                  (or
-                   storage
-                   (apply #'make-array
-                          size
-                          :element-type ',type
-                          (if initial-element
-                              (list :initial-element (coerce initial-element ',type))
-                              nil))))))
+       (defmethod make-tensor ((class (eql ',name)) shape &key initial-element order storage)
+         (policy-cond:with-expectations
+             (< speed safety)
+             ((type shape shape)
+              (assertion (cl:= 2 (length shape))))
+           (let ((size (reduce #'* shape)))
+             (funcall #',constructor-sym
+                      (first shape)
+                      (second shape)
+                      size
+                      (or order :column-major)
+                      (or
+                       storage
+                       (apply #'make-array
+                              size
+                              :element-type ',type
+                              (if initial-element
+                                  (list :initial-element (coerce initial-element ',type))
+                                  nil)))))))
 
-     ;; TODO: This does not allow for args. Make this allow for args.
-     (defmethod copy-tensor ((m ,name) &rest args)
-       (let ((new-m (,(intern (format nil "COPY-~a" name)) m)))
-         (setf (,(intern (format nil "~a-STORAGE" name)) new-m)
-               (make-array (matrix-size m) :element-type (element-type m)))
-         new-m))
+       ;; TODO: This does not allow for args. Make this allow for args.
+       (defmethod copy-tensor ((m ,name) &rest args)
+         (let ((new-m (,copy-sym m)))
+           (setf (,storage-sym new-m)
+                 (make-array (matrix-size m) :element-type (element-type m)))
+           new-m))
 
-     (defmethod deep-copy-tensor ((m ,name) &rest args)
-       (let ((new-m (,(intern (format nil "COPY-~a" name)) m)))
-         (setf (,(intern (format nil "~a-STORAGE" name)) new-m)
-               (alexandria:copy-array (,(intern (format nil "~a-STORAGE" name)) m)))
-         new-m))
-     
-     (defmethod tref ((matrix ,name) &rest pos)
-       (declare (optimize (speed 3) (safety 0))) ;; I know what I'm doing
-       (declare (dynamic-extent pos))
-       (policy-cond:with-expectations
-           (> speed safety)
-           ((assertion (valid-index-p pos (shape matrix)))
-            (type alexandria:non-negative-fixnum (first pos) (second pos)))
-         (let ((row (first pos))
-               (col (second pos))
-               (numrows (matrix-nrows matrix))
-               (numcols (matrix-ncols matrix))
-               (vec (,(intern (format nil "~a-STORAGE" name)) matrix)))
-           (declare (type fixnum row col numrows numcols)
-                    (type (simple-array ,type) vec))
-           (let ((index (ecase (matrix-order matrix)
-                          (:row-major (cl:+ col (the fixnum (* row numcols))))
-                          (:column-major (cl:+ row (the fixnum (* col numrows)))))))
-             (declare (type alexandria:array-index index))
-             (aref vec index)))))
-     
-     (defmethod (setf tref) (new-value (matrix ,name) &rest pos)
-       (declare (optimize (speed 3) (safety 0))) ;; I know what I'm doing, I promise
-       (declare (dynamic-extent pos))
-       (policy-cond:with-expectations
-           (> speed safety)
-           ((assertion (valid-index-p pos (shape matrix)))
-            (type alexandria:non-negative-fixnum (first pos) (second pos)))
-         (let ((row (first pos))
-               (col (second pos))
-               (numrows (matrix-nrows matrix))
-               (numcols (matrix-ncols matrix))
-               (vec (,(intern (format nil "~a-STORAGE" name)) matrix)))
-           (declare (type fixnum row col numrows numcols)
-                    (type (simple-array ,type) vec))
-           (let ((index (ecase (matrix-order matrix)
-                          (:row-major (cl:+ col (the fixnum (* row numcols))))
-                          (:column-major (cl:+ row (the fixnum (* col numrows)))))))
-             (declare (type alexandria:array-index index))
-             (setf (aref vec index) (coerce new-value ',type))))))))
+       (defmethod deep-copy-tensor ((m ,name) &rest args)
+         (let ((new-m (,copy-sym m)))
+           (setf (,storage-sym new-m)
+                 (alexandria:copy-array (,storage-sym m)))
+           new-m))
+       
+       (defmethod tref ((matrix ,name) &rest pos)
+         (declare (dynamic-extent pos))
+         (let ((numrows (matrix-nrows matrix))
+               (numcols (matrix-ncols matrix)))
+           (declare (type fixnum numrows numcols))
+           (policy-cond:with-expectations
+               (> speed safety)
+               ((assertion (valid-matrix-index-p pos numrows numcols)))
+             (let ((row (first pos))
+                   (col (second pos)))
+               (declare (type fixnum row col))
+               (let ((index (ecase (matrix-order matrix)
+                              (:row-major (cl:+ col (the fixnum (* row numcols))))
+                              (:column-major (cl:+ row (the fixnum (* col numrows)))))))
+                 (declare (type alexandria:array-index index))
+                 (aref (,storage-sym matrix) index))))))
+       
+       (defmethod (setf tref) (new-value (matrix ,name) &rest pos)
+         (declare (dynamic-extent pos))
+         (let ((numrows (matrix-nrows matrix))
+               (numcols (matrix-ncols matrix)))
+           (declare (type alexandria:non-negative-fixnum numrows numcols))
+           (policy-cond:with-expectations
+               (> speed safety)
+               ((assertion (valid-matrix-index-p pos numrows numcols)))
+             (let ((row (first pos))
+                   (col (second pos)))
+               (declare (type alexandria:non-negative-fixnum row col))
+               (let ((index (ecase (matrix-order matrix)
+                              (:row-major (cl:+ col (the fixnum (* row numcols))))
+                              (:column-major (cl:+ row (the fixnum (* col numrows)))))))
+                 (declare (type alexandria:array-index index))
+                 (setf (aref (,storage-sym matrix) index)
+                       (coerce new-value ',type))))))))))
 
 (defun pprint-matrix (stream matrix &optional colon-p at-sign-p)
   "Pretty-print a matrix MATRIX to the stream STREAM."
@@ -197,6 +192,17 @@
 
 (defmethod shape ((m matrix))
   (list (matrix-nrows m) (matrix-ncols m)))
+
+(defmethod (setf shape) (new-value (m matrix))
+  (policy-cond:policy-if
+   (< speed safety)
+   (progn
+     (check-type new-value shape)
+     (assert (cl:= 2 (length new-value))
+             () "Matrix shape must be of length 2"))
+   nil)
+  (setf (matrix-nrows m) (first new-value)
+        (matrix-ncols m) (second new-value)))
 
 ;; Specific constructors
 

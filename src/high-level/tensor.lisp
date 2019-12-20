@@ -21,69 +21,73 @@
 (defmethod shape ((a tensor))
   (tensor-shape a))
 
+(defmethod (setf shape) (new-value (a tensor))
+  (reshape a new-value))
+
 ;;; Specfic tensor classes
 (defmacro deftensor (name type)
-  `(progn
-     (defstruct (,name (:include tensor)
-                       (:constructor ,(intern (format nil "MAKE-~a" name))
-                           (rank shape size order storage)))
-       (storage nil :type (tensor-storage ,type)))
-     #+sbcl (declaim (sb-ext:freeze-type ,name))
-     
-     (defmethod storage ((m ,name))
-       (,(intern (format nil "~a-STORAGE" name)) m))
+  (let ((constructor-sym (intern (format nil "MAKE-~a" name)))
+        (copy-sym (intern (format nil "COPY-~a" name)))
+        (storage-sym (intern (format nil "~a-STORAGE" name))))
+    `(progn
+       (defstruct (,name (:include tensor)
+                         (:constructor ,constructor-sym
+                             (rank shape size order storage))
+                         (:copier ,copy-sym))
+         (storage nil :type (tensor-storage ,type)))
+       #+sbcl (declaim (sb-ext:freeze-type ,name))
+       
+       (defmethod storage ((m ,name))
+         (,storage-sym m))
 
-     (defmethod element-type ((m ,name))
-       (declare (ignore m))
-       ',type)
-     
-     (defmethod make-tensor ((class (eql ',name)) shape &key initial-element order storage)
-       (policy-cond:policy-if
-        (< speed safety)
-        (check-type shape shape)
-        nil)
-       (let ((size (reduce #'* shape)))
-         (funcall #',(intern (format nil "MAKE-~a" name))
-                  (length shape)
-                  shape
-                  size
-                  (or order :column-major)
-                  (or
-                   storage
-                   (apply #'make-array
-                          size
-                          :element-type ',type
-                          (if initial-element
-                              (list :initial-element (coerce initial-element ',type))
-                              nil))))))
+       (defmethod element-type ((m ,name))
+         (declare (ignore m))
+         ',type)
+       
+       (defmethod make-tensor ((class (eql ',name)) shape &key initial-element order storage)
+         (policy-cond:policy-if
+          (< speed safety)
+          (check-type shape shape)
+          nil)
+         (let ((size (reduce #'* shape)))
+           (funcall #',constructor-sym
+                    (length shape)
+                    shape
+                    size
+                    (or order :column-major)
+                    (or
+                     storage
+                     (apply #'make-array
+                            size
+                            :element-type ',type
+                            (if initial-element
+                                (list :initial-element (coerce initial-element ',type))
+                                nil))))))
 
-     ;; TODO: This does not allow for args. Make this allow for args.
-     (defmethod copy-tensor ((m ,name) &rest args)
-       (,(intern (format nil "COPY-~a" name)) m))
+       ;; TODO: This does not allow for args. Make this allow for args.
+       (defmethod copy-tensor ((m ,name) &rest args)
+         (let ((new-m (,copy-sym m)))
+           (setf (,storage-sym new-m)
+                 (make-array (tensor-size m) :element-type (element-type m)))
+           new-m))
 
-     (defmethod deep-copy-tensor ((m ,name) &rest args)
-       (let ((new-m (,(intern (format nil "COPY-~a" name)) m)))
-         (setf (,(intern (format nil "~a-STORAGE" name)) new-m)
-               (alexandria:copy-array (,(intern (format nil "~a-STORAGE" name)) m)))
-         new-m))
+       (defmethod deep-copy-tensor ((m ,name) &rest args)
+         (let ((new-m (,copy-sym m)))
+           (setf (,storage-sym new-m)
+                 (alexandria:copy-array (,storage-sym m)))
+           new-m))
 
-     (defmethod tref ((tensor ,name) &rest pos)
-       (policy-cond:with-expectations
-           (> speed safety)
-           ((assertion (valid-index-p pos (shape tensor))))
+       (defmethod tref ((tensor ,name) &rest pos)
          (let ((index (case (tensor-order tensor)
                         (:row-major (row-major-index pos (tensor-shape tensor)))
                         (:column-major (column-major-index pos (tensor-shape tensor))))))
-           (aref (,(intern (format nil "~a-STORAGE" name)) tensor) index))))
+           (aref (,storage-sym tensor) index)))
 
-     (defmethod (setf tref) (new-value (tensor ,name) &rest pos)
-       (policy-cond:with-expectations
-           (> speed safety)
-           ((assertion (valid-index-p pos (shape tensor))))
+       (defmethod (setf tref) (new-value (tensor ,name) &rest pos)
          (let ((index (case (tensor-order tensor)
                         (:row-major (row-major-index pos (tensor-shape tensor)))
                         (:column-major (column-major-index pos (tensor-shape tensor))))))
-           (setf (aref (,(intern (format nil "~a-STORAGE" name)) tensor) index)
+           (setf (aref (,storage-sym tensor) index)
                  new-value))))))
 
 (defun pprint-tensor (stream tensor &optional colon-p at-sign-p)
@@ -105,12 +109,9 @@ WARNING: This method acts differently depending on the order of the tensor. Do n
     (policy-cond:policy-if
      (< speed safety)
      (let ((shape-size (reduce #'* shape)))
-       (assert (cl:= (size tensor) shape-size)
-               () "Incompatible shape. Must have the same total number of elements. The tensor has ~a elements and the new shape has ~a elements" (size tensor) shape-size))
+       (assert (cl:= (tensor-size tensor) shape-size)
+               () "Incompatible shape. Must have the same total number of elements. The tensor has ~a elements and the new shape has ~a elements" (tensor-size tensor) shape-size))
      nil)
-    (setf (slot-value tensor 'shape) shape)
-    (setf (slot-value tensor 'rank) (length shape))
+    (setf (tensor-shape tensor) shape)
+    (setf (tensor-rank tensor) (length shape))
     tensor))
-
-(defgeneric stack (tensorA tensorB dim) ;; Also have specifics for 2d
-  (:documentation "Create a new tensor from stacking the tensors in the specififed dimension"))
