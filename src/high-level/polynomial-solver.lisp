@@ -8,13 +8,20 @@
 ;;; the eigendecomposition of the companion matrix of the given polynomial to
 ;;; obtain all of its roots.
 
-;;; A univariate polynomial is represented as a simple one-dimensional array
-;;; of complex double-floats.
+;;; A univariate polynomial is represented as a one-dimensional array of
+;;; complex coefficients.
 
 (deftype polynomial-coefficients () '(simple-array (complex double-float) (*)))
 
-(defstruct polynomial
+(defstruct (polynomial (:constructor %make-polynomial))
   (coefficients nil :type polynomial-coefficients))
+
+(defun make-polynomial (&rest args)
+  "Return a POLYNOMIAL structure whose (complex) coefficients are the elements of ARGS."
+  (assert (and args (first args)))
+  (%make-polynomial :coefficients (coerce (loop :for arg :in args
+                                                :collect (coerce arg '(complex double-float)))
+                                          'polynomial-coefficients)))
 
 (defun polynomial-solve (polynomial)
   "Return all the roots of POLYNOMIAL.
@@ -30,7 +37,7 @@ It is assumed that POLYNOMIAL is well-formed in the sense that its leading coeff
                     (leading-coefficient (aref coefficients (1- degree))))
                (dotimes (i degree)
                  (setf (aref coefficients i) (/ (aref coefficients i) leading-coefficient)))
-               (make-polynomial :coefficients coefficients)))
+               (%make-polynomial :coefficients coefficients)))
 
            (make-companion-matrix (polynomial)
              "Return the companion matrix of POLYNOMIAL."
@@ -38,15 +45,10 @@ It is assumed that POLYNOMIAL is well-formed in the sense that its leading coeff
                    :with coefficients := (polynomial-coefficients polynomial)
                    :with n := (1- (length coefficients))
                    :with matrix := (make-zero-matrix n n)
-
                    :for i :below n
                    :for coefficient :of-type (complex double-float) := (aref coefficients i)
-
-                   :when (plusp i)
-                     :do (setf (ref matrix i (1- i)) 1.0d0)
-
+                   :when (plusp i) :do (setf (ref matrix i (1- i)) 1.0d0)
                    :do (setf (ref matrix i (1- n)) (- coefficient))
-
                    :finally (return matrix))))
 
     (nth-value 0 (eig (make-companion-matrix polynomial)))))

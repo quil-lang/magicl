@@ -141,7 +141,7 @@
 (deftest test-polynomial-solver ()
   "Test univariate polynomial solver."
   (flet ((make-random-polynomial (degree)
-           (magicl::make-polynomial :coefficients (magicl::matrix-data (magicl:random-gaussian-matrix 1 degree)))))
+           (apply #'magicl::make-polynomial (coerce (magicl::matrix-data (magicl:random-gaussian-matrix 1 degree)) 'list))))
     (dotimes (i 10)
       (let* ((polynomial (make-random-polynomial 5))
              (roots (magicl::polynomial-solve polynomial)))
