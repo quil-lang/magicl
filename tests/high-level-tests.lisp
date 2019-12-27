@@ -147,7 +147,7 @@
              (roots (magicl::polynomial-solve polynomial)))
         (is (= (length roots) (1- (length (magicl:polynomial-coefficients polynomial)))))
         (dolist (root roots)
-          (let* ((refined-root (magicl:polynomial-newton-iteration polynomial root)))
+          (let ((refined-root (magicl:polynomial-newton-iteration polynomial root)))
             (is (< (abs (- root refined-root)) 1.0d-9))
             (is (< (abs (magicl:polynomial-eval polynomial refined-root))
                    (* 1.0d2 magicl:+double-float-epsilon+)))))))))

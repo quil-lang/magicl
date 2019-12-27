@@ -8,6 +8,11 @@
 ;;; the eigendecomposition of the companion matrix of the given polynomial to
 ;;; obtain all of its roots.
 
+;;; A root refinement mechanism via Newton's iteration is included. Note that
+;;; polynomials (a) whose leading coefficient is much smaller than the
+;;; remaining coefficients or (b) having roots with multiplicity higher than
+;;; one will be harder to solve accurately.
+
 ;;; A univariate polynomial is represented as a one-dimensional array of
 ;;; complex coefficients.
 
