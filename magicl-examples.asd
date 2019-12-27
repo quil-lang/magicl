@@ -3,7 +3,7 @@
   :description "MAGICL examples"
   :maintainer "Rigetti Computing"
   :author "Rigetti Computing"
-  :depends-on (#:magicl)
+  :depends-on (#:magicl #:magicl-transcendental)
   :serial t
   :components
   ((:file "examples")))

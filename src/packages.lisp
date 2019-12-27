@@ -85,7 +85,6 @@
            #:direct-sum
            #:diag
            #:matrix-diagonal
-           #:expm
            #:eig
            #:hermitian-eig
            #:logm
