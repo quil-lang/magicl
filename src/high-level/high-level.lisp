@@ -5,6 +5,10 @@
 
 (in-package #:magicl)
 
+(defconstant +double-float-epsilon+ #+sbcl sb-c::double-float-epsilon #-sbcl 1.1102230246251568d-16)
+
+(defconstant +single-float-epsilon+ #+sbcl sb-c::single-float-epsilon #-sbcl 5.960465e-8)
+
 (deftype matrix-storage ()
   "Representation of the smallest supertype of matrix storage."
   `(simple-array * (*)))

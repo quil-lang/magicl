@@ -95,6 +95,14 @@
            #:dec-matrix
            #:add-matrix
            #:sub-matrix
+           #:+double-float-epsilon+
+           #:+single-float-epsilon+
+           #:polynomial
+           #:polynomial-coefficients
+           #:polynomial-solver
+           #:polynomial-eval
+           #:polynomial-diff
+           #:polynomial-newton-iteration
            )
 
   ;; random.lisp
