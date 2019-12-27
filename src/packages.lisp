@@ -95,8 +95,6 @@
            #:dec-matrix
            #:add-matrix
            #:sub-matrix
-           #:+double-float-epsilon+
-           #:+single-float-epsilon+
            #:polynomial
            #:make-polynomial
            #:polynomial-coefficients

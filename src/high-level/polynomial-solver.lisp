@@ -86,15 +86,15 @@ It is assumed that POLYNOMIAL is well-formed in the sense that its leading coeff
         :do (setf (aref new-coefficients i) (* (1+ i) c))
         :finally (return (%make-polynomial :coefficients new-coefficients))))
 
-(defconstant +default-tolerance+ (* 1e2 +double-float-epsilon+)
+(defconstant +default-newton-tolerance+ (* 1e2 double-float-epsilon)
   "Default tolerance for Newton's method.")
 
-(defconstant +default-max-iterations+ 100
+(defconstant +default-newton-max-iterations+ 100
   "Default maximum number of iterations in Newton's method.")
 
 (defun polynomial-newton-iteration (polynomial initial-value
-                                    &key (tolerance +default-tolerance+)
-                                      (max-iterations +default-max-iterations+))
+                                    &key (tolerance +default-newton-tolerance+)
+                                      (max-iterations +default-newton-max-iterations+))
   "Return the result of running Newton's method on POLYNOMIAL starting with INITIAL-VALUE. The arguments TOLERANCE and MAX-ITERATIONS determine the convergence criterion."
   (declare (type polynomial polynomial)
            (type (complex double-float) initial-value)
@@ -104,7 +104,7 @@ It is assumed that POLYNOMIAL is well-formed in the sense that its leading coeff
 
   (loop :with diff :of-type polynomial := (polynomial-diff polynomial)
         :with x :of-type (complex double-float) := initial-value
-        :for i :of-type fixnum :below (min 1 max-iterations)
+        :repeat (min 1 max-iterations)
         :for p :of-type (complex double-float) := (polynomial-eval polynomial x)
         :for dp :of-type (complex double-float) := (polynomial-eval diff x)
         :until (< (abs p) tolerance)

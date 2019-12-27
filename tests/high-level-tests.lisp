@@ -84,7 +84,7 @@
              (let ((data (magicl::matrix-data matrix)))
                (reduce #'max data :key #'abs)))
 
-           (zero-p (matrix &optional (tolerance (* 1.0d2 magicl:+double-float-epsilon+)))
+           (zero-p (matrix &optional (tolerance (* 1.0d2 double-float-epsilon)))
              "Return T if MATRIX is close to zero (within TOLERANCE)."
              (< (norm-inf matrix) tolerance))
 
@@ -125,7 +125,7 @@
 (deftest test-csd-2x2-basic ()
   "Test CS decomposition of an equipartitioned 2x2 unitary matrix."
   (let ((x (magicl:random-unitary 2))
-        (tol (* 1.0d2 magicl:+double-float-epsilon+)))
+        (tol (* 1.0d2 double-float-epsilon)))
     (multiple-value-bind (u1 u2 v1h v2h theta)
         (magicl::csd-2x2-basic x 1 1)
       (multiple-value-bind (u1* u2* v1h* v2h* theta*)
@@ -151,16 +151,16 @@
           (let ((refined-root (magicl:polynomial-newton-iteration polynomial root)))
             (is (< (abs (- root refined-root)) 1.0d-9))
             (is (< (abs (magicl:polynomial-eval polynomial refined-root))
-                   (* 1.0d2 magicl:+double-float-epsilon+))))))))
+                   (* 1.0d2 double-float-epsilon))))))))
 
   ;; Test polynomial with multiple roots.
   (let* ((polynomial (magicl:make-polynomial -4 8 -3 -2 1))
          (roots (magicl:polynomial-solve polynomial))
          (reference-roots '(#c(-2.0d0 0.0d0) #c(1.0d0 0.0d0) #c(1.0d0 0.0d0) #c(2.0d0 0.0d0)))
-         (relative-error-tolerances (list (* 1.0d2 +double-float-epsilon+)
-                                          (* 1.0d2 +single-float-epsilon+) ; Accuracy drops at double root.
-                                          (* 1.0d2 +single-float-epsilon+)
-                                          (* 1.0d2 +double-float-epsilon+))))
+         (relative-error-tolerances (list (* 1.0d2 double-float-epsilon)
+                                          (* 1.0d2 single-float-epsilon) ; Accuracy drops at double root.
+                                          (* 1.0d2 single-float-epsilon)
+                                          (* 1.0d2 double-float-epsilon))))
     (loop :for root :in roots
           :for reference-root :in reference-roots
           :for relative-error-tolerance :in relative-error-tolerances :do
