@@ -137,3 +137,14 @@
         (is (< (abs (- (ref v1h 0 0) (ref v1h* 0 0))) tol))
         (is (< (abs (- (ref v2h 0 0) (ref v2h* 0 0))) tol))
         (is (< (abs (- (first theta) (first theta*))) tol))))))
+
+(deftest test-polynomial-solver ()
+  "Test univariate polynomial solver."
+  (flet ((make-random-polynomial (degree)
+           (magicl::make-polynomial :coefficients (magicl::matrix-data (magicl:random-gaussian-matrix 1 degree)))))
+    (dotimes (i 10)
+      (let* ((polynomial (make-random-polynomial 5))
+             (roots (magicl::polynomial-solve polynomial)))
+        (is (= (length roots) (1- (length (magicl::polynomial-coefficients polynomial)))))
+        (dolist (root roots)
+          (is (< (abs (magicl::polynomial-eval polynomial root)) 1e-8)))))))
