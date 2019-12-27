@@ -98,8 +98,9 @@
            #:+double-float-epsilon+
            #:+single-float-epsilon+
            #:polynomial
+           #:make-polynomial
            #:polynomial-coefficients
-           #:polynomial-solver
+           #:polynomial-solve
            #:polynomial-eval
            #:polynomial-diff
            #:polynomial-newton-iteration
