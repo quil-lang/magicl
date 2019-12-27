@@ -104,7 +104,7 @@ It is assumed that POLYNOMIAL is well-formed in the sense that its leading coeff
 
   (loop :with diff :of-type polynomial := (polynomial-diff polynomial)
         :with x :of-type (complex double-float) := initial-value
-        :repeat (min 1 max-iterations)
+        :repeat (max 1 max-iterations)
         :for p :of-type (complex double-float) := (polynomial-eval polynomial x)
         :for dp :of-type (complex double-float) := (polynomial-eval diff x)
         :until (< (abs p) tolerance)
