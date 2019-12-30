@@ -69,12 +69,15 @@
            (format stream "~6,3f ~:[+~;-~]~6,3fj"
                    (realpart z)
                    (minusp (imagpart z))
-                   (abs (imagpart z)))))
+                   (abs (imagpart z))))
+         (print-int (x)
+           (format stream "~3d" x)))
     (let* ((size (size vector))
            (type (element-type vector))
            (print-entry
              (cond
                ((subtypep type 'complex) #'print-complex)
+               ((subtypep type 'integer) #'print-int)
                (t #'print-real))))
       (pprint-logical-block (stream nil)
         (print-unreadable-object (vector stream :type t)
