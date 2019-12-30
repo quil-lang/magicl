@@ -329,19 +329,18 @@ If fast is t then just change order. Fast can cause problems when you want to mu
     "Transpose a matrix by copying values.
 If fast is t then just change order. Fast can cause problems when you want to multiply specifying transpose."
     (let ((new-matrix (copy-tensor matrix)))
+      (setf (matrix-ncols new-matrix) (matrix-nrows matrix)
+            (matrix-nrows new-matrix) (matrix-ncols matrix))
       (let ((index-function
               (ecase (order matrix)
                 (:row-major #'row-major-index)
                 (:column-major #'column-major-index)))
             (shape (shape matrix)))
         (loop :for row :below (matrix-nrows matrix)
-              :do(loop :for col :from row :below (matrix-ncols matrix)
+              :do (loop :for col :below (matrix-ncols matrix)
                        :do (let ((index1 (funcall index-function (list row col) shape))
-                                 (index2 (funcall index-function (list col row) shape)))
-                             (setf (aref (storage new-matrix) index2) (aref (storage matrix) index1)
-                                   (aref (storage new-matrix) index1) (aref (storage matrix) index2)))))
-        (setf (matrix-ncols new-matrix) (matrix-nrows matrix))
-        (setf (matrix-nrows new-matrix) (matrix-ncols matrix)))
+                                 (index2 (funcall index-function (list col row) (shape new-matrix))))
+                             (setf (aref (storage new-matrix) index2) (aref (storage matrix) index1))))))
       new-matrix)))
 
 ;; TODO: allow setf on matrix diag
