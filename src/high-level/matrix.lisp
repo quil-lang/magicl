@@ -32,6 +32,7 @@
 ;;; Specfic matrix classes
 (defmacro defmatrix (name type &rest compat-classes)
   "Define a new matrix subclass with the specified NAME, element TYPE, and TENSOR-NAME. The tensor name is used to declare that the new matrix class is a specialization of TENSOR-NAME."
+  (declare (ignore compat-classes))
   (let ((constructor-sym (intern (format nil "MAKE-~a" name)))
         (copy-sym (intern (format nil "COPY-~a" name)))
         (storage-sym (intern (format nil "~a-STORAGE" name))))
@@ -72,12 +73,14 @@
 
        ;; TODO: This does not allow for args. Make this allow for args.
        (defmethod copy-tensor ((m ,name) &rest args)
+         (declare (ignore args))
          (let ((new-m (,copy-sym m)))
            (setf (,storage-sym new-m)
                  (make-array (matrix-size m) :element-type (element-type m)))
            new-m))
 
        (defmethod deep-copy-tensor ((m ,name) &rest args)
+         (declare (ignore args))
          (let ((new-m (,copy-sym m)))
            (setf (,storage-sym new-m)
                  (alexandria:copy-array (,storage-sym m)))
@@ -208,7 +211,7 @@
 
 (defgeneric random-unitary (shape &key type)
   (:documentation "Generate a uniformly random element of U(n).")
-  (:method (shape &key (type +default-tensor-type+))
+  (:method (shape &key (type 'double-float))
     (policy-cond:policy-if
      (< speed safety)
      (assert-square-shape shape)

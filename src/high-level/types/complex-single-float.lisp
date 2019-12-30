@@ -23,7 +23,7 @@
   matrix/complex-single-float
   vector/complex-single-float)
 
-(defmethod = ((tensor1 tensor/complex-single-float) (tensor2 tensor/complex-single-float) &optional (epsilon +double-comparison-threshold-strict+))
+(defmethod = ((tensor1 tensor/complex-single-float) (tensor2 tensor/complex-single-float) &optional (epsilon 0))
   (unless (equal (shape tensor1) (shape tensor2))
     (return-from = nil))
   (map-indexes
@@ -35,7 +35,7 @@
        (return-from = nil))))
   t)
 
-(defmethod = ((tensor1 matrix/complex-single-float) (tensor2 matrix/complex-single-float) &optional (epsilon +double-comparison-threshold-strict+))
+(defmethod = ((tensor1 matrix/complex-single-float) (tensor2 matrix/complex-single-float) &optional (epsilon 0))
   (unless (equal (shape tensor1) (shape tensor2))
     (return-from = nil))
   (map-indexes

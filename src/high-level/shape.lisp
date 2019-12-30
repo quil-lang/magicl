@@ -30,7 +30,7 @@
            (cl:= (length index) (length shape))
            (cl:every #'< index shape))))
 
-(declaim (intern valid-matrix-index-p))
+(declaim (inline valid-matrix-index-p))
 (defun valid-matrix-index-p (index &optional nrows ncols)
   (if (or (null nrows) (null ncols))
       (and (typep index 'list)

@@ -10,7 +10,7 @@
 (defstruct (vector (:include abstract-tensor)
                    (:constructor nil)
                    (:copier nil))
-  (size 0 :type alexandria:positive-fixnum :read-only t))
+  (size 0 :type alexandria:positive-fixnum))
 
 (defmacro defvector (name type &rest compat-classes)
   (let ((constructor-sym (intern (format nil "MAKE-~a" name)))
@@ -53,9 +53,11 @@
                                 nil))))))
 
        (defmethod tref ((vector ,name) &rest pos)
+         (declare (ignore args))
          (aref (,storage-sym vector) (first pos)))
 
        (defmethod (setf tref) (new-value (vector ,name) &rest pos)
+         (declare (ignore args))
          (setf (aref (,storage-sym vector) (first pos)) new-value)))))
 
 

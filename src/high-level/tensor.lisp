@@ -10,8 +10,8 @@
 (defstruct (tensor (:include abstract-tensor)
                    (:constructor nil)
                    (:copier nil))
-  (rank 0 :type alexandria:non-negative-fixnum :read-only t)
-  (shape '(0) :type list :read-only t)
+  (rank 0 :type alexandria:non-negative-fixnum)
+  (shape '(0) :type list)
   (size 0 :type alexandria:positive-fixnum :read-only t)
   (order :column-major :type (member :row-major :column-major)))
 
@@ -26,7 +26,7 @@
 
 ;;; Specfic tensor classes
 (defmacro deftensor (name type)
-  (let ((constructor-sym (intern (format nil "MAKE-~a" name)))
+  (let ((constructor-sym (intern (format nil "MAKE-~a-STRUCT" name)))
         (copy-sym (intern (format nil "COPY-~a" name)))
         (storage-sym (intern (format nil "~a-STORAGE" name))))
     `(progn
@@ -66,12 +66,14 @@
 
        ;; TODO: This does not allow for args. Make this allow for args.
        (defmethod copy-tensor ((m ,name) &rest args)
+         (declare (ignore args))
          (let ((new-m (,copy-sym m)))
            (setf (,storage-sym new-m)
                  (make-array (tensor-size m) :element-type (element-type m)))
            new-m))
 
        (defmethod deep-copy-tensor ((m ,name) &rest args)
+         (declare (ignore args))
          (let ((new-m (,copy-sym m)))
            (setf (,storage-sym new-m)
                  (alexandria:copy-array (,storage-sym m)))
