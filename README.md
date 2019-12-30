@@ -39,6 +39,10 @@ You can run the MAGICL tests from your Lisp REPL with:
 (asdf:test-system :magicl)
 ```
 
+## High-level Interface
+
+See [high-level doc](doc/high-level.md).
+
 ## Showing Available Functions
 
 Some distributions of a library don't actually provide all of the functions of the reference BLAS and LAPACK. One can look at a summary of available and unavailable functions with the function `magicl:print-availability-report`. By default, it will show all functions and their availability. There are three arguments to fine-tune this behavior:
