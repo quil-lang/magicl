@@ -6,34 +6,6 @@
 
 (defconstant +default-tensor-type+ 'double-float)
 
-(defun infer-tensor-type (type shape val)
-  (find-symbol
-   (format nil "~a/~a"
-           (cond
-             ((cl:= 1 (length shape)) "VECTOR")
-             ((cl:= 2 (length shape)) "MATRIX")
-             (t "TENSOR"))
-           (if type
-               (cond
-                 ((subtypep type 'single-float) "SINGLE-FLOAT")
-                 ((subtypep type 'double-float) "DOUBLE-FLOAT")
-                 ((subtypep type '(complex single-float)) "COMPLEX-SINGLE-FLOAT")
-                 ((subtypep type '(complex double-float)) "COMPLEX-DOUBLE-FLOAT")
-                 ((subtypep type '(signed-byte 32)) "INT32")
-                 (t (error "No compatible tensor constructor for type ~a" type)))
-               (etypecase val
-                 (single-float "SINGLE-FLOAT")
-                 (double-float "DOUBLE-FLOAT")
-                 ((complex single-float) "COMPLEX-SINGLE-FLOAT")
-                 ((complex double-float) "COMPLEX-DOUBLE-FLOAT")
-                 ((signed-byte 32) "INT32"))))
-   "MAGICL"))
-#+ignore
-(defun infer-tensor-type (type default)
-  (if (null type)
-      (compatible-tensor-constructors-from-value default)
-      (values (compatible-tensor-constructors type) type)))
-
 (defgeneric make-tensor (class shape &key initial-element order storage)
   (:documentation "Make a dense tensor with elements of the specified type"))
 
