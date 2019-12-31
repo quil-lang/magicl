@@ -8,13 +8,12 @@
 
 (defmatrix matrix/single-float single-float tensor/single-float)
 
-(defvector vector/single-float single-float tensor/single-float matrix/single-float)
+(defvector vector/single-float single-float tensor/single-float)
 
 (defcompatible
     (lambda (tensor)
       (case (rank tensor)
         (1 '(vector/single-float
-             matrix/single-float
              tensor/single-float))
         (2 '(matrix/single-float
              tensor/single-float))

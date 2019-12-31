@@ -12,13 +12,12 @@
 
 (defmatrix matrix/complex-double-float (complex double-float) tensor/complex-double-float)
 
-(defvector vector/complex-double-float (complex double-float) tensor/complex-double-float matrix/complex-double-float)
+(defvector vector/complex-double-float (complex double-float) tensor/complex-double-float)
 
 (defcompatible
     (lambda (tensor)
       (case (rank tensor)
         (1 '(vector/complex-double-float
-             matrix/complex-double-float
              tensor/complex-double-float))
         (2 '(matrix/complex-double-float
              tensor/complex-double-float))

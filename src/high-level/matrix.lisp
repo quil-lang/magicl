@@ -30,7 +30,7 @@
   (matrix-order m))
 
 ;;; Specfic matrix classes
-(defmacro defmatrix (name type &rest compat-classes)
+(defmacro defmatrix (name type tensor-class)
   "Define a new matrix subclass with the specified NAME, element TYPE, and TENSOR-NAME. The tensor name is used to declare that the new matrix class is a specialization of TENSOR-NAME."
   (declare (ignore compat-classes))
   (let ((constructor-sym (intern (format nil "MAKE-~a" name)))
@@ -70,6 +70,25 @@
                               (if initial-element
                                   (list :initial-element (coerce initial-element ',type))
                                   nil)))))))
+
+       (defmethod cast ((tensor ,name) (class (eql ',name)))
+         (declare (ignore class))
+         tensor)
+       (defmethod cast :before ((tensor ,tensor-class) (class (eql ',name)))
+         (declare (ignore class))
+         (assert (cl:= 2 (rank tensor))
+                 ()
+                 "Cannot change non-2 dimensional tensor to matrix."))
+       (defmethod cast ((tensor ,tensor-class) (class (eql ',name)))
+         (declare (ignore class))
+         (make-tensor ',name (shape tensor)
+                      :storage (storage tensor)
+                      :order (order tensor)))
+       (defmethod cast ((tensor ,name) (class (eql ',tensor-class)))
+         (declare (ignore class))
+         (make-tensor ',tensor-class (shape tensor)
+                      :storage (storage tensor)
+                      :order (order tensor)))
 
        ;; TODO: This does not allow for args. Make this allow for args.
        (defmethod copy-tensor ((m ,name) &rest args)

@@ -15,6 +15,12 @@
   (size 0 :type alexandria:positive-fixnum :read-only t)
   (order :column-major :type (member :row-major :column-major)))
 
+(defmethod size ((a tensor))
+  (tensor-size a))
+
+(defmethod order ((a tensor))
+  (tensor-order a))
+
 (defmethod rank ((a tensor))
   (tensor-rank a))
 
@@ -63,6 +69,9 @@
                             (if initial-element
                                 (list :initial-element (coerce initial-element ',type))
                                 nil))))))
+       (defmethod cast ((tensor ,name) (class (eql ',name)))
+         (declare (ignore class))
+         tensor)
 
        ;; TODO: This does not allow for args. Make this allow for args.
        (defmethod copy-tensor ((m ,name) &rest args)
@@ -109,11 +118,13 @@
 WARNING: This method acts differently depending on the order of the tensor. Do not expect row-major to act the same as column-major.")
   (:method ((tensor tensor) shape)
     (policy-cond:policy-if
-     (< speed safety)
+     (<= speed safety)
      (let ((shape-size (reduce #'* shape)))
        (assert (cl:= (tensor-size tensor) shape-size)
                () "Incompatible shape. Must have the same total number of elements. The tensor has ~a elements and the new shape has ~a elements" (tensor-size tensor) shape-size))
      nil)
     (setf (tensor-shape tensor) shape)
     (setf (tensor-rank tensor) (length shape))
-    tensor))
+    (specialize-tensor tensor))
+  (:method ((tensor abstract-tensor) shape)
+    (reshape (generalize-tensor tensor) shape)))

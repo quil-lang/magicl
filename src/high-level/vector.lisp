@@ -12,7 +12,7 @@
                    (:copier nil))
   (size 0 :type alexandria:positive-fixnum))
 
-(defmacro defvector (name type &rest compat-classes)
+(defmacro defvector (name type tensor-class)
   (let ((constructor-sym (intern (format nil "MAKE-~a" name)))
         (copy-sym (intern (format nil "COPY-~a" name)))
         (storage-sym (intern (format nil "~a-STORAGE" name))))
@@ -51,6 +51,23 @@
                             (if initial-element
                                 (list :initial-element (coerce initial-element ',type))
                                 nil))))))
+
+       (defmethod cast ((tensor ,name) (class (eql ',name)))
+         (declare (ignore class))
+         tensor)
+       (defmethod cast :before ((tensor ,tensor-class) (class (eql ',name)))
+         (declare (ignore class))
+         (assert (cl:= 1 (rank tensor))
+                 ()
+                 "Cannot change non-1 dimensional tensor to vector."))
+       (defmethod cast ((tensor ,tensor-class) (class (eql ',name)))
+         (declare (ignore class))
+         (make-tensor ',name (shape tensor)
+                      :storage (storage tensor)))
+       (defmethod cast ((tensor ,name) (class (eql ',tensor-class)))
+         (declare (ignore class))
+         (make-tensor ',tensor-class (shape tensor)
+                      :storage (storage tensor)))
 
        (defmethod tref ((vector ,name) &rest pos)
          (declare (ignore args))
