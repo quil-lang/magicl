@@ -75,6 +75,8 @@
 
            #:map
            #:map!
+
+           #:reshape
            
            ;; Classes
            #:tensor
@@ -87,8 +89,16 @@
            ;; Subtypes
            #:tensor/single-float
            #:tensor/double-float
+           #:tensor/complex-single-float
+           #:tensor/complex-double-float
            #:matrix/single-float
            #:matrix/double-float
+           #:matrix/complex-single-float
+           #:matrix/complex-double-float
+           #:vector/single-float
+           #:vector/double-float
+           #:vector/complex-single-float
+           #:vector/complex-double-float
 
            ;; Constructors
            #:make-tensor
@@ -141,7 +151,19 @@
 
            ;; Vector operators
            #:dot
+           #:norm
 
            ;; LAPACK stuff
+           #:lapack-eig
+           #:lapack-lu
            #:lapack-csd
+           #:lapack-svd
+           #:lapack-ql
+           #:lapack-qr
+           #:lapack-rq
+           #:lapack-lq
+           #:lapack-ql-q
+           #:lapack-qr-q
+           #:lapack-rq-q
+           #:lapack-lq-q
            ))
