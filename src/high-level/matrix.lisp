@@ -8,7 +8,6 @@
 (deftype matrix-storage (&optional type)
   `(simple-array ,type (*)))
 
-;; TODO: Add print-function
 (defstruct (matrix (:include abstract-tensor)
                    (:constructor nil)
                    (:copier nil))

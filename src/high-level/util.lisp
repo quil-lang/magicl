@@ -5,19 +5,21 @@
 (in-package #:magicl)
 
 (defun row-major-index (pos dims)
-  (check-type pos index)
-  (check-type dims shape)
-  (loop :for i in pos
-        :for d in dims
-        :for acc = i :then (cl:+ i (* d acc))
+  (declare (type index pos)
+           (type shape dims))
+  (loop :for i :of-type fixnum in pos
+        :for d :of-type fixnum in dims
+        :for acc :of-type fixnum = i
+          :then (cl:+ i (the fixnum (* d acc)))
         :finally (return acc)))
 
 (defun column-major-index (pos dims)
-  (check-type pos index)
-  (check-type dims shape)
-  (loop :for i in (reverse pos)
-        :for d in (reverse dims)
-        :for acc = i :then (cl:+ i (* d acc))
+  (declare (type index pos)
+           (type shape dims))
+  (loop :for i :of-type fixnum in (reverse pos)
+        :for d :of-type fixnum in (reverse dims)
+        :for acc :of-type fixnum = i
+          :then (cl:+ i (the fixnum (* d acc)))
         :finally (return acc)))
 
 (defun from-row-major-index (index dims)
@@ -45,8 +47,8 @@
 
 (defun map-indexes (dims f)
   "Call a function F for all indexes in shape DIMS, going in row-major order"
-  (check-type f function)
-  (check-type dims shape)
+  (declare (type function f)
+           (type shape dims))
   (let ((ihead (make-list (list-length dims))))
     (declare (dynamic-extent ihead))
     (labels ((rec (dims itail)
