@@ -133,43 +133,46 @@
 
 (defmacro def-lapack-svd (class type svd-function &optional real-type)
   `(progn
-     (defmethod svd ((m ,class))
-       (lapack-svd m))
+     (defmethod svd ((m ,class) &key reduced)
+       (lapack-svd m :reduced reduced))
      
-     (defmethod lapack-svd ((m ,class))
-       "Find the SVD of a matrix M. Return (VALUES U SIGMA Vt) where M = U*SIGMA*Vt"
-       (let ((jobu "A")
-             (jobvt "A")
-             (rows (nrows m))
-             (cols (ncols m))
-             (a (alexandria:copy-array (storage (if (eql :row-major (order m)) (transpose m) m))))
-             (lwork -1)
-             (info 0))
-         (let ((lda rows)
-               (s (make-array (min rows cols) :element-type ',(or real-type type)))
-               (ldu rows)
-               (ldvt cols)
-               (work1 (make-array (max 1 lwork) :element-type ',type))
-               (work nil)
-               ,@(when real-type
-                   `((rwork (make-array (* 5 (min rows cols)) :element-type ',real-type)))))
-           (let ((u (make-array (* ldu rows) :element-type ',type))
-                 (vt (make-array (* ldvt cols) :element-type ',type)))
-             ;; run it once as a workspace query
-             (,svd-function jobu jobvt rows cols a lda s u ldu vt ldvt
-                            work1 lwork ,@(when real-type `(rwork)) info)
-             (setf lwork (round (realpart (aref work1 0))))
-             (setf work (make-array (max 1 lwork) :element-type ',type))
-             ;; run it again with optimal workspace size
-             (,svd-function jobu jobvt rows cols a lda s u ldu vt ldvt
-                            work lwork ,@(when real-type `(rwork)) info)
-             (let ((smat (make-array (* rows cols) :element-type ',(or real-type type))))
-               (dotimes (i (min rows cols))
-                 (setf (aref smat (column-major-index (list i i) (shape m)))
-                       (aref s i)))
-               (values (from-array u (list rows rows) :order :column-major)
-                       (from-array smat (list rows cols) :order :column-major)
-                       (from-array vt (list cols cols) :order :column-major)))))))))
+     (defmethod lapack-svd ((m ,class) &key reduced)
+       "Find the SVD of a matrix M. Return (VALUES U SIGMA Vt) where M = U*SIGMA*Vt. If REDUCED is non-NIL, return the reduced SVD (where either U or V are just partial isometries and not necessarily unitary matrices)."
+       (let* ((jobu (if reduced "S" "A"))
+              (jobvt (if reduced "S" "A"))
+              (rows (nrows m))
+              (cols (ncols m))
+              (a (alexandria:copy-array (storage (if (eql :row-major (order m)) (transpose m) m))))
+              (lwork -1)
+              (info 0)
+              (k (min rows cols))
+              (u-cols (if reduced k rows))
+              (vt-rows (if reduced k cols))
+              (lda rows)
+              (s (make-array (min rows cols) :element-type ',(or real-type type)))
+              (ldu rows)
+              (ldvt vt-rows)
+              (work1 (make-array (max 1 lwork) :element-type ',type))
+              (work nil)
+              ,@(when real-type
+                  `((rwork (make-array (* 5 (min rows cols)) :element-type ',real-type)))))
+         (let ((u (make-array (* ldu rows) :element-type ',type))
+               (vt (make-array (* ldvt cols) :element-type ',type)))
+           ;; run it once as a workspace query
+           (,svd-function jobu jobvt rows cols a lda s u ldu vt ldvt
+                          work1 lwork ,@(when real-type `(rwork)) info)
+           (setf lwork (round (realpart (aref work1 0))))
+           (setf work (make-array (max 1 lwork) :element-type ',type))
+           ;; run it again with optimal workspace size
+           (,svd-function jobu jobvt rows cols a lda s u ldu vt ldvt
+                          work lwork ,@(when real-type `(rwork)) info)
+           (let ((smat (make-array (* u-cols vt-rows) :element-type ',(or real-type type))))
+             (dotimes (i k)
+               (setf (aref smat (column-major-index (list i i) (list u-cols vt-rows)))
+                     (aref s i)))
+             (values (from-array u (list rows u-cols) :order :column-major)
+                     (from-array smat (list u-cols vt-rows) :order :column-major)
+                     (from-array vt (list vt-rows cols) :order :column-major))))))))
 
 ;; TODO: This returns only the real parts when with non-complex numbers. Should do something different?
 (defmacro def-lapack-eig (class type eig-function &optional real-type)

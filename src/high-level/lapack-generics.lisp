@@ -10,7 +10,7 @@
 
 (defgeneric lapack-csd (matrix p q))
 
-(defgeneric lapack-svd (matrix))
+(defgeneric lapack-svd (matrix &key reduced))
 
 (defgeneric lapack-ql (matrix)
   (:documentation "Find the LAPACK intermediate representation of ql of a matrix"))

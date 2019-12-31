@@ -523,10 +523,10 @@ If fast is t then just change order. Fast can cause problems when you want to mu
     (declare (ignore matrix))
     (error "INVERSE is not defined for the generic matrix type.")))
 
-(defgeneric svd (matrix)
+(defgeneric svd (matrix &key reduced)
   (:documentation "Find the SVD of a matrix M. Return (VALUES U SIGMA Vt) where M = U*SIGMA*Vt")
-  (:method ((matrix matrix))
-    (declare (ignore matrix))
+  (:method ((matrix matrix) &key reduced)
+    (declare (ignore matrix reduced))
     (error "SVD is not defined for the generic matrix type.")))
 
 (defgeneric qr (matrix)

@@ -69,3 +69,62 @@
     (is (cl:= (magicl:nrows xxx) (magicl:ncols xxx) (expt matrix-dim 3)))
     ))
 
+
+(deftest test-svd ()
+  "Test the full and reduced SVDs."
+  (labels ((mul-diag-times-gen (diag matrix)
+             "Returns a newly allocated matrix resulting from the product of DIAG (a diagonal real matrix) with MATRIX (a complex matrix)."
+             #+ignore
+             (declare (type matrix diag matrix)
+                      (values matrix))
+             (let* ((m (magicl:nrows diag))
+                    (k (magicl:ncols matrix))
+                    (result (magicl:empty (list m k))))
+               (dotimes (i (min m (magicl:ncols diag)) result)
+                 (let ((dii (magicl:tref diag i i)))
+                   (dotimes (j k)
+                     (setf (magicl:tref result i j)
+                           (* dii (magicl:tref matrix i j))))))))
+
+           (norm-inf (matrix)
+             "Return the infinity norm of vec(MATRIX)."
+             (let ((data (magicl::storage matrix)))
+               (reduce #'max data :key #'abs)))
+
+           (zero-p (matrix &optional (tolerance 1.0e-14))
+             "Return T if MATRIX is close to zero (within TOLERANCE)."
+             (< (norm-inf matrix) tolerance))
+
+           (check-full-svd (matrix)
+             "Validate full SVD of MATRIX."
+             (let ((m (magicl:nrows matrix))
+                   (n (magicl:ncols matrix)))
+               (multiple-value-bind (u sigma vh)
+                   (magicl:svd matrix)
+                 (is (= (magicl:nrows u) (magicl:ncols u) m))
+                 (is (and (= (magicl:nrows sigma) m) (= (magicl:ncols sigma) n)))
+                 (is (= (magicl:nrows vh) (magicl:ncols vh) n))
+                 (is (zero-p (magicl:- matrix (magicl:@ u (mul-diag-times-gen sigma vh))))))))
+
+           (check-reduced-svd (matrix)
+             "Validate reduced SVD of MATRIX."
+             (let* ((m (magicl:nrows matrix))
+                    (n (magicl:ncols matrix))
+                    (k (min m n)))
+
+               (multiple-value-bind (u sigma vh)
+                   (magicl:svd matrix :reduced t)
+                 (is (and (= (magicl:nrows u) m)
+                          (= (magicl:ncols u) k)))
+                 (is (= (magicl:nrows sigma) (magicl:ncols sigma) k))
+                 (is (and (= (magicl:nrows vh) k)
+                          (= (magicl:ncols vh) n)))
+                 (is (zero-p (magicl:- matrix (magicl:@ u (mul-diag-times-gen sigma vh)))))))))
+
+    (let ((tall-thin-matrix (magicl:rand '(8 2))))
+      (check-full-svd tall-thin-matrix)
+      (check-reduced-svd tall-thin-matrix))
+
+    (let ((short-fat-matrix (magicl:rand '(2 8))))
+      (check-full-svd short-fat-matrix)
+      (check-reduced-svd short-fat-matrix))))
