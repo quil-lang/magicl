@@ -128,3 +128,19 @@
     (let ((short-fat-matrix (magicl:rand '(2 8))))
       (check-full-svd short-fat-matrix)
       (check-reduced-svd short-fat-matrix))))
+
+
+(deftest test-csd-2x2-basic ()
+  "Test CS decomposition of an equipartitioned 2x2 unitary matrix."
+  (let ((x (magicl:random-unitary '(2 2)
+                                  :type '(complex double-float)))
+        (tol (* 1.0d2 +double-float-epsilon+)))
+    (multiple-value-bind (u1 u2 v1h v2h theta)
+        (magicl::csd-2x2-basic x 1 1)
+      (multiple-value-bind (u1* u2* v1h* v2h* theta*)
+          (magicl:lapack-csd x 1 1)
+        (is (< (abs (- (magicl:tref u1 0 0) (magicl:tref u1* 0 0))) tol))
+        (is (< (abs (- (magicl:tref u2 0 0) (magicl:tref u2* 0 0))) tol))
+        (is (< (abs (- (magicl:tref v1h 0 0) (magicl:tref v1h* 0 0))) tol))
+        (is (< (abs (- (magicl:tref v2h 0 0) (magicl:tref v2h* 0 0))) tol))
+        (is (< (abs (- (first theta) (first theta*))) tol))))))

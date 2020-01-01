@@ -217,3 +217,50 @@
                   (from-array v2t (list (cl:- m q) (cl:- m q)) :order :column-major)
                   (coerce theta 'list)))))))
 
+(defmethod csd-2x2-basic ((unitary-matrix-2x2 matrix/complex-double-float) p q)
+  "Returns the Cosine-Sine decomposition of an equipartitioned UNITARY-MATRIX-2x2. The values of P and Q are assumed to be equal to one and ignored. See the documentation of LAPACK-CSD for details about the returned values."
+  ;; This function is meant to be used within LAPACK-CSD in the base case
+  ;; where the unitary matrix is 2x2 (i.e., it is equivalent to a ZYZ
+  ;; decomposition). It computes the CS decomposition in Lisp faster (more
+  ;; than three times) and with less memory overhead (conses less than half
+  ;; as much) than the corresponding LAPACK wrapper.
+  (declare (values matrix/complex-double-float
+                   matrix/complex-double-float
+                   matrix/complex-double-float
+                   matrix/complex-double-float
+                   list)
+           (ignorable p q)
+           (optimize (speed 3) (safety 0) (debug 0) (space 0)))
+
+  (let* ((data (storage unitary-matrix-2x2))
+         (a1 (aref data 0))
+         (a2 (aref data 1))
+         (a3 (aref data 2))
+         (a4 (aref data 3))
+
+         (c (abs a1))
+         (u1 (cis (phase a1)))
+         (s (abs a2))
+         (u2 (cis (phase a2))))
+
+    (declare (type (simple-array (complex double-float) (4)) data)
+             (type (double-float -1.0d0 1.0d0) c s)
+             (type (complex double-float) u1 u2)
+             (dynamic-extent c s u1 u2))
+
+    (let ((v2h (conjugate (/ 1.0d0 (cl:- (* c (conjugate u2) a4)
+                                         (* s (conjugate u1) a3)))))
+          (mu1 (empty '(1 1)))
+          (mu2 (empty '(1 1)))
+          (mv1h (empty '(1 1)))
+          (mv2h (empty '(1 1))))
+
+      (macrolet ((matrix-1x1-data (matrix)
+                   `(the (simple-array (complex double-float) (1)) (storage ,matrix))))
+
+        (setf (aref (matrix-1x1-data mu1) 0) u1
+              (aref (matrix-1x1-data mu2) 0) u2
+              (aref (matrix-1x1-data mv1h) 0) #C(1.0d0 0.0d0)
+              (aref (matrix-1x1-data mv2h) 0) v2h))
+
+      (values mu1 mu2 mv1h mv2h (list (atan s c))))))
