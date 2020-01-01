@@ -16,9 +16,9 @@ If TYPE is not specified then +DEFAULT-TENSOR-TYPE+ is used.
 ORDER specifies the internal storage represenation ordering of the returned tensor.
 The tensor specialized on the specified SHAPE and TYPE."
   (policy-cond:with-expectations (> speed safety)
-      ((type shape shape)))
-  (let ((tensor-type (infer-tensor-type type shape nil)))
-    (make-tensor tensor-type shape :order order)))
+      ((type shape shape))
+    (let ((tensor-type (infer-tensor-type type shape nil)))
+      (make-tensor tensor-type shape :order order))))
 
 (defun const (const shape &key type order)
   "Create a tensor with the specified SHAPE with each element being set to CONST
@@ -27,9 +27,9 @@ If TYPE is not specified then it is inferred from the type of CONST.
 ORDER specifies the internal storage represenation ordering of the returned tensor.
 The tensor is specialized on SHAPE and TYPE."
   (policy-cond:with-expectations (> speed safety)
-      ((type shape shape)))
-  (let ((tensor-class (infer-tensor-type type shape const)))
-    (make-tensor tensor-class shape :order order :initial-element const)))
+      ((type shape shape))
+    (let ((tensor-class (infer-tensor-type type shape const)))
+      (make-tensor tensor-class shape :order order :initial-element const))))
 
 (defun rand (shape &key (type +default-tensor-type+) order distribution)
   "Create tensor with random elements from DISTRIBUTION
@@ -40,23 +40,23 @@ If TYPE is not specified then +DEFAULT-TENSOR-TYPE+ is used.
 ORDER specifies the internal storage represenation ordering of the returned tensor.
 The tensor is specialized on SHAPE and TYPE."
   (policy-cond:with-expectations (> speed safety)
-      ((type shape shape)))
-  (let* ((tensor-class (infer-tensor-type type shape nil))
-         (rand-function
-           (or distribution
-               (cond
-                 ((subtypep type 'complex)
-                  (lambda ()
-                    (complex
-                     (random 1d0)
-                     (random 1d0))))
-                 (t
-                  (lambda ()
-                    (random 1d0))))))
-         (f (lambda (&rest rest)
-              (declare (ignore rest))
-              (coerce  (funcall rand-function) type))))
-    (into! f (make-tensor tensor-class shape :order order))))
+      ((type shape shape))
+    (let* ((tensor-class (infer-tensor-type type shape nil))
+           (rand-function
+             (or distribution
+                 (cond
+                   ((subtypep type 'complex)
+                    (lambda ()
+                      (complex
+                       (random 1d0)
+                       (random 1d0))))
+                   (t
+                    (lambda ()
+                      (random 1d0))))))
+           (f (lambda (&rest rest)
+                (declare (ignore rest))
+                (coerce  (funcall rand-function) type))))
+      (into! f (make-tensor tensor-class shape :order order)))))
 
 (defun deye (d shape &key type order)
   "Create a 2-dimensional square tensor with D along the diagonal
@@ -68,12 +68,12 @@ ORDER specifies the internal storage represenation ordering of the returned tens
 The tensor is specialized on SHAPE and TYPE."
   (policy-cond:with-expectations (> speed safety)
       ((type shape shape)
-       (assertion (square-shape-p shape))))
-  (let ((tensor-class (infer-tensor-type type shape d)))
-    (let ((tensor (make-tensor tensor-class shape :order order)))
-      (loop :for i :below (first shape)
-            :do (setf (tref tensor i i) d))
-      tensor)))
+       (assertion (square-shape-p shape)))
+    (let ((tensor-class (infer-tensor-type type shape d)))
+      (let ((tensor (make-tensor tensor-class shape :order order)))
+        (loop :for i :below (first shape)
+              :do (setf (tref tensor i i) d))
+        tensor))))
 
 (defun arange (range &key (type +default-tensor-type+) order)
   "Create a 1-dimensional tensor of elements from 0 up to but not including the RANGE
