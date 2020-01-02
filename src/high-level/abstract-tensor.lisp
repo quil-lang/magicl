@@ -7,11 +7,12 @@
 (in-package #:magicl)
 
 (defstruct (abstract-tensor
+            "Abstract tensor class. Superclass for implementing the abstract-tensor protocol"
             (:constructor nil)
             (:copier nil)))
 
 ;;; abstract-tensor protocol
-;;; Must be implemented by subclasses
+;;; These methods do not have generic definitions and must be implemented by subclasses
 
 (defgeneric shape (tensor)
   (:documentation "The shape (dimensions) of the tensor. eg. '(2 3) for a 2x3 tensor"))
@@ -23,13 +24,13 @@
   (:documentation "Set the value of element at position"))
 
 (defgeneric copy-tensor (tensor &rest args)
-  (:documentation "Create a new tensor with the same properties as the given tensor, not initializing the storage"))
+  (:documentation "Create a new tensor with the same properties as the given tensor, creating new storage without initializing contents"))
 
 (defgeneric deep-copy-tensor (tensor &rest args)
-  (:documentation "Create a new tensor with the same properties as the given tensor, copying storage"))
+  (:documentation "Create a new tensor with the same properties as the given tensor, copying the contents of the storage"))
 
 ;;; abstract-tensor generic methods
-;;; Can be optimized by subclasses
+;;; These methods have default generic implementations but can be optimized by subclasses
 
 (defgeneric rank (tensor)
   (:documentation "Rank (number of dimensions) of the tensor")
