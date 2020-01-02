@@ -5,8 +5,6 @@
 
 (in-package #:magicl-tests)
 
-(defconstant +double-float-epsilon+ #+sbcl sb-c::double-float-epsilon #-sbcl 1.1102230246251568d-16)
-
 (deftest test-determinant ()
   "Test that DET works."
   (let* ((x (magicl::make-complex-matrix 3 3 (list 6 4 2 1 -2 8 1 5 7)))
@@ -86,7 +84,7 @@
              (let ((data (magicl::matrix-data matrix)))
                (reduce #'max data :key #'abs)))
 
-           (zero-p (matrix &optional (tolerance (* 1.0d2 +double-float-epsilon+)))
+           (zero-p (matrix &optional (tolerance (* 1.0d2 double-float-epsilon)))
              "Return T if MATRIX is close to zero (within TOLERANCE)."
              (< (norm-inf matrix) tolerance))
 
@@ -127,7 +125,7 @@
 (deftest test-csd-2x2-basic ()
   "Test CS decomposition of an equipartitioned 2x2 unitary matrix."
   (let ((x (magicl:random-unitary 2))
-        (tol (* 1.0d2 +double-float-epsilon+)))
+        (tol (* 1.0d2 double-float-epsilon)))
     (multiple-value-bind (u1 u2 v1h v2h theta)
         (magicl::csd-2x2-basic x 1 1)
       (multiple-value-bind (u1* u2* v1h* v2h* theta*)
@@ -137,3 +135,33 @@
         (is (< (abs (- (ref v1h 0 0) (ref v1h* 0 0))) tol))
         (is (< (abs (- (ref v2h 0 0) (ref v2h* 0 0))) tol))
         (is (< (abs (- (first theta) (first theta*))) tol))))))
+
+(deftest test-polynomial-solver ()
+  "Test univariate polynomial solver."
+  ;; Test random polynomials with favorable coefficients.
+  (flet ((make-random-polynomial (degree)
+           (let ((c (magicl::matrix-data (magicl:random-matrix 1 degree))))
+             (setf (aref c (1- degree)) (complex 1.0d0))
+             (magicl::%make-polynomial :coefficients c))))
+    (dotimes (i 10)
+      (let* ((polynomial (make-random-polynomial 5))
+             (roots (magicl::polynomial-solve polynomial)))
+        (is (= (length roots) (1- (length (magicl:polynomial-coefficients polynomial)))))
+        (dolist (root roots)
+          (let ((refined-root (magicl:polynomial-newton-iteration polynomial root)))
+            (is (< (abs (- root refined-root)) 1.0d-9))
+            (is (< (abs (magicl:polynomial-eval polynomial refined-root))
+                   (* 1.0d2 double-float-epsilon))))))))
+
+  ;; Test polynomial with multiple roots.
+  (let* ((polynomial (magicl:make-polynomial -4 8 -3 -2 1))
+         (roots (magicl:polynomial-solve polynomial))
+         (reference-roots '(#c(-2.0d0 0.0d0) #c(1.0d0 0.0d0) #c(1.0d0 0.0d0) #c(2.0d0 0.0d0)))
+         (relative-error-tolerances (list (* 1.0d2 double-float-epsilon)
+                                          (* 1.0d2 single-float-epsilon) ; Accuracy drops at double root.
+                                          (* 1.0d2 single-float-epsilon)
+                                          (* 1.0d2 double-float-epsilon))))
+    (loop :for root :in roots
+          :for reference-root :in reference-roots
+          :for relative-error-tolerance :in relative-error-tolerances :do
+            (is (< (abs (/ (- root reference-root) reference-root)) relative-error-tolerance)))))

@@ -33,4 +33,5 @@
    (:file "high-level/high-level")
    (:file "high-level/random")
    (:file "high-level/einsum")
+   (:file "high-level/polynomial-solver")
    (:file "magicl")))
