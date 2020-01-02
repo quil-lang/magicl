@@ -6,7 +6,9 @@
 
 (in-package #:magicl)
 
-(defstruct (abstract-tensor))
+(defstruct (abstract-tensor
+            (:constructor nil)
+            (:copier nil)))
 
 ;;; abstract-tensor protocol
 ;;; Must be implemented by subclasses
