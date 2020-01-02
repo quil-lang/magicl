@@ -55,4 +55,4 @@
      ,@(loop :for shape in shapes
              :collect `(assert (square-shape-p ,shape)
                                ()
-                               ,"The value of ~a is ~a, which is not a square SHAPE" ,(symbol-name shape) ,shape))))
+                               "The value of ~a is ~a, which is not a square SHAPE" ,(symbol-name shape) ,shape))))
