@@ -69,11 +69,11 @@ The tensor is specialized on SHAPE and TYPE."
   (policy-cond:with-expectations (> speed safety)
       ((type shape shape)
        (assertion (square-shape-p shape)))
-    (let ((tensor-class (infer-tensor-type type shape d)))
-      (let ((tensor (make-tensor tensor-class shape :order order)))
-        (loop :for i :below (first shape)
-              :do (setf (tref tensor i i) d))
-        tensor))))
+    (let* ((tensor-class (infer-tensor-type type shape d))
+           (tensor (make-tensor tensor-class shape :order order)))
+      (loop :for i :below (first shape)
+            :do (setf (tref tensor i i) d))
+      tensor)))
 
 (defun arange (range &key (type +default-tensor-type+) order)
   "Create a 1-dimensional tensor of elements from 0 up to but not including the RANGE
@@ -87,21 +87,31 @@ The tensor is specialized on TYPE with shape (floor(RANGE))."
                (coerce index type))))
       (into! f tensor))))
 
+;; NOTE: This does not accout for changing array order. If the input
+;;       is in row-major but the constructor specifies column-major
+;;       then the tensor will not return the correct values. Not a
+;;       huge deal but something that be improved (similarly to how
+;;       FROM-LIST does it.)
 (defun from-array (array shape &key type (order :row-major))
   "Create a tensor from ARRAY, calling ADJUST-ARRAY on ARRAY to flatten to a 1-dimensional array of length equal to the product of the elements in SHAPE
 
 If TYPE is not specified then it is inferred from the element type of ARRAY.
 ORDER specifies the internal storage represenation ordering of the returned tensor.
 The tensor is specialized on SHAPE and TYPE."
-  (let* ((element-type ;; TODO: copy array properly, accounting for ORDER
-           (if (null type)
-               (array-element-type array)
-               type))
-         (tensor-class (infer-tensor-type element-type shape nil)))
-    (adjust-array array (list (reduce #'* shape)) :element-type element-type)
-    (make-tensor tensor-class shape
-                 :storage array
-                 :order order)))
+  (policy-cond:with-expectations (> speed safety)
+      ((type shape shape))
+    (let* (;; TODO: This gets the type of an array from the array, not
+           ;; by inspecting the elements. This can cause issues when
+           ;; the element-type of the array is T
+           (element-type
+             (if (null type)
+                 (array-element-type array)
+                 type))
+           (tensor-class (infer-tensor-type element-type shape nil)))
+      (adjust-array array (list (reduce #'* shape)) :element-type element-type)
+      (make-tensor tensor-class shape
+                   :storage array
+                   :order order))))
 
 (defun from-list (list shape &key type order (input-order :row-major))
   "Create a tensor with the elements of LIST, placing in order INPUT-ORDER
@@ -111,23 +121,19 @@ If INPUT-ORDER is not specified then row-major is assumed.
 If TYPE is not specified then it is inferred from the type of the first element of LIST.
 ORDER specifies the internal storage represenation ordering of the returned tensor.
 The tensor is specialized on SHAPE and TYPE."
-  (policy-cond:policy-if
-   (> speed safety)
-   (progn
-     (check-type shape shape)
-     (assert (cl:= (length list) (reduce #'* shape))
-             () "Incompatible shape. Must have the same total number of elements. The list has ~a elements and the new shape has ~a elements" list-size shape-size))
-   nil)
-  (let ((tensor-class (infer-tensor-type type shape (first list))))
-    (let ((tensor (make-tensor tensor-class shape :order order)))
-      (into!
-       (lambda (&rest pos)
-         (nth
-          (if (eql input-order :row-major)
-              (row-major-index pos shape)
-              (column-major-index pos shape))
-          list))
-       tensor))))
+  (policy-cond:with-expectations (> speed safety)
+      ((type shape shape)
+       (assertion (cl:= (length list) (reduce #'* shape))))
+    (let ((tensor-class (infer-tensor-type type shape (first list))))
+      (let ((tensor (make-tensor tensor-class shape :order order)))
+        (into!
+         (lambda (&rest pos)
+           (nth
+            (if (eql input-order :row-major)
+                (row-major-index pos shape)
+                (column-major-index pos shape))
+            list))
+         tensor)))))
 
 (defun from-diag (list shape &key type order)
   "Create a tensor of the specified shape from a list, placing along the diagonal
@@ -135,19 +141,13 @@ The tensor is specialized on SHAPE and TYPE."
 If TYPE is not specified then it is inferred from the type of the first element of LIST.
 ORDER specifies the internal storage represenation ordering of the returned tensor.
 The tensor is specialized on SHAPE and TYPE."
-  (policy-cond:policy-if
-   (> speed safety)
-   (progn
-     (check-type shape shape)
-     (assert (cl:= 2 (length shape))
-             () "Shape must be of rank 2.")
-     (assert-square-shape shape)
-     (let ((list-size (length list)))
-       (assert (cl:= list-size (first shape))
-               () "Incompatible shape. Must have the same total number of elements. The list has ~a diagonal elements and the new shape has ~a diagonal elements" list-size (first shape))))
-   nil)
-  (let ((tensor-class (infer-tensor-type type shape (first list))))
-    (let ((tensor (make-tensor tensor-class shape :order order)))
-      (loop :for i :below (first shape)
-            :do (setf (tref tensor i i) (pop list)))
-      tensor)))
+  (policy-cond:with-expectations (> speed safety)
+      ((type shape shape)
+       (assertion (cl:= 2 (length shape)))
+       (assertion (square-shape-p shape))
+       (assertion (cl:= (length list) (first shape))))
+    (let ((tensor-class (infer-tensor-type type shape (first list))))
+      (let ((tensor (make-tensor tensor-class shape :order order)))
+        (loop :for i :below (first shape)
+              :do (setf (tref tensor i i) (pop list)))
+        tensor))))
