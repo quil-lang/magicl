@@ -77,7 +77,7 @@ This table was adapted largely from the [NumPy Equivalent Table](https://docs.sc
 | `(eig a)` (Returns `(VALUES EIGENVALUES EIGENVECTORS)`) | `[V,D]=eig(a)`    | `D,V = linalg.eig(a)`                                          | Eigenvalues and eigenvectors of matrix     |
 | `(qr a)` (Returns `(VALUES Q R)`)                       | `[Q,R,P]=qr(a,0)` | `Q,R = scipy.linalg.qr(a)`                                     | QR factorization of matrix                 |
 | `(ql a)` (Returns `(VALUES Q L)`)                       |                   |                                                                | QL factorization of matrix                 |
-| `(rq a)` (Returns `(VALUES R Q)`)                       |                   |                                                                | RQ factorization of matrix                 |
+| `(rq a)` (Returns `(VALUES R Q)`)                       |                   | `R,Q = scipy.linalg.rq(a)`                                     | RQ factorization of matrix                 |
 | `(lq a)` (Returns `(VALUES L Q)`)                       |                   |                                                                | LQ factorization of matrix                 |
 | `(lu a)` (Returns `(VALUES LU IPIV)`)                   | `[L,U,P]=lu(a)`   | `L,U = scipy.linalg.lu(a)` or `LU,P=scipy.linalg.lu_factor(a)` | LU decomposition of matrix                 |
 | `(csd a)` (Returns `(VALUES U SIGMA VT)`)               |                   |                                                                | Cosine-sine decomposition of matrix        |
