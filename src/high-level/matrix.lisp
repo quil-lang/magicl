@@ -31,7 +31,6 @@
 ;;; Specfic matrix classes
 (defmacro defmatrix (name type tensor-class)
   "Define a new matrix subclass with the specified NAME, element TYPE, and TENSOR-NAME. The tensor name is used to declare that the new matrix class is a specialization of TENSOR-NAME."
-  (declare (ignore compat-classes))
   (let ((constructor-sym (intern (format nil "MAKE-~a" name)))
         (copy-sym (intern (format nil "COPY-~a" name)))
         (storage-sym (intern (format nil "~a-STORAGE" name))))
@@ -101,7 +100,7 @@
          (declare (ignore args))
          (let ((new-m (,copy-sym m)))
            (setf (,storage-sym new-m)
-                 (alexandria:copy-array (,storage-sym m)))
+                 (copy-seq (,storage-sym m)))
            new-m))
        
        (defmethod tref ((matrix ,name) &rest pos)

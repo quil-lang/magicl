@@ -69,6 +69,21 @@
          (make-tensor ',tensor-class (shape tensor)
                       :storage (storage tensor)))
 
+       ;; TODO: This does not allow for args. Make this allow for args.
+       (defmethod copy-tensor ((v ,name) &rest args)
+         (declare (ignore args))
+         (let ((new-v (,copy-sym v)))
+           (setf (,storage-sym new-v)
+                 (make-array (vector-size v) :element-type (element-type v)))
+           new-v))
+
+       (defmethod deep-copy-tensor ((v ,name) &rest args)
+         (declare (ignore args))
+         (let ((new-v (,copy-sym v)))
+           (setf (,storage-sym new-v)
+                 (copy-seq (,storage-sym v)))
+           new-v))
+
        (defmethod tref ((vector ,name) &rest pos)
          (declare (ignore args))
          (aref (,storage-sym vector) (first pos)))
@@ -143,4 +158,4 @@
                   (cl:map (list 'cl:vector (element-type vector))
                           (lambda (x) (expt x p))
                           (storage vector)))
-          (/ 1 p))))
+          (/ p))))

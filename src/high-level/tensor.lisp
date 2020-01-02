@@ -85,7 +85,7 @@
          (declare (ignore args))
          (let ((new-m (,copy-sym m)))
            (setf (,storage-sym new-m)
-                 (alexandria:copy-array (,storage-sym m)))
+                 (copy-seq (,storage-sym m)))
            new-m))
 
        (defmethod tref ((tensor ,name) &rest pos)
