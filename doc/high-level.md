@@ -38,17 +38,17 @@ This table was adapted largely from the [NumPy Equivalent Table](https://docs.sc
 | `(order a)`    | `ndims(a)` | `ndim(a)` or `a.ndim`   | Get the number of dimensions of the array.                    |
 | `(size a)`     | `numel(a)` | `size(a)` or `a.size`   | Get the number of elements of the array.                      |
 | `(shape a)`    | `size(a)`  | `shape(a)` or `a.shape` | Get the shape of the array.                                   |
-| `(tref a 1 4)` | `a(2,5)`   | `a[1 4]`                | Get the element in the second row, fifth column of the array. |
+| `(tref a 1 4)` | `a(2,5)`   | `a[1, 4]`               | Get the element in the second row, fifth column of the array. |
 
 ### Constructors
 
 | MAGICL                                          | MATLAB             | NumPy                             | Description                                                                          |
 |-------------------------------------------------|--------------------|-----------------------------------|--------------------------------------------------------------------------------------|
 | `(from-list '(1d0 2d0 3d0 4d0 5d0 6d0) '(2 3))` | `[ 1 2 3; 4 5 6 ]` | `array([[1.,2.,3.], [4.,5.,6.]])` | Create a 2x3 matrix from given elements.                                             |
-| `(empty '(2 3 4))` or `(const 0d0 '(2 3 4))`    | `zeroes(2,3,4)`    | `zeroes((2,3,4))`                 | Create a 2x3x4 dimensional array of zeroes of double-float element type.             |
+| `(empty '(2 3 4))` or `(const 0d0 '(2 3 4))`    | `zeros(2,3,4)`     | `zeros((2,3,4))`                  | Create a 2x3x4 dimensional array of zeroes of double-float element type.             |
 | `(const 1d0 '(3 4))`                            | `ones(3,4)`        | `ones((3,4))`                     | Create a 3x4 dimensional array of ones of double-float element type.                 |
 | `(deye 1d0 '(3 3))`                             | `eye(3)`           | `eye(3)`                          | Create a 3x3 identity array of double-float element type.                            |
-| `(from-diag a (list (length a) (length a)))`    | `diag(a,0)`        | `diag(a,0)`                       | Create a square matrix from the diagonal entries in `a` with zeroes everywhere else. |
+| `(from-diag a (list (length a) (length a)))`    | `diag(a)`          | `diag(a)`                         | Create a square matrix from the diagonal entries in `a` with zeroes everywhere else. |
 | `(rand '(3 4))`                                 | `rand(3,4)`        | `random.rand(3,4)`                | Create a random 3x4 array.                                                           |
 
 ### Basic Operations
@@ -56,8 +56,8 @@ This table was adapted largely from the [NumPy Equivalent Table](https://docs.sc
 | MAGICL    | MATLAB   | NumPy            | Description                 |
 |-----------|----------|------------------|-----------------------------|
 | `(@ a b)` | `a * b`  | `a @ b`          | Matrix multiplication       |
-| `(+ a b)` | `a + b`  | `add(a, b)`      | Element-wise add            |
-| `(- a b)` | `a - b`  | `subtract(a, b)` | Element-wise subtract       |
+| `(+ a b)` | `a + b`  | `a + b`      | Element-wise add            |
+| `(- a b)` | `a - b`  | `a - b` | Element-wise subtract       |
 |           | `a .* b` | `a * b`          | Element-wise multiply       |
 |           | `a./b`   | `a/b`            | Element-wise divide         |
 |           | `a.^3`   | `a**3`           | Element-wise exponentiation |
