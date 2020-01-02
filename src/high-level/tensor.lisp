@@ -32,6 +32,10 @@
 
 ;;; Specfic tensor classes
 (defmacro deftensor (name type)
+  "Define a new tensor subclass with the specified NAME and element
+TYPE as well as the abstract-tensor methods required not specified by
+the generic TENSOR class (MAKE-TENSOR, ELEMENT-TYPE, CAST,
+COPY-TENSOR, DEEP-COPY-TENSOR, TREF, SETF TREF)"
   (let ((constructor-sym (intern (format nil "MAKE-~a-STRUCT" name)))
         (copy-sym (intern (format nil "COPY-~a" name)))
         (storage-sym (intern (format nil "~a-STORAGE" name))))

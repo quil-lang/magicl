@@ -30,7 +30,10 @@
 
 ;;; Specfic matrix classes
 (defmacro defmatrix (name type tensor-class)
-  "Define a new matrix subclass with the specified NAME, element TYPE, and TENSOR-NAME. The tensor name is used to declare that the new matrix class is a specialization of TENSOR-NAME."
+  "Define a new matrix subclass with the specified NAME and element TYPE,
+compatible with TENSOR-CLASS, as well as the abstract-tensor methods
+required not specified by the generic MATRIX class (MAKE-TENSOR,
+ELEMENT-TYPE, CAST, COPY-TENSOR, DEEP-COPY-TENSOR, TREF, SETF TREF)"
   (let ((constructor-sym (intern (format nil "MAKE-~a" name)))
         (copy-sym (intern (format nil "COPY-~a" name)))
         (storage-sym (intern (format nil "~a-STORAGE" name))))

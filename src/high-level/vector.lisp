@@ -13,6 +13,10 @@
   (size 0 :type alexandria:positive-fixnum))
 
 (defmacro defvector (name type tensor-class)
+  "Define a new vector subclass with the specified NAME and element TYPE,
+compatible with TENSOR-CLASS, as well as the abstract-tensor methods
+required not specified by the generic VECTOR class (MAKE-TENSOR,
+ELEMENT-TYPE, CAST, COPY-TENSOR, DEEP-COPY-TENSOR, TREF, SETF TREF)"
   (let ((constructor-sym (intern (format nil "MAKE-~a" name)))
         (copy-sym (intern (format nil "COPY-~a" name)))
         (storage-sym (intern (format nil "~a-STORAGE" name))))
