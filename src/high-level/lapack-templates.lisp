@@ -9,7 +9,7 @@
 
 (in-package #:magicl)
 
-(defun def-lapack-mult-for-type (class type blas-function)
+(defun generate-lapack-mult-for-type (class type blas-function)
   `(defmethod mult ((a ,class) (b ,class) &key target (alpha ,(coerce 1 type)) (beta ,(coerce 0 type)) (transa :n) (transb :n))
      (policy-cond:with-expectations (> speed safety)
          ((type (member nil :n :t :c) transa)
@@ -61,7 +61,7 @@
               m)
              target))))))
 
-(defun def-lapack-lu-for-type (class type lu-function)
+(defun generate-lapack-lu-for-type (class type lu-function)
   (declare (ignore type))
   `(progn
      (defmethod lu ((m ,class))
@@ -87,7 +87,7 @@
          (values a-tensor ipiv-tensor)))))
 
 ;; NOTE: This requires lu to be defined for the matrix type
-(defun def-lapack-inv-for-type (class type lu-function inv-function)
+(defun generate-lapack-inv-for-type (class type lu-function inv-function)
   `(progn
      (defmethod inverse ((m ,class))
        (lapack-inv m))
@@ -135,7 +135,7 @@
               info))
            (values a-tensor))))))
 
-(defun def-lapack-svd-for-type (class type svd-function &optional real-type)
+(defun generate-lapack-svd-for-type (class type svd-function &optional real-type)
   `(progn
      (defmethod svd ((m ,class) &key reduced)
        (lapack-svd m :reduced reduced))
@@ -179,7 +179,7 @@
                      (from-array vt (list vt-rows cols) :order :column-major))))))))
 
 ;; TODO: This returns only the real parts when with non-complex numbers. Should do something different?
-(defun def-lapack-eig-for-type (class type eig-function &optional real-type)
+(defun generate-lapack-eig-for-type (class type eig-function &optional real-type)
   `(progn
      (defmethod eig ((m ,class))
        (lapack-eig m))
@@ -217,7 +217,7 @@
                             vl 1 vr rows work lwork ,@(when real-type `(rwork)) info)
              (values (coerce ,@(if real-type `(w) `(wr)) 'list) (from-array vr (list rows cols) :order :column-major))))))))
 
-(defun def-lapack-hermitian-eig-for-type (class type eig-function real-type)
+(defun generate-lapack-hermitian-eig-for-type (class type eig-function real-type)
   `(progn
      (defmethod hermitian-eig ((m ,class))
        (lapack-hermitian-eig m))
@@ -252,7 +252,7 @@
            (values (coerce w 'list) (from-array a (list rows cols))))))))
 
 ;; TODO: implement row-major checks in these functions
-(defun def-lapack-ql-qr-rq-lq-for-type (class type
+(defun generate-lapack-ql-qr-rq-lq-for-type (class type
                                   ql-function qr-function rq-function lq-function
                                   ql-q-function qr-q-function rq-q-function lq-q-function)
   `(progn
