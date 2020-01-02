@@ -1,13 +1,17 @@
-;;;; lapack-macros.lisp
+;;;; lapack-templates.lisp
 ;;;;
 ;;;; Author: Cole Scott
 
+;;; NOTE: This file is emulating C++-style templates to generate
+;;;       methods to call LAPACK functions. This is done to avoid
+;;;       writing the same method four times but results in
+;;;       less-than-perfect use of macros.
+
 (in-package #:magicl)
 
-(defmacro def-lapack-mult (class type blas-function)
+(defun def-lapack-mult-for-type (class type blas-function)
   `(defmethod mult ((a ,class) (b ,class) &key target (alpha ,(coerce 1 type)) (beta ,(coerce 0 type)) (transa :n) (transb :n))
-     (policy-cond:with-expectations
-         (> speed safety)
+     (policy-cond:with-expectations (> speed safety)
          ((type (member nil :n :t :c) transa)
           (type (member nil :n :t :c) transb))
        (let* ((m (if (eq :n transa) (nrows a) (ncols a)))
@@ -57,7 +61,7 @@
               m)
              target))))))
 
-(defmacro def-lapack-lu (class type lu-function)
+(defun def-lapack-lu-for-type (class type lu-function)
   (declare (ignore type))
   `(progn
      (defmethod lu ((m ,class))
@@ -83,7 +87,7 @@
          (values a-tensor ipiv-tensor)))))
 
 ;; NOTE: This requires lu to be defined for the matrix type
-(defmacro def-lapack-inv (class type lu-function inv-function)
+(defun def-lapack-inv-for-type (class type lu-function inv-function)
   `(progn
      (defmethod inverse ((m ,class))
        (lapack-inv m))
@@ -131,7 +135,7 @@
               info))
            (values a-tensor))))))
 
-(defmacro def-lapack-svd (class type svd-function &optional real-type)
+(defun def-lapack-svd-for-type (class type svd-function &optional real-type)
   `(progn
      (defmethod svd ((m ,class) &key reduced)
        (lapack-svd m :reduced reduced))
@@ -175,7 +179,7 @@
                      (from-array vt (list vt-rows cols) :order :column-major))))))))
 
 ;; TODO: This returns only the real parts when with non-complex numbers. Should do something different?
-(defmacro def-lapack-eig (class type eig-function &optional real-type)
+(defun def-lapack-eig-for-type (class type eig-function &optional real-type)
   `(progn
      (defmethod eig ((m ,class))
        (lapack-eig m))
@@ -213,7 +217,7 @@
                             vl 1 vr rows work lwork ,@(when real-type `(rwork)) info)
              (values (coerce ,@(if real-type `(w) `(wr)) 'list) (from-array vr (list rows cols) :order :column-major))))))))
 
-(defmacro def-lapack-hermitian-eig (class type eig-function real-type)
+(defun def-lapack-hermitian-eig-for-type (class type eig-function real-type)
   `(progn
      (defmethod hermitian-eig ((m ,class))
        (lapack-hermitian-eig m))
@@ -248,7 +252,7 @@
            (values (coerce w 'list) (from-array a (list rows cols))))))))
 
 ;; TODO: implement row-major checks in these functions
-(defmacro def-lapack-ql-qr-rq-lq (class type
+(defun def-lapack-ql-qr-rq-lq-for-type (class type
                                   ql-function qr-function rq-function lq-function
                                   ql-q-function qr-q-function rq-q-function lq-q-function)
   `(progn

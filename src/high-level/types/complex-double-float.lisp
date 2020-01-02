@@ -33,7 +33,7 @@
   (loop :for i :below (size vector1)
         :sum (* (tref vector1 i) (conjugate (tref vector2 i)))))
 
-(defmethod orthonormalize!((m matrix/complex-double-float))
+(defmethod orthonormalize! ((m matrix/complex-double-float))
   "Applies Gram-Schmidt to the columns of a full rank square matrix to produce a unitary matrix, replacing the elements"
   (assert-square-matrix m)
   ;; consider each column
@@ -85,17 +85,6 @@
                            (apply #'tref tensor2 pos))))
        (return-from = nil))))
   t)
-
-
-(def-lapack-mult matrix/complex-double-float (complex double-float) magicl.blas-cffi:%zgemm)
-(def-lapack-lu matrix/complex-double-float (complex double-float) magicl.lapack-cffi:%zgetrf)
-(def-lapack-inv matrix/complex-double-float (complex double-float) magicl.lapack-cffi:%zgetrf magicl.lapack-cffi:%zgetri)
-(def-lapack-svd matrix/complex-double-float (complex double-float) magicl.lapack-cffi:%zgesvd double-float)
-(def-lapack-eig matrix/complex-double-float (complex double-float) magicl.lapack-cffi:%zgeev double-float)
-(def-lapack-hermitian-eig matrix/complex-double-float (complex double-float) magicl.lapack-cffi:%zheev double-float)
-(def-lapack-ql-qr-rq-lq matrix/complex-double-float (complex double-float)
-  magicl.lapack-cffi:%zgeqlf magicl.lapack-cffi:%zgeqrf magicl.lapack-cffi:%zgerqf magicl.lapack-cffi:%zgelqf
-  magicl.lapack-cffi:%zungql magicl.lapack-cffi:%zungqr magicl.lapack-cffi:%zungrq magicl.lapack-cffi:%zunglq)
 
 ;; ZUNCSD is broken in magicl lapack bindings
 (COMMON-LISP:DEFUN %ZUNCSD-XPOINTERS

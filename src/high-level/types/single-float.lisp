@@ -45,12 +45,3 @@
                            (apply #'tref tensor2 pos))))
        (return-from = nil))))
   t)
-
-(def-lapack-mult matrix/single-float single-float magicl.blas-cffi:%sgemm)
-(def-lapack-lu matrix/single-float single-float magicl.lapack-cffi:%sgetrf)
-(def-lapack-inv matrix/single-float single-float magicl.lapack-cffi:%sgetrf magicl.lapack-cffi:%sgetri)
-(def-lapack-svd matrix/single-float single-float magicl.lapack-cffi:%sgesvd)
-(def-lapack-eig matrix/single-float single-float magicl.lapack-cffi:%sgeev)
-(def-lapack-ql-qr-rq-lq matrix/single-float single-float
-  magicl.lapack-cffi:%sgeqlf magicl.lapack-cffi:%sgeqrf magicl.lapack-cffi:%sgerqf magicl.lapack-cffi:%sgelqf
-  magicl.lapack-cffi:%sorgql magicl.lapack-cffi:%sorgqr magicl.lapack-cffi:%sorgrq magicl.lapack-cffi:%sorglq)
