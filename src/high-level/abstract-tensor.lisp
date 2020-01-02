@@ -7,9 +7,9 @@
 (in-package #:magicl)
 
 (defstruct (abstract-tensor
-            "Abstract tensor class. Superclass for implementing the abstract-tensor protocol"
             (:constructor nil)
-            (:copier nil)))
+            (:copier nil))
+  "Abstract tensor class. Superclass for implementing the abstract-tensor protocol")
 
 ;;; abstract-tensor protocol
 ;;; These methods do not have generic definitions and must be implemented by subclasses
