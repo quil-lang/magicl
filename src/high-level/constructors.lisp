@@ -141,8 +141,7 @@ The tensor is specialized on SHAPE and TYPE."
             list))
          tensor)))))
 
-;; TODO: This doesn't work
-(defun from-diag (list &key (offset 0) (order 2) type layout)
+(defun from-diag (list &key (order 2) type layout)
   "Create a tensor from a list, placing along the diagonal
 
 If ORDER is specified then the tensor will be of that order, otherwise 2 is assumed.
@@ -154,10 +153,7 @@ The tensor is specialized on SHAPE and TYPE."
          (tensor-class (infer-tensor-type type shape (first list)))
          (tensor (make-tensor tensor-class shape :layout layout)))
     (loop :for i :below length
-          :do (setf (apply #'tref tensor
-                           (mod (- i offset) length)
-                           (make-list (1- order)
-                                      :initial-element i))
+          :do (setf (apply #'tref tensor (make-list order :initial-element i))
                     (pop list)))
     tensor))
 
