@@ -110,6 +110,8 @@
            #:from-array
            #:from-list
            #:from-diag
+           #:zeros
+           #:ones
 
            #:random-unitary
 

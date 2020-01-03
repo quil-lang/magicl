@@ -10,7 +10,7 @@
   (:documentation "Make a dense tensor with elements of the specified type"))
 
 (defun empty (shape &key (type +default-tensor-type+) layout)
-  "Create an empty tensor
+  "Create a tensor without intializing the contents of the storage
 
 If TYPE is not specified then +DEFAULT-TENSOR-TYPE+ is used.
 LAYOUT specifies the internal storage represenation ordering of the returned tensor.
@@ -151,3 +151,21 @@ The tensor is specialized on SHAPE and TYPE."
         (loop :for i :below (first shape)
               :do (setf (tref tensor i i) (pop list)))
         tensor))))
+
+;;; Constructors for convenience
+
+(defun zeros (shape &key (type +default-tensor-type+) layout)
+  "Create a tensor with the specified SHAPE of zeros
+
+If TYPE is not specified then +DEFAULT-TENSOR-TYPE+ is used.
+LAYOUT specifies the internal storage represenation ordering of the returned tensor.
+The tensor specialized on the specified SHAPE and TYPE."
+  (const 0 shape :type type :layout layout))
+
+(defun ones (shape &key (type +default-tensor-type+) layout)
+  "Create a tensor with the specified SHAPE of ones
+
+If TYPE is not specified then +DEFAULT-TENSOR-TYPE+ is used.
+LAYOUT specifies the internal storage represenation ordering of the returned tensor.
+The tensor specialized on the specified SHAPE and TYPE."
+  (const 1 shape :type type :layout layout))
