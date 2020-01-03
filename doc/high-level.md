@@ -53,14 +53,14 @@ This table was adapted largely from the [NumPy Equivalent Table](https://docs.sc
 
 ### Basic Operations
 
-| MAGICL    | MATLAB   | NumPy            | Description                 |
-|-----------|----------|------------------|-----------------------------|
-| `(@ a b)` | `a * b`  | `a @ b`          | Matrix multiplication       |
-| `(+ a b)` | `a + b`  | `a + b`      | Element-wise add            |
-| `(- a b)` | `a - b`  | `a - b` | Element-wise subtract       |
-|           | `a .* b` | `a * b`          | Element-wise multiply       |
-|           | `a./b`   | `a/b`            | Element-wise divide         |
-|           | `a.^3`   | `a**3`           | Element-wise exponentiation |
+| MAGICL     | MATLAB   | NumPy            | Description                 |
+|------------|----------|------------------|-----------------------------|
+| `(@ a b)`  | `a * b`  | `a @ b`          | Matrix multiplication       |
+| `(.+ a b)` | `a + b`  | `a + b`          | Element-wise add            |
+| `(.- a b)` | `a - b`  | `a - b`          | Element-wise subtract       |
+| `(.* a b)` | `a .* b` | `a * b`          | Element-wise multiply       |
+| `(./ a b)` | `a./b`   | `a/b`            | Element-wise divide         |
+| `(.^ a b)` | `a.^3`   | `a**3`           | Element-wise exponentiation |
 
 ### Linear Algebra
 
