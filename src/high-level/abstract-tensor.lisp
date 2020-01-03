@@ -78,32 +78,22 @@ In the event TARGET is not specified, the result may return an array sharing mem
        (apply #'(setf tref) (funcall function (apply #'tref tensor dims)) tensor dims)))
     tensor))
 
-(defgeneric into! (function tensor &key layout)
-  (:documentation "Map indices of TENSOR by replacing the value with the output of FUNCTION on the index at the element.
-
-If LAYOUT is specified then traverse TENSOR in the specified order (column major or row major).")
-  (:method ((function function) (tensor abstract-tensor) &key (layout :row-major))
-    (let ((map-func (if (eql layout :column-major)
-                        #'map-column-indexes
-                        #'map-indexes)))
-      (funcall map-func
-               (shape tensor)
-               (lambda (&rest dims)
-                 (apply #'(setf tref) (apply function dims) tensor dims))))
+(defgeneric into! (function tensor)
+  (:documentation "Map indices of TENSOR by replacing the value with the output of FUNCTION on the index at the element.")
+  (:method ((function function) (tensor abstract-tensor))
+    (map-indexes
+     (shape tensor)
+     (lambda (&rest dims)
+       (apply #'(setf tref) (apply function dims) tensor dims)))
     tensor))
 
-(defgeneric foreach (function tensor &key layout)
-  (:documentation "Call FUNCTION with each element of TENSOR
-
-If LAYOUT is specified then traverse TENSOR in the specified order (column major or row major).")
-  (:method ((function function) (tensor abstract-tensor) &key (layout :row-major))
-    (let ((map-func (if (eql layout :column-major)
-                        #'map-column-indexes
-                        #'map-indexes)))
-      (funcall map-func
-               (shape tensor)
-               (lambda (&rest dims)
-                 (funcall function (apply #'tref tensor dims)))))
+(defgeneric foreach (function tensor)
+  (:documentation "Call FUNCTION with each element of TENSOR")
+  (:method ((function function) (tensor abstract-tensor))
+    (map-indexes
+     (shape tensor)
+     (lambda (&rest dims)
+       (funcall function (apply #'tref tensor dims))))
     tensor))
 
 (defgeneric map-to (function source target)
