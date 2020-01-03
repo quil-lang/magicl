@@ -422,6 +422,8 @@ If fast is t then just change layout. Fast can cause problems when you want to m
                   do (loop for i from 0 to (min (cl:+ (cl:- order n) j) (1- m))
                            do (setf (tref target i (cl:- j (cl:- n order))) (tref matrix i j)))))
         target))))
+;;; Synonym for upper-triangular
+(setf (fdefinition 'triu) #'upper-triangular)
 
 (defgeneric lower-triangular (matrix &optional order)
   (:documentation "Get the lower triangular portion of the matrix")
@@ -441,26 +443,20 @@ If fast is t then just change layout. Fast can cause problems when you want to m
                   do (loop for i from (max 0 (cl:+ (cl:- m order) j)) to (1- m)
                            do (setf (tref target (cl:+ i (cl:- order m)) j) (tref matrix i j)))))
         target))))
+;;; Synonym for lower-triangular
+(setf (fdefinition 'tril) #'lower-triangular)
 
 (defgeneric conjugate-transpose (matrix)
   (:documentation "Compute the conjugate transpose of a matrix")
   (:method ((matrix matrix))
     (map #'conjugate (transpose matrix))))
+(setf (fdefinition 'dagger) #'conjugate-transpose)
 
 (defgeneric conjugate-transpose! (matrix)
   (:documentation "Compute the conjugate transpose of a matrix, replacing the elements")
   (:method ((matrix matrix))
     (map! #'conjugate (transpose! matrix))))
-
-(defgeneric dagger (matrix)
-  (:documentation "Compute the conjugate transpose of MATRIX")
-  (:method ((matrix matrix))
-    (conjugate-transpose matrix)))
-
-(defgeneric dagger! (matrix)
-  (:documentation "Compute the conjugate transpose of MATRIX, replacing the elements")
-  (:method ((matrix matrix))
-    (conjugate-transpose! matrix)))
+(setf (fdefinition 'dagger!) #'conjugate-transpose!)
 
 (defgeneric eig (matrix)
   (:documentation "Find the (right) eigenvectors and corresponding eigenvalues of a square matrix M. Returns a list and a tensor (EIGENVALUES, EIGENVECTORS)")
