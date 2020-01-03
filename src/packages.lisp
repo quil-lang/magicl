@@ -133,6 +133,10 @@
            #:scale!
            #:diag
            #:det
+           #:upper-triangular
+           #:lower-triangular
+           #:triu
+           #:tril
            #:transpose
            #:transpose!
            #:orthonormalize
@@ -140,7 +144,9 @@
            #:trace
            #:direct-sum
            #:conjugate-transpose
+           #:conjugate-transpose!
            #:dagger
+           #:dagger!
            #:eig
            #:inverse
            #:lu
