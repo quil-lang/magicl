@@ -58,7 +58,7 @@ The tensor is specialized on SHAPE and TYPE."
                 (coerce  (funcall rand-function) type))))
       (into! f (make-tensor tensor-class shape :layout layout)))))
 
-(defun deye (d shape &key type layout)
+(defun deye (shape &key value (type +default-tensor-type+) layout)
   "Create a 2-dimensional square tensor with D along the diagonal
 
 SHAPE must have length 2 and be square.
@@ -66,12 +66,15 @@ SHAPE must have length 2 and be square.
 If TYPE is not specified then it is inferred from the type of D.
 LAYOUT specifies the internal storage represenation ordering of the returned tensor.
 The tensor is specialized on SHAPE and TYPE."
+  (declare (dynamic-extent shape))
   (policy-cond:with-expectations (> speed safety)
       ((type shape shape))
-    (let* ((tensor-class (infer-tensor-type type shape d))
-           (tensor (make-tensor tensor-class shape :layout layout)))
-      (loop :for i :below (min (first shape) (second shape))
-            :do (setf (tref tensor i i) d))
+    (let* ((tensor-class (infer-tensor-type (if value nil type) shape value))
+           (tensor (make-tensor tensor-class shape :layout layout))
+           (shape-length (length shape))
+           (fill-value (coerce (or value 1) (element-type tensor))))
+      (loop :for i :below (reduce #'min shape)
+            :do (setf (apply #'tref tensor (make-list shape-length :initial-element i)) fill-value))
       tensor)))
 
 (defun arange (range &key (type +default-tensor-type+) layout)
