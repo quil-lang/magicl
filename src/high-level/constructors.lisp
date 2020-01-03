@@ -67,11 +67,10 @@ If TYPE is not specified then it is inferred from the type of D.
 LAYOUT specifies the internal storage represenation ordering of the returned tensor.
 The tensor is specialized on SHAPE and TYPE."
   (policy-cond:with-expectations (> speed safety)
-      ((type shape shape)
-       (assertion (square-shape-p shape)))
+      ((type shape shape))
     (let* ((tensor-class (infer-tensor-type type shape d))
            (tensor (make-tensor tensor-class shape :layout layout)))
-      (loop :for i :below (first shape)
+      (loop :for i :below (min (first shape) (second shape))
             :do (setf (tref tensor i i) d))
       tensor)))
 
