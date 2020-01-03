@@ -13,7 +13,7 @@
   "Create a tensor without intializing the contents of the storage
 
 If TYPE is not specified then +DEFAULT-TENSOR-TYPE+ is used.
-LAYOUT specifies the internal storage represenation ordering of the returned tensor.
+LAYOUT specifies the internal storage representation ordering of the returned tensor.
 The tensor specialized on the specified SHAPE and TYPE."
   (policy-cond:with-expectations (> speed safety)
       ((type shape shape))
@@ -24,7 +24,7 @@ The tensor specialized on the specified SHAPE and TYPE."
   "Create a tensor with the specified SHAPE with each element being set to CONST
 
 If TYPE is not specified then it is inferred from the type of CONST.
-LAYOUT specifies the internal storage represenation ordering of the returned tensor.
+LAYOUT specifies the internal storage representation ordering of the returned tensor.
 The tensor is specialized on SHAPE and TYPE."
   (policy-cond:with-expectations (> speed safety)
       ((type shape shape))
@@ -37,7 +37,7 @@ The tensor is specialized on SHAPE and TYPE."
 DISTRIBUTION is a function with no arguments which returns a value for the element.
 If DISTRIBUTION is not specified then CL:RANDOM is used. In the case that TYPE is complex, CL:RANDOM is called for each component.
 If TYPE is not specified then +DEFAULT-TENSOR-TYPE+ is used.
-LAYOUT specifies the internal storage represenation ordering of the returned tensor.
+LAYOUT specifies the internal storage representation ordering of the returned tensor.
 The tensor is specialized on SHAPE and TYPE."
   (policy-cond:with-expectations (> speed safety)
       ((type shape shape))
@@ -65,7 +65,7 @@ SHAPE can either be a list of dimensions or a fixnum defining the length of the 
 
 If VALUE is not specified then 1 is used.
 If TYPE is not specified then it is inferred from the type of VALUE, defaulting to +DEFAULT-TENSOR-TYPE+.
-LAYOUT specifies the internal storage represenation ordering of the returned tensor.
+LAYOUT specifies the internal storage representation ordering of the returned tensor.
 The tensor is specialized on SHAPE and TYPE."
   (policy-cond:with-expectations (> speed safety)
       ((type (or shape fixnum) shape)
@@ -85,7 +85,7 @@ The tensor is specialized on SHAPE and TYPE."
   "Create a 1-dimensional tensor of elements from 0 up to but not including the RANGE
 
 If TYPE is not specified then it is inferred from the type of RANGE.
-LAYOUT specifies the internal storage represenation ordering of the returned tensor.
+LAYOUT specifies the internal storage representation ordering of the returned tensor.
 The tensor is specialized on TYPE with shape (floor(RANGE))."
   (let ((tensor-class (infer-tensor-type type (list (floor range)) range)))
     (let ((tensor (make-tensor tensor-class (list (floor range)) :layout layout))
@@ -102,7 +102,7 @@ The tensor is specialized on TYPE with shape (floor(RANGE))."
   "Create a tensor from ARRAY, calling ADJUST-ARRAY on ARRAY to flatten to a 1-dimensional array of length equal to the product of the elements in SHAPE
 
 If TYPE is not specified then it is inferred from the element type of ARRAY.
-LAYOUT specifies the internal storage represenation ordering of the returned tensor.
+LAYOUT specifies the internal storage representation ordering of the returned tensor.
 The tensor is specialized on SHAPE and TYPE."
   (policy-cond:with-expectations (> speed safety)
       ((type shape shape))
@@ -125,7 +125,7 @@ The tensor is specialized on SHAPE and TYPE."
 If INPUT-LAYOUT is not specified then row-major is assumed.
 
 If TYPE is not specified then it is inferred from the type of the first element of LIST.
-LAYOUT specifies the internal storage represenation ordering of the returned tensor.
+LAYOUT specifies the internal storage representation ordering of the returned tensor.
 The tensor is specialized on SHAPE and TYPE."
   (policy-cond:with-expectations (> speed safety)
       ((type shape shape)
@@ -146,7 +146,7 @@ The tensor is specialized on SHAPE and TYPE."
 
 If ORDER is specified then the tensor will be of that order, otherwise 2 is assumed.
 If TYPE is not specified then it is inferred from the type of the first element of LIST.
-LAYOUT specifies the internal storage represenation ordering of the returned tensor.
+LAYOUT specifies the internal storage representation ordering of the returned tensor.
 The tensor is specialized on SHAPE and TYPE."
   (let* ((length (length list))
          (shape (fixnum-to-shape length order))
@@ -163,7 +163,7 @@ The tensor is specialized on SHAPE and TYPE."
   "Create a tensor with the specified SHAPE of zeros
 
 If TYPE is not specified then +DEFAULT-TENSOR-TYPE+ is used.
-LAYOUT specifies the internal storage represenation ordering of the returned tensor.
+LAYOUT specifies the internal storage representation ordering of the returned tensor.
 The tensor specialized on the specified SHAPE and TYPE."
   (const 0 shape :type type :layout layout))
 
@@ -171,6 +171,6 @@ The tensor specialized on the specified SHAPE and TYPE."
   "Create a tensor with the specified SHAPE of ones
 
 If TYPE is not specified then +DEFAULT-TENSOR-TYPE+ is used.
-LAYOUT specifies the internal storage represenation ordering of the returned tensor.
+LAYOUT specifies the internal storage representation ordering of the returned tensor.
 The tensor specialized on the specified SHAPE and TYPE."
   (const 1 shape :type type :layout layout))
