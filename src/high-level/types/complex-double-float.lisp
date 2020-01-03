@@ -86,7 +86,7 @@
        (return-from = nil))))
   t)
 
-;; ZUNCSD is broken in magicl lapack bindings
+;; ZUNCSD is broken in magicl lapack bindings (Issue #72)
 (COMMON-LISP:DEFUN %ZUNCSD-XPOINTERS
     (JOBU1 JOBU2 JOBV1T JOBV2T TRANS SIGNS M P Q X11 LDX11 X12
      LDX12 X21 LDX21 X22 LDX22 THETA U1 LDU1 U2 LDU2 V1T LDV1T
