@@ -50,7 +50,7 @@
   (multiple-value-bind (vals vects) (magicl:eig m)
     (let ((new-log-diag
             (let ((log-vals (mapcar #'log vals)))
-              (magicl:from-diag log-vals (list (magicl:ncols m) (magicl:nrows m))))))
+              (magicl:from-diag log-vals))))
       (magicl:@ vects
                 new-log-diag
                 (magicl:inverse vects)))))

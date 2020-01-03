@@ -242,7 +242,7 @@ ELEMENT-TYPE, CAST, COPY-TENSOR, DEEP-COPY-TENSOR, TREF, SETF TREF)"
     (multiple-value-bind (q r) (qr (rand shape :type type :distribution #'alexandria:gaussian-random))
       (let ((d (diag r)))
         (setf d (cl:map 'list (lambda (di) (/ di (sqrt (* di (conjugate di))))) d))
-        (@ q (funcall #'from-diag d shape))))))
+        (@ q (funcall #'from-diag d))))))
 
 ;; TODO: This should be generic to abstract-tensor
 (defgeneric ptr-ref (m base i j)
