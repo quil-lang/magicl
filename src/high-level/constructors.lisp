@@ -58,7 +58,7 @@ The tensor is specialized on SHAPE and TYPE."
                 (coerce  (funcall rand-function) type))))
       (into! f (make-tensor tensor-class shape :layout layout)))))
 
-(defun deye (shape &key value (type +default-tensor-type+) layout)
+(defun eye (shape &key value (type +default-tensor-type+) layout)
   "Create a 2-dimensional square tensor with D along the diagonal
 
 SHAPE must have length 2 and be square.

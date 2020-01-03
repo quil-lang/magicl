@@ -38,7 +38,7 @@
 (deftest test-kron ()
   "Test a few properties of the kronecker product."
   (let* ((matrix-dim 2)
-         (eye2 (magicl:deye 1.0 '(2 2)))
+         (eye2 (magicl:eye '(2 2)))
          (eye4 (magicl:kron eye2 eye2))
          (x (magicl:from-list '(0.0 1.0 1.0 0.0) '(2 2)))
          (xxx (magicl:kron x x x))

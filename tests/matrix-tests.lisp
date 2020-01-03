@@ -16,8 +16,8 @@
   "Test that identity matrices can be identified by IDENTITY-MATRIX-P for all types of matrixes from 1x1 to 64x64"
   (loop :for i :from 1 :to 64
         :do (loop :for type :in +magicl-types+
-                  :do (is (magicl:identity-matrix-p (magicl:deye 1 (list i i) :type type)))
-                      (is (not (magicl:identity-matrix-p (magicl:deye 2 (list i i) :type type))))
+                  :do (is (magicl:identity-matrix-p (magicl:eye (list i i) :type type)))
+                      (is (not (magicl:identity-matrix-p (magicl:eye (list i i) :value 2 :type type))))
                       (is (not (magicl:identity-matrix-p (magicl:const 0 (list i i) :type type)))))))
 
 (deftest test-square-matrix-p ()
@@ -70,6 +70,6 @@
                                           (abs (magicl:det m))
                                           1))))
                         (is (magicl:=
-                             (magicl:deye 1 (list i i) :type type)
+                             (magicl:eye (list i i) :type type)
                              (magicl:@ m (magicl:transpose m))
                              5e-5))))))

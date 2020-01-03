@@ -105,7 +105,7 @@
            #:empty
            #:const
            #:rand
-           #:deye
+           #:eye
            #:arange
            #:from-array
            #:from-list
