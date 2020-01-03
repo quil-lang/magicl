@@ -23,13 +23,13 @@
              ((assertion (cl:= k brows))
               (assertion (or (not target) (equal (shape target) (list m n)))))
            (let ((ta
-                   (if (eql :row-major (order a))
+                   (if (eql :row-major (layout a))
                        (case transa
                          (:n :t)
                          (:t :n)
                          (:c (error "Specifying TRANSA to be :C is not allowed if A is ROW-MAJOR")))
                        transa))
-                 (tb (if (eql :row-major (order b))
+                 (tb (if (eql :row-major (layout b))
                          (case transb
                            (:n :t)
                            (:t :n)
@@ -76,7 +76,7 @@
               (ipiv-tensor (empty (list (max m n)) :type '(signed-byte 32)))
               (ipiv (storage ipiv-tensor))
               (info 0))
-         (when (eql :row-major (order a-tensor)) (transpose! a-tensor))
+         (when (eql :row-major (layout a-tensor)) (transpose! a-tensor))
          (,lu-function
           m
           n
@@ -94,7 +94,7 @@
      
      (defmethod lapack-inv ((a ,class))
        (let ((a-tensor (deep-copy-tensor a)))
-         (when (eql :row-major (order a-tensor)) (transpose! a-tensor))
+         (when (eql :row-major (layout a-tensor)) (transpose! a-tensor))
          (let* ((a (storage a-tensor))
                 (m (nrows a-tensor))
                 (n (ncols a-tensor))
@@ -146,7 +146,7 @@
               (jobvt (if reduced "S" "A"))
               (rows (nrows m))
               (cols (ncols m))
-              (a (alexandria:copy-array (storage (if (eql :row-major (order m)) (transpose m) m))))
+              (a (alexandria:copy-array (storage (if (eql :row-major (layout m)) (transpose m) m))))
               (lwork -1)
               (info 0)
               (k (min rows cols))
@@ -174,9 +174,9 @@
              (dotimes (i k)
                (setf (aref smat (column-major-index (list i i) (list u-cols vt-rows)))
                      (aref s i)))
-             (values (from-array u (list rows u-cols) :order :column-major)
-                     (from-array smat (list u-cols vt-rows) :order :column-major)
-                     (from-array vt (list vt-rows cols) :order :column-major))))))))
+             (values (from-array u (list rows u-cols) :layout :column-major)
+                     (from-array smat (list u-cols vt-rows) :layout :column-major)
+                     (from-array vt (list vt-rows cols) :layout :column-major))))))))
 
 ;; TODO: This returns only the real parts when with non-complex numbers. Should do something different?
 (defun generate-lapack-eig-for-type (class type eig-function &optional real-type)
@@ -192,7 +192,7 @@
        (let ((rows (nrows m))
              (cols (ncols m))
              (a-tensor (deep-copy-tensor m)))
-         (when (eql :row-major (order m)) (transpose! a-tensor))
+         (when (eql :row-major (layout m)) (transpose! a-tensor))
          (let ((jobvl "N")
                (jobvr "V")
                (a (storage a-tensor))
@@ -215,7 +215,7 @@
              ;; run it again with optimal workspace size
              (,eig-function jobvl jobvr rows a rows ,@(if real-type `(w) `(wr wi))
                             vl 1 vr rows work lwork ,@(when real-type `(rwork)) info)
-             (values (coerce ,@(if real-type `(w) `(wr)) 'list) (from-array vr (list rows cols) :order :column-major))))))))
+             (values (coerce ,@(if real-type `(w) `(wr)) 'list) (from-array vr (list rows cols) :layout :column-major))))))))
 
 (defun generate-lapack-hermitian-eig-for-type (class type eig-function real-type)
   `(progn
@@ -232,7 +232,7 @@
        (let ((rows (nrows m))
              (cols (ncols m))
              (a-tensor (deep-copy-tensor m)))
-         (when (eql :row-major (order m)) (transpose! a-tensor))
+         (when (eql :row-major (layout m)) (transpose! a-tensor))
          (let ((jobz "V")
                (uplo "U")
                (n rows)
@@ -355,7 +355,7 @@
               (a (storage a-tensor))
               (lwork -1)
               (info 0))
-         (when (eql :row-major (order m))
+         (when (eql :row-major (layout m))
            (transpose! a-tensor))
          (let ((lda rows)
                (tau (make-array (min rows cols) :element-type ',type))
@@ -369,7 +369,7 @@
            (values a-tensor
                    (from-array tau (list (min rows cols))
                                :type ',type
-                               :order :column-major)))))
+                               :layout :column-major)))))
      
      (defmethod lapack-ql ((m ,class))
        (let* ((rows (nrows m))
@@ -378,7 +378,7 @@
               (a (storage a-tensor))
               (lwork -1)
               (info 0))
-         (when (eql :row-major (order m))
+         (when (eql :row-major (layout m))
            (transpose! a-tensor))
          (let ((lda rows)
                (tau (make-array (min rows cols) :element-type ',type))
@@ -392,7 +392,7 @@
            (values a-tensor
                    (from-array tau (list (min rows cols))
                                :type ',type
-                               :order :column-major)))))
+                               :layout :column-major)))))
 
      (defmethod lapack-rq ((m ,class))
        (let* ((rows (nrows m))
@@ -401,7 +401,7 @@
               (a (storage a-tensor))
               (lwork -1)
               (info 0))
-         (when (eql :row-major (order m))
+         (when (eql :row-major (layout m))
            (transpose! a-tensor))
          (let ((lda rows)
                (tau (make-array (min rows cols) :element-type ',type))
@@ -415,7 +415,7 @@
            (values a-tensor
                    (from-array tau (list (min rows cols))
                                :type ',type
-                               :order :column-major)))))
+                               :layout :column-major)))))
 
      (defmethod lapack-lq ((m ,class))
        (let* ((rows (nrows m))
@@ -424,7 +424,7 @@
               (a (storage a-tensor))
               (lwork -1)
               (info 0))
-         (when (eql :row-major (order m))
+         (when (eql :row-major (layout m))
            (transpose! a-tensor))
          (let ((lda rows)
                (tau (make-array (min rows cols) :element-type ',type))
@@ -438,7 +438,7 @@
            (values a-tensor
                    (from-array tau (list (min rows cols))
                                :type ',type
-                               :order :column-major)))))
+                               :layout :column-major)))))
 
      (defmethod lapack-qr-q ((m ,class) tau)
        (let ((m (nrows m))
@@ -457,7 +457,7 @@
            (setf work (make-array (max 1 lwork) :element-type ',type))
            ;; run it again with optimal workspace size
            (,qr-q-function m n k a lda atau work lwork info)
-           (from-array a (list m k) :order :column-major))))
+           (from-array a (list m k) :layout :column-major))))
 
      (defmethod lapack-ql-q ((m ,class) tau)
        (let ((m (nrows m))
@@ -475,7 +475,7 @@
            (setf work (make-array (max 1 lwork) :element-type ',type))
            ;; run it again with optimal workspace size
            (,ql-q-function m n k a lda atau work lwork info)
-           (from-array a (list m n) :order :column-major))))
+           (from-array a (list m n) :layout :column-major))))
 
      (defmethod lapack-rq-q ((m ,class) tau)
        (let ((m (nrows m))
@@ -493,7 +493,7 @@
            (setf work (make-array (max 1 lwork) :element-type ',type))
            ;; run it again with optimal workspace size
            (,rq-q-function m n k a lda atau work lwork info)
-           (from-array a (list m n) :order :column-major))))
+           (from-array a (list m n) :layout :column-major))))
 
      (defmethod lapack-lq-q ((m ,class) tau)
        (let ((m (nrows m))
@@ -511,4 +511,4 @@
            (setf work (make-array (max 1 lwork) :element-type ',type))
            ;; run it again with optimal workspace size
            (,lq-q-function m n k a lda atau work lwork info)
-           (from-array a (list m n) :order :column-major))))))
+           (from-array a (list m n) :layout :column-major))))))

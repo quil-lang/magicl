@@ -27,8 +27,8 @@
                   :do (is (magicl:square-matrix-p (magicl:empty (list i i) :type type)))
                       (is (not (magicl:square-matrix-p (magicl:empty (list i (* 2 i)) :type type)))))))
 
-(deftest test-matrix-rank ()
-  (is (cl:= 2 (magicl:rank (magicl:empty '(4 5))))))
+(deftest test-matrix-order ()
+  (is (cl:= 2 (magicl:order (magicl:empty '(4 5))))))
 
 ;; Multiplication
 
@@ -47,7 +47,7 @@
 (deftest test-complex-matrix-multiplication-results ()
   "Test a few basic complex matrix multiplications"
   (let* ((m-old (magicl:from-list '(#C(1d0 2d0) #C(3d0 4d0) #C(5d0 6d0) #C(7d0 8d0)) '(2 2)))
-         (m (magicl:from-list '(#C(1d0 2d0) #C(3d0 4d0) #C(5d0 6d0) #C(7d0 8d0)) '(2 2) :order :row-major))
+         (m (magicl:from-list '(#C(1d0 2d0) #C(3d0 4d0) #C(5d0 6d0) #C(7d0 8d0)) '(2 2) :layout :row-major))
          (x-old (magicl:from-list '(#C(1d0 2d0) #C(3d0 4d0)) '(2 1)))
          (x (magicl:from-list '(#C(1d0 2d0) #C(3d0 4d0)) '(2 1)))
          (expected (magicl:from-list '(#C(-10d0 28d0) #C(-18d0 68d0)) '(2 1))))

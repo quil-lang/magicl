@@ -12,7 +12,7 @@
 
 (defcompatible
     (lambda (tensor)
-      (case (rank tensor)
+      (case (order tensor)
         (1 '(vector/complex-single-float
              tensor/complex-single-float))
         (2 '(matrix/complex-single-float

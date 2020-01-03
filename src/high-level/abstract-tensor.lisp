@@ -32,8 +32,8 @@
 ;;; abstract-tensor generic methods
 ;;; These methods have default generic implementations but can be optimized by subclasses
 
-(defgeneric rank (tensor)
-  (:documentation "Rank (number of dimensions) of the tensor")
+(defgeneric order (tensor)
+  (:documentation "Order (number of dimensions) of the tensor")
   (:method ((tensor abstract-tensor))
     (length (shape tensor))))
 
@@ -57,7 +57,7 @@ In the event TARGET is not specified, the result may return an array sharing mem
     (unless (null target)
       (policy-cond:policy-if
        (< speed safety)
-       (assert (and (= (rank tensor) (array-rank target))
+       (assert (and (= (order tensor) (array-rank target))
                     (equal (shape tensor) (array-dimensions target))))
        nil)))
   (:method ((tensor abstract-tensor) &optional target)
@@ -78,12 +78,12 @@ In the event TARGET is not specified, the result may return an array sharing mem
        (apply #'(setf tref) (funcall function (apply #'tref tensor dims)) tensor dims)))
     tensor))
 
-(defgeneric into! (function tensor &key order)
+(defgeneric into! (function tensor &key layout)
   (:documentation "Map indices of TENSOR by replacing the value with the output of FUNCTION on the index at the element.
 
-If ORDER is specified then traverse TENSOR in the specified order (column major or row major).")
-  (:method ((function function) (tensor abstract-tensor) &key (order :row-major))
-    (let ((map-func (if (eql order :column-major)
+If LAYOUT is specified then traverse TENSOR in the specified order (column major or row major).")
+  (:method ((function function) (tensor abstract-tensor) &key (layout :row-major))
+    (let ((map-func (if (eql layout :column-major)
                         #'map-column-indexes
                         #'map-indexes)))
       (funcall map-func
@@ -92,12 +92,12 @@ If ORDER is specified then traverse TENSOR in the specified order (column major 
                  (apply #'(setf tref) (apply function dims) tensor dims))))
     tensor))
 
-(defgeneric foreach (function tensor &key order)
+(defgeneric foreach (function tensor &key layout)
   (:documentation "Call FUNCTION with each element of TENSOR
 
-If ORDER is specified then traverse TENSOR in the specified order (column major or row major).")
-  (:method ((function function) (tensor abstract-tensor) &key (order :row-major))
-    (let ((map-func (if (eql order :column-major)
+If LAYOUT is specified then traverse TENSOR in the specified order (column major or row major).")
+  (:method ((function function) (tensor abstract-tensor) &key (layout :row-major))
+    (let ((map-func (if (eql layout :column-major)
                         #'map-column-indexes
                         #'map-indexes)))
       (funcall map-func
@@ -128,7 +128,7 @@ If ORDER is specified then traverse TENSOR in the specified order (column major 
 (defgeneric into (function tensor)
   (:documentation "Map indices of TENSOR, storing the output of FUNCTION on the index into the corresponding element of a new tensor
 
-If ORDER is specified then traverse TENSOR in the specified order (column major or row major).")
+If LAYOUT is specified then traverse TENSOR in the specified order (column major or row major).")
   (:method ((function function) (tensor abstract-tensor))
     (into! function (deep-copy-tensor tensor))))
 
@@ -160,7 +160,7 @@ If ORDER is specified then traverse TENSOR in the specified order (column major 
                     (cl:every #'< from (shape tensor)))
                () "Incompatible FROM position for TENSOR. Position ~a is not within tensor shape ~a"
                from (shape tensor))
-       (assert (and (cl:= (rank tensor) (length to))
+       (assert (and (cl:= (order tensor) (length to))
                     (valid-shape-p to)
                     (cl:every #'<= to (shape tensor)))
                () "Incompatible TO position for TENSOR. Position ~a is not within tensor shape ~a"
@@ -171,7 +171,7 @@ If ORDER is specified then traverse TENSOR in the specified order (column major 
      nil)
     (let* ((dims (mapcar #'cl:- to from))
            (target (empty dims
-                    :order (order tensor)
+                    :layout (layout tensor)
                     :type (element-type tensor))))
       (map-indexes dims
                    (lambda (&rest dims)
@@ -265,7 +265,7 @@ If TARGET is not specified then a new tensor is created with the same element ty
 (defgeneric coerce-type (tensor type)
   (:documentation "Coerce element type of TENSOR to TYPE by creating a new tensor")
   (:method ((tensor abstract-tensor) type)
-    (let ((target (empty (shape tensor) :order (order tensor) :type type)))
+    (let ((target (empty (shape tensor) :layout (layout tensor) :type type)))
       (map-to (lambda (x) (coerce x type))
               tensor
               target)

@@ -115,7 +115,7 @@
   (multiple-value-bind (u sigma vt)
       (magicl:csd x p q)
     (let ((x-reconst (magicl:@ u sigma vt)))
-      (format t "X~%~a:~a~%"  (magicl::order x) x)
+      (format t "X~%~a:~a~%"  (magicl::layout x) x)
       (format t "U~%~a~%" u)
       (format t "SIGMA~%~a~%" sigma)
       (format t "VT~%~a~%" vt)

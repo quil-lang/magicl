@@ -63,7 +63,7 @@
            #:generalize-tensor
            #:shape
            #:tref
-           #:rank
+           #:order
            #:size
            #:element-type
            #:lisp-array

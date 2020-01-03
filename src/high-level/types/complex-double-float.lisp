@@ -16,7 +16,7 @@
 
 (defcompatible
     (lambda (tensor)
-      (case (rank tensor)
+      (case (order tensor)
         (1 '(vector/complex-double-float
              tensor/complex-double-float))
         (2 '(matrix/complex-double-float
@@ -129,7 +129,7 @@
 
 (defmethod lapack-csd ((x matrix/complex-double-float) p q)
   (let* ((m (nrows x))
-         (order (order x))
+         (layout (layout x))
          (xcopy (deep-copy-tensor x)))
     (assert-square-matrix x)
     (check-type p integer)
@@ -141,7 +141,7 @@
           (jobv1t "Y")
           (jobv2t "Y")
           (trans 
-            (if (eql :row-major order)
+            (if (eql :row-major layout)
                 "T"
                 "F"))
           (signs "D")
@@ -200,10 +200,10 @@
                              x11 ldx11 x12 ldx12 x21 ldx21 x22 ldx22
                              theta u1 ldu1 u2 ldu2 v1t ldv1t v2t ldv2t
                              work lwork rwork lrwork iwork info)
-          (values (from-array u1 (list p p) :order :column-major)
-                  (from-array u2 (list (cl:- m p) (cl:- m p)) :order :column-major)
-                  (from-array v1t (list q q) :order :column-major)
-                  (from-array v2t (list (cl:- m q) (cl:- m q)) :order :column-major)
+          (values (from-array u1 (list p p) :layout :column-major)
+                  (from-array u2 (list (cl:- m p) (cl:- m p)) :layout :column-major)
+                  (from-array v1t (list q q) :layout :column-major)
+                  (from-array v2t (list (cl:- m q) (cl:- m q)) :layout :column-major)
                   (coerce theta 'list)))))))
 
 (defmethod csd-2x2-basic ((unitary-matrix-2x2 matrix/complex-double-float) p q)

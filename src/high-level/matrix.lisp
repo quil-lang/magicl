@@ -14,7 +14,7 @@
   (nrows 0 :type alexandria:non-negative-fixnum)
   (ncols 0 :type alexandria:non-negative-fixnum)
   (size 0 :type alexandria:non-negative-fixnum :read-only t)
-  (order :column-major :type (member :row-major :column-major)))
+  (layout :column-major :type (member :row-major :column-major)))
 
 (defmethod nrows ((m matrix))
   (matrix-nrows m))
@@ -25,8 +25,8 @@
 (defmethod size ((m matrix))
   (matrix-size m))
 
-(defmethod order ((m matrix))
-  (matrix-order m))
+(defmethod layout ((m matrix))
+  (matrix-layout m))
 
 ;;; Specfic matrix classes
 (defmacro defmatrix (name type tensor-class)
@@ -40,7 +40,7 @@ ELEMENT-TYPE, CAST, COPY-TENSOR, DEEP-COPY-TENSOR, TREF, SETF TREF)"
     `(progn
        (defstruct (,name (:include matrix)
                          (:constructor ,constructor-sym
-                             (nrows ncols size order storage))
+                             (nrows ncols size layout storage))
                          (:copier ,copy-sym))
          (storage nil :type (matrix-storage ,type)))
        #+sbcl (declaim (sb-ext:freeze-type ,name))
@@ -52,7 +52,7 @@ ELEMENT-TYPE, CAST, COPY-TENSOR, DEEP-COPY-TENSOR, TREF, SETF TREF)"
          (declare (ignore m))
          ',type)
 
-       (defmethod make-tensor ((class (eql ',name)) shape &key initial-element order storage)
+       (defmethod make-tensor ((class (eql ',name)) shape &key initial-element layout storage)
          (policy-cond:with-expectations
              (< speed safety)
              ((type shape shape)
@@ -62,7 +62,7 @@ ELEMENT-TYPE, CAST, COPY-TENSOR, DEEP-COPY-TENSOR, TREF, SETF TREF)"
                       (first shape)
                       (second shape)
                       size
-                      (or order :column-major)
+                      (or layout :column-major)
                       (or
                        storage
                        (apply #'make-array
@@ -77,19 +77,19 @@ ELEMENT-TYPE, CAST, COPY-TENSOR, DEEP-COPY-TENSOR, TREF, SETF TREF)"
          tensor)
        (defmethod cast :before ((tensor ,tensor-class) (class (eql ',name)))
          (declare (ignore class))
-         (assert (cl:= 2 (rank tensor))
+         (assert (cl:= 2 (order tensor))
                  ()
                  "Cannot change non-2 dimensional tensor to matrix."))
        (defmethod cast ((tensor ,tensor-class) (class (eql ',name)))
          (declare (ignore class))
          (make-tensor ',name (shape tensor)
                       :storage (storage tensor)
-                      :order (order tensor)))
+                      :layout (layout tensor)))
        (defmethod cast ((tensor ,name) (class (eql ',tensor-class)))
          (declare (ignore class))
          (make-tensor ',tensor-class (shape tensor)
                       :storage (storage tensor)
-                      :order (order tensor)))
+                      :layout (layout tensor)))
 
        ;; TODO: This does not allow for args. Make this allow for args.
        (defmethod copy-tensor ((m ,name) &rest args)
@@ -117,7 +117,7 @@ ELEMENT-TYPE, CAST, COPY-TENSOR, DEEP-COPY-TENSOR, TREF, SETF TREF)"
              (let ((row (first pos))
                    (col (second pos)))
                (declare (type fixnum row col))
-               (let ((index (ecase (matrix-order matrix)
+               (let ((index (ecase (matrix-layout matrix)
                               (:row-major (cl:+ col (the fixnum (* row numcols))))
                               (:column-major (cl:+ row (the fixnum (* col numrows)))))))
                  (declare (type alexandria:array-index index))
@@ -134,7 +134,7 @@ ELEMENT-TYPE, CAST, COPY-TENSOR, DEEP-COPY-TENSOR, TREF, SETF TREF)"
              (let ((row (first pos))
                    (col (second pos)))
                (declare (type alexandria:non-negative-fixnum row col))
-               (let ((index (ecase (matrix-order matrix)
+               (let ((index (ecase (matrix-layout matrix)
                               (:row-major (cl:+ col (the fixnum (* row numcols))))
                               (:column-major (cl:+ row (the fixnum (* col numrows)))))))
                  (declare (type alexandria:array-index index))
@@ -212,7 +212,7 @@ ELEMENT-TYPE, CAST, COPY-TENSOR, DEEP-COPY-TENSOR, TREF, SETF TREF)"
 
 ;;; Required abstract-tensor methods
 
-(defmethod rank ((m matrix))
+(defmethod order ((m matrix))
   (declare (ignore m))
   2)
 
@@ -255,7 +255,7 @@ ELEMENT-TYPE, CAST, COPY-TENSOR, DEEP-COPY-TENSOR, TREF, SETF TREF)"
              () "Incompatible position for MATRIX. Position ~a is not within matrix shape ~a" (list i j) (shape m))
      nil)
     (let ((type (element-type m)))
-      ;; TODO: compensate for order
+      ;; TODO: compensate for layout
       (let ((idx (column-major-index (list i j) (shape m))))
         (cond
           ((subtypep type 'single-float) (cffi:mem-aptr base :float idx))
@@ -324,17 +324,17 @@ Target cannot be the same as a or b."))
                                                          :type '(complex double-float))))))))
 
 (defgeneric transpose! (matrix &key fast)
-  (:documentation "Transpose MATRIX, replacing the elements of MATRIX, optionally performing a faster change of order if FAST is specified")
+  (:documentation "Transpose MATRIX, replacing the elements of MATRIX, optionally performing a faster change of layout if FAST is specified")
   (:method ((matrix matrix) &key fast)
     "Transpose a matrix by copying values.
-If fast is t then just change order. Fast can cause problems when you want to multiply specifying transpose."
+If fast is t then just change layout. Fast can cause problems when you want to multiply specifying transpose."
     (if fast
         (progn (rotatef (matrix-ncols matrix) (matrix-nrows matrix))
-               (setf (matrix-order matrix) (ecase (matrix-order matrix)
+               (setf (matrix-layout matrix) (ecase (matrix-layout matrix)
                                              (:row-major :column-major)
                                              (:column-major :row-major))))
         (let ((index-function
-                (ecase (matrix-order matrix)
+                (ecase (matrix-layout matrix)
                   (:row-major #'row-major-index)
                   (:column-major #'column-major-index)))
               (shape (shape matrix)))
@@ -350,12 +350,12 @@ If fast is t then just change order. Fast can cause problems when you want to mu
   (:documentation "Create a new matrix containing the transpose of MATRIX")
   (:method ((matrix matrix))
     "Transpose a matrix by copying values.
-If fast is t then just change order. Fast can cause problems when you want to multiply specifying transpose."
+If fast is t then just change layout. Fast can cause problems when you want to multiply specifying transpose."
     (let ((new-matrix (copy-tensor matrix)))
       (setf (matrix-ncols new-matrix) (matrix-nrows matrix)
             (matrix-nrows new-matrix) (matrix-ncols matrix))
       (let ((index-function
-              (ecase (order matrix)
+              (ecase (layout matrix)
                 (:row-major #'row-major-index)
                 (:column-major #'column-major-index)))
             (shape (shape matrix)))
@@ -413,7 +413,7 @@ If fast is t then just change order. Fast can cause problems when you want to mu
        (< speed safety)
        (assert (<= order (max (nrows matrix) (ncols matrix))) () "ORDER, given as ~D, is greater than the maximum dimension of A, ~D." order (max m n))
        nil)
-      (let ((target (empty (list order order) :order (order matrix) :type (element-type matrix))))
+      (let ((target (empty (list order order) :layout (layout matrix) :type (element-type matrix))))
         (if (> m n)
             (loop for i from 0 to (1- order)
                   do (loop for j from (max 0 (cl:+ (cl:- n order) i)) to (1- n)
@@ -432,7 +432,7 @@ If fast is t then just change order. Fast can cause problems when you want to mu
        (< speed safety)
        (assert (<= order (max (nrows matrix) (ncols matrix))) () "ORDER, given as ~D, is greater than the maximum dimension of A, ~D." order (max m n))
        nil)
-      (let ((target (empty (list order order) :order (order matrix) :type (element-type matrix))))
+      (let ((target (empty (list order order) :layout (layout matrix) :type (element-type matrix))))
         (if (> m n)
             (loop for i from (cl:- m order) to (1- m)
                   do (loop for j from 0 to (min (cl:+ (cl:- order m) i) (1- n))

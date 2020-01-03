@@ -10,19 +10,19 @@
 (defstruct (tensor (:include abstract-tensor)
                    (:constructor nil)
                    (:copier nil))
-  (rank 0 :type alexandria:non-negative-fixnum)
+  (order 0 :type alexandria:non-negative-fixnum)
   (shape '(0) :type list)
   (size 0 :type alexandria:positive-fixnum :read-only t)
-  (order :column-major :type (member :row-major :column-major)))
+  (layout :column-major :type (member :row-major :column-major)))
 
 (defmethod size ((a tensor))
   (tensor-size a))
 
+(defmethod layout ((a tensor))
+  (tensor-layout a))
+
 (defmethod order ((a tensor))
   (tensor-order a))
-
-(defmethod rank ((a tensor))
-  (tensor-rank a))
 
 (defmethod shape ((a tensor))
   (tensor-shape a))
@@ -42,7 +42,7 @@ COPY-TENSOR, DEEP-COPY-TENSOR, TREF, SETF TREF)"
     `(progn
        (defstruct (,name (:include tensor)
                          (:constructor ,constructor-sym
-                             (rank shape size order storage))
+                             (order shape size layout storage))
                          (:copier ,copy-sym))
          (storage nil :type (tensor-storage ,type)))
        #+sbcl (declaim (sb-ext:freeze-type ,name))
@@ -54,7 +54,7 @@ COPY-TENSOR, DEEP-COPY-TENSOR, TREF, SETF TREF)"
          (declare (ignore m))
          ',type)
        
-       (defmethod make-tensor ((class (eql ',name)) shape &key initial-element order storage)
+       (defmethod make-tensor ((class (eql ',name)) shape &key initial-element layout storage)
          (policy-cond:policy-if
           (< speed safety)
           (check-type shape shape)
@@ -64,7 +64,7 @@ COPY-TENSOR, DEEP-COPY-TENSOR, TREF, SETF TREF)"
                     (length shape)
                     shape
                     size
-                    (or order :column-major)
+                    (or layout :column-major)
                     (or
                      storage
                      (apply #'make-array
@@ -93,13 +93,13 @@ COPY-TENSOR, DEEP-COPY-TENSOR, TREF, SETF TREF)"
            new-m))
 
        (defmethod tref ((tensor ,name) &rest pos)
-         (let ((index (case (tensor-order tensor)
+         (let ((index (case (tensor-layout tensor)
                         (:row-major (row-major-index pos (tensor-shape tensor)))
                         (:column-major (column-major-index pos (tensor-shape tensor))))))
            (aref (,storage-sym tensor) index)))
 
        (defmethod (setf tref) (new-value (tensor ,name) &rest pos)
-         (let ((index (case (tensor-order tensor)
+         (let ((index (case (tensor-layout tensor)
                         (:row-major (row-major-index pos (tensor-shape tensor)))
                         (:column-major (column-major-index pos (tensor-shape tensor))))))
            (setf (aref (,storage-sym tensor) index)
@@ -119,7 +119,7 @@ COPY-TENSOR, DEEP-COPY-TENSOR, TREF, SETF TREF)"
 
 (defgeneric reshape (tensor shape)
   (:documentation "Change the shape of the tensor.
-WARNING: This method acts differently depending on the order of the tensor. Do not expect row-major to act the same as column-major.")
+WARNING: This method acts differently depending on the layout of the tensor. Do not expect row-major to act the same as column-major.")
   (:method ((tensor tensor) shape)
     (policy-cond:policy-if
      (<= speed safety)
@@ -128,7 +128,7 @@ WARNING: This method acts differently depending on the order of the tensor. Do n
                () "Incompatible shape. Must have the same total number of elements. The tensor has ~a elements and the new shape has ~a elements" (tensor-size tensor) shape-size))
      nil)
     (setf (tensor-shape tensor) shape)
-    (setf (tensor-rank tensor) (length shape))
+    (setf (tensor-order tensor) (length shape))
     (specialize-tensor tensor))
   (:method ((tensor abstract-tensor) shape)
     (reshape (generalize-tensor tensor) shape)))

@@ -12,7 +12,7 @@
 
 (defcompatible
     (lambda (tensor)
-      (case (rank tensor)
+      (case (order tensor)
         (1 '(vector/int32
              tensor/int32))
         (2 '(matrix/int32

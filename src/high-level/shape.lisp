@@ -43,7 +43,7 @@
            (< (second index) ncols))))
 
 ;; Types
-(deftype shape (&optional rank)
+(deftype shape (&optional order)
   `(satisfies valid-shape-p))
 
 (deftype index ()

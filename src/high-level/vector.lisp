@@ -35,8 +35,8 @@ ELEMENT-TYPE, CAST, COPY-TENSOR, DEEP-COPY-TENSOR, TREF, SETF TREF)"
          (declare (ignore v))
          ',type)
 
-       (defmethod make-tensor ((class (eql ',name)) shape &key initial-element order storage)
-         (declare (ignore order))
+       (defmethod make-tensor ((class (eql ',name)) shape &key initial-element layout storage)
+         (declare (ignore layout))
          (policy-cond:policy-if
           (< speed safety)
           (progn
@@ -61,7 +61,7 @@ ELEMENT-TYPE, CAST, COPY-TENSOR, DEEP-COPY-TENSOR, TREF, SETF TREF)"
          tensor)
        (defmethod cast :before ((tensor ,tensor-class) (class (eql ',name)))
          (declare (ignore class))
-         (assert (cl:= 1 (rank tensor))
+         (assert (cl:= 1 (order tensor))
                  ()
                  "Cannot change non-1 dimensional tensor to vector."))
        (defmethod cast ((tensor ,tensor-class) (class (eql ',name)))
@@ -126,7 +126,7 @@ ELEMENT-TYPE, CAST, COPY-TENSOR, DEEP-COPY-TENSOR, TREF, SETF TREF)"
 
 ;;; Required abstract-tensor methods
 
-(defmethod rank ((vector vector))
+(defmethod order ((vector vector))
   (declare (ignore vector))
   1)
 
