@@ -9,7 +9,7 @@
            (type shape dims))
   (loop :for i :of-type fixnum in pos
         :for d :of-type fixnum in dims
-        :for acc :of-type fixnum = i
+        :for acc :of-type fixnum := i
           :then (cl:+ i (the fixnum (* d acc)))
         :finally (return acc)))
 
@@ -18,7 +18,7 @@
            (type shape dims))
   (loop :for i :of-type fixnum in (reverse pos)
         :for d :of-type fixnum in (reverse dims)
-        :for acc :of-type fixnum = i
+        :for acc :of-type fixnum := i
           :then (cl:+ i (the fixnum (* d acc)))
         :finally (return acc)))
 
@@ -27,7 +27,7 @@
   (check-type dims shape)
   (reverse
    (loop :for d :in (reverse dims)
-         :with acc = index
+         :with acc := index
          :collect
          (multiple-value-bind (a r)
              (floor acc d)
@@ -38,7 +38,7 @@
   (check-type index fixnum)
   (check-type dims shape)
   (loop :for d :in dims
-        :with acc = index
+        :with acc := index
         :collect
         (multiple-value-bind (a r)
             (floor acc d)
