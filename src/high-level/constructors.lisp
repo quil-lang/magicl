@@ -59,17 +59,20 @@ The tensor is specialized on SHAPE and TYPE."
       (into! f (make-tensor tensor-class shape :layout layout)))))
 
 (defun eye (shape &key value (type +default-tensor-type+) layout)
-  "Create a 2-dimensional square tensor with D along the diagonal
+  "Create an identity tensor
 
-SHAPE must have length 2 and be square.
+SHAPE can either be a list of dimensions or a fixnum defining the length of the side a square matrix.
 
-If TYPE is not specified then it is inferred from the type of D.
+If VALUE is not specified then 1 is used.
+If TYPE is not specified then it is inferred from the type of VALUE, defaulting to +DEFAULT-TENSOR-TYPE+.
 LAYOUT specifies the internal storage represenation ordering of the returned tensor.
 The tensor is specialized on SHAPE and TYPE."
-  (declare (dynamic-extent shape))
   (policy-cond:with-expectations (> speed safety)
-      ((type shape shape))
-    (let* ((tensor-class (infer-tensor-type (if value nil type) shape value))
+      ((type (or shape fixnum) shape))
+    (let* ((shape (if (integerp shape)
+                      (fixnum-to-shape shape)
+                      shape))
+           (tensor-class (infer-tensor-type (if value nil type) shape value))
            (tensor (make-tensor tensor-class shape :layout layout))
            (shape-length (length shape))
            (fill-value (coerce (or value 1) (element-type tensor))))
@@ -137,22 +140,19 @@ The tensor is specialized on SHAPE and TYPE."
             list))
          tensor)))))
 
-(defun from-diag (list shape &key type layout)
-  "Create a tensor of the specified shape from a list, placing along the diagonal
+(defun from-diag (list &key (order 2) type layout)
+  "Create a tensor from a list, placing along the diagonal
 
+If ORDER is specified then the tensor will be of that order, otherwise 2 is assumed.
 If TYPE is not specified then it is inferred from the type of the first element of LIST.
 LAYOUT specifies the internal storage represenation ordering of the returned tensor.
 The tensor is specialized on SHAPE and TYPE."
-  (policy-cond:with-expectations (> speed safety)
-      ((type shape shape)
-       (assertion (cl:= 2 (length shape)))
-       (assertion (square-shape-p shape))
-       (assertion (cl:= (length list) (first shape))))
-    (let ((tensor-class (infer-tensor-type type shape (first list))))
-      (let ((tensor (make-tensor tensor-class shape :layout layout)))
-        (loop :for i :below (first shape)
-              :do (setf (tref tensor i i) (pop list)))
-        tensor))))
+  (let* ((shape (fixnum-to-shape (length list) order))
+         (tensor-class (infer-tensor-type type shape (first list)))
+         (tensor (make-tensor tensor-class shape :layout layout)))
+    (loop :for i :below (first shape)
+          :do (setf (tref tensor i i) (pop list)))
+    tensor))
 
 ;;; Constructors for convenience
 

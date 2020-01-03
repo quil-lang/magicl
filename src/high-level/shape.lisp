@@ -56,3 +56,6 @@
              :collect `(assert (square-shape-p ,shape)
                                ()
                                "The value of ~a is ~a, which is not a square SHAPE" ,(symbol-name shape) ,shape))))
+
+(defun fixnum-to-shape (num &optional (order 2))
+  (make-list order :initial-element num))
