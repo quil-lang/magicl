@@ -29,8 +29,8 @@
    (shape tensor1)
    (lambda (&rest pos)
      (unless (> epsilon
-                (abs (cl:- (apply #'tref tensor1 pos)
-                           (apply #'tref tensor2 pos))))
+                (abs (- (apply #'tref tensor1 pos)
+                        (apply #'tref tensor2 pos))))
        (return-from = nil))))
   t)
 
@@ -41,7 +41,7 @@
    (shape tensor1)
    (lambda (&rest pos)
      (unless (> epsilon
-                (abs (cl:- (apply #'tref tensor1 pos)
-                           (apply #'tref tensor2 pos))))
+                (abs (- (apply #'tref tensor1 pos)
+                        (apply #'tref tensor2 pos))))
        (return-from = nil))))
   t)

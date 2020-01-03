@@ -159,55 +159,66 @@ If LAYOUT is specified then traverse TENSOR in the specified order (column major
                () "Incomaptible TO and FROM positions. ~a is not less than or equal to ~a"
                from to))
      nil)
-    (let* ((dims (mapcar #'cl:- to from))
+    (let* ((dims (mapcar #'- to from))
            (target (empty dims
-                    :layout (layout tensor)
-                    :type (element-type tensor))))
+                          :layout (layout tensor)
+                          :type (element-type tensor))))
       (map-indexes dims
                    (lambda (&rest dims)
                      (setf (apply #'tref target dims)
-                           (apply #'tref tensor (mapcar #'cl:+ dims from)))))
+                           (apply #'tref tensor (mapcar #'+ dims from)))))
       target)))
 
-(defgeneric + (source1 source2 &optional target)
+(defgeneric binary-operator (function source1 source2 &optional target)
+  (:documentation "Perform a binary operator on tensors elementwise, optionally storing the result in TARGET.
+If TARGET is not specified then a new tensor is created with the same element type as the first source tensor")
+  (:method ((function function) (source1 abstract-tensor) (source2 abstract-tensor) &optional target)
+    (policy-cond:policy-if
+     (< speed safety)
+     (assert (equalp (shape source1) (shape source2))
+             () "Incompatible shapes. Cannot perform binary operation on tensor of shape ~a to tensor of shape ~a."
+             (shape source1) (shape source2))
+     nil)
+    (let ((target (or target (copy-tensor source1))))
+      (map-indexes
+       (shape source1)
+       (lambda (&rest dims)
+         (apply #'(setf tref)
+                (funcall function
+                         (apply #'tref source1 dims)
+                         (apply #'tref source2 dims))
+                target dims)))
+      target)))
+
+(defgeneric .+ (source1 source2 &optional target)
   (:documentation "Add tensors elementwise, optionally storing the result in TARGET.
 If TARGET is not specified then a new tensor is created with the same element type as the first source tensor")
   (:method ((source1 abstract-tensor) (source2 abstract-tensor) &optional target)
-    (policy-cond:policy-if
-     (< speed safety)
-     (assert (equalp (shape source1) (shape source2))
-             () "Incompatible shapes. Cannot add tensor of shape ~a to tensor of shape ~a."
-             (shape source1) (shape source2))
-     nil)
-    (let ((target (or target (copy-tensor source1))))
-      (map-indexes
-       (shape source1)
-       (lambda (&rest dims)
-         (apply #'(setf tref)
-                (cl:+ (apply #'tref source1 dims)
-                      (apply #'tref source2 dims))
-                target dims)))
-      target)))
+    (binary-operator #'+ source1 source2 target)))
 
-(defgeneric - (source1 source2 &optional target)
+(defgeneric .- (source1 source2 &optional target)
   (:documentation "Subtract tensors elementwise, optionally storing the result in TARGET.
 If TARGET is not specified then a new tensor is created with the same element type as the first source tensor")
   (:method ((source1 abstract-tensor) (source2 abstract-tensor) &optional target)
-    (policy-cond:policy-if
-     (< speed safety)
-     (assert (equalp (shape source1) (shape source2))
-             () "Incompatible shapes. Cannot add tensor of shape ~a to tensor of shape ~a."
-             (shape source1) (shape source2))
-     nil)
-    (let ((target (or target (copy-tensor source1))))
-      (map-indexes
-       (shape source1)
-       (lambda (&rest dims)
-         (apply #'(setf tref)
-                (cl:- (apply #'tref source1 dims)
-                      (apply #'tref source2 dims))
-                target dims)))
-      target)))
+    (binary-operator #'- source1 source2 target)))
+
+(defgeneric .* (source1 source2 &optional target)
+  (:documentation "Multiply tensors elementwise, optionally storing the result in TARGET.
+If TARGET is not specified then a new tensor is created with the same element type as the first source tensor")
+  (:method ((source1 abstract-tensor) (source2 abstract-tensor) &optional target)
+    (binary-operator #'* source1 source2 target)))
+
+(defgeneric ./ (source1 source2 &optional target)
+  (:documentation "Add tensors elementwise, optionally storing the result in TARGET.
+If TARGET is not specified then a new tensor is created with the same element type as the first source tensor")
+  (:method ((source1 abstract-tensor) (source2 abstract-tensor) &optional target)
+    (binary-operator #'/ source1 source2 target)))
+
+(defgeneric .^ (source1 source2 &optional target)
+  (:documentation "Exponentiate SOURCE1 by SOURCE2 elementwise, optionally storing the result in TARGET.
+If TARGET is not specified then a new tensor is created with the same element type as the first source tensor")
+  (:method ((source1 abstract-tensor) (source2 abstract-tensor) &optional target)
+    (binary-operator #'expt source2 source1 target)))
 
 (defgeneric = (source1 source2 &optional epsilon)
   (:documentation "Check the equality of tensors with an optional EPSILON")

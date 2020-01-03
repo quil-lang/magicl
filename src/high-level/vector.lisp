@@ -158,7 +158,7 @@ ELEMENT-TYPE, CAST, COPY-TENSOR, DEEP-COPY-TENSOR, TREF, SETF TREF)"
 (defgeneric norm (vector &optional p)
   (:documentation "Compute the norm of a vector")
   (:method ((vector vector) &optional (p 2))
-    (expt (reduce #'cl:+
+    (expt (reduce #'+
                   (cl:map (list 'cl:vector (element-type vector))
                           (lambda (x) (expt x p))
                           (storage vector)))

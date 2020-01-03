@@ -104,7 +104,7 @@
                  (is (= (magicl:nrows u) (magicl:ncols u) m))
                  (is (and (= (magicl:nrows sigma) m) (= (magicl:ncols sigma) n)))
                  (is (= (magicl:nrows vh) (magicl:ncols vh) n))
-                 (is (zero-p (magicl:- matrix (magicl:@ u (mul-diag-times-gen sigma vh))))))))
+                 (is (zero-p (magicl:.- matrix (magicl:@ u (mul-diag-times-gen sigma vh))))))))
 
            (check-reduced-svd (matrix)
              "Validate reduced SVD of MATRIX."
@@ -119,7 +119,7 @@
                  (is (= (magicl:nrows sigma) (magicl:ncols sigma) k))
                  (is (and (= (magicl:nrows vh) k)
                           (= (magicl:ncols vh) n)))
-                 (is (zero-p (magicl:- matrix (magicl:@ u (mul-diag-times-gen sigma vh)))))))))
+                 (is (zero-p (magicl:.- matrix (magicl:@ u (mul-diag-times-gen sigma vh)))))))))
 
     (let ((tall-thin-matrix (magicl:rand '(8 2))))
       (check-full-svd tall-thin-matrix)

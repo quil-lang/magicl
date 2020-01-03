@@ -10,7 +10,7 @@
   (loop :for i :of-type fixnum in pos
         :for d :of-type fixnum in dims
         :for acc :of-type fixnum := i
-          :then (cl:+ i (the fixnum (* d acc)))
+          :then (+ i (the fixnum (* d acc)))
         :finally (return acc)))
 
 (defun column-major-index (pos dims)
@@ -19,7 +19,7 @@
   (loop :for i :of-type fixnum in (reverse pos)
         :for d :of-type fixnum in (reverse dims)
         :for acc :of-type fixnum := i
-          :then (cl:+ i (the fixnum (* d acc)))
+          :then (+ i (the fixnum (* d acc)))
         :finally (return acc)))
 
 (defun from-row-major-index (index dims)

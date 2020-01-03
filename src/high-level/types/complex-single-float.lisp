@@ -44,9 +44,9 @@
         ;; ... and do the subtraction.
         (dotimes (i (nrows m))
           (setf (tref m i j)
-                (cl:- (tref m i j)
-                      (* scalar
-                         (tref m i jp)))))))
+                (- (tref m i j)
+                   (* scalar
+                      (tref m i jp)))))))
     ;; now j is orthogonal to the things that came before it. normalize it.
     (let ((scalar
             (sqrt
@@ -65,8 +65,8 @@
    (shape tensor1)
    (lambda (&rest pos)
      (unless (> epsilon
-                (abs (cl:- (apply #'tref tensor1 pos)
-                           (apply #'tref tensor2 pos))))
+                (abs (- (apply #'tref tensor1 pos)
+                        (apply #'tref tensor2 pos))))
        (return-from = nil))))
   t)
 
@@ -77,7 +77,7 @@
    (shape tensor1)
    (lambda (&rest pos)
      (unless (> epsilon
-                (abs (cl:- (apply #'tref tensor1 pos)
-                           (apply #'tref tensor2 pos))))
+                (abs (- (apply #'tref tensor1 pos)
+                        (apply #'tref tensor2 pos))))
        (return-from = nil))))
   t)

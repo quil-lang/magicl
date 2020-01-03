@@ -47,8 +47,6 @@
   (:import-from #:magicl.foreign-libraries
                 #:print-availability-report)
   (:shadow #:vector
-           #:+
-           #:-
            #:=
            #:map
            #:trace
@@ -116,8 +114,12 @@
            #:random-unitary
 
            ;; Operators
-           #:+
-           #:-
+           #:binary-operator
+           #:.+
+           #:.-
+           #:.*
+           #:./
+           #:.^
            #:=
            #:map
            

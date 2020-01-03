@@ -58,7 +58,7 @@ The tensor is specialized on SHAPE and TYPE."
                 (coerce  (funcall rand-function) type))))
       (into! f (make-tensor tensor-class shape :layout layout)))))
 
-(defun eye (shape &key value (type +default-tensor-type+) layout)
+(defun eye (shape &key value (offset 0) (type +default-tensor-type+) layout)
   "Create an identity tensor
 
 SHAPE can either be a list of dimensions or a fixnum defining the length of the side a square matrix.
@@ -68,7 +68,8 @@ If TYPE is not specified then it is inferred from the type of VALUE, defaulting 
 LAYOUT specifies the internal storage represenation ordering of the returned tensor.
 The tensor is specialized on SHAPE and TYPE."
   (policy-cond:with-expectations (> speed safety)
-      ((type (or shape fixnum) shape))
+      ((type (or shape fixnum) shape)
+       (type fixnum offset))
     (let* ((shape (if (integerp shape)
                       (fixnum-to-shape shape)
                       shape))
@@ -140,18 +141,24 @@ The tensor is specialized on SHAPE and TYPE."
             list))
          tensor)))))
 
-(defun from-diag (list &key (order 2) type layout)
+;; TODO: This doesn't work
+(defun from-diag (list &key (offset 0) (order 2) type layout)
   "Create a tensor from a list, placing along the diagonal
 
 If ORDER is specified then the tensor will be of that order, otherwise 2 is assumed.
 If TYPE is not specified then it is inferred from the type of the first element of LIST.
 LAYOUT specifies the internal storage represenation ordering of the returned tensor.
 The tensor is specialized on SHAPE and TYPE."
-  (let* ((shape (fixnum-to-shape (length list) order))
+  (let* ((length (length list))
+         (shape (fixnum-to-shape length order))
          (tensor-class (infer-tensor-type type shape (first list)))
          (tensor (make-tensor tensor-class shape :layout layout)))
-    (loop :for i :below (first shape)
-          :do (setf (tref tensor i i) (pop list)))
+    (loop :for i :below length
+          :do (setf (apply #'tref tensor
+                           (mod (- i offset) length)
+                           (make-list (1- order)
+                                      :initial-element i))
+                    (pop list)))
     tensor))
 
 ;;; Constructors for convenience

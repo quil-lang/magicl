@@ -48,9 +48,9 @@
         ;; ... and do the subtraction.
         (dotimes (i (nrows m))
           (setf (tref m i j)
-                (cl:- (tref m i j)
-                      (* scalar
-                         (tref m i jp)))))))
+                (- (tref m i j)
+                   (* scalar
+                      (tref m i jp)))))))
     ;; now j is orthogonal to the things that came before it. normalize it.
     (let ((scalar
             (sqrt
@@ -69,8 +69,8 @@
    (shape tensor1)
    (lambda (&rest pos)
      (unless (> epsilon
-                (abs (cl:- (apply #'tref tensor1 pos)
-                           (apply #'tref tensor2 pos))))
+                (abs (- (apply #'tref tensor1 pos)
+                        (apply #'tref tensor2 pos))))
        (return-from = nil))))
   t)
 
@@ -81,8 +81,8 @@
    (shape tensor1)
    (lambda (&rest pos)
      (unless (> epsilon
-                (abs (cl:- (apply #'tref tensor1 pos)
-                           (apply #'tref tensor2 pos))))
+                (abs (- (apply #'tref tensor1 pos)
+                        (apply #'tref tensor2 pos))))
        (return-from = nil))))
   t)
 
@@ -150,11 +150,11 @@
           (ldx12 m)
           (ldx21 m)
           (ldx22 m)
-          (r (min p (cl:- m p) q (cl:- m q)))
+          (r (min p (- m p) q (- m q)))
           (ldu1 p)
-          (ldu2 (cl:- m p))
+          (ldu2 (- m p))
           (ldv1t q)
-          (ldv2t (cl:- m q))
+          (ldv2t (- m q))
           (lwork -1)
           (work (make-array 1 :element-type '(complex double-float)))
           (lrwork -1)
@@ -176,13 +176,13 @@
                                  :element-type 'double-float))
               (u1 (make-array (* ldu1 p)
                               :element-type '(complex double-float)))
-              (u2 (make-array (* ldu2 (cl:- m p))
+              (u2 (make-array (* ldu2 (- m p))
                               :element-type '(complex double-float)))
               (v1t (make-array (* ldv1t q)
                                :element-type '(complex double-float)))
-              (v2t (make-array (* ldv2t (cl:- m q))
+              (v2t (make-array (* ldv2t (- m q))
                                :element-type '(complex double-float)))
-              (iwork (make-array (cl:- m r)
+              (iwork (make-array (- m r)
                                  :element-type '(signed-byte 32))))
           ;; run it once as a workspace query
           (%ZUNCSD-XPOINTERS jobu1 jobu2 jobv1t jobv2t
@@ -201,9 +201,9 @@
                              theta u1 ldu1 u2 ldu2 v1t ldv1t v2t ldv2t
                              work lwork rwork lrwork iwork info)
           (values (from-array u1 (list p p) :layout :column-major)
-                  (from-array u2 (list (cl:- m p) (cl:- m p)) :layout :column-major)
+                  (from-array u2 (list (- m p) (- m p)) :layout :column-major)
                   (from-array v1t (list q q) :layout :column-major)
-                  (from-array v2t (list (cl:- m q) (cl:- m q)) :layout :column-major)
+                  (from-array v2t (list (- m q) (- m q)) :layout :column-major)
                   (coerce theta 'list)))))))
 
 (defmethod csd-2x2-basic ((unitary-matrix-2x2 matrix/complex-double-float) p q)
@@ -237,8 +237,8 @@
              (type (complex double-float) u1 u2)
              (dynamic-extent c s u1 u2))
 
-    (let ((v2h (conjugate (/ 1.0d0 (cl:- (* c (conjugate u2) a4)
-                                         (* s (conjugate u1) a3)))))
+    (let ((v2h (conjugate (/ 1.0d0 (- (* c (conjugate u2) a4)
+                                      (* s (conjugate u1) a3)))))
           (mu1 (empty '(1 1)))
           (mu2 (empty '(1 1)))
           (mv1h (empty '(1 1)))

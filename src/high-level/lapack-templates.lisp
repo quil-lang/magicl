@@ -253,8 +253,8 @@
 
 ;; TODO: implement row-major checks in these functions
 (defun generate-lapack-ql-qr-rq-lq-for-type (class type
-                                  ql-function qr-function rq-function lq-function
-                                  ql-q-function qr-q-function rq-q-function lq-q-function)
+                                             ql-function qr-function rq-function lq-function
+                                             ql-q-function qr-q-function rq-q-function lq-q-function)
   `(progn
      (defmethod qr ((m ,class))
        (policy-cond:policy-if
@@ -275,8 +275,8 @@
                  (when (minusp diag-elt)
                    (dotimes (i rows)
                      (when (<= j i (1- cols))
-                       (setf (tref r j i) (cl:- (tref r j i))))
-                     (setf (tref q i j) (cl:- (tref q i j)))))))
+                       (setf (tref r j i) (- (tref r j i))))
+                     (setf (tref q i j) (- (tref q i j)))))))
              (values q r)))))
      
      (defmethod ql ((m ,class))
@@ -298,8 +298,8 @@
                  (when (minusp diag-elt)
                    (dotimes (i rows)
                      (when (<= i j)
-                       (setf (tref l j i) (cl:- (tref l j i))))
-                     (setf (tref q i j) (cl:- (tref q i j)))))))
+                       (setf (tref l j i) (- (tref l j i))))
+                     (setf (tref q i j) (- (tref q i j)))))))
              (values q l)))))
 
      (defmethod rq ((m ,class))
@@ -321,8 +321,8 @@
                  (when (minusp diag-elt)
                    (dotimes (j cols)
                      (when (<= j i)
-                       (setf (tref r j i) (cl:- (tref r j i))))
-                     (setf (tref q i j) (cl:- (tref q i j)))))))
+                       (setf (tref r j i) (- (tref r j i))))
+                     (setf (tref q i j) (- (tref q i j)))))))
              (values q r)))))
 
      (defmethod lq ((m ,class))
@@ -344,8 +344,8 @@
                  (when (minusp diag-elt)
                    (dotimes (j cols)
                      (when (<= i j (1- rows))
-                       (setf (tref l j i) (cl:- (tref l j i))))
-                     (setf (tref q i j) (cl:- (tref q i j)))))))
+                       (setf (tref l j i) (- (tref l j i))))
+                     (setf (tref q i j) (- (tref q i j)))))))
              (values q l)))))
 
      (defmethod lapack-qr ((m ,class))
