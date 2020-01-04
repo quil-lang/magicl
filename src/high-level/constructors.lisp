@@ -35,7 +35,7 @@ The tensor is specialized on SHAPE and TYPE."
   "Create tensor with random elements from DISTRIBUTION
 
 DISTRIBUTION is a function with no arguments which returns a value for the element.
-If DISTRIBUTION is not specified then CL:RANDOM is used. In the case that TYPE is complex, CL:RANDOM is called for each component.
+If DISTRIBUTION is not specified then a uniform distribution on [0,1] (or [0,1] + [0,1]i for complex types) is used.
 If TYPE is not specified then +DEFAULT-TENSOR-TYPE+ is used.
 LAYOUT specifies the internal storage representation ordering of the returned tensor.
 The tensor is specialized on SHAPE and TYPE."
