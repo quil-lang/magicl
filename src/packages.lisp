@@ -150,6 +150,7 @@
            #:dagger
            #:dagger!
            #:eig
+           #:hermitian-eig
            #:inverse
            #:lu
            #:csd

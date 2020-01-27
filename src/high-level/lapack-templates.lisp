@@ -249,7 +249,7 @@
            (setf work (make-array (max 1 lwork) :element-type ',type))
            ;; run it again with optimal workspace size
            (,eig-function jobz uplo n a lda w work lwork rwork info)
-           (values (coerce w 'list) (from-array a (list rows cols))))))))
+           (values (coerce w 'list) a-tensor))))))
 
 ;; TODO: implement row-major checks in these functions
 (defun generate-lapack-ql-qr-rq-lq-for-type (class type
