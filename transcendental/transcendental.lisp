@@ -43,7 +43,7 @@
           (dotimes (i (* rows rows))
             (setf (row-major-aref exph i)
                   (row-major-aref wsp (+ i (1- iexph)))))
-          (values (magicl:from-array exph (list rows rows))))))))
+          (values (magicl:from-array exph (list rows rows) :layout :column-major)))))))
 
 (defun logm (m)
   "Finds the matrix logarithm of a given square matrix M assumed to be diagonalizable, with nonzero eigenvalues"
