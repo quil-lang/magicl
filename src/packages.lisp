@@ -75,6 +75,7 @@
            #:map!
 
            #:reshape
+           #:slice
            
            ;; Classes
            #:tensor
@@ -130,6 +131,7 @@
            #:row
            #:column
            #:@
+           #:mult
            #:kron
            #:scale
            #:scale!
