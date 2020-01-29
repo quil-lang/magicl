@@ -50,6 +50,7 @@
                  (:file "types/complex-single-float")
                  (:file "types/complex-double-float")
                  (:file "types/int32")
+                 (:file "types/bit")
                  (:file "lapack-templates")
                  (:file "lapack-bindings")
                  (:file "constructors")
