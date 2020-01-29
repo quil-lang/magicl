@@ -36,9 +36,9 @@
 TYPE as well as the abstract-tensor methods required not specified by
 the generic TENSOR class (MAKE-TENSOR, ELEMENT-TYPE, CAST,
 COPY-TENSOR, DEEP-COPY-TENSOR, TREF, SETF TREF)"
-  (let ((constructor-sym (intern (format nil "MAKE-~A-STRUCT" (string-upcase name))))
-        (copy-sym (intern (format nil "COPY-~A" (string-upcase name))))
-        (storage-sym (intern (format nil "~A-STORAGE" (string-upcase name)))))
+  (let ((constructor-sym (intern (format nil "MAKE-~:@(~A~)-STRUCT" name)))
+        (copy-sym (intern (format nil "COPY-~:@(~A~)" name)))
+        (storage-sym (intern (format nil "~:@(~A~)-STORAGE" name))))
     `(progn
        (defstruct (,name (:include tensor)
                          (:constructor ,constructor-sym
