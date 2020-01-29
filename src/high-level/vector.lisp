@@ -17,9 +17,9 @@
 compatible with TENSOR-CLASS, as well as the abstract-tensor methods
 required not specified by the generic VECTOR class (MAKE-TENSOR,
 ELEMENT-TYPE, CAST, COPY-TENSOR, DEEP-COPY-TENSOR, TREF, SETF TREF)"
-  (let ((constructor-sym (intern (format nil "MAKE-~a" name)))
-        (copy-sym (intern (format nil "COPY-~a" name)))
-        (storage-sym (intern (format nil "~a-STORAGE" name))))
+  (let ((constructor-sym (intern (format nil "MAKE-~:@(~A~)" name)))
+        (copy-sym (intern (format nil "COPY-~:@(~A~)" name)))
+        (storage-sym (intern (format nil "~:@(~A~)-STORAGE" name))))
     `(progn
        (defstruct (,name (:include vector)
                          (:constructor ,constructor-sym
@@ -89,11 +89,9 @@ ELEMENT-TYPE, CAST, COPY-TENSOR, DEEP-COPY-TENSOR, TREF, SETF TREF)"
            new-v))
 
        (defmethod tref ((vector ,name) &rest pos)
-         (declare (ignore args))
          (aref (,storage-sym vector) (first pos)))
 
        (defmethod (setf tref) (new-value (vector ,name) &rest pos)
-         (declare (ignore args))
          (setf (aref (,storage-sym vector) (first pos)) new-value)))))
 
 
