@@ -14,6 +14,7 @@
            ((subtypep type 'double-float) 'vector/double-float)
            ((subtypep type '(complex single-float)) 'vector/complex-single-float)
            ((subtypep type '(complex double-float)) 'vector/complex-double-float)
+           ((subtypep type 'bit) 'vector/bit)
            ((subtypep type '(signed-byte 32)) 'vector/int32)
            (t (error "no compatible tensor constructor for type ~a" type))))
         ((cl:= 2 (length shape))
@@ -22,6 +23,7 @@
            ((subtypep type 'double-float) 'matrix/double-float)
            ((subtypep type '(complex single-float)) 'matrix/complex-single-float)
            ((subtypep type '(complex double-float)) 'matrix/complex-double-float)
+           ((subtypep type 'bit) 'matrix/bit)
            ((subtypep type '(signed-byte 32)) 'matrix/int32)
            (t (error "no compatible tensor constructor for type ~a" type))))
         (t
@@ -30,6 +32,7 @@
            ((subtypep type 'double-float) 'tensor/double-float)
            ((subtypep type '(complex single-float)) 'tensor/complex-single-float)
            ((subtypep type '(complex double-float)) 'tensor/complex-double-float)
+           ((subtypep type 'bit) 'tensor/bit)
            ((subtypep type '(signed-byte 32)) 'tensor/int32)
            (t (error "no compatible tensor constructor for type ~a" type)))))
       (cond
@@ -39,6 +42,7 @@
            (double-float 'vector/double-float)
            ((complex single-float) 'vector/complex-single-float)
            ((complex double-float) 'vector/complex-double-float)
+           (bit 'vector/bit)
            ((signed-byte 32) 'vector/int32)))
         ((cl:= 2 (length shape))
          (etypecase val
@@ -46,11 +50,13 @@
            (double-float 'matrix/double-float)
            ((complex single-float) 'matrix/complex-single-float)
            ((complex double-float) 'matrix/complex-double-float)
+           (bit 'matrix/bit)
            ((signed-byte 32) 'matrix/int32)))
         (t (etypecase val
              (single-float 'tensor/single-float)
              (double-float 'tensor/double-float)
              ((complex single-float) 'tensor/complex-single-float)
              ((complex double-float) 'tensor/complex-double-float)
+             (bit 'tensor/bit)
              ((signed-byte 32) 'tensor/int32))))))
 
