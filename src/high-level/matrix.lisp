@@ -34,9 +34,10 @@
 compatible with TENSOR-CLASS, as well as the abstract-tensor methods
 required not specified by the generic MATRIX class (MAKE-TENSOR,
 ELEMENT-TYPE, CAST, COPY-TENSOR, DEEP-COPY-TENSOR, TREF, SETF TREF)"
-  (let ((constructor-sym (intern (format nil "MAKE-~a" name)))
-        (copy-sym (intern (format nil "COPY-~a" name)))
-        (storage-sym (intern (format nil "~a-STORAGE" name))))
+  (let* ((upcase-name (string-upcase name))
+         (constructor-sym (intern (format nil "MAKE-~A" upcase-name)))
+         (copy-sym (intern (format nil "COPY-~A" upcase-name)))
+         (storage-sym (intern (format nil "~A-STORAGE" upcase-name))))
     `(progn
        (defstruct (,name (:include matrix)
                          (:constructor ,constructor-sym

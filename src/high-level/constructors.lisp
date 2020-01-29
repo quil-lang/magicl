@@ -130,16 +130,16 @@ The tensor is specialized on SHAPE and TYPE."
   (policy-cond:with-expectations (> speed safety)
       ((type shape shape)
        (assertion (cl:= (length list) (reduce #'* shape))))
-    (let ((tensor-class (infer-tensor-type type shape (first list))))
-      (let ((tensor (make-tensor tensor-class shape :layout layout)))
-        (into!
-         (lambda (&rest pos)
-           (nth
-            (if (eql input-layout :row-major)
-                (row-major-index pos shape)
-                (column-major-index pos shape))
-            list))
-         tensor)))))
+    (let* ((tensor-class (infer-tensor-type type shape (first list)))
+           (tensor (make-tensor tensor-class shape :layout layout)))
+      (into!
+       (lambda (&rest pos)
+         (nth
+          (if (eql input-layout :row-major)
+              (row-major-index pos shape)
+              (column-major-index pos shape))
+          list))
+       tensor))))
 
 (defun from-diag (list &key (order 2) type layout)
   "Create a tensor from a list, placing along the diagonal
