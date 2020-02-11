@@ -4,9 +4,9 @@ The purpose of the high-level magicl bindings is to allow for MATLAB-like multid
 
 ## Constructors
 
-The construction of tensors can be done with any of the given constructors. The constructors take a shape and the arguments for method of construction.
+The construction of tensors can be done with any of the given constructors. The constructors take a shape and arguments for method of construction.
 
-Tensors are specialized on both the shape and the element type. The class of a tensor will be of the form `$CLASS/$TYPE`. (eg. `MATRIX/DOUBLE-FLOAT`)
+Tensors are specialized on both the shape and the element type. The class of a tensor will be of the form `$CLASS/$TYPE` (e.g. `MATRIX/DOUBLE-FLOAT`).
 
 | Number of dimensions | Tensor Class    |
 |----------------------|-----------------|
@@ -29,7 +29,7 @@ The layout of the tensor (column-major or row-major) can be specified with the `
 
 ## Other Library Equivalents
 
-This table was adapted largely from the [NumPy Equivalent Table](https://docs.scipy.org/doc/numpy/user/numpy-for-matlab-users.html#linear-algebra-equivalents).
+This table was adapted largely from the [NumPy Equivalents Table](https://docs.scipy.org/doc/numpy/user/numpy-for-matlab-users.html#linear-algebra-equivalents).
 
 ### Basic Accessors
 
@@ -48,7 +48,7 @@ This table was adapted largely from the [NumPy Equivalent Table](https://docs.sc
 | `(zeros '(2 3 4))` or `(const 0d0 '(2 3 4))`    | `zeros(2,3,4)`     | `zeros((2,3,4))`                  | Create a 2x3x4 dimensional array of zeroes of double-float element type.             |
 | `(ones '(3 4)` or `(const 1d0 '(3 4))`          | `ones(3,4)`        | `ones((3,4))`                     | Create a 3x4 dimensional array of ones of double-float element type.                 |
 | `(deye 1d0 '(3 3))`                             | `eye(3)`           | `eye(3)`                          | Create a 3x3 identity array of double-float element type.                            |
-| `(from-diag a`                                  | `diag(a)`          | `diag(a)`                         | Create a square matrix from the diagonal entries in `a` with zeroes everywhere else. |
+| `(from-diag a)`                                  | `diag(a)`          | `diag(a)`                         | Create a square matrix from the diagonal entries in `a` with zeroes everywhere else. |
 | `(rand '(3 4))`                                 | `rand(3,4)`        | `random.rand(3,4)`                | Create a random 3x4 array.                                                           |
 
 ### Basic Operations
