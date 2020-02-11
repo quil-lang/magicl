@@ -539,11 +539,11 @@ If fast is t then just change layout. Fast can cause problems when you want to m
       (multiple-value-bind (u1 u2 v1t v2t theta) (lapack-csd matrix p q)
         (csd-from-blocks u1 u2 v1t v2t theta)))))
 
-(defgeneric inverse (matrix)
-  (:documentation "Get the inverse of the matrix")
+(defgeneric inv (matrix)
+  (:documentation "Get the inv of the matrix")
   (:method ((matrix matrix))
     (declare (ignore matrix))
-    (error "INVERSE is not defined for the generic matrix type.")))
+    (error "INV is not defined for the generic matrix type.")))
 
 (defgeneric svd (matrix &key reduced)
   (:documentation "Find the SVD of a matrix M. Return (VALUES U SIGMA Vt) where M = U*SIGMA*Vt")

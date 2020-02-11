@@ -53,4 +53,4 @@
               (magicl:from-diag log-vals))))
       (magicl:@ vects
                 new-log-diag
-                (magicl:inverse vects)))))
+                (magicl:inv vects)))))

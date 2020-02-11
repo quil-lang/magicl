@@ -130,7 +130,7 @@
 
 (defun inv-example ()
   (let* ((x (magicl:from-list (list 2 3 5 #C(1.5 -2) -3 1.5 #C(0 2) 0 #C(0 -3)) '(3 3) :type '(complex double-float)))
-         (inv-x (magicl:inverse x))
+         (inv-x (magicl:inv x))
          (id (magicl:@ x inv-x)))
     (format t "X~%~a~%" x)
     (format t "X^-1~%~a~%" inv-x)

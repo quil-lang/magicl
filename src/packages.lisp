@@ -153,7 +153,7 @@
            #:dagger!
            #:eig
            #:hermitian-eig
-           #:inverse
+           #:inv
            #:lu
            #:csd
            #:svd

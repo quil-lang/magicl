@@ -89,7 +89,7 @@
 ;; NOTE: This requires lu to be defined for the matrix type
 (defun generate-lapack-inv-for-type (class type lu-function inv-function)
   `(progn
-     (defmethod inverse ((m ,class))
+     (defmethod inv ((m ,class))
        (lapack-inv m))
      
      (defmethod lapack-inv ((a ,class))
