@@ -172,7 +172,7 @@
                           work lwork ,@(when real-type `(rwork)) info)
            (let ((smat (make-array (* u-cols vt-rows) :element-type ',(or real-type type))))
              (dotimes (i k)
-               (setf (aref smat (column-major-index (list i i) (list u-cols vt-rows)))
+               (setf (aref smat (matrix-column-major-index i i u-cols vt-rows))
                      (aref s i)))
              (values (from-array u (list rows u-cols) :layout :column-major)
                      (from-array smat (list u-cols vt-rows) :layout :column-major)

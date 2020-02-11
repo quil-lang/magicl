@@ -46,7 +46,7 @@
 
 (deftest test-complex-matrix-multiplication-results ()
   "Test a few basic complex matrix multiplications"
-  (let* ((m-old (magicl:from-list '(#C(1d0 2d0) #C(3d0 4d0) #C(5d0 6d0) #C(7d0 8d0)) '(2 2)))
+  (let* ((m-old (magicl:from-list '(#C(1d0 2d0) #C(3d0 4d0) #C(5d0 6d0) #C(7d0 8d0)) '(2 2) :layout :row-major))
          (m (magicl:from-list '(#C(1d0 2d0) #C(3d0 4d0) #C(5d0 6d0) #C(7d0 8d0)) '(2 2) :layout :row-major))
          (x-old (magicl:from-list '(#C(1d0 2d0) #C(3d0 4d0)) '(2 1)))
          (x (magicl:from-list '(#C(1d0 2d0) #C(3d0 4d0)) '(2 1)))

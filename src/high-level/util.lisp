@@ -6,21 +6,42 @@
 
 (defun row-major-index (pos dims)
   (declare (type index pos)
-           (type shape dims))
-  (loop :for i :of-type fixnum in pos
-        :for d :of-type fixnum in dims
-        :for acc :of-type fixnum := i
-          :then (+ i (the fixnum (* d acc)))
-        :finally (return acc)))
+           (type shape dims)
+           (optimize (speed 3) (safety 0)))
+  (if (and (cdr dims) (not (cddr dims))) ;; Quick test for length 2
+      (matrix-row-major-index (first pos) (second pos) (first dims) (second dims))
+      (loop :for i :of-type fixnum in pos
+            :for d :of-type fixnum in dims
+            :for acc :of-type fixnum := i
+              :then (+ i (the fixnum (* d acc)))
+            :finally (return acc))))
 
 (defun column-major-index (pos dims)
   (declare (type index pos)
            (type shape dims))
-  (loop :for i :of-type fixnum in (reverse pos)
-        :for d :of-type fixnum in (reverse dims)
-        :for acc :of-type fixnum := i
-          :then (+ i (the fixnum (* d acc)))
-        :finally (return acc)))
+  (if (and (cdr dims) (not (cddr dims))) ;; Quick test for length 2
+      (matrix-column-major-index (first pos) (second pos) (first dims) (second dims))
+      (loop :for i :of-type fixnum in (reverse pos)
+            :for d :of-type fixnum in (reverse dims)
+            :for acc :of-type fixnum := i
+              :then (+ i (the fixnum (* d acc)))
+            :finally (return acc))))
+
+(declaim (inline matrix-row-major-index))
+(defun matrix-row-major-index (row col numrows numcols)
+  (declare (optimize (speed 3) (safety 0))
+           (ignore numrows)
+           (type fixnum row col numcols)
+           (values fixnum))
+  (+ col (the fixnum (* row numcols))))
+
+(declaim (inline matrix-column-major-index))
+(defun matrix-column-major-index (row col numrows numcols)
+  (declare (optimize (speed 3) (safety 0))
+           (ignore numcols)
+           (type fixnum row col numrows)
+           (values fixnum))
+  (+ row (the fixnum (* col numrows))))
 
 (defun from-row-major-index (index dims)
   (check-type index fixnum)

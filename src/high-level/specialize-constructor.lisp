@@ -6,6 +6,8 @@
 
 ;; NOTE: I hate this
 (defun infer-tensor-type (type shape val)
+  (declare (type list shape)
+           (optimize (speed 3) (safety 0)))
   (if type
       (cond
         ((cl:= 1 (length shape))

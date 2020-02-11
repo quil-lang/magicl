@@ -52,25 +52,33 @@ ELEMENT-TYPE, CAST, COPY-TENSOR, DEEP-COPY-TENSOR, TREF, SETF TREF)"
          (declare (ignore m))
          ',type)
 
+       (defmethod make-storage ((class (eql ',name)) size initial-element)
+         (apply #'make-array
+                size
+                :element-type ',type
+                (if initial-element
+                    (list :initial-element (coerce initial-element ',type))
+                    nil)))
+
        (defmethod make-tensor ((class (eql ',name)) shape &key initial-element layout storage)
+         (declare (type list shape)
+                  (optimize (speed 3) (safety 0))) ;; This is probably not what you want...
          (policy-cond:with-expectations
              (< speed safety)
              ((type shape shape)
               (assertion (cl:= 2 (length shape))))
-           (let ((size (reduce #'* shape)))
-             (funcall #',constructor-sym
-                      (first shape)
-                      (second shape)
-                      size
-                      (or layout :column-major)
-                      (or
-                       storage
-                       (apply #'make-array
-                              size
-                              :element-type ',type
-                              (if initial-element
-                                  (list :initial-element (coerce initial-element ',type))
-                                  nil)))))))
+           (let ((rows (first shape))
+                 (cols (second shape)))
+             (declare (type fixnum rows cols))
+             (let ((size (the fixnum (* rows cols))))
+               (funcall #',constructor-sym
+                        rows
+                        cols
+                        size
+                        (or layout :column-major)
+                        (or
+                         storage
+                         (make-storage ',name size initial-element)))))))
 
        (defmethod cast ((tensor ,name) (class (eql ',name)))
          (declare (ignore class))
@@ -139,7 +147,23 @@ ELEMENT-TYPE, CAST, COPY-TENSOR, DEEP-COPY-TENSOR, TREF, SETF TREF)"
                               (:column-major (+ row (the fixnum (* col numrows)))))))
                  (declare (type alexandria:array-index index))
                  (setf (aref (,storage-sym matrix) index)
-                       (coerce new-value ',type))))))))))
+                       (coerce new-value ',type)))))))
+       
+       (defmethod into! ((function function) (matrix ,name))
+         (let ((index 0) ;; TODO: make if less iffy
+               (storage (storage matrix)))
+           (if (eql :row-major (layout matrix))
+               (loop :for j :below (nrows matrix) :do
+                 (loop :for i :below (ncols matrix) :do
+                   (setf (aref storage index)
+                         (coerce (funcall function j i) ',type))
+                   (incf index)))
+               (loop :for j :below (ncols matrix) :do
+                 (loop :for i :below (nrows matrix) :do
+                   (setf (aref storage index)
+                         (coerce (funcall function i j) ',type))
+                   (incf index))))
+           matrix)))))
 
 (defun pprint-matrix (stream matrix &optional colon-p at-sign-p)
   "Pretty-print a matrix MATRIX to the stream STREAM."
@@ -256,7 +280,7 @@ ELEMENT-TYPE, CAST, COPY-TENSOR, DEEP-COPY-TENSOR, TREF, SETF TREF)"
      nil)
     (let ((type (element-type m)))
       ;; TODO: compensate for layout
-      (let ((idx (column-major-index (list i j) (shape m))))
+      (let ((idx (apply #'matrix-column-major-index i j (shape m))))
         (cond
           ((subtypep type 'single-float) (cffi:mem-aptr base :float idx))
           ((subtypep type 'double-float) (cffi:mem-aptr base :double idx))
@@ -335,14 +359,14 @@ If fast is t then just change layout. Fast can cause problems when you want to m
                                               (:column-major :row-major))))
         (let ((index-function
                 (ecase (matrix-layout matrix)
-                  (:row-major #'row-major-index)
-                  (:column-major #'column-major-index)))
+                  (:row-major #'matrix-row-major-index)
+                  (:column-major #'matrix-column-major-index)))
               (shape (shape matrix)))
           (loop :for row :below (matrix-nrows matrix)
                 :do (loop :for col :from row :below (matrix-ncols matrix)
                           :do (rotatef
-                               (aref (storage matrix) (funcall index-function (list row col) shape))
-                               (aref (storage matrix) (funcall index-function (list col row) shape)))))
+                               (aref (storage matrix) (apply index-function row col shape))
+                               (aref (storage matrix) (apply index-function col row shape)))))
           (rotatef (matrix-ncols matrix) (matrix-nrows matrix))))
     matrix))
 
@@ -356,13 +380,13 @@ If fast is t then just change layout. Fast can cause problems when you want to m
             (matrix-nrows new-matrix) (matrix-ncols matrix))
       (let ((index-function
               (ecase (layout matrix)
-                (:row-major #'row-major-index)
-                (:column-major #'column-major-index)))
+                (:row-major #'matrix-row-major-index)
+                (:column-major #'matrix-column-major-index)))
             (shape (shape matrix)))
         (loop :for row :below (matrix-nrows matrix)
               :do (loop :for col :below (matrix-ncols matrix)
-                        :do (let ((index1 (funcall index-function (list row col) shape))
-                                  (index2 (funcall index-function (list col row) (shape new-matrix))))
+                        :do (let ((index1 (apply index-function row col shape))
+                                  (index2 (apply index-function col row (shape new-matrix))))
                               (setf (aref (storage new-matrix) index2) (aref (storage matrix) index1))))))
       new-matrix)))
 
