@@ -55,24 +55,22 @@ COPY-TENSOR, DEEP-COPY-TENSOR, TREF, SETF TREF)"
          ',type)
        
        (defmethod make-tensor ((class (eql ',name)) shape &key initial-element layout storage)
-         (policy-cond:policy-if
-          (< speed safety)
-          (check-type shape shape)
-          nil)
-         (let ((size (reduce #'* shape)))
-           (funcall #',constructor-sym
-                    (length shape)
-                    shape
-                    size
-                    (or layout :column-major)
-                    (or
-                     storage
-                     (apply #'make-array
-                            size
-                            :element-type ',type
-                            (if initial-element
-                                (list :initial-element (coerce initial-element ',type))
-                                nil))))))
+         (policy-cond:with-expectations (> speed safety)
+             ((type shape shape))
+           (let ((size (reduce #'* shape)))
+             (funcall #',constructor-sym
+                      (length shape)
+                      shape
+                      size
+                      (or layout :column-major)
+                      (or
+                       storage
+                       (apply #'make-array
+                              size
+                              :element-type ',type
+                              (if initial-element
+                                  (list :initial-element (coerce initial-element ',type))
+                                  nil)))))))
        (defmethod cast ((tensor ,name) (class (eql ',name)))
          (declare (ignore class))
          tensor)
@@ -121,14 +119,10 @@ COPY-TENSOR, DEEP-COPY-TENSOR, TREF, SETF TREF)"
   (:documentation "Change the shape of the tensor.
 WARNING: This method acts differently depending on the layout of the tensor. Do not expect row-major to act the same as column-major.")
   (:method ((tensor tensor) shape)
-    (policy-cond:policy-if
-     (<= speed safety)
-     (let ((shape-size (reduce #'* shape)))
-       (assert (cl:= (tensor-size tensor) shape-size)
-               () "Incompatible shape. Must have the same total number of elements. The tensor has ~a elements and the new shape has ~a elements" (tensor-size tensor) shape-size))
-     nil)
-    (setf (tensor-shape tensor) shape)
-    (setf (tensor-order tensor) (length shape))
-    (specialize-tensor tensor))
+    (policy-cond:with-expectations (> speed safety)
+        ((assertion (cl:= (tensor-size tensor) (reduce #'* shape))))
+      (setf (tensor-shape tensor) shape)
+      (setf (tensor-order tensor) (length shape))
+      (specialize-tensor tensor)))
   (:method ((tensor abstract-tensor) shape)
     (reshape (generalize-tensor tensor) shape)))

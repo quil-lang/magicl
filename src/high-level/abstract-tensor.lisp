@@ -53,21 +53,18 @@
 
 If TARGET is specified then the contents of the tensor are copied into the array.
 In the event TARGET is not specified, the result may return an array sharing memory with the input tensor.")
-  (:method :before (tensor &optional target)
-    (unless (null target)
-      (policy-cond:policy-if
-       (< speed safety)
-       (assert (and (= (order tensor) (array-rank target))
-                    (equal (shape tensor) (array-dimensions target))))
-       nil)))
   (:method ((tensor abstract-tensor) &optional target)
-    (let  ((arr (or target (make-array (shape tensor) :element-type (element-type tensor)))))
-      (map-indexes
-       (shape tensor)
-       (lambda (&rest pos)
-         (let ((val (apply #'tref tensor pos)))
-           (apply #'(setf aref) val arr pos))))
-      arr)))
+    (policy-cond:with-expectations (> speed safety)
+        ((assertion (or (null target)
+                        (and (= (order tensor) (array-rank target))
+                             (equal (shape tensor) (array-dimensions target))))))
+      (let  ((arr (or target (make-array (shape tensor) :element-type (element-type tensor)))))
+        (map-indexes
+         (shape tensor)
+         (lambda (&rest pos)
+           (let ((val (apply #'tref tensor pos)))
+             (apply #'(setf aref) val arr pos))))
+        arr))))
 
 (defgeneric map! (function tensor)
   (:documentation "Map elements of TENSOR by replacing the value with the output of FUNCTION on the element")
@@ -99,16 +96,12 @@ In the event TARGET is not specified, the result may return an array sharing mem
 (defgeneric map-to (function source target)
   (:documentation "Map elements of SOURCE by replacing the corresponding element of TARGET the output of FUNCTION on the source element")
   (:method ((function function) (source abstract-tensor) (target abstract-tensor))
-    (policy-cond:policy-if
-     (< speed safety)
-     (assert (equalp (shape source) (shape target))
-             () "Incompatible shapes. Cannot map tensor of shape ~a to tensor of shape ~a."
-             (shape source) (shape target))
-     nil)
-    (map-indexes
-     (shape source)
-     (lambda (&rest dims)
-       (apply #'(setf tref) (funcall function (apply #'tref source dims)) target dims)))))
+    (policy-cond:with-expectations (> speed safety)
+        ((assertion (equalp (shape source) (shape target))))
+      (map-indexes
+       (shape source)
+       (lambda (&rest dims)
+         (apply #'(setf tref) (funcall function (apply #'tref source dims)) target dims))))))
 
 (defgeneric map (function tensor)
   (:documentation "Map elements of TENSOR, storing the output of FUNCTION on the element into the corresponding element of a new tensor")
@@ -143,52 +136,39 @@ If LAYOUT is specified then traverse TENSOR in the specified order (column major
   (:documentation "Slice a tensor from FROM to TO, returning a new tensor with the contained elements")
   (:method ((tensor abstract-tensor) from to)
     (declare (type sequence from to))
-    (policy-cond:policy-if
-     (< speed safety)
-     (progn
-       (assert (and (valid-index-p from (shape tensor))
-                    (cl:every #'< from (shape tensor)))
-               () "Incompatible FROM position for TENSOR. Position ~a is not within tensor shape ~a"
-               from (shape tensor))
-       (assert (and (cl:= (order tensor) (length to))
-                    (valid-shape-p to)
-                    (cl:every #'<= to (shape tensor)))
-               () "Incompatible TO position for TENSOR. Position ~a is not within tensor shape ~a"
-               to (shape tensor))
-       (assert (cl:every #'<= from to)
-               () "Incomaptible TO and FROM positions. ~a is not less than or equal to ~a"
-               from to))
-     nil)
-    (let* ((dims (mapcar #'- to from))
-           (target (empty dims
-                          :layout (layout tensor)
-                          :type (element-type tensor))))
-      (map-indexes dims
-                   (lambda (&rest dims)
-                     (setf (apply #'tref target dims)
-                           (apply #'tref tensor (mapcar #'+ dims from)))))
-      target)))
+    (policy-cond:with-expectations (> speed safety)
+        ((assertion (and (valid-index-p from (shape tensor))
+                         (cl:every #'< from (shape tensor))))
+         (assertion (and (cl:= (order tensor) (length to))
+                         (valid-shape-p to)
+                         (cl:every #'<= to (shape tensor))))
+         (assertion (cl:every #'<= from to)))
+      (let* ((dims (mapcar #'- to from))
+             (target (empty dims
+                            :layout (layout tensor)
+                            :type (element-type tensor))))
+        (map-indexes dims
+                     (lambda (&rest dims)
+                       (setf (apply #'tref target dims)
+                             (apply #'tref tensor (mapcar #'+ dims from)))))
+        target))))
 
 (defgeneric binary-operator (function source1 source2 &optional target)
   (:documentation "Perform a binary operator on tensors elementwise, optionally storing the result in TARGET.
 If TARGET is not specified then a new tensor is created with the same element type as the first source tensor")
   (:method ((function function) (source1 abstract-tensor) (source2 abstract-tensor) &optional target)
-    (policy-cond:policy-if
-     (< speed safety)
-     (assert (equalp (shape source1) (shape source2))
-             () "Incompatible shapes. Cannot perform binary operation on tensor of shape ~a to tensor of shape ~a."
-             (shape source1) (shape source2))
-     nil)
-    (let ((target (or target (copy-tensor source1))))
-      (map-indexes
-       (shape source1)
-       (lambda (&rest dims)
-         (apply #'(setf tref)
-                (funcall function
-                         (apply #'tref source1 dims)
-                         (apply #'tref source2 dims))
-                target dims)))
-      target)))
+    (policy-cond:with-expectations (> speed safety)
+        ((assertion (equalp (shape source1) (shape source2))))
+      (let ((target (or target (copy-tensor source1))))
+        (map-indexes
+         (shape source1)
+         (lambda (&rest dims)
+           (apply #'(setf tref)
+                  (funcall function
+                           (apply #'tref source1 dims)
+                           (apply #'tref source2 dims))
+                  target dims)))
+        target))))
 
 (defgeneric .+ (source1 source2 &optional target)
   (:documentation "Add tensors elementwise, optionally storing the result in TARGET.

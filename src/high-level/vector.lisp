@@ -37,24 +37,20 @@ ELEMENT-TYPE, CAST, COPY-TENSOR, DEEP-COPY-TENSOR, TREF, SETF TREF)"
 
        (defmethod make-tensor ((class (eql ',name)) shape &key initial-element layout storage)
          (declare (ignore layout))
-         (policy-cond:policy-if
-          (< speed safety)
-          (progn
-            (check-type shape shape)
-            (assert (cl:= 1 (length shape))
-                    () "Vector shape must be of length 1"))
-          nil)
-         (let ((size (reduce #'* shape)))
-           (funcall #',constructor-sym
-                    size
-                    (or
-                     storage
-                     (apply #'make-array
-                            size
-                            :element-type ',type
-                            (if initial-element
-                                (list :initial-element (coerce initial-element ',type))
-                                nil))))))
+         (policy-cond:with-expectations (> speed safety)
+             ((type shape shape)
+              (assertion (cl:= 1 (length shape))))
+           (let ((size (reduce #'* shape)))
+             (funcall #',constructor-sym
+                      size
+                      (or
+                       storage
+                       (apply #'make-array
+                              size
+                              :element-type ',type
+                              (if initial-element
+                                  (list :initial-element (coerce initial-element ',type))
+                                  nil)))))))
 
        (defmethod cast ((tensor ,name) (class (eql ',name)))
          (declare (ignore class))
@@ -132,26 +128,18 @@ ELEMENT-TYPE, CAST, COPY-TENSOR, DEEP-COPY-TENSOR, TREF, SETF TREF)"
   (list (vector-size vector)))
 
 (defmethod (setf shape) (new-value (vector vector))
-  (policy-cond:policy-if
-   (< speed safety)
-   (progn
-     (check-type new-value shape)
-     (assert (cl:= 1 (length new-value))
-             () "Vector shape must be of length 1"))
-   nil)
-  (setf (vector-size vector) (first new-value)))
+  (policy-cond:with-expectations (> speed safety)
+      ((type shape new-value)
+       (assertion (cl:= 1 (length new-value))))
+    (setf (vector-size vector) (first new-value))))
 
 (defgeneric dot (vector1 vector2)
   (:documentation "Compute the dot product of two vectors")
   (:method ((vector1 vector) (vector2 vector))
-    (policy-cond:policy-if
-     (< speed safety)
-     (assert (cl:= (size vector1) (size vector2))
-             () "Vectors must have the same size. The first vector is size ~a and the second vector is size ~a."
-             (size vector1) (size vector2))
-     nil)
-    (loop :for i :below (size vector1)
-          :sum (* (tref vector1 i) (tref vector2 i)))))
+    (policy-cond:with-expectations (> speed safety)
+        ((assertion (cl:= (size vector1) (size vector2))))
+      (loop :for i :below (size vector1)
+            :sum (* (tref vector1 i) (tref vector2 i))))))
 
 (defgeneric norm (vector &optional p)
   (:documentation "Compute the norm of a vector")

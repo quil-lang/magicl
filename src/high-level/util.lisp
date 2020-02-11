@@ -4,6 +4,11 @@
 
 (in-package #:magicl)
 
+(defconstant +float-comparison-threshold-loose+   1d-5)
+(defconstant +float-comparison-threshold-strict+  5d-8)
+(defconstant +double-comparison-threshold-loose+  1d-5)
+(defconstant +double-comparison-threshold-strict+ 5d-11)
+
 (defun row-major-index (pos dims)
   (declare (type index pos)
            (type shape dims)

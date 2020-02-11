@@ -4,10 +4,6 @@
 
 (in-package #:magicl)
 
-;; TODO: Is there a better way to do this?
-(defconstant +double-comparison-threshold-loose+  1d-5)
-(defconstant +double-comparison-threshold-strict+ 5d-11)
-
 (deftensor tensor/complex-double-float (complex double-float))
 
 (defmatrix matrix/complex-double-float (complex double-float) tensor/complex-double-float)
