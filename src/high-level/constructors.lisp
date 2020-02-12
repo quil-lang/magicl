@@ -4,15 +4,16 @@
 
 (in-package #:magicl)
 
-(defconstant +default-tensor-type+ 'double-float)
+(defvar *default-tensor-type* 'double-float
+  "The default element type to be used for constructing tensors when TYPE is not specified.")
 
 (defgeneric make-tensor (class shape &key initial-element layout storage)
   (:documentation "Make a dense tensor with elements of the specified type"))
 
-(defun empty (shape &key (type +default-tensor-type+) layout)
+(defun empty (shape &key (type *default-tensor-type*) layout)
   "Create a tensor without intializing the contents of the storage
 
-If TYPE is not specified then +DEFAULT-TENSOR-TYPE+ is used.
+If TYPE is not specified then *DEFAULT-TENSOR-TYPE* is used.
 LAYOUT specifies the internal storage representation ordering of the returned tensor.
 The tensor specialized on the specified SHAPE and TYPE."
   (policy-cond:with-expectations (> speed safety)
@@ -31,12 +32,12 @@ The tensor is specialized on SHAPE and TYPE."
     (let ((tensor-class (infer-tensor-type type shape const)))
       (make-tensor tensor-class shape :layout layout :initial-element const))))
 
-(defun rand (shape &key (type +default-tensor-type+) layout distribution)
+(defun rand (shape &key (type *default-tensor-type*) layout distribution)
   "Create tensor with random elements from DISTRIBUTION
 
 DISTRIBUTION is a function with no arguments which returns a value for the element.
 If DISTRIBUTION is not specified then a uniform distribution on [0,1] (or [0,1] + [0,1]i for complex types) is used.
-If TYPE is not specified then +DEFAULT-TENSOR-TYPE+ is used.
+If TYPE is not specified then *DEFAULT-TENSOR-TYPE* is used.
 LAYOUT specifies the internal storage representation ordering of the returned tensor.
 The tensor is specialized on SHAPE and TYPE."
   (policy-cond:with-expectations (> speed safety)
@@ -58,13 +59,13 @@ The tensor is specialized on SHAPE and TYPE."
                 (coerce  (funcall rand-function) type))))
       (into! f (make-tensor tensor-class shape :layout layout)))))
 
-(defun eye (shape &key value (offset 0) (type +default-tensor-type+) layout)
+(defun eye (shape &key value (offset 0) (type *default-tensor-type*) layout)
   "Create an identity tensor
 
 SHAPE can either be a list of dimensions or a fixnum defining the length of the side a square matrix.
 
 If VALUE is not specified then 1 is used.
-If TYPE is not specified then it is inferred from the type of VALUE, defaulting to +DEFAULT-TENSOR-TYPE+.
+If TYPE is not specified then it is inferred from the type of VALUE, defaulting to *DEFAULT-TENSOR-TYPE*.
 LAYOUT specifies the internal storage representation ordering of the returned tensor.
 The tensor is specialized on SHAPE and TYPE."
   (policy-cond:with-expectations (> speed safety)
@@ -81,7 +82,7 @@ The tensor is specialized on SHAPE and TYPE."
             :do (setf (apply #'tref tensor (make-list shape-length :initial-element i)) fill-value))
       tensor)))
 
-(defun arange (range &key (type +default-tensor-type+) layout)
+(defun arange (range &key (type *default-tensor-type*) layout)
   "Create a 1-dimensional tensor of elements from 0 up to but not including the RANGE
 
 If TYPE is not specified then it is inferred from the type of RANGE.
@@ -159,18 +160,18 @@ The tensor is specialized on SHAPE and TYPE."
 
 ;;; Constructors for convenience
 
-(defun zeros (shape &key (type +default-tensor-type+) layout)
+(defun zeros (shape &key (type *default-tensor-type*) layout)
   "Create a tensor with the specified SHAPE of zeros
 
-If TYPE is not specified then +DEFAULT-TENSOR-TYPE+ is used.
+If TYPE is not specified then *DEFAULT-TENSOR-TYPE* is used.
 LAYOUT specifies the internal storage representation ordering of the returned tensor.
 The tensor specialized on the specified SHAPE and TYPE."
   (const 0 shape :type type :layout layout))
 
-(defun ones (shape &key (type +default-tensor-type+) layout)
+(defun ones (shape &key (type *default-tensor-type*) layout)
   "Create a tensor with the specified SHAPE of ones
 
-If TYPE is not specified then +DEFAULT-TENSOR-TYPE+ is used.
+If TYPE is not specified then *DEFAULT-TENSOR-TYPE* is used.
 LAYOUT specifies the internal storage representation ordering of the returned tensor.
 The tensor specialized on the specified SHAPE and TYPE."
   (const 1 shape :type type :layout layout))
