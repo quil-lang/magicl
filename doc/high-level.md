@@ -35,7 +35,7 @@ This table was adapted largely from the [NumPy Equivalents Table](https://docs.s
 
 | MAGICL         | MATLAB     | NumPy                   | Description                                                   |
 |----------------|------------|-------------------------|---------------------------------------------------------------|
-| `(layout a)`    | `ndims(a)` | `ndim(a)` or `a.ndim`   | Get the number of dimensions of the array.                    |
+| `(order a)`    | `ndims(a)` | `ndim(a)` or `a.ndim`   | Get the number of dimensions of the array.                    |
 | `(size a)`     | `numel(a)` | `size(a)` or `a.size`   | Get the number of elements of the array.                      |
 | `(shape a)`    | `size(a)`  | `shape(a)` or `a.shape` | Get the shape of the array.                                   |
 | `(tref a 1 4)` | `a(2,5)`   | `a[1, 4]`               | Get the element in the second row, fifth column of the array. |
