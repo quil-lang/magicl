@@ -224,7 +224,6 @@
            ((assertion (square-matrix-p m))
             (assertion (hermitian-matrix-p m)))
          (let ((rows (nrows m))
-               (cols (ncols m))
                (a-tensor (deep-copy-tensor m)))
            (when (eql :row-major (layout m)) (transpose! a-tensor))
            (let ((jobz "V")
