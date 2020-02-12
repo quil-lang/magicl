@@ -60,7 +60,7 @@ This table was adapted largely from the [NumPy Equivalents Table](https://docs.s
 | `(.- a b)` | `a - b`  | `a - b`          | Element-wise subtract       |
 | `(.* a b)` | `a .* b` | `a * b`          | Element-wise multiply       |
 | `(./ a b)` | `a./b`   | `a/b`            | Element-wise divide         |
-| `(.^ a b)` | `a.^3`   | `a**3`           | Element-wise exponentiation |
+| `(.^ a b)` | `a.^b`   | `np.power(a,b)`  | Element-wise exponentiation |
 
 ### Linear Algebra
 
