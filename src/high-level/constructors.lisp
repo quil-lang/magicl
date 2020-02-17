@@ -82,14 +82,14 @@ The tensor is specialized on SHAPE and TYPE."
             :do (setf (apply #'tref tensor (make-list shape-length :initial-element i)) fill-value))
       tensor)))
 
-(defun arange (range &key (type *default-tensor-type*) layout)
+(defun arange (range &key (type *default-tensor-type*))
   "Create a 1-dimensional tensor of elements from 0 up to but not including the RANGE
 
 If TYPE is not specified then it is inferred from the type of RANGE.
 LAYOUT specifies the internal storage representation ordering of the returned tensor.
 The tensor is specialized on TYPE with shape (floor(RANGE))."
   (let ((tensor-class (infer-tensor-type type (list (floor range)) range)))
-    (let ((tensor (make-tensor tensor-class (list (floor range)) :layout layout))
+    (let ((tensor (make-tensor tensor-class (list (floor range))))
           (f (lambda (index)
                (coerce index type))))
       (into! f tensor))))
