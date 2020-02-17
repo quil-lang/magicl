@@ -2,10 +2,9 @@
 ;;;;
 ;;;; Author: Joseph Lin
 ;;;;         Robert Smith
+;;;;         Cole Scott
 
 (in-package #:magicl-tests)
-
-(defconstant +double-float-epsilon+ #+sbcl sb-c::double-float-epsilon #-sbcl 1.1102230246251568d-16)
 
 (deftest test-determinant ()
   "Test that DET works."
@@ -21,7 +20,7 @@
 (deftest test-random-unitary ()
   "Check that we can make and identify unitaries."
   (loop :for i :from 1 :to 128 :do
-    (is (magicl:unitary-matrix-p (magicl:random-unitary (list i i) :type '(complex double-float)) magicl::+double-comparison-threshold-loose+))))
+    (is (magicl:unitary-matrix-p (magicl:random-unitary (list i i) :type '(complex double-float)) +double-comparison-threshold-loose+))))
 
 (deftest test-logm ()
   "Check that the matrix logarithm is the inverse of the matrix exponential."

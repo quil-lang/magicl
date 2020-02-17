@@ -26,3 +26,5 @@
     magicl::matrix/complex-double-float
     magicl::matrix/int32)
   :test #'equal)
+
+(defconstant +double-comparison-threshold-loose+ (* 256 double-float-epsilon))

@@ -27,9 +27,6 @@
                   :do (is (magicl:square-matrix-p (magicl:empty (list i i) :type type)))
                       (is (not (magicl:square-matrix-p (magicl:empty (list i (* 2 i)) :type type)))))))
 
-(deftest test-matrix-order ()
-  (is (cl:= 2 (magicl:order (magicl:empty '(4 5))))))
-
 ;; Multiplication
 
 (deftest test-matrix-multiplication-errors ()
