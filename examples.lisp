@@ -24,7 +24,7 @@
 (defun dot-example ()
   (let ((a (magicl:const #C(1d0 0d0) '(4)))
         (b (magicl:const #C(2d0 0d0) '(4))))
-    (format t "a^t = ~A~%b^t = ~A~%a^t b = ~A~%~%"
+    (format t "a = ~A~%b = ~A~%<a, b> = ~A~%~%"
             a b (magicl:dot a b))))
 
 (defun eigenvalue-example ()
