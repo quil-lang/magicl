@@ -133,7 +133,7 @@
   "Test CS decomposition of an equipartitioned 2x2 unitary matrix."
   (let ((x (magicl:random-unitary '(2 2)
                                   :type '(complex double-float)))
-        (tol (* 1.0d2 +double-float-epsilon+)))
+        (tol (* 1.0d2 double-float-epsilon)))
     (multiple-value-bind (u1 u2 v1h v2h theta)
         (magicl::csd-2x2-basic x 1 1)
       (multiple-value-bind (u1* u2* v1h* v2h* theta*)

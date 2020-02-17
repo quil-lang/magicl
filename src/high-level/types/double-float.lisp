@@ -45,3 +45,15 @@
                  epsilon)
        (return-from = nil))))
   t)
+
+(defmethod = ((tensor1 vector/double-float) (tensor2 vector/double-float) &optional (epsilon +double-comparison-threshold+))
+  (unless (equal (shape tensor1) (shape tensor2))
+    (return-from = nil))
+  (map-indexes
+   (shape tensor1)
+   (lambda (&rest pos)
+     (unless (<= (abs (- (apply #'tref tensor1 pos)
+                         (apply #'tref tensor2 pos)))
+                 epsilon)
+       (return-from = nil))))
+  t)

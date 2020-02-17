@@ -88,6 +88,21 @@
        (return-from = nil))))
   t)
 
+(defmethod = ((tensor1 vector/complex-double-float) (tensor2 vector/complex-double-float) &optional (epsilon +double-comparison-threshold+))
+  (unless (equal (shape tensor1) (shape tensor2))
+    (return-from = nil))
+  (map-indexes
+   (shape tensor1)
+   (lambda (&rest pos)
+     (unless (and (<= (abs (- (realpart (apply #'tref tensor1 pos))
+                              (realpart (apply #'tref tensor2 pos))))
+                      epsilon)
+                  (<= (abs (- (imagpart (apply #'tref tensor1 pos))
+                              (imagpart (apply #'tref tensor2 pos))))
+                      epsilon))
+       (return-from = nil))))
+  t)
+
 ;; ZUNCSD is broken in magicl lapack bindings (Issue #72)
 (COMMON-LISP:DEFUN %ZUNCSD-XPOINTERS
     (JOBU1 JOBU2 JOBV1T JOBV2T TRANS SIGNS M P Q X11 LDX11 X12
