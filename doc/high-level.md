@@ -71,7 +71,7 @@ This table was adapted largely from the [NumPy Equivalents Table](https://docs.s
 | `(upper-triangular a)`                                  | `triu(a)`         | `triu(a)`                                                      | Upper triangular part of matrix            |
 | `(lower-triangular a)`                                  | `tril(a)`         | `tril(a)`                                                      | Lower triangular part of matrix            |
 | `(transpose a)`                                         | `a.'`             | `a.transpose()` or `a.T`                                       | Transpose of matrix                        |
-| `(conjugate-transpose a)` or `(dagger a)`               | `a'`              | `a.conj().transpose()` or `a.conj().T`                         | Conjugate transpose of matrix              |
+| `(conjugate-transpose a)` or `(dagger a)`               | `a'`              | `a.conj().transpose()` or `a.H`                                | Conjugate transpose of matrix              |
 | `(inv a)`                                               | `inv(a)`          | `linalg.inv(a)`                                                | Inverse of matrix                          |
 | `(svd a)` (Returns `(VALUES U SIGMA Vt)`)               | `[U,S,V]=svd(a)`  | `U, S, Vh = linalg.svd(a), V = Vh.T`                           | Singular value decomposition of matrix     |
 | `(eig a)` (Returns `(VALUES EIGENVALUES EIGENVECTORS)`) | `[V,D]=eig(a)`    | `D,V = linalg.eig(a)`                                          | Eigenvalues and eigenvectors of matrix     |
