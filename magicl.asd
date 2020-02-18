@@ -25,16 +25,15 @@
    (:file "with-array-pointers")
    (:file "cffi-types")
    (:module "bindings"
-            :components
-            ((:file "lapack00-cffi")
-             (:file "lapack01-cffi")
-             (:file "lapack02-cffi")
-             (:file "lapack03-cffi")
-             (:file "lapack04-cffi")
-             (:file "lapack05-cffi")
-             (:file "lapack06-cffi")
-             (:file "lapack07-cffi")
-             (:file "blas-cffi")))
+    :components ((:file "lapack00-cffi")
+                 (:file "lapack01-cffi")
+                 (:file "lapack02-cffi")
+                 (:file "lapack03-cffi")
+                 (:file "lapack04-cffi")
+                 (:file "lapack05-cffi")
+                 (:file "lapack06-cffi")
+                 (:file "lapack07-cffi")
+                 (:file "blas-cffi")))
    (:module "high-level"
     :serial t
     :components ((:file "util")
@@ -53,5 +52,6 @@
                  (:file "lapack-templates")
                  (:file "lapack-bindings")
                  (:file "constructors")
-                 (:file "specialize-constructor")))
+                 (:file "specialize-constructor")
+                 (:file "polynomial-solver")))
    (:file "magicl")))

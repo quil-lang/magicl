@@ -161,6 +161,14 @@
            #:qr
            #:rq
            #:lq
+           
+           #:polynomial
+           #:make-polynomial
+           #:polynomial-coefficients
+           #:polynomial-solve
+           #:polynomial-eval
+           #:polynomial-diff
+           #:polynomial-newton-iteration
 
            ;; Vector operators
            #:dot
