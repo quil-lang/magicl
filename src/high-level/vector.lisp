@@ -146,10 +146,22 @@ ELEMENT-TYPE, CAST, COPY-TENSOR, DEEP-COPY-TENSOR, TREF, SETF TREF)"
             :sum (* (tref vector1 i) (tref vector2 i))))))
 
 (defgeneric norm (vector &optional p)
-  (:documentation "Compute the norm of a vector")
+  (:documentation "Compute the p-norm of a vector.
+
+If P is not specified then the Euclidean norm is computed.
+Special values of P are: :INFINITY :INF :NEGATIVE-INFINITY :NEG-INF")
   (:method ((vector vector) &optional (p 2))
-    (expt (reduce #'+
-                  (cl:map (list 'cl:vector (element-type vector))
-                          (lambda (x) (expt x p))
-                          (storage vector)))
-          (/ p))))
+    (cond
+      ((or (eql p :infinity)
+           (eql p :inf))
+       (reduce (lambda (x y) (max (abs x) (abs y))) (storage vector)))
+      ((or (eql p :negative-infinity)
+           (eql p :neg-inf))
+       (reduce (lambda (x y) (min (abs x) (abs y))) (storage vector)))
+      (t
+       (assert (< 0 p)
+               () "P must be a positive number.")
+       (expt (reduce (lambda (x y) (+ x (abs (expt y p))))
+                     (storage vector)
+                     :initial-value 0)
+             (/ p))))))
