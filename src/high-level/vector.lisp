@@ -154,10 +154,10 @@ Special values of P are: :INFINITY :INF :NEGATIVE-INFINITY :NEG-INF")
     (cond
       ((or (eql p :infinity)
            (eql p :inf))
-       (reduce (lambda (x y) (max (abs x) (abs y))) (storage vector)))
+       (abs (reduce (lambda (x y) (max (abs x) (abs y))) (storage vector))))
       ((or (eql p :negative-infinity)
            (eql p :neg-inf))
-       (reduce (lambda (x y) (min (abs x) (abs y))) (storage vector)))
+       (abs (reduce (lambda (x y) (min (abs x) (abs y))) (storage vector))))
       (t
        (assert (< 0 p)
                () "P must be a positive number.")

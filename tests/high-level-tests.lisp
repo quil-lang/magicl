@@ -18,12 +18,13 @@
   ;; Basic 3-4-5
   (is (= 5 (magicl:norm (magicl:from-list '(3 4) '(2)))))
   ;; One element vector should return element for all
-  (let ((x (magicl:from-list '(3) '(1))))
-    (is (= 3 (magicl:norm x 1)))
-    (is (= 3 (magicl:norm x 2)))
-    (is (= 3 (magicl:norm x 3)))
-    (is (= 3 (magicl:norm x :infinity)))
-    (is (= 3 (magicl:norm x :negative-infinity))))
+  (loop :for val :in '(-3 0 10) :do
+    (let ((x (magicl:from-list (list val) '(1))))
+      (is (= (abs val) (magicl:norm x 1)))
+      (is (= (abs val) (magicl:norm x 2)))
+      (is (= (abs val) (magicl:norm x 3)))
+      (is (= (abs val) (magicl:norm x :infinity)))
+      (is (= (abs val) (magicl:norm x :negative-infinity)))))
   ;; Test known values
   (let ((x (magicl:from-list '(1 -2 3 4 5 -6) '(6))))
     (is (= 6 (magicl:norm x :infinity)))
