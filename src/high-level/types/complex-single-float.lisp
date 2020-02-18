@@ -58,7 +58,7 @@
               (/ (tref m i j) scalar)))))
   m)
 
-(defmethod = ((tensor1 tensor/complex-single-float) (tensor2 tensor/complex-single-float) &optional (epsilon +float-comparison-threshold+))
+(defmethod = ((tensor1 tensor/complex-single-float) (tensor2 tensor/complex-single-float) &optional (epsilon *float-comparison-threshold*))
   (unless (equal (shape tensor1) (shape tensor2))
     (return-from = nil))
   (map-indexes
@@ -73,7 +73,7 @@
        (return-from = nil))))
   t)
 
-(defmethod = ((tensor1 matrix/complex-single-float) (tensor2 matrix/complex-single-float) &optional (epsilon +float-comparison-threshold+))
+(defmethod = ((tensor1 matrix/complex-single-float) (tensor2 matrix/complex-single-float) &optional (epsilon *float-comparison-threshold*))
   (unless (equal (shape tensor1) (shape tensor2))
     (return-from = nil))
   (map-indexes
@@ -88,7 +88,7 @@
        (return-from = nil))))
   t)
 
-(defmethod = ((tensor1 vector/complex-single-float) (tensor2 vector/complex-single-float) &optional (epsilon +float-comparison-threshold+))
+(defmethod = ((tensor1 vector/complex-single-float) (tensor2 vector/complex-single-float) &optional (epsilon *float-comparison-threshold*))
   (unless (equal (shape tensor1) (shape tensor2))
     (return-from = nil))
   (map-indexes

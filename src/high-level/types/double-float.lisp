@@ -22,7 +22,7 @@
   matrix/double-float
   vector/double-float)
 
-(defmethod = ((tensor1 tensor/double-float) (tensor2 tensor/double-float) &optional (epsilon +double-comparison-threshold+))
+(defmethod = ((tensor1 tensor/double-float) (tensor2 tensor/double-float) &optional (epsilon *double-comparison-threshold*))
   (unless (equal (shape tensor1) (shape tensor2))
     (return-from = nil))
   (map-indexes
@@ -34,7 +34,7 @@
        (return-from = nil))))
   t)
 
-(defmethod = ((tensor1 matrix/double-float) (tensor2 matrix/double-float) &optional (epsilon +double-comparison-threshold+))
+(defmethod = ((tensor1 matrix/double-float) (tensor2 matrix/double-float) &optional (epsilon *double-comparison-threshold*))
   (unless (equal (shape tensor1) (shape tensor2))
     (return-from = nil))
   (map-indexes
@@ -46,7 +46,7 @@
        (return-from = nil))))
   t)
 
-(defmethod = ((tensor1 vector/double-float) (tensor2 vector/double-float) &optional (epsilon +double-comparison-threshold+))
+(defmethod = ((tensor1 vector/double-float) (tensor2 vector/double-float) &optional (epsilon *double-comparison-threshold*))
   (unless (equal (shape tensor1) (shape tensor2))
     (return-from = nil))
   (map-indexes

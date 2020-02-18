@@ -4,8 +4,8 @@
 
 (in-package #:magicl)
 
-(defconstant +float-comparison-threshold+  single-float-epsilon)
-(defconstant +double-comparison-threshold+ double-float-epsilon)
+(defvar *float-comparison-threshold*  single-float-epsilon)
+(defvar *double-comparison-threshold* double-float-epsilon)
 
 (defun row-major-index (pos dims)
   (declare (type index pos)
