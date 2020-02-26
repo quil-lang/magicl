@@ -85,7 +85,6 @@
           info)
          (values a-tensor ipiv-tensor)))))
 
-;; NOTE: This requires lu to be defined for the matrix type
 (defun generate-lapack-inv-for-type (class type lu-function inv-function)
   `(progn
      (defmethod inv ((m ,class))
