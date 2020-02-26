@@ -318,7 +318,7 @@ Target cannot be the same as a or b."))
       result)))
 
 (defgeneric kron (a b &rest rest)
-  (:documentation "Compute the kronecker product of A and B")
+  (:documentation "Compute the Kronecker product of A and B")
   (:method (a b &rest rest)
     (let ((ma (nrows a))
           (mb (nrows b))
@@ -334,7 +334,7 @@ Target cannot be the same as a or b."))
   (:documentation "Transpose MATRIX, replacing the elements of MATRIX, optionally performing a faster change of layout if FAST is specified")
   (:method ((matrix matrix) &key fast)
     "Transpose a matrix by copying values.
-If fast is t then just change layout. Fast can cause problems when you want to multiply specifying transpose."
+If FAST is t then just change layout. Fast can cause problems when you want to multiply specifying transpose."
     (if fast
         (progn (rotatef (matrix-ncols matrix) (matrix-nrows matrix))
                (setf (matrix-layout matrix) (ecase (matrix-layout matrix)
@@ -515,7 +515,7 @@ If fast is t then just change layout. Fast can cause problems when you want to m
         (csd-from-blocks u1 u2 v1t v2t theta)))))
 
 (defgeneric inv (matrix)
-  (:documentation "Get the inv of the matrix")
+  (:documentation "Get the inverse of the matrix")
   (:method ((matrix matrix))
     (declare (ignore matrix))
     (error "INV is not defined for the generic matrix type.")))
@@ -553,4 +553,3 @@ NOTE: Only square matrices supported")
   (:method ((matrix matrix))
     (declare (ignore matrix))
     (error "LQ is not defined for the generic matrix type.")))
-
