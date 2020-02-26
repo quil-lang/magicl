@@ -108,6 +108,15 @@
             lda
             ipiv
             info)
+           ;; TODO: This check is already performed by the LU
+           ;;       function, however INFO is not being returned
+           ;;       correctly. When the bindings are fixed this should
+           ;;       just check if INFO is non-zero
+           (assert (cl:notany
+                    (lambda (x)
+                      (cl:= x 0))
+                    (diag a-tensor))
+                   () "The provided matrix is singular and cannot be inverted.")
            (let* ((lwork -1)
                   (work1 (make-array (max 1 lwork) :element-type ',type))
                   (work nil)
