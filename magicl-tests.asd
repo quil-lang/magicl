@@ -6,7 +6,8 @@
   :license "BSD 3-Clause (See LICENSE.txt)"
   :description "Regression tests for MAGICL."
   :author "Rigetti Computing"
-  :depends-on (#:uiop
+  :depends-on (#:alexandria
+               #:uiop
                #:magicl
                #:magicl-transcendental
                #:magicl-examples
@@ -18,4 +19,9 @@
   :serial t
   :components ((:file "packages")
                (:file "suite")
+               (:file "constants")
+               (:file "util-tests")
+               (:file "abstract-tensor-tests")
+               (:file "specialization-tests")
+               (:file "matrix-tests")
                (:file "high-level-tests")))

@@ -25,7 +25,7 @@
   "Like LET, but binds with dynamic extent the pointers to the data of numeric simple arrays being bound.
 
 WARNING: Do not close over these pointers or otherwise store them outside of the extent of this macro."
-  (assert (every (lambda (binding)
+  (assert (cl:every (lambda (binding)
                    (and (listp binding)
                         (= 2 (length binding))
                         (symbolp (first binding))))

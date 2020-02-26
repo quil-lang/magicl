@@ -49,11 +49,11 @@ It is assumed that POLYNOMIAL is well-formed in the sense that its leading coeff
              (loop :with polynomial := (polynomial-normalize polynomial)
                    :with coefficients := (polynomial-coefficients polynomial)
                    :with n := (1- (length coefficients))
-                   :with matrix := (make-zero-matrix n n)
+                   :with matrix := (zeros (list n n) :type '(complex double-float))
                    :for i :below n
                    :for coefficient :of-type (complex double-float) := (aref coefficients i)
-                   :when (plusp i) :do (setf (ref matrix i (1- i)) 1.0d0)
-                   :do (setf (ref matrix i (1- n)) (- coefficient))
+                   :when (plusp i) :do (setf (tref matrix i (1- i)) 1.0d0)
+                   :do (setf (tref matrix i (1- n)) (- coefficient))
                    :finally (return matrix))))
 
     (nth-value 0 (eig (make-companion-matrix polynomial)))))
@@ -68,7 +68,7 @@ It is assumed that POLYNOMIAL is well-formed in the sense that its leading coeff
           (c (aref coefficients 0) (aref coefficients i))
           (x (complex 1.0d0) (* x value))
           (y (* x c) (+ y (* x c))))
-         ((= i (1- (length coefficients))) y)
+         ((cl:= i (1- (length coefficients))) y)
 
       (declare (type fixnum i)
                (type (complex double-float) x y)))))

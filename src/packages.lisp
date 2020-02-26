@@ -38,62 +38,130 @@
 
 (defpackage #:magicl
   (:use #:common-lisp
-        #:cffi)
+        #:cffi
+        #:abstract-classes)
   #+package-local-nicknames
   (:local-nicknames (#:blas #:magicl.blas-cffi)
                     (#:lapack #:magicl.lapack-cffi)
                     (#:expokit #:magicl.expokit-cffi))
   (:import-from #:magicl.foreign-libraries
                 #:print-availability-report)
-  (:export #:*type-strictness*          ; VARIABLE
-           #:S #:D #:C #:Z              ; SYMBOLS
-           #:matrix                     ; TYPE, FUNCTION
-           #:make-matrix                ; FUNCTION
-           #:matrix-rows                ; READER
-           #:matrix-cols                ; READER
-           #:matrix-element-type        ; FUNCTION
-           #:make-zero-matrix           ; FUNCTION
-           #:square-matrix-p            ; FUNCTION
-           #:identityp                  ; FUNCTION
-           #:unitaryp                   ; FUNCTION
-           #:map-indexes                ; FUNCTION
-           #:tabulate                   ; FUNCTION
-           #:make-identity-matrix       ; FUNCTION
-           #:print-availability-report
-           #:with-blapack
-           #:make-complex-matrix
-           #:make-complex-vector
-           #:conjugate-entrywise
-           #:transpose
-           #:conjugate-transpose
+  (:shadow #:vector
+           #:=
+           #:map
+           #:trace
+           #:every
+           #:some
+           #:notevery
+           #:notany)
+  (:export #:with-blapack
+           
+           ;; abstract-tensor protocol
+           #:specialize-tensor
+           #:generalize-tensor
+           #:shape
+           #:tref
+           #:order
+           #:size
+           #:element-type
+           #:lisp-array
+
+           #:every
+           #:some
+           #:notevery
+           #:notany
+
+           #:map
+           #:map!
+
+           #:reshape
            #:slice
-           #:matrix-column
-           #:matrix-row
-           #:qr
-           #:ql
-           #:rq
-           #:lq
-           #:svd
-           #:multiply-complex-matrices
+           
+           ;; Classes
+           #:tensor
+           #:matrix
+
+           ;; Accessors
+           #:nrows
+           #:ncols
+
+           ;; Subtypes
+           #:tensor/single-float
+           #:tensor/double-float
+           #:tensor/complex-single-float
+           #:tensor/complex-double-float
+           #:matrix/single-float
+           #:matrix/double-float
+           #:matrix/complex-single-float
+           #:matrix/complex-double-float
+           #:vector/single-float
+           #:vector/double-float
+           #:vector/complex-single-float
+           #:vector/complex-double-float
+
+           ;; Constructors
+           #:make-tensor
+           #:empty
+           #:const
+           #:rand
+           #:eye
+           #:arange
+           #:from-array
+           #:from-list
+           #:from-diag
+           #:zeros
+           #:ones
+
+           #:random-unitary
+
+           ;; Operators
+           #:binary-operator
+           #:.+
+           #:.-
+           #:.*
+           #:./
+           #:.^
+           #:=
+           #:map
+           
+           ;; Matrix operators
+           #:square-matrix-p
+           #:identity-matrix-p
+           #:unitary-matrix-p
+           #:row
+           #:column
+           #:@
+           #:mult
+           #:kron
            #:scale
-           #:ref
-           #:csd
-           #:lapack-csd
-           #:det
-           #:inv
-           #:dagger
-           #:direct-sum
+           #:scale!
            #:diag
-           #:matrix-diagonal
+           #:det
+           #:upper-triangular
+           #:lower-triangular
+           #:triu
+           #:tril
+           #:transpose
+           #:transpose!
+           #:orthonormalize
+           #:orthonormalize!
+           #:trace
+           #:direct-sum
+           #:conjugate-transpose
+           #:conjugate-transpose!
+           #:dagger
+           #:dagger!
            #:eig
            #:hermitian-eig
-           #:logm
-           #:kron
-           #:exptm
-           #:inc-matrix
-           #:dec-matrix
-           #:add-matrix
-           #:sub-matrix
+           #:inv
+           #:lu
+           #:csd
+           #:svd
+           #:ql
+           #:qr
+           #:rq
+           #:lq
+           
            #:polynomial
            #:make-polynomial
            #:polynomial-coefficients
@@ -101,10 +169,22 @@
            #:polynomial-eval
            #:polynomial-diff
            #:polynomial-newton-iteration
-           )
 
-  ;; random.lisp
-  (:export #:random-matrix              ; FUNCTION
-           #:random-gaussian-matrix     ; FUNCTION
-           #:random-unitary             ; FUNCTION
+           ;; Vector operators
+           #:dot
+           #:norm
+
+           ;; LAPACK stuff
+           #:lapack-eig
+           #:lapack-lu
+           #:lapack-csd
+           #:lapack-svd
+           #:lapack-ql
+           #:lapack-qr
+           #:lapack-rq
+           #:lapack-lq
+           #:lapack-ql-q
+           #:lapack-qr-q
+           #:lapack-rq-q
+           #:lapack-lq-q
            ))
