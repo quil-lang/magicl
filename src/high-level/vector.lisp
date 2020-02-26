@@ -145,23 +145,24 @@ ELEMENT-TYPE, CAST, COPY-TENSOR, DEEP-COPY-TENSOR, TREF, SETF TREF)"
       (loop :for i :below (size vector1)
             :sum (* (tref vector1 i) (tref vector2 i))))))
 
-(defgeneric norm (vector &optional p)
-  (:documentation "Compute the p-norm of a vector.
+(deftype p-norm-type ()
+  `(or (member :inf :infinity :positive-infinity)
+       (integer 1)))
+
+(defun norm (vector &optional (p 2))
+  "Compute the p-norm of a vector.
 
 If P is not specified then the Euclidean norm is computed.
-Special values of P are: :INFINITY :INF :NEGATIVE-INFINITY :NEG-INF")
-  (:method ((vector vector) &optional (p 2))
-    (cond
-      ((or (eql p :infinity)
-           (eql p :inf))
-       (abs (reduce (lambda (x y) (max (abs x) (abs y))) (storage vector))))
-      ((or (eql p :negative-infinity)
-           (eql p :neg-inf))
-       (abs (reduce (lambda (x y) (min (abs x) (abs y))) (storage vector))))
-      (t
-       (assert (>= p 1)
-               () "P must be greater than or equal to 1.")
-       (expt (reduce (lambda (x y) (+ x (abs (expt y p))))
-                     (storage vector)
-                     :initial-value 0)
-             (/ p))))))
+Special values of P are: :INFINITY :INF :POSITIVE-INFINITY"
+  (declare (type vector vector)
+           (type p-norm-type p))
+  (case p
+    (1
+     (reduce #'+ (storage vector) :key #'abs))
+    ((:infinity :inf :positive-infinity)
+     (abs (reduce (lambda (x y) (max (abs x) (abs y))) (storage vector))))
+    (t
+     (expt (reduce (lambda (x y) (+ x (abs (expt y p))))
+                   (storage vector)
+                   :initial-value 0)
+           (/ p)))))
