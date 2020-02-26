@@ -195,33 +195,29 @@ ELEMENT-TYPE, CAST, COPY-TENSOR, DEEP-COPY-TENSOR, TREF, SETF TREF)"
 
 (set-pprint-dispatch 'matrix 'pprint-matrix)
 
-(defgeneric square-matrix-p (matrix)
-  (:documentation "Whether the MATRIX is square")
-  (:method ((matrix matrix))
-    (cl:= (nrows matrix) (ncols matrix))))
+(defun square-matrix-p (matrix)
+  "Whether the MATRIX is square"
+  (cl:= (nrows matrix) (ncols matrix)))
 
-(defgeneric identity-matrix-p (matrix &optional epsilon)
-  (:documentation "Whether MATRIX is an idenity matrix")
-  (:method ((matrix matrix) &optional (epsilon *double-comparison-threshold*))
-    (unless (square-matrix-p matrix) (return-from identity-matrix-p nil))
-    (map-indexes (shape matrix)
-                 (lambda (r c)
-                   (unless (<= (abs (- (tref matrix r c)
-                                       (if (cl:= r c)
-                                           1 0)))
-                               epsilon)
-                     (return-from identity-matrix-p nil))))
-    t))
+(defun identity-matrix-p (matrix &optional (epsilon *double-comparison-threshold*))
+  "Whether MATRIX is an idenity matrix"
+  (unless (square-matrix-p matrix) (return-from identity-matrix-p nil))
+  (map-indexes (shape matrix)
+               (lambda (r c)
+                 (unless (<= (abs (- (tref matrix r c)
+                                     (if (cl:= r c)
+                                         1 0)))
+                             epsilon)
+                   (return-from identity-matrix-p nil))))
+  t)
 
-(defgeneric unitary-matrix-p (matrix &optional epsilon)
-  (:documentation "Whether MATRIX is a unitary matrix")
-  (:method ((matrix matrix) &optional (epsilon *double-comparison-threshold*))
-    (identity-matrix-p (@ matrix (conjugate-transpose matrix)) epsilon)))
+(defun unitary-matrix-p (matrix &optional (epsilon *double-comparison-threshold*))
+  "Whether MATRIX is a unitary matrix"
+  (identity-matrix-p (@ matrix (conjugate-transpose matrix)) epsilon))
 
-(defgeneric hermitian-matrix-p (matrix &optional epsilon)
-  (:documentation "Whether MATRIX is a unitary matrix")
-  (:method ((matrix matrix) &optional (epsilon *double-comparison-threshold*))
-    (= matrix (conjugate-transpose matrix) epsilon)))
+(defun hermitian-matrix-p (matrix &optional (epsilon *double-comparison-threshold*))
+  "Whether MATRIX is a unitary matrix"
+  (= matrix (conjugate-transpose matrix) epsilon))
 
 (defmacro assert-square-matrix (&rest matrices)
   `(progn
