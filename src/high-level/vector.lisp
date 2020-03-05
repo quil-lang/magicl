@@ -12,6 +12,9 @@
                    (:copier nil))
   (size 0 :type alexandria:positive-fixnum))
 
+(defmethod layout ((v vector))
+  :row-major)
+
 (defmacro defvector (name type tensor-class)
   "Define a new vector subclass with the specified NAME and element TYPE,
 compatible with TENSOR-CLASS, as well as the abstract-tensor methods
