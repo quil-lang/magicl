@@ -200,7 +200,7 @@ ELEMENT-TYPE, CAST, COPY-TENSOR, DEEP-COPY-TENSOR, TREF, SETF TREF)"
   (cl:= (nrows matrix) (ncols matrix)))
 
 (defun identity-matrix-p (matrix &optional (epsilon *double-comparison-threshold*))
-  "Whether MATRIX is an idenity matrix"
+  "Whether MATRIX is an identity matrix"
   (unless (square-matrix-p matrix) (return-from identity-matrix-p nil))
   (map-indexes (shape matrix)
                (lambda (r c)
