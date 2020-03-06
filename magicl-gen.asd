@@ -7,7 +7,8 @@
   :description "Generate MAGICL interfaces"
   :maintainer "Rigetti Computing"
   :author "Rigetti Computing"
-  :depends-on (#:cffi
+  :depends-on (#:abstract-classes
+               #:cffi
                #:cffi-libffi)
   :serial t
   :components
