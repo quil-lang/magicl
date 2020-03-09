@@ -6,7 +6,11 @@
 
 (defgeneric lapack-eig (matrix))
 
+(defgeneric lapack-hermitian-eig (matrix))
+
 (defgeneric lapack-lu (matrix))
+
+(defgeneric lapack-inv (matrix))
 
 (defgeneric lapack-csd (matrix p q))
 
