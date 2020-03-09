@@ -12,6 +12,9 @@
                    (:copier nil))
   (size 0 :type alexandria:positive-fixnum))
 
+(defmethod size ((m vector))
+  (vector-size m))
+
 (defmethod layout ((v vector))
   :row-major)
 
