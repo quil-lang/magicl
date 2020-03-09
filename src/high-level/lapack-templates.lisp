@@ -9,56 +9,94 @@
 
 (in-package #:magicl)
 
-(defun generate-lapack-mult-for-type (class type blas-function)
-  `(defmethod mult ((a ,class) (b ,class) &key target (alpha ,(coerce 1 type)) (beta ,(coerce 0 type)) (transa :n) (transb :n))
-     (policy-cond:with-expectations (> speed safety)
-         ((type (member nil :n :t :c) transa)
-          (type (member nil :n :t :c) transb))
-       (let* ((m (if (eq :n transa) (nrows a) (ncols a)))
-              (k (if (eq :n transa) (ncols a) (nrows a)))
-              (n (if (eq :n transb) (ncols b) (nrows b)))
-              (brows (if (eq :n transb) (nrows b) (ncols b))))
-         (policy-cond:with-expectations (> speed safety)
-             ((assertion (cl:= k brows))
-              (assertion (or (not target) (equal (shape target) (list m n)))))
-           (let ((ta
-                   (if (eql :row-major (layout a))
-                       (case transa
-                         (:n :t)
-                         (:t :n)
-                         (:c (error "Specifying TRANSA to be :C is not allowed if A is ROW-MAJOR")))
-                       transa))
-                 (tb (if (eql :row-major (layout b))
-                         (case transb
+(defun generate-lapack-mult-for-type (matrix-class vector-class type matrix-matrix-function matrix-vector-function)
+  `(progn
+     (defmethod mult ((a ,matrix-class) (b ,matrix-class) &key target (alpha ,(coerce 1 type)) (beta ,(coerce 0 type)) (transa :n) (transb :n))
+       (policy-cond:with-expectations (> speed safety)
+           ((type (member nil :n :t :c) transa)
+            (type (member nil :n :t :c) transb))
+         (let* ((m (if (eq :n transa) (nrows a) (ncols a)))
+                (k (if (eq :n transa) (ncols a) (nrows a)))
+                (n (if (eq :n transb) (ncols b) (nrows b)))
+                (brows (if (eq :n transb) (nrows b) (ncols b))))
+           (policy-cond:with-expectations (> speed safety)
+               ((assertion (cl:= k brows))
+                (assertion (or (not target) (equal (shape target) (list m n)))))
+             (let ((ta
+                     (if (eql :row-major (layout a))
+                         (case transa
                            (:n :t)
                            (:t :n)
-                           (:c (error "Specifying TRANSB to be :C is not allowed if B is ROW-MAJOR")))
-                         transb))
-                 (target (or target
-                             (empty
-                              (list m n)
-                              :type ',type))))
-             (,blas-function
-              (ecase ta
-                (:t "T")
-                (:c "C")
-                (:n "N"))
-              (ecase tb
-                (:t "T")
-                (:c "C")
-                (:n "N"))
-              m
-              n
-              k
-              alpha
-              (storage a)
-              (if (eql :n ta) m k)
-              (storage b)
-              (if (eql :n tb) k n)
-              beta
-              (storage target)
-              m)
-             target))))))
+                           (:c (error "Specifying TRANSA to be :C is not allowed if A is ROW-MAJOR")))
+                         transa))
+                   (tb (if (eql :row-major (layout b))
+                           (case transb
+                             (:n :t)
+                             (:t :n)
+                             (:c (error "Specifying TRANSB to be :C is not allowed if B is ROW-MAJOR")))
+                           transb))
+                   (target (or target
+                               (empty
+                                (list m n)
+                                :type ',type))))
+               (,matrix-matrix-function
+                (ecase ta
+                  (:t "T")
+                  (:c "C")
+                  (:n "N"))
+                (ecase tb
+                  (:t "T")
+                  (:c "C")
+                  (:n "N"))
+                m
+                n
+                k
+                alpha
+                (storage a)
+                (if (eql :n ta) m k)
+                (storage b)
+                (if (eql :n tb) k n)
+                beta
+                (storage target)
+                m)
+               target)))))
+     (defmethod mult ((a ,matrix-class) (x ,vector-class) &key target (alpha ,(coerce 1 type)) (beta ,(coerce 0 type)) (transa :n) transb)
+       (declare (ignore transb))
+       (policy-cond:with-expectations (> speed safety)
+           ((type (member nil :n :t :c) transa))
+         (let* ((m-op (if (eq :n transa) (nrows a) (ncols a)))
+                (n-op (if (eq :n transa) (ncols a) (nrows a))))
+           (policy-cond:with-expectations (> speed safety)
+               ((assertion (cl:= n-op (size x)))
+                (assertion (or (not target) (equal (shape target) (list m-op)))))
+             (let ((ta
+                     (if (eql :row-major (layout a))
+                         (case transa
+                           (:n :t)
+                           (:t :n)
+                           (:c (error "Specifying TRANS to be :C is not allowed if A is ROW-MAJOR")))
+                         transa))
+                   (target (or target
+                               (empty
+                                (list m-op)
+                                :type ',type))))
+               (,matrix-vector-function
+                (ecase ta
+                  (:t "T")
+                  (:c "C")
+                  (:n "N"))
+                (if (eql :column-major (layout a)) (nrows a) (ncols a))
+                (if (eql :column-major (layout a)) (ncols a) (nrows a))
+                alpha
+                (storage a)
+                (if (eql :n ta) (ncols a) (nrows a))
+                (storage x)
+                1 ;; NOTE: This corresponds to the stride of X
+                beta
+                (storage target)
+                1 ;; NOTE: THis corresponds to the stride of TARGET
+                )
+               target)))))))
 
 (defun generate-lapack-lu-for-type (class type lu-function)
   (declare (ignore type))

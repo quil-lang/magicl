@@ -10,6 +10,7 @@
                 ,@(loop :for type :in '(single-float double-float (complex single-float) (complex double-float))
                         :for real-type :in (list nil nil 'single-float 'double-float)
                         :for matrix-class :in '(matrix/single-float matrix/double-float matrix/complex-single-float matrix/complex-double-float)
+                        :for vector-class :in '(vector/single-float vector/double-float vector/complex-single-float vector/complex-double-float)
                         :for prefix :in '("s" "d" "c" "z")
                         :append
                         (labels ((generate-routine-symbol (package routine)
@@ -21,8 +22,8 @@
                           (let ((complex (not (null real-type))))
                             (list
                              (generate-lapack-mult-for-type
-                              matrix-class type
-                              (blas-routine "gemm"))
+                              matrix-class vector-class type
+                              (blas-routine "gemm") (blas-routine "gemv"))
                              (generate-lapack-lu-for-type
                               matrix-class type (lapack-routine "getrf"))
                              (generate-lapack-inv-for-type
