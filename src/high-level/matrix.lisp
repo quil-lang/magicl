@@ -286,10 +286,6 @@ ELEMENT-TYPE, CAST, COPY-TENSOR, DEEP-COPY-TENSOR, TREF, SETF TREF)"
            (list 0 index)
            (list (nrows m) (1+ index)))))
 
-(defgeneric mult (a b &key target alpha beta transa transb)
-  (:documentation "Multiply matrix a by matrix b, storing in target or creating a new matrix if target is not specified.
-Target cannot be the same as a or b."))
-
 (defgeneric @ (matrix &rest matrices)
     (:documentation "Multiplication of matrices")
   (:method (matrix &rest matrices)
