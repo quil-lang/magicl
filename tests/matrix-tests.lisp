@@ -29,6 +29,90 @@
 
 ;; Multiplication
 
+(deftest test-matrix-multiplication ()
+  "Test multiplication for random pairs of matrices"
+  (labels ((mult (a b)
+             (assert (= (magicl:ncols a) (magicl:nrows b)))
+             (let* ((m (magicl:nrows a))
+                    (n (magicl:ncols b))
+                    (p (magicl:ncols a))
+                    (target (magicl:empty (list m n))))
+               (loop :for i :below m
+                     :do (loop :for j :below n
+                               :do (setf (magicl:tref target i j)
+                                         (loop :for k :below p
+                                               :sum (* (magicl:tref a i k)
+                                                       (magicl:tref b k j))))))
+               target)))
+    (loop :for magicl::*default-tensor-type* :in +magicl-float-types+
+          :do
+             (loop :for i :below 1000
+                   :do
+                      (let* ((n (1+ (random 5)))
+                             (m (1+ (random 5)))
+                             (k (1+ (random 5)))
+                             (a (magicl:rand (list m k)))
+                             (b (magicl:rand (list k n)))
+                             (c (magicl:rand (list m n))))
+                        ;; Check that multiplication returns the correct result
+                        (is (magicl:=
+                             (mult a b)
+                             (magicl:mult a b)))
+
+                        ;; Check that transposing doesn't affect correctness
+                        (is (magicl:=
+                             (mult (magicl:transpose a) c)
+                             (magicl:mult a c :transa :t)))
+                        (is (magicl:=
+                             (mult b (magicl:transpose c))
+                             (magicl:mult b c :transb :t)))
+                        (is (magicl:=
+                             (mult (magicl:transpose b) (magicl:transpose a))
+                             (magicl:mult b a :transa :t :transb :t)))
+
+                        ;; Check that alpha correctly scales the matrices
+                        (is (magicl:=
+                             (mult (magicl:scale a 2) b)
+                             (magicl:mult a b :alpha (coerce 2 magicl::*default-tensor-type*)))))))))
+
+(deftest test-matrix-vector-multiplication ()
+  "Test multiplication for random pairs of matrix and vectors"
+  (labels ((mult (a x)
+             (assert (= (magicl:ncols a) (magicl:size x)))
+             (let* ((m (magicl:nrows a))
+                    (n (magicl:ncols a))
+                    (target (magicl:empty (list m))))
+               (loop :for i :below m
+                     :do (setf (magicl:tref target i)
+                               (loop :for k :below n
+                                     :sum (* (magicl:tref a i k)
+                                             (magicl:tref x k)))))
+               target)))
+    (loop :for magicl::*default-tensor-type* :in +magicl-float-types+
+          :do
+             (loop :for i :below 1000
+                   :do
+                      (let* ((n (1+ (random 5)))
+                             (m (1+ (random 5)))
+                             (a (magicl:rand (list m n)))
+                             (x (magicl:rand (list n)))
+                             (y (magicl:rand (list m))))
+
+                        ;; Check that multiplication returns the correct result
+                        (is (magicl:=
+                             (mult a x)
+                             (magicl:mult a x)))
+
+                        ;; Check that transposing doesn't affect correctness
+                        (is (magicl:=
+                             (mult (magicl:transpose a) y)
+                             (magicl:mult a y :transa :t)))
+
+                        ;; Check that alpha correctly scales the matrices
+                        (is (magicl:=
+                             (mult (magicl:scale a 2) x)
+                             (magicl:mult a x :alpha (coerce 2 magicl::*default-tensor-type*)))))))))
+
 (deftest test-matrix-multiplication-errors ()
   (signals simple-error (magicl:@
                          (magicl:empty '(3 3))
@@ -43,10 +127,10 @@
 
 (deftest test-complex-matrix-multiplication-results ()
   "Test a few basic complex matrix multiplications"
-  (let* ((m-old (magicl:from-list '(#C(1d0 2d0) #C(3d0 4d0) #C(5d0 6d0) #C(7d0 8d0)) '(2 2) :layout :row-major))
-         (m (magicl:from-list '(#C(1d0 2d0) #C(3d0 4d0) #C(5d0 6d0) #C(7d0 8d0)) '(2 2) :layout :row-major))
-         (x-old (magicl:from-list '(#C(1d0 2d0) #C(3d0 4d0)) '(2 1)))
+  (let* ((m (magicl:from-list '(#C(1d0 2d0) #C(3d0 4d0) #C(5d0 6d0) #C(7d0 8d0)) '(2 2) :layout :row-major))
+         (m-old (magicl::deep-copy-tensor m))
          (x (magicl:from-list '(#C(1d0 2d0) #C(3d0 4d0)) '(2 1)))
+         (x-old (magicl::deep-copy-tensor x))
          (expected (magicl:from-list '(#C(-10d0 28d0) #C(-18d0 68d0)) '(2 1))))
     ;; Check that the multiplication is correct and does not throw any errors
     (is (magicl:= expected (magicl:@ m x)))
