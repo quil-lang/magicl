@@ -61,9 +61,9 @@
                 m)
                target)))))
      (defmethod mult ((a ,matrix-class) (x ,vector-class) &key target (alpha ,(coerce 1 type)) (beta ,(coerce 0 type)) (transa :n) transb)
-       (declare (ignore transb))
        (policy-cond:with-expectations (> speed safety)
-           ((type (member nil :n :t :c) transa))
+           ((type (member nil :n :t :c) transa)
+            (assertion (null transb)))
          (let* ((m-op (if (eq :n transa) (nrows a) (ncols a)))
                 (n-op (if (eq :n transa) (ncols a) (nrows a))))
            (policy-cond:with-expectations (> speed safety)
@@ -89,7 +89,7 @@
                 (if (eql :column-major (layout a)) (ncols a) (nrows a))
                 alpha
                 (storage a)
-                (if (eql :n ta) (ncols a) (nrows a))
+                (if (eql :column-major (layout a)) (nrows a) (ncols a))
                 (storage x)
                 1 ;; NOTE: This corresponds to the stride of X
                 beta

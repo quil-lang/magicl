@@ -4,6 +4,10 @@
 
 (in-package #:magicl)
 
+(defgeneric mult (a b &key target alpha beta transa transb)
+  (:documentation "Multiply a by b, storing in target or creating a new tensor if target is not specified.
+Target cannot be the same as a or b."))
+
 (defgeneric lapack-eig (matrix))
 
 (defgeneric lapack-hermitian-eig (matrix))
