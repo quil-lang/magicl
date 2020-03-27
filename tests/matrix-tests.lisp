@@ -14,18 +14,18 @@
 
 (deftest test-identity-matrix-p ()
   "Test that identity matrices can be identified by IDENTITY-MATRIX-P for all types of matrixes from 1x1 to 64x64"
-  (loop :for i :from 1 :to 64
-        :do (loop :for type :in +magicl-types+
-                  :do (is (magicl:identity-matrix-p (magicl:eye (list i i) :type type)))
-                      (is (not (magicl:identity-matrix-p (magicl:eye (list i i) :value 2 :type type))))
-                      (is (not (magicl:identity-matrix-p (magicl:const 0 (list i i) :type type)))))))
+  (dolist (type +magic-types+)
+    (loop :for i :from 1 :to 64 :do
+      (is (magicl:identity-matrix-p (magicl:eye (list i i) :type type)))
+      (is (not (magicl:identity-matrix-p (magicl:eye (list i i) :value 2 :type type))))
+      (is (not (magicl:identity-matrix-p (magicl:const 0 (list i i) :type type)))))))
 
 (deftest test-square-matrix-p ()
   "Test that square matrices can be identified by IDENTITY-MATRIX-P for all types of matrixes from 1x1 to 64x64"
-  (loop :for i :from 1 :to 64
-        :do (loop :for type :in +magicl-types+
-                  :do (is (magicl:square-matrix-p (magicl:empty (list i i) :type type)))
-                      (is (not (magicl:square-matrix-p (magicl:empty (list i (* 2 i)) :type type)))))))
+  (dolist (type +magicl-types+)
+    (loop :for i :from 1 :to 64 :do
+      (is (magicl:square-matrix-p (magicl:empty (list i i) :type type)))
+      (is (not (magicl:square-matrix-p (magicl:empty (list i (* 2 i)) :type type)))))))
 
 ;; Multiplication
 
@@ -37,43 +37,41 @@
                     (n (magicl:ncols b))
                     (p (magicl:ncols a))
                     (target (magicl:empty (list m n))))
-               (loop :for i :below m
-                     :do (loop :for j :below n
-                               :do (setf (magicl:tref target i j)
-                                         (loop :for k :below p
-                                               :sum (* (magicl:tref a i k)
-                                                       (magicl:tref b k j))))))
+               (loop :for i :below m :do
+                 (loop :for j :below n :do
+                   (setf (magicl:tref target i j)
+                         (loop :for k :below p
+                               :sum (* (magicl:tref a i k)
+                                       (magicl:tref b k j))))))
                target)))
-    (loop :for magicl::*default-tensor-type* :in +magicl-float-types+
-          :do
-             (loop :for i :below 1000
-                   :do
-                      (let* ((n (1+ (random 5)))
-                             (m (1+ (random 5)))
-                             (k (1+ (random 5)))
-                             (a (magicl:rand (list m k)))
-                             (b (magicl:rand (list k n)))
-                             (c (magicl:rand (list m n))))
-                        ;; Check that multiplication returns the correct result
-                        (is (magicl:=
-                             (mult a b)
-                             (magicl:mult a b)))
+    (dolist (magicl::*default-tensor-type* +magicl-float-types+)
+      (loop :for i :below 1000 :do
+        (let* ((n (1+ (random 5)))
+               (m (1+ (random 5)))
+               (k (1+ (random 5)))
+               (a (magicl:rand (list m k)))
+               (b (magicl:rand (list k n)))
+               (c (magicl:rand (list m n))))
+          ;; Check that multiplication returns the correct result
+          (is (magicl:=
+               (mult a b)
+               (magicl:mult a b)))
 
-                        ;; Check that transposing doesn't affect correctness
-                        (is (magicl:=
-                             (mult (magicl:transpose a) c)
-                             (magicl:mult a c :transa :t)))
-                        (is (magicl:=
-                             (mult b (magicl:transpose c))
-                             (magicl:mult b c :transb :t)))
-                        (is (magicl:=
-                             (mult (magicl:transpose b) (magicl:transpose a))
-                             (magicl:mult b a :transa :t :transb :t)))
+          ;; Check that transposing doesn't affect correctness
+          (is (magicl:=
+               (mult (magicl:transpose a) c)
+               (magicl:mult a c :transa :t)))
+          (is (magicl:=
+               (mult b (magicl:transpose c))
+               (magicl:mult b c :transb :t)))
+          (is (magicl:=
+               (mult (magicl:transpose b) (magicl:transpose a))
+               (magicl:mult b a :transa :t :transb :t)))
 
-                        ;; Check that alpha correctly scales the matrices
-                        (is (magicl:=
-                             (mult (magicl:scale a 2) b)
-                             (magicl:mult a b :alpha (coerce 2 magicl::*default-tensor-type*)))))))))
+          ;; Check that alpha correctly scales the matrices
+          (is (magicl:=
+               (mult (magicl:scale a 2) b)
+               (magicl:mult a b :alpha (coerce 2 magicl::*default-tensor-type*)))))))))
 
 (deftest test-matrix-vector-multiplication ()
   "Test multiplication for random pairs of matrix and vectors"
@@ -82,36 +80,34 @@
              (let* ((m (magicl:nrows a))
                     (n (magicl:ncols a))
                     (target (magicl:empty (list m))))
-               (loop :for i :below m
-                     :do (setf (magicl:tref target i)
-                               (loop :for k :below n
-                                     :sum (* (magicl:tref a i k)
-                                             (magicl:tref x k)))))
+               (loop :for i :below m :do
+                 (setf (magicl:tref target i)
+                       (loop :for k :below n
+                             :sum (* (magicl:tref a i k)
+                                     (magicl:tref x k)))))
                target)))
-    (loop :for magicl::*default-tensor-type* :in +magicl-float-types+
-          :do
-             (loop :for i :below 1000
-                   :do
-                      (let* ((n (1+ (random 5)))
-                             (m (1+ (random 5)))
-                             (a (magicl:rand (list m n)))
-                             (x (magicl:rand (list n)))
-                             (y (magicl:rand (list m))))
+    (dolist (magicl::*default-tensor-type* +magicl-float-types+)
+      (loop :for i :below 1000 :do
+        (let* ((n (1+ (random 5)))
+               (m (1+ (random 5)))
+               (a (magicl:rand (list m n)))
+               (x (magicl:rand (list n)))
+               (y (magicl:rand (list m))))
 
-                        ;; Check that multiplication returns the correct result
-                        (is (magicl:=
-                             (mult a x)
-                             (magicl:mult a x)))
+          ;; Check that multiplication returns the correct result
+          (is (magicl:=
+               (mult a x)
+               (magicl:mult a x)))
 
-                        ;; Check that transposing doesn't affect correctness
-                        (is (magicl:=
-                             (mult (magicl:transpose a) y)
-                             (magicl:mult a y :transa :t)))
+          ;; Check that transposing doesn't affect correctness
+          (is (magicl:=
+               (mult (magicl:transpose a) y)
+               (magicl:mult a y :transa :t)))
 
-                        ;; Check that alpha correctly scales the matrices
-                        (is (magicl:=
-                             (mult (magicl:scale a 2) x)
-                             (magicl:mult a x :alpha (coerce 2 magicl::*default-tensor-type*)))))))))
+          ;; Check that alpha correctly scales the matrices
+          (is (magicl:=
+               (mult (magicl:scale a 2) x)
+               (magicl:mult a x :alpha (coerce 2 magicl::*default-tensor-type*)))))))))
 
 (deftest test-matrix-multiplication-errors ()
   (signals simple-error (magicl:@
@@ -144,13 +140,13 @@
 
 (deftest test-random-unitary-properties ()
   "Test calls to RANDOM-UNITARY for all float types and sizes 1x1 to 64x64 to check properties"
-  (loop :for type :in +magicl-float-types+
-        :do (loop :for i :from 1 :to 64
-                  :do (let ((m (magicl:random-unitary (list i i) :type type)))
-                        (is (> 5e-5 (abs (cl:-
-                                          (abs (magicl:det m))
-                                          1))))
-                        (is (magicl:=
-                             (magicl:eye (list i i) :type type)
-                             (magicl:@ m (magicl:transpose m))
-                             5e-5))))))
+  (dolist (type +magicl-float-types+)
+    (loop :for i :from 1 :to 64 :do
+      (let ((m (magicl:random-unitary (list i i) :type type)))
+        (is (> 5e-5 (abs (cl:-
+                          (abs (magicl:det m))
+                          1))))
+        (is (magicl:=
+             (magicl:eye (list i i) :type type)
+             (magicl:@ m (magicl:transpose m))
+             5e-5))))))
