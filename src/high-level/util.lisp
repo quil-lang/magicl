@@ -7,6 +7,22 @@
 (defvar *float-comparison-threshold* single-float-epsilon)
 (defvar *double-comparison-threshold* double-float-epsilon)
 
+(declaim (inline matrix-row-major-index))
+(defun matrix-row-major-index (row col numrows numcols)
+  (declare (optimize (speed 3) (safety 0))
+           (ignore numrows)
+           (type fixnum row col numcols)
+           (values fixnum))
+  (+ col (the fixnum (* row numcols))))
+
+(declaim (inline matrix-column-major-index))
+(defun matrix-column-major-index (row col numrows numcols)
+  (declare (optimize (speed 3) (safety 0))
+           (ignore numcols)
+           (type fixnum row col numrows)
+           (values fixnum))
+  (+ row (the fixnum (* col numrows))))
+
 (defun row-major-index (pos dims)
   (declare (type index pos)
            (type shape dims)
@@ -29,22 +45,6 @@
             :for acc :of-type fixnum := i
               :then (+ i (the fixnum (* d acc)))
             :finally (return acc))))
-
-(declaim (inline matrix-row-major-index))
-(defun matrix-row-major-index (row col numrows numcols)
-  (declare (optimize (speed 3) (safety 0))
-           (ignore numrows)
-           (type fixnum row col numcols)
-           (values fixnum))
-  (+ col (the fixnum (* row numcols))))
-
-(declaim (inline matrix-column-major-index))
-(defun matrix-column-major-index (row col numrows numcols)
-  (declare (optimize (speed 3) (safety 0))
-           (ignore numcols)
-           (type fixnum row col numrows)
-           (values fixnum))
-  (+ row (the fixnum (* col numrows))))
 
 (defun from-row-major-index (index dims)
   (check-type index fixnum)

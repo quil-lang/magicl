@@ -23,6 +23,9 @@
 (defgeneric (setf tref) (new-value tensor &rest pos)
   (:documentation "Set the value of element at position"))
 
+(defgeneric make-tensor (class shape &key initial-element layout storage)
+  (:documentation "Make a dense tensor with elements of the specified type"))
+
 (defgeneric copy-tensor (tensor &rest args)
   (:documentation "Create a new tensor with the same properties as the given tensor, creating new storage without initializing contents"))
 
