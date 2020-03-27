@@ -44,6 +44,7 @@
 
 ;; Types
 (deftype shape (&optional order)
+  (declare (ignore order))
   `(satisfies valid-shape-p))
 
 (deftype index ()

@@ -7,9 +7,6 @@
 (defvar *default-tensor-type* 'double-float
   "The default element type to be used for constructing tensors when TYPE is not specified.")
 
-(defgeneric make-tensor (class shape &key initial-element layout storage)
-  (:documentation "Make a dense tensor with elements of the specified type"))
-
 (defun empty (shape &key (type *default-tensor-type*) layout)
   "Create a tensor without intializing the contents of the storage
 
