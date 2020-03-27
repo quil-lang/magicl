@@ -4,8 +4,8 @@
 
 (in-package #:magicl)
 
-(defvar *float-comparison-threshold* single-float-epsilon)
-(defvar *double-comparison-threshold* double-float-epsilon)
+(defvar *float-comparison-threshold* (* 1e2 single-float-epsilon))
+(defvar *double-comparison-threshold* (* 1e2  double-float-epsilon))
 
 (declaim (inline matrix-row-major-index))
 (defun matrix-row-major-index (row col numrows numcols)
