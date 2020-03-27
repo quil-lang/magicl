@@ -16,8 +16,6 @@
 
 (in-package #:magicl-examples)
 
-(defconstant +double-comparison-threshold-loose+ (* 256 double-float-epsilon))
-
 (defun print-matrix (m)
   (princ m)
   (terpri)
@@ -63,7 +61,7 @@
     (format t "R~%~a~%" r)
     (let ((a-reconst (magicl:@ q r)))
       (format t "Reconstructed A~%~a~%" a-reconst)
-      (assert (magicl:= a a-reconst +double-comparison-threshold-loose+)))))
+      (assert (magicl:= a a-reconst)))))
 
 (defun ql-printing (a)
   (multiple-value-bind (q l)
@@ -73,7 +71,7 @@
     (format t "L~%~a~%" l)
     (let ((a-reconst (magicl:@ q l)))
       (format t "Reconstructed A~%~a~%" a-reconst)
-      (assert (magicl:= a a-reconst +double-comparison-threshold-loose+)))))
+      (assert (magicl:= a a-reconst)))))
 
 (defun rq-printing (a)
   (multiple-value-bind (q r)
@@ -83,7 +81,7 @@
     (format t "R~%~a~%" r)
     (let ((a-reconst (magicl:@ r q)))
       (format t "Reconstructed A~%~a~%" a-reconst)
-      (assert (magicl:= a a-reconst +double-comparison-threshold-loose+)))))
+      (assert (magicl:= a a-reconst)))))
 
 (defun lq-printing (a)
   (multiple-value-bind (q l)
@@ -93,7 +91,7 @@
     (format t "L~%~a~%" l)
     (let ((a-reconst (magicl:@ l q)))
       (format t "Reconstructed A~%~a~%" a-reconst)
-      (assert (magicl:= a a-reconst +double-comparison-threshold-loose+)))))
+      (assert (magicl:= a a-reconst)))))
 
 (defun svd-printing (a)
   (multiple-value-bind (u sigma vt) (magicl:svd a)
