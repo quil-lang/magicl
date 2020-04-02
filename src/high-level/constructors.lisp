@@ -125,19 +125,19 @@ If INPUT-LAYOUT is not specified then row-major is assumed.
 If TYPE is not specified then it is inferred from the type of the first element of LIST.
 LAYOUT specifies the internal storage representation ordering of the returned tensor.
 The tensor is specialized on SHAPE and TYPE."
-  (policy-cond:with-expectations (> speed safety)
-      ((type shape shape)
-       (assertion (cl:= (length list) (reduce #'* shape))))
-    (let* ((tensor-class (infer-tensor-type type shape (first list)))
-           (tensor (make-tensor tensor-class shape :layout layout)))
-      (into!
-       (lambda (&rest pos)
-         (nth
-          (if (eql input-layout :row-major)
-              (row-major-index pos shape)
-              (column-major-index pos shape))
-          list))
-       tensor))))
+  (let ((len (length list)))
+    (policy-cond:with-expectations (> speed safety)
+        ((type shape shape)
+         (assertion (cl:= len (reduce #'* shape))))
+      (let* ((tensor-class (infer-tensor-type type shape (first list)))
+             (tensor (make-tensor tensor-class shape :layout layout))
+             (index-function (if (eql input-layout :row-major)
+                                 #'from-row-major-index
+                                 #'from-column-major-index)))
+        (loop :for i :below len :do
+          (setf (apply #'tref tensor (funcall index-function i shape))
+                (pop list)))
+        tensor))))
 
 (defun from-diag (list &key (order 2) type layout)
   "Create a tensor from a list, placing along the diagonal
