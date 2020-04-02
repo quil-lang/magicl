@@ -75,8 +75,18 @@ The tensor is specialized on SHAPE and TYPE."
            (tensor (make-tensor tensor-class shape :layout layout))
            (shape-length (length shape))
            (fill-value (coerce (or value 1) (element-type tensor))))
-      (loop :for i :below (reduce #'min shape)
-            :do (setf (apply #'tref tensor (make-list shape-length :initial-element i)) fill-value))
+      (cond
+        ((/= offset 0)
+         (assert (cl:= shape-length 2)
+                 ()
+                 "The length of SHAPE must be 2 when OFFSET is specified. Shape has length ~A." shape-length)
+         ;; Now we know we are dealing with a matrix.
+         (loop :for i :from (max 0 (- offset)) :below (first shape)
+               :for j :from (max 0 offset) :below (second shape) :do
+                 (setf (tref tensor i j) fill-value)))
+        (t
+         (loop :for i :below (reduce #'min shape)
+               :do (setf (apply #'tref tensor (make-list shape-length :initial-element i)) fill-value))))
       tensor)))
 
 (defun arange (range &key (type *default-tensor-type*))
