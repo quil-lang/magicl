@@ -149,20 +149,30 @@ The tensor is specialized on SHAPE and TYPE."
           (setf (apply #'tref tensor (funcall index-function i shape))
                 (pop list)))))))
 
-(defun from-diag (list &key (order 2) type layout)
+(defun from-diag (list &key (order 2) (offset 0) type layout)
   "Create a tensor from a list, placing along the diagonal
 
 If ORDER is specified then the tensor will be of that order, otherwise 2 is assumed.
 If TYPE is not specified then it is inferred from the type of the first element of LIST.
 LAYOUT specifies the internal storage representation ordering of the returned tensor.
 The tensor is specialized on SHAPE and TYPE."
-  (let* ((length (length list))
+  (let* ((length (+ (length list) (abs offset)))
          (shape (fixnum-to-shape length order))
          (tensor-class (infer-tensor-type type shape (first list)))
          (tensor (make-tensor tensor-class shape :layout layout)))
-    (loop :for i :below length
-          :do (setf (apply #'tref tensor (make-list order :initial-element i))
-                    (pop list)))
+    (cond
+      ((/= offset 0)
+       (assert (cl:= (length shape) 2)
+               ()
+               "The length of SHAPE must be 2 when OFFSET is specified. Shape has length ~A." (length shape))
+       ;; Now we know we are dealing with a matrix.
+       (loop :for i :from (max 0 (- offset)) :below (first shape)
+             :for j :from (max 0 offset) :below (second shape) :do
+               (setf (tref tensor i j) (pop list))))
+      (t
+       (loop :for i :below (reduce #'min shape)
+             :do (setf (apply #'tref tensor (make-list order :initial-element i))
+                       (pop list)))))
     tensor))
 
 ;;; Constructors for convenience
