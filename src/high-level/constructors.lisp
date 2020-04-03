@@ -64,7 +64,8 @@ SHAPE can either be a list of dimensions or a fixnum defining the length of the 
 If VALUE is not specified then 1 is used.
 If TYPE is not specified then it is inferred from the type of VALUE, defaulting to *DEFAULT-TENSOR-TYPE*.
 LAYOUT specifies the internal storage representation ordering of the returned tensor.
-The tensor is specialized on SHAPE and TYPE."
+The tensor is specialized on SHAPE and TYPE.
+If OFFSET is specified then the diagonal band will be offset by that much, positive shifting up and negative shifting down."
   (policy-cond:with-expectations (> speed safety)
       ((type (or shape fixnum) shape)
        (type fixnum offset))
@@ -155,7 +156,8 @@ The tensor is specialized on SHAPE and TYPE."
 If ORDER is specified then the tensor will be of that order, otherwise 2 is assumed.
 If TYPE is not specified then it is inferred from the type of the first element of LIST.
 LAYOUT specifies the internal storage representation ordering of the returned tensor.
-The tensor is specialized on SHAPE and TYPE."
+The tensor is specialized on SHAPE and TYPE.
+If OFFSET is specified then the diagonal band will be offset by that much, positive shifting up and negative shifting down."
   (let* ((length (+ (length list) (abs offset)))
          (shape (fixnum-to-shape length order))
          (tensor-class (infer-tensor-type type shape (first list)))
