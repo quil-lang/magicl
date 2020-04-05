@@ -66,29 +66,34 @@ If TYPE is not specified then it is inferred from the type of VALUE, defaulting 
 LAYOUT specifies the internal storage representation ordering of the returned tensor.
 The tensor is specialized on SHAPE and TYPE.
 If OFFSET is specified then the diagonal band will be offset by that much, positive shifting up and negative shifting down."
-  (policy-cond:with-expectations (> speed safety)
-      ((type (or shape fixnum) shape)
-       (type fixnum offset))
-    (let* ((shape (if (integerp shape)
-                      (fixnum-to-shape shape)
-                      shape))
-           (tensor-class (infer-tensor-type (if value nil type) shape value))
-           (tensor (make-tensor tensor-class shape :layout layout))
-           (shape-length (length shape))
-           (fill-value (coerce (or value 1) (element-type tensor))))
-      (cond
-        ((/= offset 0)
-         (assert (cl:= shape-length 2)
-                 ()
-                 "The length of SHAPE must be 2 when OFFSET is specified. Shape has length ~A." shape-length)
-         ;; Now we know we are dealing with a matrix.
+  (declare (type (or shape fixnum) shape)
+           (type fixnum offset))
+  (let ((shape (if (integerp shape)
+                   (fixnum-to-shape shape)
+                   shape)))
+    (cond
+      ((/= offset 0)
+       (assert (cl:= (length shape) 2)
+               (shape)
+               "The length of SHAPE must be 2 when OFFSET is specified. Shape has length ~A." (length shape))
+       ;; Now we know we are dealing with a matrix and can use offsets
+       ;;
+       ;; NOTE: We infer the tensor type this late to allow for
+       ;; reassignment of SHAPE in the assertion.
+       (let* ((tensor-class (infer-tensor-type (if value nil type) shape value))
+              (tensor (make-tensor tensor-class shape :layout layout))
+              (fill-value (coerce (or value 1) (element-type tensor)))) ;; TODO: use registry)
          (loop :for i :from (max 0 (- offset)) :below (first shape)
                :for j :from (max 0 offset) :below (second shape) :do
-                 (setf (tref tensor i j) fill-value)))
-        (t
-         (loop :for i :below (reduce #'min shape)
-               :do (setf (apply #'tref tensor (make-list shape-length :initial-element i)) fill-value))))
-      tensor)))
+                 (setf (tref tensor i j) fill-value))
+         tensor))
+      (t
+       (let* ((tensor-class (infer-tensor-type (if value nil type) shape value))
+              (tensor (make-tensor tensor-class shape :layout layout))
+              (fill-value (coerce (or value 1) (element-type tensor))) ;; TODO: use registry
+              (shape-length (length shape)))
+         (dotimes (i (reduce #'min shape) tensor)
+           (setf (apply #'tref tensor (make-list shape-length :initial-element i)) fill-value)))))))
 
 (defun arange (range &key (type *default-tensor-type*))
   "Create a 1-dimensional tensor of elements from 0 up to but not including the RANGE
@@ -158,24 +163,28 @@ If TYPE is not specified then it is inferred from the type of the first element 
 LAYOUT specifies the internal storage representation ordering of the returned tensor.
 The tensor is specialized on SHAPE and TYPE.
 If OFFSET is specified then the diagonal band will be offset by that much, positive shifting up and negative shifting down."
-  (let* ((length (+ (length list) (abs offset)))
-         (shape (fixnum-to-shape length order))
-         (tensor-class (infer-tensor-type type shape (first list)))
-         (tensor (make-tensor tensor-class shape :layout layout)))
-    (cond
-      ((/= offset 0)
-       (assert (cl:= (length shape) 2)
-               ()
-               "The length of SHAPE must be 2 when OFFSET is specified. Shape has length ~A." (length shape))
-       ;; Now we know we are dealing with a matrix.
+  (cond
+    ((/= offset 0)
+     (assert (cl:= order 2)
+             (order)
+             "ORDER must be 2 when OFFSET is specified. ORDER is ~A." order)
+     ;; Now we know we are dealing with a matrix.
+     (let* ((length (+ (length list) (abs offset)))
+            (shape (fixnum-to-shape length order))
+            (tensor-class (infer-tensor-type type shape (first list)))
+            (tensor (make-tensor tensor-class shape :layout layout)))
        (loop :for i :from (max 0 (- offset)) :below (first shape)
              :for j :from (max 0 offset) :below (second shape) :do
-               (setf (tref tensor i j) (pop list))))
-      (t
-       (loop :for i :below (reduce #'min shape)
-             :do (setf (apply #'tref tensor (make-list order :initial-element i))
-                       (pop list)))))
-    tensor))
+               (setf (tref tensor i j) (pop list)))
+       tensor))
+    (t
+     (let* ((length (+ (length list) (abs offset)))
+            (shape (fixnum-to-shape length order))
+            (tensor-class (infer-tensor-type type shape (first list)))
+            (tensor (make-tensor tensor-class shape :layout layout)))
+       (dotimes (i (reduce #'min shape) tensor)
+         (setf (apply #'tref tensor (make-list order :initial-element i))
+               (pop list)))))))
 
 ;;; Constructors for convenience
 

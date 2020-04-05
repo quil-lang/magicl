@@ -18,6 +18,7 @@
     (loop :for i :from 1 :to 64 :do
       (is (magicl:identity-matrix-p (magicl:eye (list i i) :type type)))
       (is (not (magicl:identity-matrix-p (magicl:eye (list i i) :value 2 :type type))))
+      (is (not (magicl:identity-matrix-p (magicl:eye (list i i) :offset 1 :type type))))
       (is (not (magicl:identity-matrix-p (magicl:const 0 (list i i) :type type)))))))
 
 (deftest test-square-matrix-p ()
