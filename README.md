@@ -1,6 +1,5 @@
 # MAGICL
 
-[![pipeline status](https://gitlab.com/rigetti/magicl/badges/master/pipeline.svg)](https://gitlab.com/rigetti/magicl/commits/master)
 
 _Matrix Algebra proGrams In Common Lisp_ by [Rigetti Computing](http://www.rigetti.com). (née FLAIL: _Finally, Linear Algebra In Lisp!_)
 
