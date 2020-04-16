@@ -75,7 +75,7 @@
 
 (deftest test-matrix-vector-multiplication ()
   "Test multiplication for random pairs of matrix and vectors"
-  (labels ((mult (a x)
+  (labels ((mult1 (a x)
              (assert (= (magicl:ncols a) (magicl:size x)))
              (let* ((m (magicl:nrows a))
                     (n (magicl:ncols a))
@@ -85,7 +85,19 @@
                        (loop :for k :below n
                              :sum (* (magicl:tref a i k)
                                      (magicl:tref x k)))))
+               target))
+           (mult2 (y a)
+             (assert (= (magicl:nrows a) (magicl:size y)))
+             (let* ((m (magicl:nrows a))
+                    (n (magicl:ncols a))
+                    (target (magicl:empty (list n))))
+               (loop :for j :below n :do
+                 (setf (magicl:tref target j)
+                       (loop :for k :below m
+                             :sum (* (magicl:tref a k j)
+                                     (magicl:tref y k)))))
                target)))
+    
     (dolist (magicl::*default-tensor-type* +magicl-float-types+)
       (loop :for i :below 1000 :do
         (let* ((n (1+ (random 5)))
@@ -96,18 +108,27 @@
 
           ;; Check that multiplication returns the correct result
           (is (magicl:=
-               (mult a x)
+               (mult1 a x)
                (magicl:mult a x)))
+          (is (magicl:=
+               (mult2 y a)
+               (magicl:mult y a)))
 
           ;; Check that transposing doesn't affect correctness
           (is (magicl:=
-               (mult (magicl:transpose a) y)
+               (mult1 (magicl:transpose a) y)
                (magicl:mult a y :transa :t)))
+          (is (magicl:=
+               (mult2 x (magicl:transpose a))
+               (magicl:mult x a :transb :t)))
 
           ;; Check that alpha correctly scales the matrices
           (is (magicl:=
-               (mult (magicl:scale a 2) x)
-               (magicl:mult a x :alpha (coerce 2 magicl::*default-tensor-type*)))))))))
+               (mult1 (magicl:scale a 2) x)
+               (magicl:mult a x :alpha (coerce 2 magicl::*default-tensor-type*))))
+          (is (magicl:=
+               (mult2 y (magicl:scale a 2))
+               (magicl:mult y a :beta (coerce 2 magicl::*default-tensor-type*)))))))))
 
 (deftest test-matrix-multiplication-errors ()
   (signals simple-error (magicl:@
