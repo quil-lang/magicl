@@ -23,7 +23,8 @@
                             (list
                              (generate-lapack-mult-for-type
                               matrix-class vector-class type
-                              (blas-routine "gemm") (blas-routine "gemv"))
+                              (blas-routine "gemm") (blas-routine "gemv")
+                              (blas-routine (if complex "dotc" "dot")))
                              (generate-lapack-lu-for-type
                               matrix-class type (lapack-routine "getrf"))
                              (generate-lapack-inv-for-type

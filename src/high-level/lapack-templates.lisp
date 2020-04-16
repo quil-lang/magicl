@@ -9,7 +9,7 @@
 
 (in-package #:magicl)
 
-(defun generate-lapack-mult-for-type (matrix-class vector-class type matrix-matrix-function matrix-vector-function)
+(defun generate-lapack-mult-for-type (matrix-class vector-class type matrix-matrix-function matrix-vector-function vector-vector-function)
   `(progn
      (defmethod mult ((a ,matrix-class) (b ,matrix-class) &key target (alpha ,(coerce 1 type)) (beta ,(coerce 0 type)) (transa :n) (transb :n))
        (policy-cond:with-expectations (> speed safety)
@@ -105,9 +105,29 @@
                 1 ;; NOTE: This corresponds to the stride of X
                 beta
                 (storage target)
-                1 ;; NOTE: THis corresponds to the stride of TARGET
+                1 ;; NOTE: This corresponds to the stride of TARGET
                 )
-               target)))))))
+               target)))))
+
+     (defmethod mult ((a ,vector-class) (b ,vector-class) &key target (alpha ,(coerce 1 type)) (beta ,(coerce 0 type)) transa transb)
+       (let ((n (vector-size a)))
+         (policy-cond:with-expectations (> speed safety)
+             ((type (member nil :n) transa)
+              (type (member nil :n) transb)
+              (type null target)
+              (assertion (cl:= (vector-size b) n))
+              (assertion (cl:= alpha ,(coerce 1 type)))
+              (assertion (cl:= beta ,(coerce 0 type))))
+           ;; !!! Most of the BLAS ?DOT? routines are broken on OSX
+           ,(if (eq vector-vector-function 'magicl.blas-cffi:%ddot)
+              `(,vector-vector-function
+                n
+                (storage a)
+                1 ;; NOTE: This corresponds to the stride of A
+                (storage b)
+                1 ;; NOTE: This corresponds to the stride of B
+                )
+              `(magicl:dot a b)))))))
 
 (defun generate-lapack-lu-for-type (class type lu-function)
   (declare (ignore type))
