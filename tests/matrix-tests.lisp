@@ -90,7 +90,7 @@
              (assert (= (magicl:nrows a) (magicl:size y)))
              (let* ((m (magicl:nrows a))
                     (n (magicl:ncols a))
-                    (target (magicl:empty (list n))))
+                    (target (magicl:transpose (magicl:empty (list n)))))
                (loop :for j :below n :do
                  (setf (magicl:tref target j)
                        (loop :for k :below m
@@ -112,7 +112,7 @@
                (magicl:mult a x)))
           (is (magicl:=
                (mult2 y a)
-               (magicl:mult y a)))
+               (magicl:mult (magicl:transpose y) a)))
 
           ;; Check that transposing doesn't affect correctness
           (is (magicl:=
@@ -120,7 +120,7 @@
                (magicl:mult a y :transa :t)))
           (is (magicl:=
                (mult2 x (magicl:transpose a))
-               (magicl:mult x a :transb :t)))
+               (magicl:mult (magicl:transpose x) a :transb :t)))
 
           ;; Check that alpha correctly scales the matrices
           (is (magicl:=
@@ -128,7 +128,7 @@
                (magicl:mult a x :alpha (coerce 2 magicl::*default-tensor-type*))))
           (is (magicl:=
                (mult2 y (magicl:scale a 2))
-               (magicl:mult y a :beta (coerce 2 magicl::*default-tensor-type*)))))))))
+               (magicl:mult (magicl:transpose y) a :beta (coerce 2 magicl::*default-tensor-type*)))))))))
 
 (deftest test-matrix-multiplication-errors ()
   (signals simple-error (magicl:@
