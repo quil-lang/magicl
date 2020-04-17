@@ -18,16 +18,11 @@
 (defmethod layout ((v vector))
   :row-major)
 
-(defmacro defvector (name type tensor-class)
-  "Define a new vector subclass with the specified NAME and element TYPE,
-compatible with TENSOR-CLASS, as well as the abstract-tensor methods
-required not specified by the generic VECTOR class (MAKE-TENSOR,
-ELEMENT-TYPE, CAST, COPY-TENSOR, DEEP-COPY-TENSOR, TREF, SETF TREF)"
+(defun defsubvector (parent-name name type tensor-class)
   (let ((constructor-sym (intern (format nil "MAKE-~:@(~A~)" name)))
         (copy-sym (intern (format nil "COPY-~:@(~A~)" name)))
         (storage-sym (intern (format nil "~:@(~A~)-STORAGE" name))))
-    `(progn
-       (defstruct (,name (:include vector)
+    `((defstruct (,name (:include ,parent-name)
                          (:constructor ,constructor-sym
                              (size storage))
                          (:copier ,copy-sym))
@@ -100,6 +95,20 @@ ELEMENT-TYPE, CAST, COPY-TENSOR, DEEP-COPY-TENSOR, TREF, SETF TREF)"
              ((assertion (valid-index-p pos (list (vector-size vector)))))
            (setf (aref (,storage-sym vector) (first pos)) new-value))))))
 
+(defmacro defvector (name type tensor-class)
+  "Define a new vector subclass with the specified NAME and element TYPE,
+compatible with TENSOR-CLASS, as well as the abstract-tensor methods
+required not specified by the generic VECTOR class (MAKE-TENSOR,
+ELEMENT-TYPE, CAST, COPY-TENSOR, DEEP-COPY-TENSOR, TREF, SETF TREF)"
+  (let ((row-name (intern (format nil "ROW-~:@(~A~)" name)))
+        (col-name (intern (format nil "COLUMN-~:@(~A~)" name))))
+  `(progn
+       (defstruct (,name (:include vector)
+                                (:constructor nil)
+                                (:copier nil)))
+     ,@(defsubvector name row-name type tensor-class)
+     ,@(defsubvector name col-name type tensor-class)
+     #+sbcl (declaim (sb-ext:freeze-type ,name)))))
 
 (defun pprint-vector (stream vector)
   "Pretty-print a vector VECTOR to the stream STREAM."
