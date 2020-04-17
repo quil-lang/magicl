@@ -100,14 +100,25 @@
 compatible with TENSOR-CLASS, as well as the abstract-tensor methods
 required not specified by the generic VECTOR class (MAKE-TENSOR,
 ELEMENT-TYPE, CAST, COPY-TENSOR, DEEP-COPY-TENSOR, TREF, SETF TREF)"
-  (let ((row-name (intern (format nil "ROW-~:@(~A~)" name)))
-        (col-name (intern (format nil "COLUMN-~:@(~A~)" name))))
+  (let* ((row-name (intern (format nil "ROW-~:@(~A~)" name)))
+         (row-constructor (intern (format nil "MAKE-~:@(~A~)" row-name)))
+         (col-name (intern (format nil "COLUMN-~:@(~A~)" name)))
+         (col-constructor (intern (format nil "MAKE-~:@(~A~)" col-name))))
   `(progn
        (defstruct (,name (:include vector)
                                 (:constructor nil)
                                 (:copier nil)))
+       
      ,@(defvectorsubtype name row-name type tensor-class)
      ,@(defvectorsubtype name col-name type tensor-class)
+
+     ;; NOTE: This is fast because it doesn't copy storage, but for the same reason it is
+     ;; potentially dangerous. Could imagine returning a "frozen" view that doesn't allow SETF TREF.
+     (defmethod transpose ((matrix ,row-name))
+       (,col-constructor (size matrix) (storage matrix)))
+     (defmethod transpose ((matrix ,col-name))
+       (,row-constructor (size matrix) (storage matrix)))
+     
      #+sbcl (declaim (sb-ext:freeze-type ,name)))))
 
 (defun pprint-vector (stream vector)

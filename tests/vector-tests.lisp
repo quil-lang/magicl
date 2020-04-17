@@ -43,12 +43,12 @@
                        (y (magicl:rand (list n))))
                   (is (==
                        (dot x y)
-                       (magicl:dot x y)))
+                       (magicl:dot (magicl:transpose x) y)))
                   (is (==
                        (dot x y)
-                       (magicl:mult x y)))
+                       (magicl:mult (magicl:transpose x) y)))
                   (is (==
-                       (dot (magicl:mult y a) x)
-                       (magicl:@ y a x))))))))
+                       (dot (magicl:mult (magicl:transpose y) a) x)
+                       (magicl:@ (magicl:transpose y) a x))))))))
 
                     
