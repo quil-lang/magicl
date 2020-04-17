@@ -13,7 +13,8 @@
 (defcompatible
     (lambda (tensor)
       (case (order tensor)
-        (1 '(vector/int32
+        (1 '(column-vector/int32
+             row-vector/int32
              tensor/int32))
         (2 '(matrix/int32
              tensor/int32))

@@ -18,7 +18,7 @@
 (defmethod layout ((v vector))
   :row-major)
 
-(defun defsubvector (parent-name name type tensor-class)
+(defun defvectorsubtype (parent-name name type tensor-class)
   (let ((constructor-sym (intern (format nil "MAKE-~:@(~A~)" name)))
         (copy-sym (intern (format nil "COPY-~:@(~A~)" name)))
         (storage-sym (intern (format nil "~:@(~A~)-STORAGE" name))))
@@ -106,8 +106,8 @@ ELEMENT-TYPE, CAST, COPY-TENSOR, DEEP-COPY-TENSOR, TREF, SETF TREF)"
        (defstruct (,name (:include vector)
                                 (:constructor nil)
                                 (:copier nil)))
-     ,@(defsubvector name row-name type tensor-class)
-     ,@(defsubvector name col-name type tensor-class)
+     ,@(defvectorsubtype name row-name type tensor-class)
+     ,@(defvectorsubtype name col-name type tensor-class)
      #+sbcl (declaim (sb-ext:freeze-type ,name)))))
 
 (defun pprint-vector (stream vector)

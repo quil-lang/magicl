@@ -13,7 +13,8 @@
 (defcompatible
     (lambda (tensor)
       (case (order tensor)
-        (1 '(vector/complex-single-float
+        (1 '(column-vector/complex-single-float
+             row-vector/complex-single-float
              tensor/complex-single-float))
         (2 '(matrix/complex-single-float
              tensor/complex-single-float))
@@ -59,9 +60,10 @@
        (return-from = nil))))
   t)
 
-(defmethod = ((tensor1 vector/complex-single-float) (tensor2 vector/complex-single-float) &optional (epsilon *float-comparison-threshold*))
+(declaim (inline complex-single-float-vector=))
+(defun complex-single-float-vector= (tensor1 tensor2 epsilon)
   (unless (equal (shape tensor1) (shape tensor2))
-    (return-from = nil))
+    (return-from complex-single-float-vector= nil))
   (map-indexes
    (shape tensor1)
    (lambda (&rest pos)
@@ -71,5 +73,10 @@
                   (<= (abs (- (imagpart (apply #'tref tensor1 pos))
                               (imagpart (apply #'tref tensor2 pos))))
                       epsilon))
-       (return-from = nil))))
+       (return-from complex-single-float-vector= nil))))
   t)
+
+(defmethod = ((tensor1 column-vector/complex-single-float) (tensor2 column-vector/complex-single-float) &optional (epsilon *float-comparison-threshold*))
+  (complex-single-float-vector= tensor1 tensor2 epsilon))
+(defmethod = ((tensor1 row-vector/complex-single-float) (tensor2 row-vector/complex-single-float) &optional (epsilon *float-comparison-threshold*))
+  (complex-single-float-vector= tensor1 tensor2 epsilon))
