@@ -73,6 +73,7 @@
 
            #:map
            #:map!
+           #:map-blocks
 
            #:reshape
            #:slice
@@ -136,6 +137,7 @@
            #:scale
            #:scale!
            #:diag
+           #:block-diag
            #:det
            #:upper-triangular
            #:lower-triangular
@@ -146,6 +148,7 @@
            #:orthonormalize
            #:orthonormalize!
            #:trace
+           #:partial-trace
            #:direct-sum
            #:conjugate-transpose
            #:conjugate-transpose!
