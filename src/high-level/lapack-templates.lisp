@@ -10,6 +10,8 @@
 (in-package #:magicl)
 
 (defun generate-lapack-mult-for-type (matrix-class vector-class type matrix-matrix-function matrix-vector-function vector-vector-function)
+  (let ((row-vector-class (intern (format nil "ROW-~:@(~A~)" vector-class)))
+        (col-vector-class (intern (format nil "COLUMN-~:@(~A~)" vector-class))))
   `(progn
      (defmethod mult ((a ,matrix-class) (b ,matrix-class) &key target (alpha ,(coerce 1 type)) (beta ,(coerce 0 type)) (transa :n) (transb :n))
        (policy-cond:with-expectations (> speed safety)
@@ -23,18 +25,18 @@
                ((assertion (cl:= k brows))
                 (assertion (or (not target) (equal (shape target) (list m n)))))
              (let ((ta
-                     (if (eql :row-major (layout a))
-                         (case transa
+                    (if (eql :row-major (layout a))
+                      (case transa
+                        (:n :t)
+                        (:t :n)
+                        (:c (error "Specifying TRANSA to be :C is not allowed if A is ROW-MAJOR")))
+                      transa))
+                   (tb (if (eql :row-major (layout b))
+                         (case transb
                            (:n :t)
                            (:t :n)
-                           (:c (error "Specifying TRANSA to be :C is not allowed if A is ROW-MAJOR")))
-                         transa))
-                   (tb (if (eql :row-major (layout b))
-                           (case transb
-                             (:n :t)
-                             (:t :n)
-                             (:c (error "Specifying TRANSB to be :C is not allowed if B is ROW-MAJOR")))
-                           transb))
+                           (:c (error "Specifying TRANSB to be :C is not allowed if B is ROW-MAJOR")))
+                         transb))
                    (target (or target
                                (empty
                                 (list m n)
@@ -61,17 +63,17 @@
                 m)
                target)))))
 
-     (defmethod mult ((a ,vector-class) (b ,matrix-class) &key target (alpha ,(coerce 0 type)) (beta ,(coerce 1 type)) transa (transb :n))
+     (defmethod mult ((a ,row-vector-class) (b ,matrix-class) &key target (alpha ,(coerce 0 type)) (beta ,(coerce 1 type)) transa (transb :n))
        (policy-cond:with-expectations (> speed safety)
            ((type (member nil :n :t :c) transb)
             (assertion (null transa)))
-           (let ((ta (ecase transb
-                       (:n :t)
-                       (:t :n)
-                       (:c (error "Specifying TRANSA to be :C is not supported for vector-matrix multiplication")))))
-             (mult b a :target target :alpha beta :beta alpha :transa ta :transb transa))))
+         (let ((ta (ecase transb
+                     (:n :t)
+                     (:t :n)
+                     (:c (error "Specifying TRANSB to be :C is not supported for vector-matrix multiplication")))))
+           (mult b (transpose a) :target target :alpha beta :beta alpha :transa ta :transb transa))))     
      
-     (defmethod mult ((a ,matrix-class) (x ,vector-class) &key target (alpha ,(coerce 1 type)) (beta ,(coerce 0 type)) (transa :n) transb)
+     (defmethod mult ((a ,matrix-class) (x ,col-vector-class) &key target (alpha ,(coerce 1 type)) (beta ,(coerce 0 type)) (transa :n) transb)
        (policy-cond:with-expectations (> speed safety)
            ((type (member nil :n :t :c) transa)
             (assertion (null transb)))
@@ -81,12 +83,12 @@
                ((assertion (cl:= n-op (size x)))
                 (assertion (or (not target) (equal (shape target) (list m-op)))))
              (let ((ta
-                     (if (eql :row-major (layout a))
-                         (case transa
-                           (:n :t)
-                           (:t :n)
-                           (:c (error "Specifying TRANS to be :C is not allowed if A is ROW-MAJOR")))
-                         transa))
+                    (if (eql :row-major (layout a))
+                      (case transa
+                        (:n :t)
+                        (:t :n)
+                        (:c (error "Specifying TRANS to be :C is not allowed if A is ROW-MAJOR")))
+                      transa))
                    (target (or target
                                (empty
                                 (list m-op)
@@ -109,7 +111,9 @@
                 )
                target)))))
 
-     (defmethod mult ((a ,vector-class) (b ,vector-class) &key target (alpha ,(coerce 1 type)) (beta ,(coerce 0 type)) transa transb)
+     ;;TODO: col-row method to call ?GER? for outer product
+     
+     (defmethod mult ((a ,row-vector-class) (b ,col-vector-class) &key target (alpha ,(coerce 1 type)) (beta ,(coerce 0 type)) transa transb)
        (let ((n (vector-size a)))
          (policy-cond:with-expectations (> speed safety)
              ((type (member nil :n) transa)
@@ -127,7 +131,7 @@
                 (storage b)
                 1 ;; NOTE: This corresponds to the stride of B
                 )
-              `(magicl:dot a b)))))))
+              `(magicl:dot a b))))))))
 
 (defun generate-lapack-lu-for-type (class type lu-function)
   (declare (ignore type))
