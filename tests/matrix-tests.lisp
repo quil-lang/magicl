@@ -128,7 +128,11 @@
                (magicl:mult a x :alpha (coerce 2 magicl::*default-tensor-type*))))
           (is (magicl:=
                (mult2 y (magicl:scale a 2))
-               (magicl:mult (magicl:transpose y) a :beta (coerce 2 magicl::*default-tensor-type*)))))))))
+               (magicl:mult (magicl:transpose y) a :beta (coerce 2 magicl::*default-tensor-type*))))
+
+          ;; Check that shape mismatches are detected
+          (signals error (magicl:mult x a))
+          (signals error (magicl:mult a (magicl:transpose x))))))))
 
 (deftest test-matrix-multiplication-errors ()
   (signals simple-error (magicl:@
