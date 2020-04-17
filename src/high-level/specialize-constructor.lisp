@@ -12,11 +12,11 @@
       (cond
         ((cl:= 1 (length shape))
          (cond
-           ((subtypep type 'single-float) 'vector/single-float)
-           ((subtypep type 'double-float) 'vector/double-float)
-           ((subtypep type '(complex single-float)) 'vector/complex-single-float)
-           ((subtypep type '(complex double-float)) 'vector/complex-double-float)
-           ((subtypep type '(signed-byte 32)) 'vector/int32)
+           ((subtypep type 'single-float) 'column-vector/single-float)
+           ((subtypep type 'double-float) 'column-vector/double-float)
+           ((subtypep type '(complex single-float)) 'column-vector/complex-single-float)
+           ((subtypep type '(complex double-float)) 'column-vector/complex-double-float)
+           ((subtypep type '(signed-byte 32)) 'column-vector/int32)
            (t (error "no compatible tensor constructor for type ~a" type))))
         ((cl:= 2 (length shape))
          (cond
@@ -37,11 +37,11 @@
       (cond
         ((cl:= 1 (length shape))
          (etypecase val
-           (single-float 'vector/single-float)
-           (double-float 'vector/double-float)
-           ((complex single-float) 'vector/complex-single-float)
-           ((complex double-float) 'vector/complex-double-float)
-           ((signed-byte 32) 'vector/int32)))
+           (single-float 'column-vector/single-float)
+           (double-float 'column-vector/double-float)
+           ((complex single-float) 'column-vector/complex-single-float)
+           ((complex double-float) 'column-vector/complex-double-float)
+           ((signed-byte 32) 'column-vector/int32)))
         ((cl:= 2 (length shape))
          (etypecase val
            (single-float 'matrix/single-float)

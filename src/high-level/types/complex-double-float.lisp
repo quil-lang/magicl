@@ -13,7 +13,8 @@
 (defcompatible
     (lambda (tensor)
       (case (order tensor)
-        (1 '(vector/complex-double-float
+        (1 '(column-vector/complex-double-float
+             row-vector/complex-double-float
              tensor/complex-double-float))
         (2 '(matrix/complex-double-float
              tensor/complex-double-float))
@@ -59,9 +60,10 @@
        (return-from = nil))))
   t)
 
-(defmethod = ((tensor1 vector/complex-double-float) (tensor2 vector/complex-double-float) &optional (epsilon *double-comparison-threshold*))
+(declaim (inline complex-double-float-vector=))
+(defun complex-double-float-vector= (tensor1 tensor2 epsilon)  
   (unless (equal (shape tensor1) (shape tensor2))
-    (return-from = nil))
+    (return-from complex-double-float-vector= nil))
   (map-indexes
    (shape tensor1)
    (lambda (&rest pos)
@@ -71,8 +73,13 @@
                   (<= (abs (- (imagpart (apply #'tref tensor1 pos))
                               (imagpart (apply #'tref tensor2 pos))))
                       epsilon))
-       (return-from = nil))))
+       (return-from complex-double-float-vector= nil))))
   t)
+
+(defmethod = ((tensor1 column-vector/complex-double-float) (tensor2 column-vector/complex-double-float) &optional (epsilon *double-comparison-threshold*))
+  (complex-double-float-vector= tensor1 tensor2 epsilon))
+(defmethod = ((tensor1 row-vector/complex-double-float) (tensor2 row-vector/complex-double-float) &optional (epsilon *double-comparison-threshold*))
+  (complex-double-float-vector= tensor1 tensor2 epsilon))
 
 ;; ZUNCSD is broken in magicl lapack bindings (Issue #72)
 (COMMON-LISP:DEFUN %ZUNCSD-XPOINTERS
