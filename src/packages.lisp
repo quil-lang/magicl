@@ -94,6 +94,14 @@
            #:matrix/double-float
            #:matrix/complex-single-float
            #:matrix/complex-double-float
+           #:column-vector/single-float
+           #:column-vector/double-float
+           #:column-vector/complex-single-float
+           #:column-vector/complex-double-float
+           #:row-vector/single-float
+           #:row-vector/double-float
+           #:row-vector/complex-single-float
+           #:row-vector/complex-double-float
            #:vector/single-float
            #:vector/double-float
            #:vector/complex-single-float
