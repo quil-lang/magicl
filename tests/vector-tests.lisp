@@ -51,4 +51,17 @@
                        (dot (magicl:mult (magicl:transpose y) a) x)
                        (magicl:@ (magicl:transpose y) a x))))))))
 
-                    
+(deftest test-outer-product ()
+  (dolist (magicl::*default-tensor-type* +magicl-float-types+)
+    (loop :for i :below 1000
+          :do (let* ((m (1+ (random 10)))
+                     (n (1+ (random 10)))
+                     (x (magicl:rand (list m)))
+                     (y (magicl:rand (list n))))
+                (is (magicl:=
+                     (magicl:outer x y)
+                     (magicl:mult x (magicl:transpose y))))
+                (is (magicl:=
+                     (magicl:outer y x)
+                     (magicl:mult y (magicl:transpose x))))))))
+
