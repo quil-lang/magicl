@@ -90,8 +90,8 @@
              ((assertion (valid-index-p pos (list (vector-size vector)))))
            (aref (,storage-sym vector) (first pos))))
 
-       (defmethod (setf tref) (new-value (vector ,name) &rest pos)
-         (policy-cond:with-expectations (> speed safety)
+      (defmethod (setf tref) (new-value (vector ,name) &rest pos)
+        (policy-cond:with-expectations (> speed safety)
              ((assertion (valid-index-p pos (list (vector-size vector)))))
            (setf (aref (,storage-sym vector) (first pos)) new-value))))))
 
@@ -102,23 +102,53 @@ required not specified by the generic VECTOR class (MAKE-TENSOR,
 ELEMENT-TYPE, CAST, COPY-TENSOR, DEEP-COPY-TENSOR, TREF, SETF TREF)"
   (let* ((row-name (intern (format nil "ROW-~:@(~A~)" name)))
          (row-constructor (intern (format nil "MAKE-~:@(~A~)" row-name)))
+         (conj-row-name (intern (format nil "CONJUGATE-TRANSPOSE-ROW-~:@(~A~)" name)))
+         (conj-row-constructor (intern (format nil "MAKE-~:@(~A~)" conj-row-name)))
+         (conj-row-storage-sym (intern (format nil "~:@(~A~)-STORAGE" conj-row-name)))
          (col-name (intern (format nil "COLUMN-~:@(~A~)" name)))
          (col-constructor (intern (format nil "MAKE-~:@(~A~)" col-name))))
   `(progn
        (defstruct (,name (:include vector)
                                 (:constructor nil)
                                 (:copier nil)))
-       
+            
      ,@(defvectorsubtype name row-name type tensor-class)
      ,@(defvectorsubtype name col-name type tensor-class)
 
-     ;; NOTE: This is fast because it doesn't copy storage, but for the same reason it is
-     ;; potentially dangerous. Could imagine returning a "frozen" view that doesn't allow SETF TREF.
-     (defmethod transpose ((matrix ,row-name))
-       (,col-constructor (size matrix) (storage matrix)))
-     (defmethod transpose ((matrix ,col-name))
-       (,row-constructor (size matrix) (storage matrix)))
-     
+     ;; Fast transpose and/or conjugate-transpose (with lazy accessors for the sake of correctness)
+     ;;
+     ;; NOTE: These are fast because they don't copy storage, but for the same reason they are
+     ;; potentially dangerous.
+     ,@(if (subtypep type 'complex)
+        `((defstruct (,conj-row-name (:include ,name)
+                                     (:constructor ,conj-row-constructor
+                                                   (size storage)))
+            (storage nil :type (vector-storage ,type)))
+          (defmethod conjugate-transpose ((matrix ,col-name))
+            (,conj-row-constructor (size matrix) (storage matrix)))
+          (defmethod conjugate-transpose ((matrix ,conj-row-name))
+            (,col-constructor (size matrix) (storage matrix)))
+          
+          (defmethod tref ((vector ,conj-row-name) &rest pos)
+            (policy-cond:with-expectations (> speed safety)
+                ((assertion (valid-index-p pos (list (vector-size vector)))))
+              (conjugate (aref (,conj-row-storage-sym vector) (first pos)))))
+
+          (defmethod (setf tref) (new-value (vector ,conj-row-name) &rest pos)
+            (policy-cond:with-expectations (> speed safety)
+                ((assertion (valid-index-p pos (list (vector-size vector)))))
+              (setf (aref (,conj-row-storage-sym vector) (first pos))
+                    (conjugate new-value)))))
+        
+         `((defmethod conjugate-transpose ((matrix ,col-name))
+             (transpose matrix))
+           (defmethod conjugate-transpose ((matrix ,row-name))
+             (transpose matrix))
+           (defmethod transpose ((matrix ,row-name))
+             (,col-constructor (size matrix) (storage matrix)))
+           (defmethod transpose ((matrix ,col-name))
+             (,row-constructor (size matrix) (storage matrix)))))
+
      #+sbcl (declaim (sb-ext:freeze-type ,name)))))
 
 (defun pprint-vector (stream vector)
@@ -170,6 +200,17 @@ ELEMENT-TYPE, CAST, COPY-TENSOR, DEEP-COPY-TENSOR, TREF, SETF TREF)"
         ((assertion (cl:= (size vector1) (size vector2))))
       (loop :for i :below (size vector1)
             :sum (* (tref vector1 i) (tref vector2 i))))))
+
+(defgeneric outer (vector1 vector2)
+  (:documentation "Compute the outer product of two vectors")
+  (:method ((vector1 vector) (vector2 vector))
+    (loop :with ret := (empty (list (size vector1) (size vector2))
+                              :type (element-type vector1))
+          :for i :below (size vector1)
+          :do (loop :for j :below (size vector2)
+                    :do (setf (tref ret i j)
+                              (* (tref vector1 i) (tref vector2 j))))
+          :finally (return ret))))
 
 (deftype p-norm-type ()
   `(or (member :inf :infinity :positive-infinity)

@@ -181,6 +181,7 @@
            ;; Vector operators
            #:dot
            #:norm
+           #:outer
 
            ;; LAPACK stuff
            #:lapack-eig
