@@ -45,8 +45,16 @@
                        (dot x y)
                        (magicl:dot (magicl:transpose x) y)))
                   (is (==
-                       (dot x y)
-                       (magicl:mult (magicl:transpose x) y)))
+                       (dot y x)
+                       (magicl:mult (magicl:transpose y) x)))
+
+                  (is (==
+                       (dot (magicl:dagger x) y)
+                       (magicl:dot (magicl:dagger x) y)))
+                  (is (==
+                       (dot (magicl:dagger y) x)
+                       (magicl:mult (magicl:dagger y) x)))
+
                   (is (==
                        (dot (magicl:mult (magicl:transpose y) a) x)
                        (magicl:@ (magicl:transpose y) a x))))))))
@@ -63,5 +71,26 @@
                      (magicl:mult x (magicl:transpose y))))
                 (is (magicl:=
                      (magicl:outer y x)
-                     (magicl:mult y (magicl:transpose x))))))))
+                     (magicl:mult y (magicl:transpose x))))
 
+                (is (magicl:=
+                     (magicl:outer x (magicl:dagger y))
+                     (magicl:mult x (magicl:dagger y))))
+                (is (magicl:=
+                     (magicl:outer y (magicl:dagger x))
+                     (magicl:mult y (magicl:dagger x))))))))
+
+(deftest test-dagger ()
+  (dolist (magicl::*default-tensor-type* +magicl-float-types+)
+    (loop :for i :below 1000
+          :do (let* ((n (1+ (random 10)))
+                     (x (magicl:rand (list n)))
+                     (y (magicl:rand (list n)))
+                     (xd (magicl:dagger x)))
+                (loop :for j :below n
+                      :do (is (== (magicl:tref xd j)
+                                  (conjugate (magicl:tref x j))))
+                         (setf (magicl:tref xd j)
+                               (magicl:tref y j))
+                         (is (== (magicl:tref xd j)
+                                 (magicl:tref y j))))))))
