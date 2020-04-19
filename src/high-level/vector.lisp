@@ -124,6 +124,10 @@ ELEMENT-TYPE, CAST, COPY-TENSOR, DEEP-COPY-TENSOR, TREF, SETF TREF)"
                                      (:constructor ,conj-row-constructor
                                                    (size storage)))
             (storage nil :type (vector-storage ,type)))
+
+          (defmethod storage ((v ,conj-row-name))
+            (,conj-row-storage-sym v))
+          
           (defmethod conjugate-transpose ((matrix ,col-name))
             (,conj-row-constructor (size matrix) (storage matrix)))
           (defmethod conjugate-transpose ((matrix ,conj-row-name))
@@ -143,12 +147,13 @@ ELEMENT-TYPE, CAST, COPY-TENSOR, DEEP-COPY-TENSOR, TREF, SETF TREF)"
          `((defmethod conjugate-transpose ((matrix ,col-name))
              (transpose matrix))
            (defmethod conjugate-transpose ((matrix ,row-name))
-             (transpose matrix))
-           (defmethod transpose ((matrix ,row-name))
-             (,col-constructor (size matrix) (storage matrix)))
-           (defmethod transpose ((matrix ,col-name))
-             (,row-constructor (size matrix) (storage matrix)))))
+             (transpose matrix))))
 
+     (defmethod transpose ((matrix ,row-name))
+       (,col-constructor (size matrix) (storage matrix)))
+     (defmethod transpose ((matrix ,col-name))
+       (,row-constructor (size matrix) (storage matrix)))
+           
      #+sbcl (declaim (sb-ext:freeze-type ,name)))))
 
 (defun pprint-vector (stream vector)

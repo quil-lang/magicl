@@ -24,8 +24,10 @@
                              (generate-lapack-mult-for-type
                               matrix-class vector-class type
                               (blas-routine "gemm") (blas-routine "gemv")
-                              (blas-routine (if complex "dotc" "dot"))
-                              (blas-routine (if complex "gerc" "ger")))
+                              (blas-routine (if complex "dotu" "dot"))
+                              (blas-routine (if complex "geru" "ger"))
+                              (when complex (blas-routine "dotc"))
+                              (when complex (blas-routine "gerc")))
                              (generate-lapack-lu-for-type
                               matrix-class type (lapack-routine "getrf"))
                              (generate-lapack-inv-for-type

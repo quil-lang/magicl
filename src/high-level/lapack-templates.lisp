@@ -9,11 +9,12 @@
 
 (in-package #:magicl)
 
-(defun generate-lapack-mult-for-type (matrix-class vector-class type matrix-matrix-function matrix-vector-function inner-product-function outer-product-function)
-  (let ((row-vector-class
-         (if (subtypep type 'complex)
-           (intern (format nil "CONJUGATE-TRANSPOSE-ROW-~:@(~A~)" vector-class))
-           (intern (format nil "ROW-~:@(~A~)" vector-class))))
+(defun generate-lapack-mult-for-type (matrix-class vector-class type matrix-matrix-function matrix-vector-function
+                                      inner-product-function outer-product-function
+                                      conj-inner-product-function conj-outer-product-function)
+  (let ((row-vector-class (intern (format nil "ROW-~:@(~A~)" vector-class)))
+        (conj-row-vector-class (when conj-inner-product-function
+                                 (intern (format nil "CONJUGATE-TRANSPOSE-ROW-~:@(~A~)" vector-class))))
         (col-vector-class (intern (format nil "COLUMN-~:@(~A~)" vector-class))))
   `(progn
      (defmethod mult ((a ,matrix-class) (b ,matrix-class) &key target (alpha ,(coerce 1 type)) (beta ,(coerce 0 type)) (transa :n) (transb :n))
@@ -81,7 +82,7 @@
                               (list n-op)
                                 :type ',type)))))
            (mult b (transpose a) :target target :alpha beta :beta alpha :transa ta :transb transa))))     
-     
+
      (defmethod mult ((a ,matrix-class) (x ,col-vector-class) &key target (alpha ,(coerce 1 type)) (beta ,(coerce 0 type)) (transa :n) transb)
        (policy-cond:with-expectations (> speed safety)
            ((type (member nil :n :t :c) transa)
@@ -120,6 +121,52 @@
                 )
                target)))))
      
+
+     ,@(when conj-row-vector-class
+         `((defmethod mult ((a ,conj-row-vector-class) (b ,col-vector-class) &key target (alpha ,(coerce 1 type)) (beta ,(coerce 0 type)) transa transb)
+             (let ((n (vector-size a)))
+               (policy-cond:with-expectations (> speed safety)
+                   ((type (member nil :n) transa)
+                    (type (member nil :n) transb)
+                    (type null target)
+                    (assertion (cl:= (vector-size b) n))
+                    (assertion (cl:= alpha ,(coerce 1 type)))
+                    (assertion (cl:= beta ,(coerce 0 type))))
+                 ;; !!! Most of the BLAS ?DOT? routines are broken on OSX
+                 ,(if (eq inner-product-function 'magicl.blas-cffi:%ddot)
+                    `(,conj-inner-product-function
+                      n
+                      (storage a)
+                      1 ;; NOTE: This corresponds to the stride of A
+                      (storage b)
+                      1 ;; NOTE: This corresponds to the stride of B
+                      )
+                    `(magicl:dot a b)))))
+     
+           (defmethod mult ((a ,col-vector-class) (b ,conj-row-vector-class) &key target (alpha ,(coerce 1 type)) (beta ,(coerce 0 type)) transa transb)
+             (let ((m (vector-size a))
+                   (n (vector-size b)))
+               (policy-cond:with-expectations (> speed safety)
+                   ((type (member nil :n) transa)
+                    (type (member nil :n) transb)
+                    (assertion (or (not target) (equal (shape target) (list m n))))
+                    (assertion (cl:= beta ,(coerce 0 type))))
+                 (let ((target (or target
+                                   (empty
+                                    (list m n)
+                                    :type ',type))))
+                   (,conj-outer-product-function
+                    m n
+                    alpha
+                    (storage a)
+                    1
+                    (storage b)
+                    1
+                    (storage target)
+                    m)
+                   target))))))
+
+
      (defmethod mult ((a ,row-vector-class) (b ,col-vector-class) &key target (alpha ,(coerce 1 type)) (beta ,(coerce 0 type)) transa transb)
        (let ((n (vector-size a)))
          (policy-cond:with-expectations (> speed safety)
