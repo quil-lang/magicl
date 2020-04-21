@@ -74,14 +74,31 @@
          (let* ((ta (ecase transb
                       (:n :t)
                       (:t :n)
-                      (:c (error "Specifying TRANSB to be :C is not supported for vector-matrix multiplication"))))
+                      (:c (error "Specifying TRANSB to be :C is not supported for row-vector-matrix multiplication"))))
                 (n-op (if (eq :n transb) (ncols b) (nrows b)))
                 (target (or target
                             (transpose 
                              (empty
                               (list n-op)
                                 :type ',type)))))
-           (mult b (transpose a) :target target :alpha beta :beta alpha :transa ta :transb transa))))     
+           (mult b (transpose a) :target target :alpha beta :beta alpha :transa ta :transb transa))))
+
+     ,@(when conj-row-vector-class
+         `((defmethod mult ((a ,conj-row-vector-class) (b ,matrix-class) &key target (alpha ,(coerce 0 type)) (beta ,(coerce 1 type)) transa (transb :n))
+             (policy-cond:with-expectations (> speed safety)
+                 ((type (member nil :n :t :c) transb)
+                  (assertion (null transa)))
+               (let* ((ta (ecase transb
+                            (:n :c)
+                            (:c :n)
+                            (:t (error "Specifying TRANSB to be :T is not supported for conjugated-row-vector-matrix multiplication"))))
+                      (n-op (if (eq :n transb) (ncols b) (nrows b)))
+                      (target (or target
+                                  (conjugate-transpose
+                                   (empty
+                                    (list n-op)
+                                    :type ',type)))))
+                 (mult b (conjugate-transpose a) :target target :alpha beta :beta alpha :transa ta :transb transa))))))
 
      (defmethod mult ((a ,matrix-class) (x ,col-vector-class) &key target (alpha ,(coerce 1 type)) (beta ,(coerce 0 type)) (transa :n) transb)
        (policy-cond:with-expectations (> speed safety)

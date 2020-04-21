@@ -122,6 +122,19 @@
                (mult2 x (magicl:transpose a))
                (magicl:mult (magicl:transpose x) a :transb :t)))
 
+          ;; Check that adjoints don't affect correctness
+          (when (subtypep magicl::*default-tensor-type* 'complex)
+            (is (magicl:=
+                 (mult1 (magicl:dagger a) y)
+                 (magicl:mult a y :transa :c)))
+            (is (magicl:=
+                 (mult2 (magicl:dagger x) (magicl:dagger a))
+                 (magicl:mult (magicl:dagger x) a :transb :c))
+                (format nil "~A <> ~A~%X=~A~%A=~A~%(STORAGE X)=~S~%(STORAGE A)=~S~%"
+                        '(mult2 (magicl:dagger x) (magicl:dagger a))
+                        '(magicl:mult (magicl:dagger x) a :transb :c)
+                        x a (magicl::storage x) (magicl::storage a))))
+
           ;; Check that alpha correctly scales the matrices
           (is (magicl:=
                (mult1 (magicl:scale a 2) x)

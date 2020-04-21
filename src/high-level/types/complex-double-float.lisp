@@ -81,6 +81,14 @@
 (defmethod = ((tensor1 row-vector/complex-double-float) (tensor2 row-vector/complex-double-float) &optional (epsilon *double-comparison-threshold*))
   (complex-double-float-vector= tensor1 tensor2 epsilon))
 
+(defmethod = ((tensor1 conjugate-transpose-row-vector/complex-double-float) (tensor2 row-vector/complex-double-float) &optional (epsilon *float-comparison-threshold*))
+  (complex-double-float-vector= tensor1 tensor2 epsilon))
+(defmethod = ((tensor1 row-vector/complex-double-float) (tensor2 conjugate-transpose-row-vector/complex-double-float) &optional (epsilon *float-comparison-threshold*))
+  (complex-double-float-vector= tensor1 tensor2 epsilon))
+(defmethod = ((tensor1 conjugate-transpose-row-vector/complex-double-float) (tensor2 conjugate-transpose-row-vector/complex-double-float) &optional (epsilon *float-comparison-threshold*))
+  (complex-double-float-vector= tensor1 tensor2 epsilon))
+
+
 ;; ZUNCSD is broken in magicl lapack bindings (Issue #72)
 (COMMON-LISP:DEFUN %ZUNCSD-XPOINTERS
     (JOBU1 JOBU2 JOBV1T JOBV2T TRANS SIGNS M P Q X11 LDX11 X12

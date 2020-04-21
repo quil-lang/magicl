@@ -80,3 +80,10 @@
   (complex-single-float-vector= tensor1 tensor2 epsilon))
 (defmethod = ((tensor1 row-vector/complex-single-float) (tensor2 row-vector/complex-single-float) &optional (epsilon *float-comparison-threshold*))
   (complex-single-float-vector= tensor1 tensor2 epsilon))
+
+(defmethod = ((tensor1 conjugate-transpose-row-vector/complex-single-float) (tensor2 row-vector/complex-single-float) &optional (epsilon *float-comparison-threshold*))
+  (complex-single-float-vector= tensor1 tensor2 epsilon))
+(defmethod = ((tensor1 row-vector/complex-single-float) (tensor2 conjugate-transpose-row-vector/complex-single-float) &optional (epsilon *float-comparison-threshold*))
+  (complex-single-float-vector= tensor1 tensor2 epsilon))
+(defmethod = ((tensor1 conjugate-transpose-row-vector/complex-single-float) (tensor2 conjugate-transpose-row-vector/complex-single-float) &optional (epsilon *float-comparison-threshold*))
+  (complex-single-float-vector= tensor1 tensor2 epsilon))
