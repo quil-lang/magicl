@@ -116,7 +116,7 @@ The tensor is specialized on TYPE with shape (floor(RANGE))."
   "Create a tensor from ARRAY, calling ADJUST-ARRAY on ARRAY to flatten to a 1-dimensional array of length equal to the product of the elements in SHAPE
 
 If TYPE is not specified then it is inferred from the element type of ARRAY.
-LAYOUT specifies the internal storage representation ordering of the returned tensor.
+LAYOUT specifies the internal storage representation ordering of the returned tensor. The input is assumed to be ROW-MAJOR.
 The tensor is specialized on SHAPE and TYPE."
   (policy-cond:with-expectations (> speed safety)
       ((type shape shape))
@@ -124,13 +124,22 @@ The tensor is specialized on SHAPE and TYPE."
            ;; by inspecting the elements. This can cause issues when
            ;; the element-type of the array is T
            (element-type
-             (if (null type)
-                 (array-element-type array)
-                 type))
-           (tensor-class (infer-tensor-type element-type shape nil)))
-      (adjust-array array (list (reduce #'* shape)) :element-type element-type)
+            (if (null type)
+                (array-element-type array)
+                type))
+           (tensor-class (infer-tensor-type element-type shape nil))
+           (storage-size (reduce #'* shape))
+           (storage (make-array (list storage-size) :element-type element-type))
+           (array-dims (array-dimensions array)))
+      (let ((index-function
+             (if (eq layout ':row-major)
+                 #'from-row-major-index
+                 #'from-column-major-index)))
+        (dotimes (i storage-size)
+          (setf (aref storage i)
+                (apply #'aref array (funcall index-function i array-dims)))))
       (make-tensor tensor-class shape
-                   :storage array
+                   :storage storage
                    :layout layout))))
 
 (defun from-list (list shape &key type layout (input-layout :row-major))
