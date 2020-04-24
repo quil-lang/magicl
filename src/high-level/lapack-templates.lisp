@@ -19,15 +19,15 @@
   `(progn
      (defmethod mult ((a ,matrix-class) (b ,matrix-class) &key target (alpha ,(coerce 1 type)) (beta ,(coerce 0 type)) (transa ':n) (transb ':n))
        (policy-cond:with-expectations (> speed safety)
-         ((type (member nil :n :t :c) transa)
-          (type (member nil :n :t :c) transb))
+           ((type (member nil :n :t :c) transa)
+            (type (member nil :n :t :c) transb))
          (let* ((m (if (eq ':n transa) (nrows a) (ncols a)))
                 (k (if (eq ':n transa) (ncols a) (nrows a)))
                 (n (if (eq ':n transb) (ncols b) (nrows b)))
                 (brows (if (eq ':n transb) (nrows b) (ncols b))))
            (policy-cond:with-expectations (> speed safety)
-             ((assertion (cl:= k brows))
-              (assertion (or (not target) (equal (shape target) (list m n)))))
+               ((assertion (cl:= k brows))
+                (assertion (or (not target) (equal (shape target) (list m n)))))
              (let ((ta (if (eql ':row-major (layout a))
                          (case transa
                            (:n ':t)
@@ -68,8 +68,8 @@
 
      (defmethod mult ((a ,row-vector-class) (b ,matrix-class) &key target (alpha ,(coerce 0 type)) (beta ,(coerce 1 type)) transa (transb ':n))
        (policy-cond:with-expectations (> speed safety)
-         ((type (member nil :n :t :c) transb)
-          (assertion (null transa)))
+           ((type (member nil :n :t :c) transb)
+            (assertion (null transa)))
          (let* ((ta (ecase transb
                       (:n ':t)
                       (:t ':n)
@@ -85,8 +85,8 @@
      ,@(when conj-row-vector-class
          `((defmethod mult ((a ,conj-row-vector-class) (b ,matrix-class) &key target (alpha ,(coerce 0 type)) (beta ,(coerce 1 type)) transa (transb ':n))
              (policy-cond:with-expectations (> speed safety)
-               ((type (member nil :n :t :c) transb)
-                (assertion (null transa)))
+                 ((type (member nil :n :t :c) transb)
+                  (assertion (null transa)))
                (let* ((ta (ecase transb
                             (:n ':c)
                             (:c ':n)
@@ -101,13 +101,13 @@
 
      (defmethod mult ((a ,matrix-class) (x ,col-vector-class) &key target (alpha ,(coerce 1 type)) (beta ,(coerce 0 type)) (transa ':n) transb)
        (policy-cond:with-expectations (> speed safety)
-         ((type (member nil :n :t :c) transa)
-          (assertion (null transb)))
+           ((type (member nil :n :t :c) transa)
+            (assertion (null transb)))
          (let* ((m-op (if (eq ':n transa) (nrows a) (ncols a)))
                 (n-op (if (eq ':n transa) (ncols a) (nrows a))))
            (policy-cond:with-expectations (> speed safety)
-             ((assertion (cl:= n-op (size x)))
-              (assertion (or (not target) (equal (shape target) (list m-op)))))
+               ((assertion (cl:= n-op (size x)))
+                (assertion (or (not target) (equal (shape target) (list m-op)))))
              (let ((ta
                     (if (eql ':row-major (layout a))
                       (case transa
@@ -142,12 +142,12 @@
          `((defmethod mult ((a ,conj-row-vector-class) (b ,col-vector-class) &key target (alpha ,(coerce 1 type)) (beta ,(coerce 0 type)) transa transb)
              (let ((n (vector-size a)))
                (policy-cond:with-expectations (> speed safety)
-                 ((type (member nil :n) transa)
-                  (type (member nil :n) transb)
-                  (type null target)
-                  (assertion (cl:= (vector-size b) n))
-                  (assertion (cl:= alpha ,(coerce 1 type)))
-                  (assertion (cl:= beta ,(coerce 0 type))))
+                   ((type (member nil :n) transa)
+                    (type (member nil :n) transb)
+                    (type null target)
+                    (assertion (cl:= (vector-size b) n))
+                    (assertion (cl:= alpha ,(coerce 1 type)))
+                    (assertion (cl:= beta ,(coerce 0 type))))
                  ;; !!! Most of the BLAS ?DOT? routines are broken on OSX
                  ,(if (eq inner-product-function 'magicl.blas-cffi:%ddot)
                     `(,conj-inner-product-function
@@ -163,10 +163,10 @@
              (let ((m (vector-size a))
                    (n (vector-size b)))
                (policy-cond:with-expectations (> speed safety)
-                 ((type (member nil :n) transa)
-                  (type (member nil :n) transb)
-                  (assertion (or (not target) (equal (shape target) (list m n))))
-                  (assertion (cl:= beta ,(coerce 0 type))))
+                   ((type (member nil :n) transa)
+                    (type (member nil :n) transb)
+                    (assertion (or (not target) (equal (shape target) (list m n))))
+                    (assertion (cl:= beta ,(coerce 0 type))))
                  (let ((target (or target
                                    (empty
                                     (list m n)
@@ -186,12 +186,12 @@
      (defmethod mult ((a ,row-vector-class) (b ,col-vector-class) &key target (alpha ,(coerce 1 type)) (beta ,(coerce 0 type)) transa transb)
        (let ((n (vector-size a)))
          (policy-cond:with-expectations (> speed safety)
-           ((type (member nil :n) transa)
-            (type (member nil :n) transb)
-            (type null target)
-            (assertion (cl:= (vector-size b) n))
-            (assertion (cl:= alpha ,(coerce 1 type)))
-            (assertion (cl:= beta ,(coerce 0 type))))
+             ((type (member nil :n) transa)
+              (type (member nil :n) transb)
+              (type null target)
+              (assertion (cl:= (vector-size b) n))
+              (assertion (cl:= alpha ,(coerce 1 type)))
+              (assertion (cl:= beta ,(coerce 0 type))))
            ;; !!! Most of the BLAS ?DOT? routines are broken on OSX
            ,(if (eq inner-product-function 'magicl.blas-cffi:%ddot)
               `(,inner-product-function
@@ -207,10 +207,10 @@
        (let ((m (vector-size a))
              (n (vector-size b)))
          (policy-cond:with-expectations (> speed safety)
-           ((type (member nil :n) transa)
-            (type (member nil :n) transb)
-            (assertion (or (not target) (equal (shape target) (list m n))))
-            (assertion (cl:= beta ,(coerce 0 type))))
+             ((type (member nil :n) transa)
+              (type (member nil :n) transb)
+              (assertion (or (not target) (equal (shape target) (list m n))))
+              (assertion (cl:= beta ,(coerce 0 type))))
            (let ((target (or target
                              (empty
                               (list m n)
