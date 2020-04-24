@@ -29,16 +29,16 @@
                ((assertion (cl:= k brows))
                 (assertion (or (not target) (equal (shape target) (list m n)))))
              (let ((ta (if (eql ':row-major (layout a))
-                         (case transa
-                           (:n ':t)
-                           (:t ':n)
-                           (:c (error "Specifying TRANSA to be :C is not allowed if A is ROW-MAJOR")))
+                           (case transa
+                             (:n ':t)
+                             (:t ':n)
+                             (:c (error "Specifying TRANSA to be :C is not allowed if A is ROW-MAJOR")))
                          transa))
                    (tb (if (eql ':row-major (layout b))
-                         (case transb
-                           (:n ':t)
-                           (:t ':n)
-                           (:c (error "Specifying TRANSB to be :C is not allowed if B is ROW-MAJOR")))
+                           (case transb
+                             (:n ':t)
+                             (:t ':n)
+                             (:c (error "Specifying TRANSB to be :C is not allowed if B is ROW-MAJOR")))
                          transb))
                    (target (or target
                                (empty
@@ -110,10 +110,10 @@
                 (assertion (or (not target) (equal (shape target) (list m-op)))))
              (let ((ta
                     (if (eql ':row-major (layout a))
-                      (case transa
-                        (:n ':t)
-                        (:t ':n)
-                        (:c (error "Specifying TRANS to be :C is not allowed if A is ROW-MAJOR")))
+                        (case transa
+                          (:n ':t)
+                          (:t ':n)
+                          (:c (error "Specifying TRANS to be :C is not allowed if A is ROW-MAJOR")))
                       transa))
                    (target (or target
                                (empty
