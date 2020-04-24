@@ -29,7 +29,7 @@
                ((assertion (cl:= k brows))
                 (assertion (or (not target) (equal (shape target) (list m n)))))
              (let ((ta
-                    (if (eql :row-major (layout a))
+                    (if (eql ':row-major (layout a))
                       (case transa
                         (:n :t)
                         (:t :n)
