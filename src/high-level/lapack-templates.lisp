@@ -35,7 +35,7 @@
                         (:t :n)
                         (:c (error "Specifying TRANSA to be :C is not allowed if A is ROW-MAJOR")))
                       transa))
-                   (tb (if (eql :row-major (layout b))
+                   (tb (if (eql ':row-major (layout b))
                          (case transb
                            (:n :t)
                            (:t :n)
