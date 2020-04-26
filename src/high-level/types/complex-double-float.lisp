@@ -30,18 +30,31 @@
   (loop :for i :below (size vector1)
         :sum (* (tref vector1 i) (conjugate (tref vector2 i)))))
 
+
+(defmethod = ((val1 complex) (val2 complex) &optional (epsilon (list *float-comparison-threshold*
+                                                                     *double-comparison-threshold*)))
+  (let ((epsilon (cond
+                   ((atom epsilon)
+                    epsilon)
+                   ((typep val1 '(complex single-float))
+                    (first epsilon))
+                   (t (second epsilon)))))
+    (if (and (<= (abs (- (realpart val1) (realpart val2)))
+                     epsilon)
+                 (<= (abs (- (imagpart val1) (imagpart val2)))
+                     epsilon))
+        t
+        nil)))
+
 (defmethod = ((tensor1 tensor/complex-double-float) (tensor2 tensor/complex-double-float) &optional (epsilon *double-comparison-threshold*))
   (unless (equal (shape tensor1) (shape tensor2))
     (return-from = nil))
   (map-indexes
    (shape tensor1)
    (lambda (&rest pos)
-     (unless (and (<= (abs (- (realpart (apply #'tref tensor1 pos))
-                              (realpart (apply #'tref tensor2 pos))))
-                      epsilon)
-                  (<= (abs (- (imagpart (apply #'tref tensor1 pos))
-                              (imagpart (apply #'tref tensor2 pos))))
-                      epsilon))
+     (unless (= (apply #'tref tensor1 pos)
+                (apply #'tref tensor2 pos)
+                epsilon)
        (return-from = nil))))
   t)
 
@@ -51,12 +64,9 @@
   (map-indexes
    (shape tensor1)
    (lambda (&rest pos)
-     (unless (and (<= (abs (- (realpart (apply #'tref tensor1 pos))
-                              (realpart (apply #'tref tensor2 pos))))
-                      epsilon)
-                  (<= (abs (- (imagpart (apply #'tref tensor1 pos))
-                              (imagpart (apply #'tref tensor2 pos))))
-                      epsilon))
+     (unless (= (apply #'tref tensor1 pos)
+                (apply #'tref tensor2 pos)
+                epsilon)
        (return-from = nil))))
   t)
 
@@ -67,12 +77,9 @@
   (map-indexes
    (shape tensor1)
    (lambda (&rest pos)
-     (unless (and (<= (abs (- (realpart (apply #'tref tensor1 pos))
-                              (realpart (apply #'tref tensor2 pos))))
-                      epsilon)
-                  (<= (abs (- (imagpart (apply #'tref tensor1 pos))
-                              (imagpart (apply #'tref tensor2 pos))))
-                      epsilon))
+     (unless (= (apply #'tref tensor1 pos)
+                (apply #'tref tensor2 pos)
+                epsilon)
        (return-from complex-double-float-vector= nil))))
   t)
 

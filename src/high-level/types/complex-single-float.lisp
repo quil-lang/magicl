@@ -30,18 +30,17 @@
   (loop :for i :below (size vector1)
         :sum (* (tref vector1 i) (conjugate (tref vector2 i)))))
 
+;; see `complex-double-float.lisp` for the = method for complex scalars
+
 (defmethod = ((tensor1 tensor/complex-single-float) (tensor2 tensor/complex-single-float) &optional (epsilon *float-comparison-threshold*))
   (unless (equal (shape tensor1) (shape tensor2))
     (return-from = nil))
   (map-indexes
    (shape tensor1)
    (lambda (&rest pos)
-     (unless (and (<= (abs (- (realpart (apply #'tref tensor1 pos))
-                              (realpart (apply #'tref tensor2 pos))))
-                      epsilon)
-                  (<= (abs (- (imagpart (apply #'tref tensor1 pos))
-                              (imagpart (apply #'tref tensor2 pos))))
-                      epsilon))
+     (unless (= (apply #'tref tensor1 pos)
+                (apply #'tref tensor2 pos)
+                epsilon)
        (return-from = nil))))
   t)
 
@@ -51,12 +50,9 @@
   (map-indexes
    (shape tensor1)
    (lambda (&rest pos)
-     (unless (and (<= (abs (- (realpart (apply #'tref tensor1 pos))
-                              (realpart (apply #'tref tensor2 pos))))
-                      epsilon)
-                  (<= (abs (- (imagpart (apply #'tref tensor1 pos))
-                              (imagpart (apply #'tref tensor2 pos))))
-                      epsilon))
+     (unless (= (apply #'tref tensor1 pos)
+                (apply #'tref tensor2 pos)
+                epsilon)
        (return-from = nil))))
   t)
 
@@ -67,12 +63,9 @@
   (map-indexes
    (shape tensor1)
    (lambda (&rest pos)
-     (unless (and (<= (abs (- (realpart (apply #'tref tensor1 pos))
-                              (realpart (apply #'tref tensor2 pos))))
-                      epsilon)
-                  (<= (abs (- (imagpart (apply #'tref tensor1 pos))
-                              (imagpart (apply #'tref tensor2 pos))))
-                      epsilon))
+     (unless (= (apply #'tref tensor1 pos)
+                (apply #'tref tensor2 pos)
+                epsilon)
        (return-from complex-single-float-vector= nil))))
   t)
 

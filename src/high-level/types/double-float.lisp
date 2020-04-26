@@ -23,15 +23,21 @@
   matrix/double-float
   vector/double-float)
 
+(defmethod = ((val1 double-float) (val2 double-float) &optional (epsilon *double-comparison-threshold*))
+  (if (<= (abs (- val1 val2))
+          epsilon)
+      t
+      nil))
+
 (defmethod = ((tensor1 tensor/double-float) (tensor2 tensor/double-float) &optional (epsilon *double-comparison-threshold*))
   (unless (equal (shape tensor1) (shape tensor2))
     (return-from = nil))
   (map-indexes
    (shape tensor1)
    (lambda (&rest pos)
-     (unless (<= (abs (- (apply #'tref tensor1 pos)
-                         (apply #'tref tensor2 pos)))
-                 epsilon)
+     (unless (= (apply #'tref tensor1 pos)
+                (apply #'tref tensor2 pos)
+                epsilon)
        (return-from = nil))))
   t)
 
@@ -41,9 +47,9 @@
   (map-indexes
    (shape tensor1)
    (lambda (&rest pos)
-     (unless (<= (abs (- (apply #'tref tensor1 pos)
-                         (apply #'tref tensor2 pos)))
-                 epsilon)
+     (unless (= (apply #'tref tensor1 pos)
+                (apply #'tref tensor2 pos)
+                epsilon)
        (return-from = nil))))
   t)
 
@@ -54,9 +60,9 @@
   (map-indexes
    (shape tensor1)
    (lambda (&rest pos)
-     (unless (<= (abs (- (apply #'tref tensor1 pos)
-                         (apply #'tref tensor2 pos)))
-                 epsilon)
+     (unless (= (apply #'tref tensor1 pos)
+                (apply #'tref tensor2 pos)
+                epsilon)
        (return-from double-float-vector= nil))))
   t)
 
@@ -64,4 +70,3 @@
   (double-float-vector= tensor1 tensor2 epsilon))
 (defmethod = ((tensor1 row-vector/double-float) (tensor2 row-vector/double-float) &optional (epsilon *double-comparison-threshold*))
   (double-float-vector= tensor1 tensor2 epsilon))
-
