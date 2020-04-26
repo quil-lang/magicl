@@ -10,6 +10,15 @@
 
 (defvector vector/int32 (signed-byte 32) tensor/int32)
 
+
+;; There is no Common Lisp class that corresponds exactly to (SIGNED-BYTE 32).
+;; Even FIXNUM is too general, so we might as well just specialize on INTEGER.
+(defmethod = ((val1 integer) (val2 integer) &optional (epsilon 0))
+  (if (<= (abs (- val1 val2))
+          epsilon)
+      t
+      nil))
+
 (defcompatible
     (lambda (tensor)
       (case (order tensor)

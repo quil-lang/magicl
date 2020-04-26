@@ -23,15 +23,21 @@
   matrix/single-float
   vector/single-float)
 
+(defmethod = ((val1 single-float) (val2 single-float) &optional (epsilon *float-comparison-threshold*))
+  (if (<= (abs (- val1 val2))
+          epsilon)
+      t
+      nil))
+
 (defmethod = ((tensor1 tensor/single-float) (tensor2 tensor/single-float) &optional (epsilon *float-comparison-threshold*))
   (unless (equal (shape tensor1) (shape tensor2))
     (return-from = nil))
   (map-indexes
    (shape tensor1)
    (lambda (&rest pos)
-     (unless (<= (abs (- (apply #'tref tensor1 pos)
-                         (apply #'tref tensor2 pos)))
-                 epsilon)
+     (unless (= (apply #'tref tensor1 pos)
+                (apply #'tref tensor2 pos)
+                epsilon)
        (return-from = nil))))
   t)
 
@@ -41,9 +47,9 @@
   (map-indexes
    (shape tensor1)
    (lambda (&rest pos)
-     (unless (<= (abs (- (apply #'tref tensor1 pos)
-                         (apply #'tref tensor2 pos)))
-                 epsilon)
+     (unless (= (apply #'tref tensor1 pos)
+                (apply #'tref tensor2 pos)
+                epsilon)
        (return-from = nil))))
   t)
 
@@ -54,9 +60,9 @@
   (map-indexes
    (shape tensor1)
    (lambda (&rest pos)
-     (unless (<= (abs (- (apply #'tref tensor1 pos)
-                         (apply #'tref tensor2 pos)))
-                 epsilon)
+     (unless (= (apply #'tref tensor1 pos)
+                (apply #'tref tensor2 pos)
+                epsilon)
        (return-from single-float-vector= nil))))
   t)
 
