@@ -27,7 +27,9 @@
                               (blas-routine (if complex "dotu" "dot"))
                               (blas-routine (if complex "geru" "ger"))
                               (when complex (blas-routine "dotc"))
-                              (when complex (blas-routine "gerc")))
+                              (when complex (blas-routine "gerc"))
+                              (blas-routine "scal")
+                              (blas-routine "copy"))
                              (generate-lapack-lu-for-type
                               matrix-class type (lapack-routine "getrf"))
                              (generate-lapack-inv-for-type

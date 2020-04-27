@@ -188,3 +188,40 @@
              (magicl:eye (list i i) :type type)
              (magicl:@ m (magicl:transpose m))
              5e-5))))))
+
+(defun scale-matrix (a mat)
+  (loop :with m := (magicl:nrows mat)
+        :with n := (magicl:ncols mat)
+        :with out := (magicl:empty (list m n))
+        :for i :below m
+        :do (loop :for j :below n
+                  :do (setf (magicl:tref out i j)
+                            (* a (magicl:tref mat i j))))
+        :finally (return out)))
+
+(deftest test-matrix-scaling ()
+  "Check scaling of random matrices by random amounts"
+  (dolist (magicl::*default-tensor-type* +magicl-float-types+)
+    (loop :for i :below 1000 :do
+          (let* ((m (1+ (random 5)))
+                 (n (1+ (random 5)))
+                 (a (coerce
+                     (if (subtypep magicl::*default-tensor-type* 'complex)
+                         (complex (random 1d0) (random 1d0))
+                         (random 1d0))
+                     magicl::*default-tensor-type*))
+                 (b (coerce
+                     (if (subtypep magicl::*default-tensor-type* 'complex)
+                         (complex (random 1d0) (random 1d0))
+                         (random 1d0))
+                     magicl::*default-tensor-type*))
+                 (mat (magicl:rand (list m n))))
+            (is (magicl:= (magicl:mult a mat)
+                          (scale-matrix a mat)))
+            (is (magicl:= (magicl:mult mat a)
+                          (scale-matrix a mat)))
+
+            (is (magicl:= (magicl:mult mat a :alpha b)
+                          (scale-matrix (* a b) mat)))
+            (is (magicl:= (magicl:mult a mat :alpha b)
+                          (scale-matrix (* a b) mat)))))))
