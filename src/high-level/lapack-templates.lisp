@@ -94,10 +94,11 @@
                             (:t (error "Specifying TRANSB to be :T is not supported for conjugated-row-vector-matrix multiplication"))))
                       (n-op (if (eq ':n transb) (ncols b) (nrows b)))
                       (target (or target
-                                  (conjugate-transpose
+                                  (conjugate-transpose ; conjugate-transpose the result to get (A^*x)^* = x^*A
                                    (empty
                                     (list n-op)
                                     :type ',type)))))
+                 ;; HERE
                  (mult b (conjugate-transpose a) :target target :alpha beta :beta alpha :transa ta :transb transa))))))
 
      (defmethod mult ((a ,matrix-class) (x ,col-vector-class) &key target (alpha ,(coerce 1 type)) (beta ,(coerce 0 type)) (transa ':n) transb)
@@ -158,7 +159,7 @@
                       (storage b)
                       1 ;; NOTE: This corresponds to the stride of B
                       )
-                    `(magicl:dot a b)))))
+                    `(unconjugated-dot a b))))) ; UNCONJUGATED-DOT will "see" conjugated A, whereas BLAS sees the unconjugated storage of A
      
            (defmethod mult ((a ,col-vector-class) (b ,conj-row-vector-class) &key target (alpha ,(coerce 1 type)) (beta ,(coerce 0 type)) transa transb)
              (let ((m (vector-size a))
@@ -202,7 +203,7 @@
                 (storage b)
                 1 ;; NOTE: This corresponds to the stride of B
                 )
-              `(magicl:dot a b)))))
+              `(uncongugated-dot a b)))))
      
      (defmethod mult ((a ,col-vector-class) (b ,row-vector-class) &key target (alpha ,(coerce 1 type)) (beta ,(coerce 0 type)) transa transb)
        (let ((m (vector-size a))
