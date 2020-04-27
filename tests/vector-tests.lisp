@@ -70,3 +70,37 @@
                                (magicl:tref y j))
                          (is (magicl:= (magicl:tref xd j)
                                  (magicl:tref y j))))))))
+
+(defun scale-vector (a vec)
+  (loop :with n := (magicl::size vec)
+        :with out := (magicl:empty (list n))
+        :for i :below n
+        :do (setf (magicl:tref out i)
+                  (* a (magicl:tref vec i)))
+        :finally (return out)))
+
+(deftest test-vector-scaling ()
+  "Check scaling of random vectors by random amounts"
+  (dolist (magicl::*default-tensor-type* +magicl-float-types+)
+    (loop :for i :below 1000 :do
+          (let* ((n (1+ (random 5)))
+                 (a (coerce
+                     (if (subtypep magicl::*default-tensor-type* 'complex)
+                         (complex (random 1d0) (random 1d0))
+                         (random 1d0))
+                     magicl::*default-tensor-type*))
+                 (b (coerce
+                     (if (subtypep magicl::*default-tensor-type* 'complex)
+                         (complex (random 1d0) (random 1d0))
+                         (random 1d0))
+                     magicl::*default-tensor-type*))
+                 (vec (magicl:rand (list n))))
+             (is (magicl:= (magicl:mult a vec)
+                           (scale-vector a vec)))
+             (is (magicl:= (magicl:mult vec a)
+                           (scale-vector a vec)))
+
+             (is (magicl:= (magicl:mult vec a :alpha b)
+                           (scale-vector (* a b) vec)))
+             (is (magicl:= (magicl:mult a vec :alpha b)
+                           (scale-vector (* a b) vec)))))))
