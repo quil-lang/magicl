@@ -198,13 +198,20 @@ ELEMENT-TYPE, CAST, COPY-TENSOR, DEEP-COPY-TENSOR, TREF, SETF TREF)"
        (assertion (cl:= 1 (length new-value))))
     (setf (vector-size vector) (first new-value))))
 
+(declaim (inline unconjugated-dot))
+(defun unconjugated-dot (vector1 vector2)
+  "Compute VECTOR1^T * VECTOR2, even for complex types.
+Use `dot` for inner product that conjugates complex vectors appropriately."
+  (policy-cond:with-expectations (> speed safety)
+        ((assertion (cl:= (size vector1) (size vector2))))
+      (loop :for i :below (size vector1)
+            :sum (* (tref vector1 i) (tref vector2 i)))))
+
 (defgeneric dot (vector1 vector2)
   (:documentation "Compute the dot product of two vectors")
   (:method ((vector1 vector) (vector2 vector))
-    (policy-cond:with-expectations (> speed safety)
-        ((assertion (cl:= (size vector1) (size vector2))))
-      (loop :for i :below (size vector1)
-            :sum (* (tref vector1 i) (tref vector2 i))))))
+    ;; Complex types will override to provide conjugation
+    (unconjugated-dot vector1 vector2)))
 
 (defgeneric outer (vector1 vector2)
   (:documentation "Compute the outer product of two vectors")

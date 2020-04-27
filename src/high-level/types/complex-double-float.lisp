@@ -23,6 +23,12 @@
   matrix/complex-double-float
   vector/complex-double-float)
 
+;; Strip off lazy conjugation before calling the main method
+(defmethod dot ((vector1 conjugate-transpose-row-vector/complex-single-float) (vector2 vector/complex-single-float))
+  (dot (dagger vector1) vector2))
+(defmethod dot ((vector1 vector/complex-single-float) (vector2 conjugate-transpose-row-vector/complex-single-float))
+  (dot vector1 (dagger vector2)))
+
 (defmethod dot ((vector1 vector/complex-double-float) (vector2 vector/complex-double-float))
   (assert (cl:= (size vector1) (size vector2))
           () "Vectors must have the same size. The first vector is size ~a and the second vector is size ~a."
@@ -41,8 +47,8 @@
                    (t (second epsilon)))))
     (if (and (<= (abs (- (realpart val1) (realpart val2)))
                      epsilon)
-                 (<= (abs (- (imagpart val1) (imagpart val2)))
-                     epsilon))
+             (<= (abs (- (imagpart val1) (imagpart val2)))
+                 epsilon))
         t
         nil)))
 

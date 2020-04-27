@@ -6,31 +6,42 @@
 
 (deftest test-dot-product ()
   (labels ((dot (x y)
-             (if (typep (magicl:tref x 0) 'complex)
-               (loop :for i :below (magicl:size x)
-                     :sum (* (magicl:tref x i) (conjugate (magicl:tref y i))))
-               (loop :for i :below (magicl:size x)
-                     :sum (* (magicl:tref x i) (magicl:tref y i))))))
+             (loop :for i :below (magicl:size x)
+                   :sum (* (magicl:tref x i) (magicl:tref y i)))))
     (dolist (magicl::*default-tensor-type* +magicl-float-types+)
       (loop :for i :below 1000
             :do (let* ((n (1+ (random 10)))
                        (a (magicl:rand (list n n)))
                        (x (magicl:rand (list n)))
                        (y (magicl:rand (list n))))
+
+                  ;; DOT conjugates one complex input
                   (is (magicl:=
-                       (dot x y)
+                       (dot x (magicl:dagger y))
+                       (magicl:dot x y)))
+
+                  ;; Simple transpose does not change DOT's behavior
+                  (is (magicl:=
+                       (dot x (magicl:dagger y))
                        (magicl:dot (magicl:transpose x) y)))
+                  (is (magicl:=
+                       (dot x (magicl:dagger y))
+                       (magicl:dot x (magicl:transpose y))))
+                  
+                  ;; MULT does not silently conjugate
                   (is (magicl:=
                        (dot y x)
                        (magicl:mult (magicl:transpose y) x)))
 
-                  (is (magicl:=
-                       (dot (magicl:dagger x) y)
-                       (magicl:dot (magicl:dagger x) y)))
+                  ;; MULT conjugates on request
                   (is (magicl:=
                        (dot (magicl:dagger y) x)
                        (magicl:mult (magicl:dagger y) x)))
 
+                  ;; Check @
+                  (is (magicl:=
+                       (dot (magicl:mult (magicl:dagger y) a) x)
+                       (magicl:@ (magicl:dagger y) a x)))
                   (is (magicl:=
                        (dot (magicl:mult (magicl:transpose y) a) x)
                        (magicl:@ (magicl:transpose y) a x))))))))
