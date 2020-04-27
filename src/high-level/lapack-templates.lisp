@@ -11,7 +11,8 @@
 
 (defun generate-lapack-mult-for-type (matrix-class vector-class type matrix-matrix-function matrix-vector-function
                                       inner-product-function outer-product-function
-                                      conj-inner-product-function conj-outer-product-function)
+                                      conj-inner-product-function conj-outer-product-function
+                                      scale-vector-function copy-vector-function)
   (let ((row-vector-class (intern (format nil "ROW-~:@(~A~)" vector-class)))
         (conj-row-vector-class (when conj-inner-product-function
                                  (intern (format nil "CONJUGATE-TRANSPOSE-ROW-~:@(~A~)" vector-class))))
@@ -224,7 +225,75 @@
               1
               (storage target)
               m)
-             target)))))))
+             target))))
+
+     ;; For complex types, scalar class is just COMPLEX
+     ,@(if conj-row-vector-class
+           `((defmethod mult ((a ,matrix-class) (b complex) &key target (alpha ,(coerce 1 type)) (beta ,(coerce 0 type)) (transa ':n) (transb ':n))
+               (policy-cond:with-expectations (> speed safety)
+                   ((type (member nil :n) transa)
+                    (type (member nil :n) transb)
+                    (type ,type b)
+                    (type ,type alpha)
+                    (assertion (= ,(coerce 0 type) beta)))
+                 (let* ((m (nrows a))
+                        (n (ncols a))
+                        (target (or target
+                                    (empty
+                                     (list m n)
+                                     :type ',type)))
+                        (sz (* m n)))
+                   ;; First copy to TARGET
+                   (,copy-vector-function
+                    sz
+                    (storage a)
+                    1                   ; stride of a
+                    (storage target)
+                    1                   ; stride of target
+                    )
+                   ;; Then scale by B
+                   (,scale-vector-function
+                    sz
+                    (* b alpha)
+                    (storage target)
+                    1                   ; stride of target
+                    )
+                   target)))
+           
+             (defmethod mult ((a complex) (b ,matrix-class) &key target (alpha ,(coerce 1 type)) (beta ,(coerce 0 type)) (transa ':n) (transb ':n))
+               (mult b a :target target :alpha alpha :beta beta :transa transa :transb transb)))
+           `((defmethod mult ((a ,matrix-class) (b ,type) &key target (alpha ,(coerce 1 type)) (beta ,(coerce 0 type)) (transa ':n) (transb ':n))
+             (policy-cond:with-expectations (> speed safety)
+                 ((type (member nil :n) transa)
+                  (type (member nil :n) transb)
+                  (type ,type alpha)
+                  (assertion (= ,(coerce 0 type) beta)))
+               (let* ((m (nrows a))
+                      (n (ncols a))
+                      (target (or target
+                                 (empty
+                                  (list m n)
+                                  :type ',type)))
+                      (sz (* m n)))
+                 ;; First copy to TARGET
+                 (,copy-vector-function
+                  sz
+                  (storage a)
+                  1 ; stride of a
+                  (storage target)
+                  1 ; stride of target
+                  )
+                 ;; Then scale by B
+                 (,scale-vector-function
+                  sz
+                  (* b alpha)
+                  (storage target)
+                  1 ; stride of target
+                  )
+                 target)))
+           
+           (defmethod mult ((a ,type) (b ,matrix-class) &key target (alpha ,(coerce 1 type)) (beta ,(coerce 0 type)) (transa ':n) (transb ':n))
+             (mult b a :target target :alpha alpha :beta beta :transa transa :transb transb)))))))
 
 (defun generate-lapack-lu-for-type (class type lu-function)
   (declare (ignore type))
