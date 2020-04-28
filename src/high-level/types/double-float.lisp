@@ -24,10 +24,8 @@
   vector/double-float)
 
 (defmethod = ((val1 double-float) (val2 double-float) &optional (epsilon *double-comparison-threshold*))
-  (if (<= (abs (- val1 val2))
-          epsilon)
-      t
-      nil))
+  (<= (abs (- val1 val2))
+      epsilon))
 
 (defmethod = ((tensor1 tensor/double-float) (tensor2 tensor/double-float) &optional (epsilon *double-comparison-threshold*))
   (unless (equal (shape tensor1) (shape tensor2))
