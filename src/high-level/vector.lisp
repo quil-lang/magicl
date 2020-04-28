@@ -104,6 +104,7 @@ ELEMENT-TYPE, CAST, COPY-TENSOR, DEEP-COPY-TENSOR, TREF, SETF TREF)"
          (row-constructor (intern (format nil "MAKE-~:@(~A~)" row-name)))
          (conj-row-name (intern (format nil "CONJUGATE-TRANSPOSE-ROW-~:@(~A~)" name)))
          (conj-row-constructor (intern (format nil "MAKE-~:@(~A~)" conj-row-name)))
+         (conj-row-copier (intern (format nil "COPY-~:@(~A~)" conj-row-name)))
          (conj-row-storage-sym (intern (format nil "~:@(~A~)-STORAGE" conj-row-name)))
          (col-name (intern (format nil "COLUMN-~:@(~A~)" name)))
          (col-constructor (intern (format nil "MAKE-~:@(~A~)" col-name))))
@@ -122,7 +123,8 @@ ELEMENT-TYPE, CAST, COPY-TENSOR, DEEP-COPY-TENSOR, TREF, SETF TREF)"
      ,@(if (subtypep type 'complex)
         `((defstruct (,conj-row-name (:include ,name)
                                      (:constructor ,conj-row-constructor
-                                                   (size storage)))
+                                                   (size storage))
+                                     (:copier ,conj-row-copier))
             (storage nil :type (vector-storage ,type)))
 
           (defmethod storage ((v ,conj-row-name))
@@ -133,6 +135,17 @@ ELEMENT-TYPE, CAST, COPY-TENSOR, DEEP-COPY-TENSOR, TREF, SETF TREF)"
           (defmethod conjugate-transpose ((matrix ,conj-row-name))
             (,col-constructor (size matrix) (storage matrix)))
           
+          (defmethod element-type ((v ,name))
+            (declare (ignore v))
+            ',type)
+
+          (defmethod copy-tensor ((v ,conj-row-name) &rest args)
+            (declare (ignore args))
+            (let ((new-v (,conj-row-copier v)))
+              (setf (,conj-row-storage-sym new-v)
+                    (make-array (vector-size v) :element-type (element-type v)))
+              new-v))
+
           (defmethod tref ((vector ,conj-row-name) &rest pos)
             (policy-cond:with-expectations (> speed safety)
                 ((assertion (valid-index-p pos (list (vector-size vector)))))
