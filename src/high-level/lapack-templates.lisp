@@ -240,9 +240,7 @@
                  (let* ((m (nrows a))
                         (n (ncols a))
                         (target (or target
-                                    (empty
-                                     (list m n)
-                                     :type ',type)))
+                                    (copy-tensor a)))
                         (sz (* m n)))
                    ;; First copy to TARGET
                    (,copy-vector-function
@@ -273,9 +271,7 @@
                     (assertion (= ,(coerce 0 type) beta)))
                  (let* ((sz (vector-size a))
                         (target (or target
-                                    (empty
-                                     (list sz)
-                                     :type ',type))))
+                                    (copy-tensor a))))
                    ;; First copy to TARGET
                    (,copy-vector-function
                     sz
@@ -304,9 +300,7 @@
                  (let* ((m (nrows a))
                         (n (ncols a))
                         (target (or target
-                                    (empty
-                                     (list m n)
-                                     :type ',type)))
+                                    (copy-tensor a)))
                         (sz (* m n)))
                    ;; First copy to TARGET
                    (,copy-vector-function
@@ -336,9 +330,7 @@
                     (assertion (= ,(coerce 0 type) beta)))
                  (let* ((sz (vector-size a))
                         (target (or target
-                                    (empty
-                                     (list sz)
-                                     :type ',type))))
+                                    (copy-tensor a))))
                    ;; First copy to TARGET
                    (,copy-vector-function
                     sz
