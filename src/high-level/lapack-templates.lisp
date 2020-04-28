@@ -203,7 +203,7 @@
                 (storage b)
                 1 ;; NOTE: This corresponds to the stride of B
                 )
-              `(uncongugated-dot a b)))))
+              `(unconjugated-dot a b)))))
      
      (defmethod mult ((a ,col-vector-class) (b ,row-vector-class) &key target (alpha ,(coerce 1 type)) (beta ,(coerce 0 type)) transa transb)
        (let ((m (vector-size a))

@@ -24,10 +24,8 @@
   vector/single-float)
 
 (defmethod = ((val1 single-float) (val2 single-float) &optional (epsilon *float-comparison-threshold*))
-  (if (<= (abs (- val1 val2))
-          epsilon)
-      t
-      nil))
+  (<= (abs (- val1 val2))
+      epsilon))
 
 (defmethod = ((tensor1 tensor/single-float) (tensor2 tensor/single-float) &optional (epsilon *float-comparison-threshold*))
   (unless (equal (shape tensor1) (shape tensor2))
