@@ -115,3 +115,11 @@
                            (scale-vector (* a b) vec)))
              (is (magicl:= (magicl:mult a vec :alpha b)
                            (scale-vector (* a b) vec)))))))
+
+(deftest test-scalar-multiply ()
+  (is (= 80d0
+         (magicl:@ 5d0
+                   (magicl:transpose (magicl:ones '(4)))
+                   (magicl:ones '(4))
+                   4d0)))
+  (is (= 0.25d0 (magicl:@ 0.5d0 0.5d0))))

@@ -290,7 +290,18 @@
                    target)))
            
              (defmethod mult ((a complex) (b ,vector-class) &key target (alpha ,(coerce 1 type)) (beta ,(coerce 0 type)) (transa ':n) (transb ':n))
-               (mult b a :target target :alpha alpha :beta beta :transa transa :transb transb)))
+               (mult b a :target target :alpha alpha :beta beta :transa transa :transb transb))
+
+             ;; This will be defined twice which is a little annoying
+             (defmethod mult ((a complex) (b complex) &key target (alpha ,(coerce 1 'complex)) (beta ,(coerce 0 'complex)) (transa ':n) (transb ':n))
+               (policy-cond:with-expectations (> speed safety)
+                   ((type (member nil :n) transa)
+                    (type (member nil :n) transb)
+                    (type complex alpha)
+                    (type null target)
+                    (assertion (= ,(coerce 0 'complex) beta)))
+                 (* alpha a b))))
+
            `((defmethod mult ((a ,matrix-class) (b ,type) &key target (alpha ,(coerce 1 type)) (beta ,(coerce 0 type)) (transa ':n) (transb ':n))
                (policy-cond:with-expectations (> speed safety)
                    ((type (member nil :n) transa)
@@ -349,7 +360,16 @@
                    target)))
            
              (defmethod mult ((a ,type) (b ,vector-class) &key target (alpha ,(coerce 1 type)) (beta ,(coerce 0 type)) (transa ':n) (transb ':n))
-               (mult b a :target target :alpha alpha :beta beta :transa transa :transb transb)))))))
+               (mult b a :target target :alpha alpha :beta beta :transa transa :transb transb))
+
+             (defmethod mult ((a ,type) (b ,type) &key target (alpha ,(coerce 1 type)) (beta ,(coerce 0 type)) (transa ':n) (transb ':n))
+               (policy-cond:with-expectations (> speed safety)
+                   ((type (member nil :n) transa)
+                    (type (member nil :n) transb)
+                    (type ,type alpha)
+                    (type null target)
+                    (assertion (= ,(coerce 0 type) beta)))
+                 (* alpha a b))))))))
 
 (defun generate-lapack-lu-for-type (class type lu-function)
   (declare (ignore type))
