@@ -112,7 +112,10 @@ The tensor is specialized on TYPE with shape (floor(RANGE))."
 ;;       then the tensor will not return the correct values. Not a
 ;;       huge deal but something that be improved (similarly to how
 ;;       FROM-LIST does it.)
-(defun from-array (array shape &key type (layout :row-major))
+;; XXX: This gets the type of an array from the array, not
+;;       by inspecting the elements. This can cause issues when
+;;       the type of the array is T
+(defun from-array (array shape &key (type (array-element-type array)) (layout :row-major) (input-layout :row-major))
   "Create a tensor from ARRAY, calling ADJUST-ARRAY on ARRAY to flatten to a 1-dimensional array of length equal to the product of the elements in SHAPE
 
 If TYPE is not specified then it is inferred from the element type of ARRAY.
@@ -120,24 +123,30 @@ LAYOUT specifies the internal storage representation ordering of the returned te
 The tensor is specialized on SHAPE and TYPE."
   (policy-cond:with-expectations (> speed safety)
       ((type shape shape))
-    (let* (;; TODO: This gets the type of an array from the array, not
-           ;; by inspecting the elements. This can cause issues when
-           ;; the element-type of the array is T
-           (element-type
-            (if (null type)
-                (array-element-type array)
-                type))
-           (tensor-class (infer-tensor-type element-type shape nil))
+    (let* ((tensor-class (infer-tensor-type type shape nil))
            (storage-size (reduce #'* shape))
-           (storage (make-array (list storage-size) :element-type element-type))
+           (storage (make-array storage-size :element-type type))
            (array-dims (array-dimensions array)))
       (let ((index-function
              (if (eq layout ':row-major)
-                 #'from-row-major-index
-                 #'from-column-major-index)))
-        (dotimes (i storage-size)
-          (setf (aref storage i)
-                (apply #'aref array (funcall index-function i array-dims)))))
+                 #'row-major-index
+                 #'column-major-index))
+            (input-index-function
+             (if (eq input-layout ':row-major)
+                 #'row-major-index
+                 #'column-major-index)))
+        (cond
+          ((not (cdr array-dims))
+           (map-indexes
+            shape
+            (lambda (&rest pos)
+              (setf (aref storage (funcall index-function pos shape))
+                    (aref array (funcall input-index-function pos shape))))))
+          (t (map-indexes
+              shape
+              (lambda (&rest pos)
+                (setf (aref storage (funcall index-function pos shape))
+                      (apply #'aref array pos)))))))
       (make-tensor tensor-class shape
                    :storage storage
                    :layout layout))))
