@@ -23,5 +23,6 @@
                (:file "util-tests")
                (:file "abstract-tensor-tests")
                (:file "specialization-tests")
+               (:file "constructor-tests")
                (:file "matrix-tests")
                (:file "high-level-tests")))
