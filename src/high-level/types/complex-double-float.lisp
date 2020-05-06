@@ -188,10 +188,10 @@
                              x11 ldx11 x12 ldx12 x21 ldx21 x22 ldx22
                              theta u1 ldu1 u2 ldu2 v1t ldv1t v2t ldv2t
                              work lwork rwork lrwork iwork info)
-          (values (from-array u1 (list p p) :layout :column-major)
-                  (from-array u2 (list (- m p) (- m p)) :layout :column-major)
-                  (from-array v1t (list q q) :layout :column-major)
-                  (from-array v2t (list (- m q) (- m q)) :layout :column-major)
+          (values (from-array u1 (list p p) :input-layout :column-major)
+                  (from-array u2 (list (- m p) (- m p)) :input-layout :column-major)
+                  (from-array v1t (list q q) :input-layout :column-major)
+                  (from-array v2t (list (- m q) (- m q)) :input-layout :column-major)
                   (coerce theta 'list)))))))
 
 (defmethod csd-2x2-basic ((unitary-matrix-2x2 matrix/complex-double-float) p q)

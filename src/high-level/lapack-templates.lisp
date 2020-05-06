@@ -178,7 +178,7 @@
               work
               lwork
               info))
-           (values a-tensor))))))
+           (values (from-array a (shape a-tensor) :input-layout :column-major)))))))
 
 (defun generate-lapack-svd-for-type (class type svd-function &optional real-type)
   `(progn
@@ -219,9 +219,9 @@
              (dotimes (i k)
                (setf (aref smat (matrix-column-major-index i i u-cols vt-rows))
                      (aref s i)))
-             (values (from-array u (list rows u-cols) :layout :column-major)
-                     (from-array smat (list u-cols vt-rows) :layout :column-major)
-                     (from-array vt (list vt-rows cols) :layout :column-major))))))))
+             (values (from-array u (list rows u-cols) :input-layout :column-major)
+                     (from-array smat (list u-cols vt-rows) :input-layout :column-major)
+                     (from-array vt (list vt-rows cols) :input-layout :column-major))))))))
 
 ;; TODO: This returns only the real parts when with non-complex numbers. Should do something different?
 (defun generate-lapack-eig-for-type (class type eig-function &optional real-type)
@@ -258,7 +258,7 @@
                ;; run it again with optimal workspace size
                (,eig-function jobvl jobvr rows a rows ,@(if real-type `(w) `(wr wi))
                               vl 1 vr rows work lwork ,@(when real-type `(rwork)) info)
-               (values (coerce ,@(if real-type `(w) `(wr)) 'list) (from-array vr (list rows cols) :layout :column-major)))))))))
+               (values (coerce ,@(if real-type `(w) `(wr)) 'list) (from-array vr (list rows cols) :input-layout :column-major)))))))))
 
 (defun generate-lapack-hermitian-eig-for-type (class type eig-function real-type)
   `(progn
@@ -400,7 +400,7 @@
            (values a-tensor
                    (from-array tau (list (min rows cols))
                                :type ',type
-                               :layout :column-major)))))
+                               :input-layout :column-major)))))
      
      (defmethod lapack-ql ((m ,class))
        (let* ((rows (nrows m))
@@ -423,7 +423,7 @@
            (values a-tensor
                    (from-array tau (list (min rows cols))
                                :type ',type
-                               :layout :column-major)))))
+                               :input-layout :column-major)))))
 
      (defmethod lapack-rq ((m ,class))
        (let* ((rows (nrows m))
@@ -446,7 +446,7 @@
            (values a-tensor
                    (from-array tau (list (min rows cols))
                                :type ',type
-                               :layout :column-major)))))
+                               :input-layout :column-major)))))
 
      (defmethod lapack-lq ((m ,class))
        (let* ((rows (nrows m))
@@ -469,7 +469,7 @@
            (values a-tensor
                    (from-array tau (list (min rows cols))
                                :type ',type
-                               :layout :column-major)))))
+                               :input-layout :column-major)))))
 
      (defmethod lapack-qr-q ((m ,class) tau)
        (let ((m (nrows m))
@@ -488,7 +488,7 @@
            (setf work (make-array (max 1 lwork) :element-type ',type))
            ;; run it again with optimal workspace size
            (,qr-q-function m n k a lda atau work lwork info)
-           (from-array a (list m k) :layout :column-major))))
+           (from-array a (list m k) :input-layout :column-major))))
 
      (defmethod lapack-ql-q ((m ,class) tau)
        (let ((m (nrows m))
@@ -506,7 +506,7 @@
            (setf work (make-array (max 1 lwork) :element-type ',type))
            ;; run it again with optimal workspace size
            (,ql-q-function m n k a lda atau work lwork info)
-           (from-array a (list m n) :layout :column-major))))
+           (from-array a (list m n) :input-layout :column-major))))
 
      (defmethod lapack-rq-q ((m ,class) tau)
        (let ((m (nrows m))
@@ -524,7 +524,7 @@
            (setf work (make-array (max 1 lwork) :element-type ',type))
            ;; run it again with optimal workspace size
            (,rq-q-function m n k a lda atau work lwork info)
-           (from-array a (list m n) :layout :column-major))))
+           (from-array a (list m n) :input-layout :column-major))))
 
      (defmethod lapack-lq-q ((m ,class) tau)
        (let ((m (nrows m))
@@ -542,4 +542,4 @@
            (setf work (make-array (max 1 lwork) :element-type ',type))
            ;; run it again with optimal workspace size
            (,lq-q-function m n k a lda atau work lwork info)
-           (from-array a (list m n) :layout :column-major))))))
+           (from-array a (list m n) :input-layout :column-major))))))
