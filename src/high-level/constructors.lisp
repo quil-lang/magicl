@@ -119,7 +119,8 @@ The tensor is specialized on TYPE with shape (floor(RANGE))."
   "Create a tensor from ARRAY, calling ADJUST-ARRAY on ARRAY to flatten to a 1-dimensional array of length equal to the product of the elements in SHAPE
 
 If TYPE is not specified then it is inferred from the element type of ARRAY.
-LAYOUT specifies the internal storage representation ordering of the returned tensor. The input is assumed to be ROW-MAJOR.
+LAYOUT specifies the internal storage representation ordering of the returned tensor.
+INPUT-LAYOUT specifies the layout of ARRAY.
 The tensor is specialized on SHAPE and TYPE."
   (policy-cond:with-expectations (> speed safety)
       ((type shape shape))
