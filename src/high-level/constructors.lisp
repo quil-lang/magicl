@@ -129,13 +129,13 @@ The tensor is specialized on SHAPE and TYPE."
            (storage (make-array storage-size :element-type type))
            (array-dims (array-dimensions array)))
       (let ((index-function
-             (if (eq layout ':row-major)
-                 #'row-major-index
-                 #'column-major-index))
+              (if (eq layout ':row-major)
+                  #'row-major-index
+                  #'column-major-index))
             (input-index-function
-             (if (eq input-layout ':row-major)
-                 #'row-major-index
-                 #'column-major-index)))
+              (if (eq input-layout ':row-major)
+                  #'row-major-index
+                  #'column-major-index)))
         (cond
           ((not (cdr array-dims))
            (map-indexes
