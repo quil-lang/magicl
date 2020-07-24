@@ -3,7 +3,7 @@ services:
 
 script:
   - docker pull rigetti/quicklisp
-  - docker run --rm --name magicl_tests -v ./:/src/magicl -d -it rigetti/quicklisp
+  - docker run --name magicl_tests -v ./:/src/magicl -d -it rigetti/quicklisp
   - docker exec -it magicl_tests cd /src/magicl
   - docker exec -it magicl_tests make install-test-deps
   - docker exec -it magicl_tests make test
