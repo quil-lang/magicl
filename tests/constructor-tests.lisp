@@ -30,3 +30,16 @@
                         #'magicl::from-column-major-index)))
               (loop :for i :below length :do
                 (is (= i (apply #'magicl:tref tensor (funcall index-function i dimensions))))))))))))
+
+(deftest test-constructor-with-value-types ()
+  "Test that when a constructor accepts a TYPE and a VALUE, TYPE is preferred."
+  (mapcar (lambda (x)
+            (let ((val (coerce 2 '(signed-byte 32)))) ;; Coerce just to be sure
+              (is (equal x (magicl:element-type (magicl:const val '(2 2) :type x))))
+              (is (equal x (magicl:element-type (magicl:eye '(2 2) :value val :type x))))
+              (is (equal x (magicl:element-type (magicl:from-list (list val val val val) '(2 2) :type x))))
+              (is (equal x (magicl:element-type (magicl:from-diag (list val val) :type x))))
+              (unless (subtypep x 'complex)
+                (is (equal x (magicl:element-type (magicl:arange val :type x)))))))
+          +magicl-types+)
+  t)
