@@ -80,7 +80,7 @@ If OFFSET is specified then the diagonal band will be offset by that much, posit
        ;;
        ;; NOTE: We infer the tensor type this late to allow for
        ;; reassignment of SHAPE in the assertion.
-       (let* ((tensor-class (infer-tensor-type (if value nil type) shape value))
+       (let* ((tensor-class (infer-tensor-type type shape value))
               (tensor (make-tensor tensor-class shape :layout layout))
               (fill-value (coerce (or value 1) (element-type tensor)))) ;; TODO: use registry)
          (loop :for i :from (max 0 (- offset)) :below (first shape)
@@ -88,7 +88,7 @@ If OFFSET is specified then the diagonal band will be offset by that much, posit
                  (setf (tref tensor i j) fill-value))
          tensor))
       (t
-       (let* ((tensor-class (infer-tensor-type (if value nil type) shape value))
+       (let* ((tensor-class (infer-tensor-type type shape value))
               (tensor (make-tensor tensor-class shape :layout layout))
               (fill-value (coerce (or value 1) (element-type tensor))) ;; TODO: use registry
               (shape-length (length shape)))
