@@ -1,0 +1,8 @@
+services:
+  - docker
+
+script:
+  - docker pull rigetti/quicklisp
+  - docker run --name magicl_tests -v $(pwd):/src/magicl -d -it --entrypoint "bash" rigetti/quicklisp
+  - docker exec -it -w /src/magicl magicl_tests make install-test-deps
+  - docker exec -it -w /src/magicl magicl_tests make test
