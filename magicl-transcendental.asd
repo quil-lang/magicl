@@ -25,7 +25,8 @@
                                          :name "libexpokit"
                                          :defaults fortran-file)))
       (uiop:run-program
-       (list "gfortran" "-fPIC" "-c"
+       (list "gfortran" "-fPIC" "-std=legacy"
+	     "-c"
              (nn fortran-file)
              "-o"
              (nn object-file)))
