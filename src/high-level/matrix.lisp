@@ -523,28 +523,32 @@ If :SQUARE is T, then the result will be restricted to the lower leftmost square
     (error "SVD is not defined for the generic matrix type.")))
 
 (defgeneric qr (matrix)
-  (:documentation "Finds the QR factorization of MATRIX. Returns two matrices (Q, R)
+  (:documentation "Finds the QR factorization of MATRIX. Returns two matrices (Q, R).
+
 NOTE: If MATRIX is not square, this will compute the reduced QR factoriation.")
   (:method ((matrix matrix))
     (declare (ignore matrix))
     (error "QR is not defined for the generic matrix type.")))
 
 (defgeneric ql (matrix)
-  (:documentation "Finds the QL factorization of MATRIX. Returns two matrices (Q, L)
+  (:documentation "Finds the QL factorization of MATRIX. Returns two matrices (Q, L).
+
 NOTE: If MATRIX is not square, this will compute the reduced QL factoriation.")
   (:method ((matrix matrix))
     (declare (ignore matrix))
     (error "QL is not defined for the generic matrix type.")))
 
 (defgeneric rq (matrix)
-  (:documentation "Finds the RQ factorization of MATRIX. Returns two tensors (R, Q)
+  (:documentation "Finds the RQ factorization of MATRIX. Returns two matrices (R, Q).
+
 NOTE: If MATRIX is not square, this will compute the reduced RQ factoriation.")
   (:method ((matrix matrix))
     (declare (ignore matrix))
     (error "RQ is not defined for the generic matrix type.")))
 
 (defgeneric lq (matrix)
-  (:documentation "Finds the LQ factorization of MATRIX. Returns two tensors (L, Q)
+  (:documentation "Finds the LQ factorization of MATRIX. Returns two matrices (L, Q).
+
 NOTE: If MATRIX is not square, this will compute the reduced LQ factoriation.")
   (:method ((matrix matrix))
     (declare (ignore matrix))
