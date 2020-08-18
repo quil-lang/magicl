@@ -297,11 +297,15 @@
   `(progn
      (defmethod qr ((m ,class))
        (policy-cond:with-expectations (> speed safety)
-           ((assertion (square-matrix-p m)))
+           ;; Needed for LAPACK-QR to do its job. In principle DGEQRF
+           ;; doesn't impose this, but the results are represented
+           ;; slightly differently for the cols <= rows vs rows < cols
+           ;; cases, and we only handle the former.
+           ((assertion (<= (ncols m) (nrows m))))
          (let ((rows (nrows m))
                (cols (ncols m)))
            (multiple-value-bind (a tau) (lapack-qr m)
-             (let* ((r (upper-triangular a cols))
+             (let* ((r (upper-triangular a :square t))
                     (q (lapack-qr-q a tau)))
                ;; change signs if diagonal elements of r are negative
                (dotimes (j cols)
@@ -318,11 +322,12 @@
      
      (defmethod ql ((m ,class))
        (policy-cond:with-expectations (> speed safety)
-           ((assertion (square-matrix-p m)))
+           ;; Similar to the assert for QR above.
+           ((assertion (<= (ncols m) (nrows m))))
          (let ((rows (nrows m))
                (cols (ncols m)))
            (multiple-value-bind (a tau) (lapack-ql m)
-             (let* ((l (lower-triangular a cols))
+             (let* ((l (lower-triangular a :square t))
                     (q (lapack-ql-q a tau)))
                ;; change signs if diagonal elements of l are negative
                (dotimes (j cols)
@@ -339,11 +344,12 @@
 
      (defmethod rq ((m ,class))
        (policy-cond:with-expectations (> speed safety)
-           ((assertion (square-matrix-p m)))
+           ;; Similar to the assert for QR above.
+           ((assertion (>= (ncols m) (nrows m))))
          (let ((rows (nrows m))
                (cols (ncols m)))
            (multiple-value-bind (a tau) (lapack-rq m)
-             (let* ((r (upper-triangular a rows))
+             (let* ((r (upper-triangular a :square t))
                     (q (lapack-rq-q a tau)))
                ;; change signs if diagonal elements of r are negative
                (dotimes (i rows)
@@ -356,15 +362,16 @@
                        (when (<= j i)
                          (setf (tref r j i) (- (tref r j i))))
                        (setf (tref q i j) (- (tref q i j)))))))
-               (values q r))))))
+               (values r q))))))
 
      (defmethod lq ((m ,class))
        (policy-cond:with-expectations (> speed safety)
-           ((assertion (square-matrix-p m)))
+           ;; Similar to the assert for QR above.
+           ((assertion (>= (ncols m) (nrows m))))
          (let ((rows (nrows m))
                (cols (ncols m)))
            (multiple-value-bind (a tau) (lapack-lq m)
-             (let* ((l (lower-triangular a rows))
+             (let* ((l (lower-triangular a :square t))
                     (q (lapack-lq-q a tau)))
                ;; change signs if diagonal elements of l are negative
                (dotimes (i rows)
@@ -377,7 +384,7 @@
                        (when (<= i j (1- rows))
                          (setf (tref l j i) (- (tref l j i))))
                        (setf (tref q i j) (- (tref q i j)))))))
-               (values q l))))))
+               (values l q))))))
 
      (defmethod lapack-qr ((m ,class))
        (let* ((rows (nrows m))
