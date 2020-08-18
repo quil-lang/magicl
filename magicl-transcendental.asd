@@ -26,7 +26,7 @@
                                          :defaults fortran-file)))
       (uiop:run-program
        (list "gfortran" "-fPIC" "-std=legacy"
-	     "-c"
+             "-c"
              (nn fortran-file)
              "-o"
              (nn object-file)))
@@ -59,4 +59,3 @@
                  (:file "load-libs")
                  (:file "transcendental")))
    (:file "src/bindings/expokit-cffi")))
-
