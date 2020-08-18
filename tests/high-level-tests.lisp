@@ -191,3 +191,20 @@
           :for reference-root :in reference-roots
           :for relative-error-tolerance :in relative-error-tolerances :do
             (is (< (abs (/ (- root reference-root) reference-root)) relative-error-tolerance)))))
+
+
+(deftest test-rectangular-factorizations ()
+  "Check that we can do various orthogonal factorizations for nonsquare matrices."
+  (let ((tall (magicl:rand '(10 4)))
+	(fat (magicl:rand '(4 10))))
+    (dolist (factorization (list #'magicl:qr #'magicl:ql))
+      (multiple-value-bind (a b)
+	  (funcall factorization tall)
+	(is (magicl:= (magicl:@ a b) tall)))
+      (signals error (funcall factorization fat)))
+
+    (dolist (factorization (list #'magicl:rq #'magicl:lq))
+      (multiple-value-bind (a b)
+	  (funcall factorization fat)
+	(is (magicl:= (magicl:@ a b) fat)))
+      (signals error (funcall factorization tall)))))

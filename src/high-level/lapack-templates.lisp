@@ -297,7 +297,7 @@
   `(progn
      (defmethod qr ((m ,class))
        (policy-cond:with-expectations (> speed safety)
-           ((assertion (square-matrix-p m)))
+           ((assertion (<= (ncols m) (nrows m))))
          (let ((rows (nrows m))
                (cols (ncols m)))
            (multiple-value-bind (a tau) (lapack-qr m)
@@ -318,7 +318,7 @@
      
      (defmethod ql ((m ,class))
        (policy-cond:with-expectations (> speed safety)
-           ((assertion (square-matrix-p m)))
+           ((assertion (<= (ncols m) (nrows m))))
          (let ((rows (nrows m))
                (cols (ncols m)))
            (multiple-value-bind (a tau) (lapack-ql m)
@@ -339,7 +339,7 @@
 
      (defmethod rq ((m ,class))
        (policy-cond:with-expectations (> speed safety)
-           ((assertion (square-matrix-p m)))
+           ((assertion (>= (ncols m) (nrows m))))
          (let ((rows (nrows m))
                (cols (ncols m)))
            (multiple-value-bind (a tau) (lapack-rq m)
@@ -356,11 +356,11 @@
                        (when (<= j i)
                          (setf (tref r j i) (- (tref r j i))))
                        (setf (tref q i j) (- (tref q i j)))))))
-               (values q r))))))
+               (values r q))))))
 
      (defmethod lq ((m ,class))
        (policy-cond:with-expectations (> speed safety)
-           ((assertion (square-matrix-p m)))
+           ((assertion (>= (ncols m) (nrows m))))
          (let ((rows (nrows m))
                (cols (ncols m)))
            (multiple-value-bind (a tau) (lapack-lq m)
@@ -377,7 +377,7 @@
                        (when (<= i j (1- rows))
                          (setf (tref l j i) (- (tref l j i))))
                        (setf (tref q i j) (- (tref q i j)))))))
-               (values q l))))))
+               (values l q))))))
 
      (defmethod lapack-qr ((m ,class))
        (let* ((rows (nrows m))
