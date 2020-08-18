@@ -301,7 +301,7 @@
          (let ((rows (nrows m))
                (cols (ncols m)))
            (multiple-value-bind (a tau) (lapack-qr m)
-             (let* ((r (upper-triangular a cols))
+             (let* ((r (upper-triangular a :square t))
                     (q (lapack-qr-q a tau)))
                ;; change signs if diagonal elements of r are negative
                (dotimes (j cols)
@@ -322,7 +322,7 @@
          (let ((rows (nrows m))
                (cols (ncols m)))
            (multiple-value-bind (a tau) (lapack-ql m)
-             (let* ((l (lower-triangular a cols))
+             (let* ((l (lower-triangular a :square t))
                     (q (lapack-ql-q a tau)))
                ;; change signs if diagonal elements of l are negative
                (dotimes (j cols)
@@ -343,7 +343,7 @@
          (let ((rows (nrows m))
                (cols (ncols m)))
            (multiple-value-bind (a tau) (lapack-rq m)
-             (let* ((r (upper-triangular a rows))
+             (let* ((r (upper-triangular a :square t))
                     (q (lapack-rq-q a tau)))
                ;; change signs if diagonal elements of r are negative
                (dotimes (i rows)
@@ -364,7 +364,7 @@
          (let ((rows (nrows m))
                (cols (ncols m)))
            (multiple-value-bind (a tau) (lapack-lq m)
-             (let* ((l (lower-triangular a rows))
+             (let* ((l (lower-triangular a :square t))
                     (q (lapack-lq-q a tau)))
                ;; change signs if diagonal elements of l are negative
                (dotimes (i rows)

@@ -401,41 +401,43 @@ If fast is t then just change layout. Fast can cause problems when you want to m
               (setq d (- d))))
           d)))))
 
-(defgeneric upper-triangular (matrix &optional order)
-  (:documentation "Get the upper triangular portion of the matrix")
-  (:method ((matrix matrix) &optional (order (ncols matrix)))
+(defgeneric upper-triangular (matrix &key square)
+  (:documentation "Get the upper triangular portion of the matrix.
+
+If :SQUARE is T, then the result will be restricted to the upper rightmost square submatrix of the input.")
+  (:method ((matrix matrix) &key square)
     (let ((m (nrows matrix))
           (n (ncols matrix)))
-      (policy-cond:with-expectations (> speed safety)
-          ((assertion (<= order (max (nrows matrix) (ncols matrix)))))
-        (let ((target (empty (list order order) :layout (layout matrix) :type (element-type matrix))))
-          (if (> m n)
-              (loop for i from 0 to (1- order)
-                    do (loop for j from (max 0 (+ (- n order) i)) to (1- n)
-                             do (setf (tref target i (+ j (- order n))) (tref matrix i j))))
-              (loop for j from (- n order) to (1- n)
-                    do (loop for i from 0 to (min (+ (- order n) j) (1- m))
-                             do (setf (tref target i (- j (- n order))) (tref matrix i j)))))
-          target)))))
+      (let* ((end-i (if square (min m n) m))
+	     (start-j (if square (- n end-i) 0))
+	     (target (empty (list end-i (- n start-j))
+			    :layout (layout matrix) :type (element-type matrix))))
+	(loop :for i :from 0 :below end-i
+	      :do (loop :for j :from (+ start-j i) :below n
+			:for j0 :from i
+			:do (setf (tref target i j0)
+				  (tref matrix i j))))
+	target))))
 ;;; Synonym for upper-triangular
 (setf (fdefinition 'triu) #'upper-triangular)
 
-(defgeneric lower-triangular (matrix &optional order)
-  (:documentation "Get the lower triangular portion of the matrix")
-  (:method ((matrix matrix) &optional (order (ncols matrix)))
+(defgeneric lower-triangular (matrix &key square)
+  (:documentation "Get the lower triangular portion of the matrix.
+
+If :SQUARE is T, then the result will be restricted to the lower leftmost square submatrix of the input.")
+  (:method ((matrix matrix) &key square)
     (let ((m (nrows matrix))
           (n (ncols matrix)))
-      (policy-cond:with-expectations (> speed safety)
-          ((assertion (<= order (max (nrows matrix) (ncols matrix)))))
-        (let ((target (empty (list order order) :layout (layout matrix) :type (element-type matrix))))
-          (if (> m n)
-              (loop for i from (- m order) to (1- m)
-                    do (loop for j from 0 to (min (+ (- order m) i) (1- n))
-                             do (setf (tref target (- i (- m order)) j) (tref matrix i j))))
-              (loop for j from 0 to (1- order)
-                    do (loop for i from (max 0 (+ (- m order) j)) to (1- m)
-                             do (setf (tref target (+ i (- order m)) j) (tref matrix i j)))))
-          target)))))
+      (let* ((end-j (if square (min m n) n))
+	     (start-i (if square (- m end-j) 0))
+	     (target (empty (list (- m start-i) end-j)
+			    :layout (layout matrix) :type (element-type matrix))))
+	(loop :for j :from 0 :below end-j
+	      :do (loop :for i :from (+ start-i j) :below m
+			:for i0 :from j
+			:do (setf (tref target i0 j)
+				  (tref matrix i j))))
+	target))))
 ;;; Synonym for lower-triangular
 (setf (fdefinition 'tril) #'lower-triangular)
 
