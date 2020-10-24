@@ -409,15 +409,15 @@ If :SQUARE is T, then the result will be restricted to the upper rightmost squar
     (let ((m (nrows matrix))
           (n (ncols matrix)))
       (let* ((end-i (if square (min m n) m))
-	     (start-j (if square (- n end-i) 0))
-	     (target (empty (list end-i (- n start-j))
-			    :layout (layout matrix) :type (element-type matrix))))
-	(loop :for i :from 0 :below end-i
-	      :do (loop :for j :from (+ start-j i) :below n
-			:for j0 :from i
-			:do (setf (tref target i j0)
-				  (tref matrix i j))))
-	target))))
+             (start-j (if square (- n end-i) 0))
+             (target (empty (list end-i (- n start-j))
+                            :layout (layout matrix) :type (element-type matrix))))
+        (loop :for i :below end-i
+              :do (loop :for j :from (+ start-j i) :below n
+                        :for j0 :from i
+                        :do (setf (tref target i j0)
+                                  (tref matrix i j))))
+        target))))
 ;;; Synonym for upper-triangular
 (setf (fdefinition 'triu) #'upper-triangular)
 
@@ -429,15 +429,15 @@ If :SQUARE is T, then the result will be restricted to the lower leftmost square
     (let ((m (nrows matrix))
           (n (ncols matrix)))
       (let* ((end-j (if square (min m n) n))
-	     (start-i (if square (- m end-j) 0))
-	     (target (empty (list (- m start-i) end-j)
-			    :layout (layout matrix) :type (element-type matrix))))
-	(loop :for j :from 0 :below end-j
-	      :do (loop :for i :from (+ start-i j) :below m
-			:for i0 :from j
-			:do (setf (tref target i0 j)
-				  (tref matrix i j))))
-	target))))
+             (start-i (if square (- m end-j) 0))
+             (target (empty (list (- m start-i) end-j)
+                            :layout (layout matrix) :type (element-type matrix))))
+        (loop :for j :below end-j
+              :do (loop :for i :from (+ start-i j) :below m
+                        :for i0 :from j
+                        :do (setf (tref target i0 j)
+                                  (tref matrix i j))))
+        target))))
 ;;; Synonym for lower-triangular
 (setf (fdefinition 'tril) #'lower-triangular)
 
