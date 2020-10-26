@@ -74,7 +74,7 @@
       (assert (magicl:= a a-reconst)))))
 
 (defun rq-printing (a)
-  (multiple-value-bind (q r)
+  (multiple-value-bind (r q)
       (magicl:rq a)
     (format t "A~%~a~%" a)
     (format t "Q~%~a~%" q)
@@ -84,7 +84,7 @@
       (assert (magicl:= a a-reconst)))))
 
 (defun lq-printing (a)
-  (multiple-value-bind (q l)
+  (multiple-value-bind (l q)
       (magicl:lq a)
     (format t "A~%~a~%" a)
     (format t "Q~%~a~%" q)
