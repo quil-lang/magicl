@@ -246,10 +246,15 @@ ELEMENT-TYPE, CAST, COPY-TENSOR, DEEP-COPY-TENSOR, TREF, SETF TREF)"
 
 (defgeneric random-unitary (shape &key type)
   (:documentation "Generate a uniformly random element of U(n).")
-  (:method (shape &key (type 'double-float))
+  (:method (shape &key (type '(complex double-float)))
     (policy-cond:with-expectations (> speed safety)
-        ((assertion (square-shape-p shape)))
-      (multiple-value-bind (q r) (qr (rand shape :type type :distribution #'alexandria:gaussian-random))
+        ((assertion (square-shape-p shape))
+         (assertion (subtypep type 'complex)))
+      (multiple-value-bind (q r)
+          (qr (rand shape :type type
+                          :distribution (lambda ()
+                                          (multiple-value-bind (re im) (alexandria:gaussian-random)
+                                            (complex re im)))))
         (let ((d (diag r)))
           (setf d (cl:map 'list (lambda (di) (/ di (sqrt (* di (conjugate di))))) d))
           (@ q (funcall #'from-diag d)))))))

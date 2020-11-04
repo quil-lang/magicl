@@ -141,7 +141,8 @@
 
 (deftest test-random-unitary-properties ()
   "Test calls to RANDOM-UNITARY for all float types and sizes 1x1 to 64x64 to check properties"
-  (dolist (type +magicl-float-types+)
+  (dolist (type '((complex single-float)
+                  (complex double-float)))
     (loop :for i :from 1 :to 64 :do
       (let ((m (magicl:random-unitary (list i i) :type type)))
         (is (> 5e-5 (abs (cl:-
@@ -149,5 +150,5 @@
                           1))))
         (is (magicl:=
              (magicl:eye (list i i) :type type)
-             (magicl:@ m (magicl:transpose m))
+             (magicl:@ m (magicl:dagger m))
              5e-5))))))
