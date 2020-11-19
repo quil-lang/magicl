@@ -292,26 +292,91 @@ ELEMENT-TYPE, CAST, COPY-TENSOR, DEEP-COPY-TENSOR, TREF, SETF TREF)"
     (reduce #'mult matrices
             :initial-value matrix)))
 
+;;; Block matrices
+
+(defun block-diag (mat &rest blocks)
+  "Construct a block diagonal matrix, given blocks (MAT . BLOCKS)."
+  (push mat blocks)
+  (let ((nrows 0)
+        (ncols 0)
+        (type (element-type mat)))
+    (dolist (mat blocks)
+      (incf nrows (nrows mat))
+      (incf ncols (ncols mat))
+      ;; TODO: type coercion? for now we can be strict
+      (unless (equalp type (element-type mat))
+               (error "Unable to construct block matrix from blocks with disagreeing types.")))
+    (let ((result (zeros (list nrows ncols) :type type)))
+      (loop :with i := 0
+            :with j := 0
+            :for mat :in blocks
+            :do (slice-to mat (list 0 0) (shape mat) result (list i j))
+                (incf i (nrows mat))
+                (incf j (ncols mat)))
+      result)))
+
+(defun hstack (mat &rest matrices)
+  "Concatenate matrices 'horizontally' (column wise)."
+  (push mat matrices)
+  (let* ((rows (nrows mat))
+         (type (element-type mat))
+         (cols
+           (loop :for mat :in matrices
+                 :unless (cl:= rows (nrows mat))
+                   :do (error "Matrices have conflicting number of rows: ~D vs ~D." rows (nrows mat))
+                 :unless (eq type (element-type mat))
+                   :do (error "Matrices have conflicting types: ~A vs ~A." type (element-type mat))
+                 :summing (ncols mat))))    
+    (loop :with result := (zeros (list rows cols) :type type)
+          :with j := 0
+          :for mat :in matrices
+          :do (slice-to mat (list 0 0) (shape mat) result (list 0 j))
+          :do (incf j (ncols mat))
+          :finally (return result))))
+
+(defun vstack (mat &rest matrices)
+  "Concatenate matrices 'vertically' (row wise)."
+  (push mat matrices)
+  (let* ((cols (ncols mat))
+         (type (element-type mat))
+         (rows
+           (loop :for mat :in matrices
+                 :unless (cl:= cols (ncols mat))
+                   :do (error "Matrices have conflicting number of columns: ~D vs ~D." cols (ncols mat))
+                 :unless (eq type (element-type mat))
+                   :do (error "Matrices have conflicting types: ~A vs ~A." type (element-type mat))
+                 :summing (nrows mat))))    
+    (loop :with result := (zeros (list rows cols) :type type)
+          :with i := 0
+          :for mat :in matrices
+          :do (slice-to mat (list 0 0) (shape mat) result (list i 0))
+          :do (incf i (nrows mat))
+          :finally (return result))))
+
+(defun block-matrix (blocks shape)
+  "Construct a matrix from a list of blocks. Here SHAPE denotes the number of blocks in each row and column."
+  (let ((len (length blocks)))
+    (policy-cond:with-expectations (> speed safety)
+        ((type shape shape)
+         (assertion (cl:= 2 (length shape)))
+         (assertion (cl:= len (reduce #'* shape))))
+      (let ((block-rows
+              (loop :with ncols := (second shape)
+                    :and tail := blocks
+                    :while tail
+                    :collect (apply #'hstack
+                                    (loop :for elts :on tail
+                                          :for i :below ncols
+                                          :collect (first elts)
+                                          :finally (setf tail elts))))))
+        (apply #'vstack block-rows)))))
+
 ;;; Generic matrix methods
 
 (defgeneric direct-sum (a b)
   (:method ((a matrix) (b matrix))
     "Compute the direct sum of A and B"
-    (let* ((arows (nrows a))
-           (acols (ncols a))
-           (brows (nrows b))
-           (bcols (ncols b))
-           (rrows (+ arows brows))
-           (rcols (+ acols bcols))
-           (result (magicl:empty (list rrows rcols)
-                                 :type '(complex double-float))))
-      (loop :for r :below arows :do
-        (loop :for c :below acols :do
-          (setf (tref result r c) (tref a r c))))
-      (loop :for r :from arows :below rrows :do
-        (loop :for c :from acols :below rcols :do
-          (setf (tref result r c) (tref b (- r arows) (- c acols)))))
-      result)))
+    (block-diag a b)))
 
 (defgeneric kron (a b &rest rest)
   (:documentation "Compute the Kronecker product of A and B")

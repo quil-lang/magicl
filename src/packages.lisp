@@ -76,6 +76,7 @@
 
            #:reshape
            #:slice
+           #:slice-to
            
            ;; Classes
            #:tensor
@@ -113,6 +114,12 @@
            #:ones
 
            #:random-unitary
+
+           ;; Block matrix construction
+           #:block-diag
+           #:hstack
+           #:vstack
+           #:block-matrix
 
            ;; Operators
            #:binary-operator

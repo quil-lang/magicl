@@ -151,3 +151,42 @@
              (magicl:eye (list i i) :type type)
              (magicl:@ m (magicl:transpose m))
              5e-5))))))
+
+(deftest test-block-diagonal ()
+  "Test that we can construct block diagonal matrices."
+  (let ((expected (magicl:from-list '(0d0 0d0 0d0
+                                      0d0 1d0 1d0
+                                      0d0 1d0 1d0)
+                                    '(3 3))))
+    (is (magicl:= expected
+                  (magicl::block-diag (magicl:zeros '(1 1)) (magicl:ones '(2 2)))))))
+
+(deftest test-matrix-stacking ()
+  "Test that we can stack matrices 'horizontally' and 'vertically'."
+  (let ((expected (magicl:from-list '(1 2 3
+                                      4 5 6)
+                                    '(2 3))))
+    (is (magicl:= expected
+                  (apply #'magicl::hstack
+                         (loop :for j :below 3
+                               :collect (magicl:column expected j)))))
+    (is (magicl:= expected
+                  (apply #'magicl::vstack
+                         (loop :for i :below 2
+                               :collect (magicl:row expected i)))))))
+
+
+(deftest test-block-matrix-construction ()
+  "Test that we can construct a block matrix."
+  (let ((mat
+          (magicl::block-matrix (list (magicl:zeros '(3 2))     (magicl:eye 3 :value 3d0)
+                                      (magicl:eye 2 :value 2d0)     (magicl:zeros '(2 3)))
+                                '(2 2))))
+    (is (magicl:=
+         mat
+         (magicl:from-list '(0d0 0d0 3d0 0d0 0d0
+                             0d0 0d0 0d0 3d0 0d0
+                             0d0 0d0 0d0 0d0 3d0
+                             2d0 0d0 0d0 0d0 0d0
+                             0d0 2d0 0d0 0d0 0d0)
+                           '(5 5))))))

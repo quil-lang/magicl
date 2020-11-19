@@ -156,6 +156,30 @@ If LAYOUT is specified then traverse TENSOR in the specified order (column major
                              (apply #'tref tensor (mapcar #'+ dims from)))))
         target))))
 
+(defgeneric slice-to (source from to target offset)
+  (:documentation "Slice the tensor SOURCE from FROM to TO, storing results in TARGET with the prescribed OFFSET.")
+  (:method ((source abstract-tensor) from to (target abstract-tensor) offset)
+    (declare (type sequence from to))
+    (policy-cond:with-expectations (> speed safety)
+        ((assertion (and (valid-index-p from (shape source))
+                         (cl:every #'< from (shape source))))
+         (assertion (and (cl:= (order source) (length to))
+                         (valid-shape-p to)
+                         (cl:every #'<= to (shape source))))
+         (assertion (cl:every #'<= from to))
+         (assertion (equalp (element-type source)
+                            (element-type target)))
+         (assertion (and (cl:every #'<=
+                                   (mapcar (lambda (off to from) (+ off (- to from)))
+                                           offset to from)
+                                   (shape target)))))
+      (let ((dims (mapcar #'- to from)))
+        (map-indexes dims
+                     (lambda (&rest dims)
+                       (setf (apply #'tref target (mapcar #'+ dims offset))
+                             (apply #'tref source (mapcar #'+ dims from)))))
+        target))))
+
 (defgeneric binary-operator (function source1 source2 &optional target)
   (:documentation "Perform a binary operator on tensors elementwise, optionally storing the result in TARGET.
 If TARGET is not specified then a new tensor is created with the same element type as the first source tensor")
