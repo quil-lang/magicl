@@ -161,6 +161,31 @@
         (is (< (abs (- (magicl:tref v2h 0 0) (magicl:tref v2h* 0 0))) tol))
         (is (< (abs (- (first theta) (first theta*))) tol))))))
 
+(deftest test-lapack-csd-matrix-ordering ()
+  "Test the CS decomposition of a 16x16 unitary matrix under both row-major and column-major orderings."
+  (flet ((random-unitary (size layout)
+           (let ((u (magicl:random-unitary (list size size) :type '(complex double-float))))
+             (unless (eq layout (magicl::layout u))
+               (magicl:transpose! u :fast t)
+               (assert (eq layout (magicl::layout u))))
+             u)))
+    (let* ((m 16)
+           (n (/ m 2)))
+      (dolist (layout '(:column-major :row-major))
+        (let* ((a (random-unitary m layout))
+               (a1 (magicl:slice a '(0 0) (list n n)))
+               (a2 (magicl:slice a (list n 0) (list m n)))
+               (a3 (magicl:slice a (list 0 n) (list n m)))
+               (a4 (magicl:slice a (list n n) (list m m))))
+          (multiple-value-bind (u1 u2 v1h v2h theta)
+              (magicl:lapack-csd a n n)
+            (let ((c (magicl:from-diag (mapcar #'cos theta) :type '(complex double-float)))
+                  (s (magicl:from-diag (mapcar #'sin theta) :type '(complex double-float))))
+              (is (magicl:= a1 (magicl:@ u1 c v1h)))
+              (is (magicl:= a2 (magicl:@ u2 s v1h)))
+              (is (magicl:= a3 (magicl:@ u1 (magicl:scale s -1) v2h)))
+              (is (magicl:= a4 (magicl:@ u2 c v2h))))))))))
+
 (deftest test-polynomial-solver ()
   "Test univariate polynomial solver."
   ;; Test random polynomials with favorable coefficients.
