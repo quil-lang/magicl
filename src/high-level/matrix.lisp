@@ -262,8 +262,10 @@ ELEMENT-TYPE, CAST, COPY-TENSOR, DEEP-COPY-TENSOR, TREF, SETF TREF)"
     (policy-cond:with-expectations (> speed safety)
         ((assertion (valid-index-p (list i j) (shape m))))
       (let ((type (element-type m)))
-        ;; TODO: compensate for layout
-        (let ((idx (apply #'matrix-column-major-index i j (shape m))))
+        (let ((idx (apply (ecase (layout m)
+                            (:column-major #'matrix-column-major-index)
+                            (:row-major #'matrix-row-major-index))
+                          i j (shape m))))
           (cond
             ((subtypep type 'single-float) (cffi:mem-aptr base :float idx))
             ((subtypep type 'double-float) (cffi:mem-aptr base :double idx))
