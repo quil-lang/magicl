@@ -155,10 +155,10 @@
                )
   :serial t
   :components
-  ((:module "src/extensions/expokit"
-    :components ((:file "package")))
-   (:module "transcendental"
-    :components ((f->so "expokit")
-                 (:file "load-libs")
-                 (:file "transcendental")))
-   (:file "src/bindings/expokit-cffi")))
+  ((:module "expokit"
+    :components ((f->so "expokit")))
+   (:module "src/extensions/expokit"
+    :components ((:file "package")
+                 (:file "load-libs")))
+   (:file "src/bindings/expokit-cffi")
+   (:file "src/extensions/expokit/expm")))

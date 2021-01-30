@@ -1,2 +1,2 @@
-transcendental/libexpokit.dylib
-transcendental/libexpokit.so
+**/*.dylib
+**/*.so
