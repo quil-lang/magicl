@@ -27,7 +27,6 @@
   :serial t
   :components
   ((:file "packages")
-   (:file "load-libs")
    (:module "high-level"
     :serial t
     :components ((:file "util")
@@ -60,9 +59,9 @@
   :components
   ((:module "extensions/common"
     :components ((:file "package")
-                 (:file "library-tracking")))
-   (:file "with-array-pointers")
-   (:file "cffi-types")))
+                 (:file "library-tracking")
+                 (:file "with-array-pointers")
+                 (:file "cffi-types")))))
 
 ;;; BLAS
 
@@ -151,8 +150,7 @@
                #:magicl
                #:magicl/ext
                #:magicl/ext-blas
-               #:magicl/ext-lapack
-               )
+               #:magicl/ext-lapack)
   :serial t
   :components
   ((:module "expokit"
