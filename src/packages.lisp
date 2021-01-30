@@ -4,8 +4,7 @@
         #:abstract-classes)
   #+package-local-nicknames
   (:local-nicknames (#:blas #:magicl.blas-cffi)
-                    (#:lapack #:magicl.lapack-cffi)
-                    (#:expokit #:magicl.expokit-cffi))
+                    (#:lapack #:magicl.lapack-cffi))
   (:import-from #:magicl.foreign-libraries
                 #:print-availability-report)
   (:shadow #:vector
@@ -123,6 +122,8 @@
            #:qr
            #:rq
            #:lq
+           #:expm
+           #:logm
            
            #:polynomial
            #:make-polynomial

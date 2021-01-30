@@ -18,17 +18,17 @@
 
                ;; temporary
                #:magicl/ext-blas
-               #:magicl/ext-lapack
-               #:magicl/ext-expokit)
+               #:magicl/ext-lapack)
   :in-order-to ((asdf:test-op (asdf:test-op #:magicl-tests)))
   :around-compile (lambda (compile)
                     (let (#+sbcl (sb-ext:*derive-function-types* t))
                       (funcall compile)))
+  :pathname "src/"
   :serial t
   :components
-  ((:file "src/packages")
-   (:file "src/load-libs")
-   (:module "src/high-level"
+  ((:file "packages")
+   (:file "load-libs")
+   (:module "high-level"
     :serial t
     :components ((:file "util")
                  (:file "shape")
@@ -48,10 +48,7 @@
                  (:file "constructors")
                  (:file "specialize-constructor")
                  (:file "polynomial-solver")))
-   (:module "transcendental"
-    :components ((:file "transcendental"))
-            )
-   (:file "src/magicl")))
+   (:file "magicl")))
 
 ;;; Extension common code
 
@@ -147,10 +144,11 @@
 
 
 (asdf:defsystem #:magicl/ext-expokit
-  :description "Expokit for MAGICL"
+  :description "Expokit for MAGICL."
   :depends-on (#:alexandria
                #:cffi
                #:cffi-libffi
+               #:magicl
                #:magicl/ext
                #:magicl/ext-blas
                #:magicl/ext-lapack
@@ -162,6 +160,5 @@
    (:module "transcendental"
     :components ((f->so "expokit")
                  (:file "load-libs")
-                 ;;(:file "transcendental")
-                 ))
+                 (:file "transcendental")))
    (:file "src/bindings/expokit-cffi")))

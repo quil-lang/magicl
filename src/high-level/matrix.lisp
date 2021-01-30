@@ -555,3 +555,17 @@ NOTE: If MATRIX is not square, this will compute the reduced LQ factoriation.")
   (:method ((matrix matrix))
     (declare (ignore matrix))
     (error "LQ is not defined for the generic matrix type.")))
+
+(defgeneric expm (matrix)
+  (:documentation "Computes the exponential of a square matrix M."))
+
+(defgeneric logm (matrix)
+  (:documentation "Finds the matrix logarithm of a given square matrix M assumed to be diagonalizable, with nonzero eigenvalues.")
+  (:method ((matrix matrix))
+    (multiple-value-bind (vals vects) (magicl:eig m)
+      (let ((new-log-diag
+              (let ((log-vals (mapcar #'log vals)))
+                (magicl:from-diag log-vals))))
+        (magicl:@ vects
+                  new-log-diag
+                  (magicl:inv vects))))))

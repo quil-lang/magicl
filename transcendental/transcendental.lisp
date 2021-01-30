@@ -4,7 +4,7 @@
 
 (in-package #:magicl-transcendental)
 
-(defun expm (m)
+(defmethod magicl:expm ((m magicl:matrix/complex-double-float))
   "Finds the exponential of a square matrix M."
   (let ((ideg 6)
         (rows (magicl:nrows m))
@@ -45,12 +45,3 @@
                   (row-major-aref wsp (+ i (1- iexph)))))
           (values (magicl:from-array exph (list rows rows) :input-layout :column-major)))))))
 
-(defun logm (m)
-  "Finds the matrix logarithm of a given square matrix M assumed to be diagonalizable, with nonzero eigenvalues"
-  (multiple-value-bind (vals vects) (magicl:eig m)
-    (let ((new-log-diag
-            (let ((log-vals (mapcar #'log vals)))
-              (magicl:from-diag log-vals))))
-      (magicl:@ vects
-                new-log-diag
-                (magicl:inv vects)))))
