@@ -28,7 +28,7 @@
   (terpri stream)
 
   ;; Print symbol information
-  (dolist (lib *cffi-libraries*)
+  (dolist (lib *foreign-libraries*)
     (let ((symbols (sort (copy-seq (getf (symbol-plist lib) ':magicl))
                          #'string<
                          :key #'first)))
