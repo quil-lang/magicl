@@ -1,9 +1,5 @@
 (defpackage #:magicl-examples
-  (:use #:common-lisp #:magicl-transcendental)
-  #+package-local-nicknames
-  (:local-nicknames (:blas :magicl.blas-cffi)
-                    (:lapack :magicl.lapack-cffi)
-                    (:expokit :magicl.expokit-cffi))
+  (:use #:common-lisp)
   (:export #:dot-example
            #:eigenvalue-example
            #:qr-example
@@ -137,8 +133,8 @@
     (format t "X*X^-1~%~a~%" id)))
 
 (defun expm-example ()
-  (let* ((x  (magicl:from-list (list 0 0 0 0 0 0 1.5 0 0 -1.5 0 0.5 0 0 -0.5 0) '(4 4) :type 'double-float))
-         (expx (magicl-transcendental:expm x))
+  (let* ((x  (magicl:from-list (list 0 0 0 0 0 0 1.5 0 0 -1.5 0 0.5 0 0 -0.5 0) '(4 4) :type '(complex double-float)))
+         (expx (magicl:expm x))
          (d (magicl:det expx)))
     (format t "X~%~a~%" x)
     (format t "e^X~%~a~%" expx)
