@@ -156,3 +156,15 @@
                  (:file "load-libs")))
    (:file "src/bindings/expokit-cffi")
    (:file "src/extensions/expokit/expm")))
+
+
+;;; Fancy - Load everything
+
+(asdf:defsystem #:magicl/fancy
+  :description "MAGICL with all extensions."
+  :depends-on (#:magicl
+               #:magicl/ext-blas
+               #:magicl/ext-lapack
+               #:magicl/ext-expokit)
+  :serial t
+  :components ())
