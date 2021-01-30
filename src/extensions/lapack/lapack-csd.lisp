@@ -56,7 +56,7 @@
            (ignorable p q)
            (optimize (speed 3) (safety 0) (debug 0) (space 0)))
 
-  (let* ((data (storage unitary-matrix-2x2))
+  (let* ((data (magicl::storage unitary-matrix-2x2))
          (a1 (aref data 0))
          (a2 (aref data 1))
          (a3 (aref data 2))
@@ -80,7 +80,7 @@
           (mv2h (empty '(1 1))))
 
       (macrolet ((matrix-1x1-data (matrix)
-                   `(the (simple-array (complex double-float) (1)) (storage ,matrix))))
+                   `(the (simple-array (complex double-float) (1)) (magicl::storage ,matrix))))
 
         (setf (aref (matrix-1x1-data mu1) 0) u1
               (aref (matrix-1x1-data mu2) 0) u2
@@ -93,7 +93,7 @@
   (let* ((m (nrows x))
          (layout (layout x))
          (xcopy (deep-copy-tensor x)))
-    (assert-square-matrix x)
+    (magicl::assert-square-matrix x)
     (check-type p integer)
     (check-type q integer)
     (assert (<= 1 p (1- m)) () "P = ~D is out of range" p)
@@ -129,11 +129,11 @@
       ;; INTO THE LISP HEAP.
       ;;
       ;; HOURS WASTED HERE: 10
-      (magicl.cffi-types:with-array-pointers ((xcopy-ptr (storage xcopy)))
+      (magicl.cffi-types:with-array-pointers ((xcopy-ptr (magicl::storage xcopy)))
         (let ((x11 xcopy-ptr)
-              (x12 (ptr-ref xcopy xcopy-ptr 0 q))
-              (x21 (ptr-ref xcopy xcopy-ptr p 0))
-              (x22 (ptr-ref xcopy xcopy-ptr p q))
+              (x12 (magicl::ptr-ref xcopy xcopy-ptr 0 q))
+              (x21 (magicl::ptr-ref xcopy xcopy-ptr p 0))
+              (x22 (magicl::ptr-ref xcopy xcopy-ptr p q))
               (theta (make-array r
                                  :element-type 'double-float))
               (u1 (make-array (* ldu1 p)
@@ -168,7 +168,7 @@
                   (from-array v2t (list (- m q) (- m q)) :input-layout layout)
                   (coerce theta 'list)))))))
 
-(defmethod magicl:csd ((matrix matrix-complex-double-float) p q)
+(defmethod magicl:csd ((matrix matrix/complex-double-float) p q)
   (labels ((csd-from-blocks (u1 u2 v1t v2t theta)
              "Calculates the matrices U, SIGMA, and VT of the CSD of a matrix from its intermediate representation, as calculated from LAPACK-CSD."
              (let ((p (nrows u1))
