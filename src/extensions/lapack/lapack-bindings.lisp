@@ -2,7 +2,7 @@
 ;;;;
 ;;;; Author: Cole Scott
 
-(in-package #:magicl)
+(in-package #:magicl-lapack)
 
 (macrolet ((def-all-lapack ()
              "Define the lapack bindings for all lapack types"

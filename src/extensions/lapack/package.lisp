@@ -2,3 +2,31 @@
   (:use)
   #-package-local-nicknames
   (:nicknames #:lapack))
+
+(defpackage #:magicl-lapack
+  (:use #:cl #:magicl)
+  ;; XXX: This is kind of annoying...
+  (:shadowing-import-from #:magicl
+                          #:vector
+                          #:=
+                          #:map
+                          #:trace
+                          #:every
+                          #:some
+                          #:notevery
+                          #:notany)
+  (:export
+   #:lapack-eig
+   #:lapack-lu
+   #:lapack-csd
+   #:lapack-svd
+   #:lapack-ql
+   #:lapack-qr
+   #:lapack-rq
+   #:lapack-lq
+   #:lapack-ql-q
+   #:lapack-qr-q
+   #:lapack-rq-q
+   #:lapack-lq-q
+   #:lapack-csd))
+

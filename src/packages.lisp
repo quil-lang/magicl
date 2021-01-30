@@ -1,10 +1,6 @@
 (defpackage #:magicl
   (:use #:common-lisp
-        #:cffi
         #:abstract-classes)
-  #+package-local-nicknames
-  (:local-nicknames (#:blas #:magicl.blas-cffi)
-                    (#:lapack #:magicl.lapack-cffi))
   (:import-from #:magicl.foreign-libraries
                 #:print-availability-report)
   (:shadow #:vector
@@ -21,6 +17,10 @@
            #:specialize-tensor
            #:generalize-tensor
            #:shape
+           #:layout
+           #:copy-tensor
+           #:deep-copy-tensor
+           #:cast
            #:tref
            #:order
            #:size
@@ -89,6 +89,7 @@
            #:square-matrix-p
            #:identity-matrix-p
            #:unitary-matrix-p
+           #:hermitian-matrix-p
            #:row
            #:column
            #:@
@@ -135,19 +136,4 @@
 
            ;; Vector operators
            #:dot
-           #:norm
-
-           ;; LAPACK stuff
-           #:lapack-eig
-           #:lapack-lu
-           #:lapack-csd
-           #:lapack-svd
-           #:lapack-ql
-           #:lapack-qr
-           #:lapack-rq
-           #:lapack-lq
-           #:lapack-ql-q
-           #:lapack-qr-q
-           #:lapack-rq-q
-           #:lapack-lq-q
-           ))
+           #:norm))
