@@ -10,4 +10,4 @@
 (defpackage #:magicl-transcendental
   (:use #:common-lisp
         #:cffi)
-  (:export #:expm #:logm))
+  (:export))
