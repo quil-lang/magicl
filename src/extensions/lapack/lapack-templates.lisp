@@ -7,11 +7,11 @@
 ;;;       writing the same method four times but results in
 ;;;       less-than-perfect use of macros.
 
-(in-package #:magicl)
+(in-package #:magicl-lapack)
 
 (defun generate-lapack-mult-for-type (matrix-class vector-class type matrix-matrix-function matrix-vector-function)
   `(progn
-     (defmethod mult ((a ,matrix-class) (b ,matrix-class) &key target (alpha ,(coerce 1 type)) (beta ,(coerce 0 type)) (transa :n) (transb :n))
+     (defmethod magicl::mult ((a ,matrix-class) (b ,matrix-class) &key target (alpha ,(coerce 1 type)) (beta ,(coerce 0 type)) (transa :n) (transb :n))
        (policy-cond:with-expectations (> speed safety)
            ((type (member nil :n :t :c) transa)
             (type (member nil :n :t :c) transb))
@@ -52,15 +52,15 @@
                 n
                 k
                 alpha
-                (storage a)
+                (magicl::storage a)
                 (if (eql :n ta) m k)
-                (storage b)
+                (magicl::storage b)
                 (if (eql :n tb) k n)
                 beta
-                (storage target)
+                (magicl::storage target)
                 m)
                target)))))
-     (defmethod mult ((a ,matrix-class) (x ,vector-class) &key target (alpha ,(coerce 1 type)) (beta ,(coerce 0 type)) (transa :n) transb)
+     (defmethod magicl::mult ((a ,matrix-class) (x ,vector-class) &key target (alpha ,(coerce 1 type)) (beta ,(coerce 0 type)) (transa :n) transb)
        (policy-cond:with-expectations (> speed safety)
            ((type (member nil :n :t :c) transa)
             (assertion (null transb)))
@@ -88,12 +88,12 @@
                 (if (eql :column-major (layout a)) (nrows a) (ncols a))
                 (if (eql :column-major (layout a)) (ncols a) (nrows a))
                 alpha
-                (storage a)
+                (magicl::storage a)
                 (if (eql :column-major (layout a)) (nrows a) (ncols a))
-                (storage x)
+                (magicl::storage x)
                 1 ;; NOTE: This corresponds to the stride of X
                 beta
-                (storage target)
+                (magicl::storage target)
                 1 ;; NOTE: THis corresponds to the stride of TARGET
                 )
                target)))))))
@@ -101,17 +101,17 @@
 (defun generate-lapack-lu-for-type (class type lu-function)
   (declare (ignore type))
   `(progn
-     (defmethod lu ((m ,class))
+     (defmethod magicl:lu ((m ,class))
        (lapack-lu m))
 
      (defmethod lapack-lu ((a ,class))
        (let* ((a-tensor (deep-copy-tensor a))
-              (a (storage a-tensor))
+              (a (magicl::storage a-tensor))
               (m (nrows a-tensor))
               (n (ncols a-tensor))
               (lda m)
               (ipiv-tensor (empty (list (max m n)) :type '(signed-byte 32)))
-              (ipiv (storage ipiv-tensor))
+              (ipiv (magicl::storage ipiv-tensor))
               (info 0))
          (when (eql :row-major (layout a-tensor)) (transpose! a-tensor))
          (,lu-function
@@ -125,18 +125,18 @@
 
 (defun generate-lapack-inv-for-type (class type lu-function inv-function)
   `(progn
-     (defmethod inv ((m ,class))
+     (defmethod magicl:inv ((m ,class))
        (lapack-inv m))
      
      (defmethod lapack-inv ((a ,class))
        (let ((a-tensor (deep-copy-tensor a)))
          (when (eql :row-major (layout a-tensor)) (transpose! a-tensor))
-         (let* ((a (storage a-tensor))
+         (let* ((a (magicl::storage a-tensor))
                 (m (nrows a-tensor))
                 (n (ncols a-tensor))
                 (lda m)
                 (ipiv-tensor (empty (list (max m n)) :type '(signed-byte 32)))
-                (ipiv (storage ipiv-tensor))
+                (ipiv (magicl::storage ipiv-tensor))
                 (info 0))
            (,lu-function
             m
@@ -182,7 +182,7 @@
 
 (defun generate-lapack-svd-for-type (class type svd-function &optional real-type)
   `(progn
-     (defmethod svd ((m ,class) &key reduced)
+     (defmethod magicl:svd ((m ,class) &key reduced)
        (lapack-svd m :reduced reduced))
      
      (defmethod lapack-svd ((m ,class) &key reduced)
@@ -191,7 +191,7 @@
               (jobvt (if reduced "S" "A"))
               (rows (nrows m))
               (cols (ncols m))
-              (a (alexandria:copy-array (storage (if (eql :row-major (layout m)) (transpose m) m))))
+              (a (alexandria:copy-array (magicl::storage (if (eql :row-major (layout m)) (transpose m) m))))
               (lwork -1)
               (info 0)
               (k (min rows cols))
@@ -217,7 +217,7 @@
                           work lwork ,@(when real-type `(rwork)) info)
            (let ((smat (make-array (* u-cols vt-rows) :element-type ',(or real-type type))))
              (dotimes (i k)
-               (setf (aref smat (matrix-column-major-index i i u-cols vt-rows))
+               (setf (aref smat (magicl::matrix-column-major-index i i u-cols vt-rows))
                      (aref s i)))
              (values (from-array u (list rows u-cols) :input-layout :column-major)
                      (from-array smat (list u-cols vt-rows) :input-layout :column-major)
@@ -226,7 +226,7 @@
 ;; TODO: This returns only the real parts when with non-complex numbers. Should do something different?
 (defun generate-lapack-eig-for-type (class type eig-function &optional real-type)
   `(progn
-     (defmethod eig ((m ,class))
+     (defmethod magicl:eig ((m ,class))
        (lapack-eig m))
 
      (defmethod lapack-eig ((m ,class))
@@ -238,7 +238,7 @@
            (when (eql :row-major (layout m)) (transpose! a-tensor))
            (let ((jobvl "N")
                  (jobvr "V")
-                 (a (storage a-tensor))
+                 (a (magicl::storage a-tensor))
                  ,@(if real-type
                        `((w (make-array rows :element-type ',type)))
                        `((wr (make-array rows :element-type ',type))
@@ -262,7 +262,7 @@
 
 (defun generate-lapack-hermitian-eig-for-type (class type eig-function real-type)
   `(progn
-     (defmethod hermitian-eig ((m ,class))
+     (defmethod magicl:hermitian-eig ((m ,class))
        (lapack-hermitian-eig m))
 
      (defmethod lapack-hermitian-eig ((m ,class))
@@ -275,7 +275,7 @@
            (let ((jobz "V")
                  (uplo "U")
                  (n rows)
-                 (a (storage a-tensor))
+                 (a (magicl::storage a-tensor))
                  (lda rows)
                  (w (make-array rows :element-type ',real-type))
                  (work (make-array 1 :element-type ',type))
@@ -295,7 +295,7 @@
                                              ql-function qr-function rq-function lq-function
                                              ql-q-function qr-q-function rq-q-function lq-q-function)
   `(progn
-     (defmethod qr ((m ,class))
+     (defmethod magicl:qr ((m ,class))
        (policy-cond:with-expectations (> speed safety)
            ;; Needed for LAPACK-QR to do its job. In principle DGEQRF
            ;; doesn't impose this, but the results are represented
@@ -320,7 +320,7 @@
                        (setf (tref q i j) (- (tref q i j)))))))
                (values q r))))))
      
-     (defmethod ql ((m ,class))
+     (defmethod magicl:ql ((m ,class))
        (policy-cond:with-expectations (> speed safety)
            ;; Similar to the assert for QR above.
            ((assertion (<= (ncols m) (nrows m))))
@@ -342,7 +342,7 @@
                        (setf (tref q i j) (- (tref q i j)))))))
                (values q l))))))
 
-     (defmethod rq ((m ,class))
+     (defmethod magicl:rq ((m ,class))
        (policy-cond:with-expectations (> speed safety)
            ;; Similar to the assert for QR above.
            ((assertion (>= (ncols m) (nrows m))))
@@ -364,7 +364,7 @@
                        (setf (tref q i j) (- (tref q i j)))))))
                (values r q))))))
 
-     (defmethod lq ((m ,class))
+     (defmethod magicl:lq ((m ,class))
        (policy-cond:with-expectations (> speed safety)
            ;; Similar to the assert for QR above.
            ((assertion (>= (ncols m) (nrows m))))
@@ -390,7 +390,7 @@
        (let* ((rows (nrows m))
               (cols (ncols m))
               (a-tensor (deep-copy-tensor m))
-              (a (storage a-tensor))
+              (a (magicl::storage a-tensor))
               (lwork -1)
               (info 0))
          (when (eql :row-major (layout m))
@@ -413,7 +413,7 @@
        (let* ((rows (nrows m))
               (cols (ncols m))
               (a-tensor (deep-copy-tensor m))
-              (a (storage a-tensor))
+              (a (magicl::storage a-tensor))
               (lwork -1)
               (info 0))
          (when (eql :row-major (layout m))
@@ -436,7 +436,7 @@
        (let* ((rows (nrows m))
               (cols (ncols m))
               (a-tensor (deep-copy-tensor m))
-              (a (storage a-tensor))
+              (a (magicl::storage a-tensor))
               (lwork -1)
               (info 0))
          (when (eql :row-major (layout m))
@@ -459,7 +459,7 @@
        (let* ((rows (nrows m))
               (cols (ncols m))
               (a-tensor (deep-copy-tensor m))
-              (a (storage a-tensor))
+              (a (magicl::storage a-tensor))
               (lwork -1)
               (info 0))
          (when (eql :row-major (layout m))
@@ -481,9 +481,9 @@
      (defmethod lapack-qr-q ((m ,class) tau)
        (let ((m (nrows m))
              (n (ncols m))
-             (a (storage m))
+             (a (magicl::storage m))
              (k (size tau))
-             (atau (storage tau))
+             (atau (magicl::storage tau))
              (lwork -1)
              (info 0))
          ;; n replaced with rank (k) to fulfil req (m >= n > 0)
@@ -500,9 +500,9 @@
      (defmethod lapack-ql-q ((m ,class) tau)
        (let ((m (nrows m))
              (n (ncols m))
-             (a (storage m))
+             (a (magicl::storage m))
              (k (size tau))
-             (atau (storage tau))
+             (atau (magicl::storage tau))
              (lwork -1)
              (info 0))
          (let ((lda m)
@@ -518,9 +518,9 @@
      (defmethod lapack-rq-q ((m ,class) tau)
        (let ((m (nrows m))
              (n (ncols m))
-             (a (storage m))
+             (a (magicl::storage m))
              (k (size tau))
-             (atau (storage tau))
+             (atau (magicl::storage tau))
              (lwork -1)
              (info 0))
          (let ((lda m)
@@ -536,9 +536,9 @@
      (defmethod lapack-lq-q ((m ,class) tau)
        (let ((m (nrows m))
              (n (ncols m))
-             (a (storage m))
+             (a (magicl::storage m))
              (k (size tau))
-             (atau (storage tau))
+             (atau (magicl::storage tau))
              (lwork -1)
              (info 0))
          (let ((lda m)

@@ -9,16 +9,11 @@
   :author "Rigetti Computing"
   :version (:read-file-form "VERSION.txt")
   :depends-on (#:alexandria
-               #:cffi
-               #:cffi-libffi
                #:abstract-classes
                #:policy-cond
                
                #:magicl/ext             ; Allow extensions
-
-               ;; temporary
-               #:magicl/ext-blas
-               #:magicl/ext-lapack)
+               )
   :in-order-to ((asdf:test-op (asdf:test-op #:magicl-tests)))
   :around-compile (lambda (compile)
                     (let (#+sbcl (sb-ext:*derive-function-types* t))
@@ -36,14 +31,11 @@
                  (:file "tensor")
                  (:file "matrix")
                  (:file "vector")
-                 (:file "lapack-generics")
                  (:file "types/single-float")
                  (:file "types/double-float")
                  (:file "types/complex-single-float")
                  (:file "types/complex-double-float")
                  (:file "types/int32")
-                 (:file "lapack-templates")
-                 (:file "lapack-bindings")
                  (:file "constructors")
                  (:file "specialize-constructor")
                  (:file "polynomial-solver")))
@@ -53,15 +45,15 @@
 
 (asdf:defsystem #:magicl/ext
   :description "Common code for extending MAGICL with foreign libraries."
-  :depends-on (#:cffi)
+  :depends-on (#:cffi
+               #:cffi-libffi)
   :serial t
-  :pathname "src/"
+  :pathname "src/extensions/common"
   :components
-  ((:module "extensions/common"
-    :components ((:file "package")
-                 (:file "library-tracking")
-                 (:file "with-array-pointers")
-                 (:file "cffi-types")))))
+  ((:file "package")
+   (:file "library-tracking")
+   (:file "with-array-pointers")
+   (:file "cffi-types")))
 
 ;;; BLAS
 
@@ -72,9 +64,8 @@
   :serial t
   :pathname "src/"
   :components
-  ((:module "extensions/blas"
-    :components ((:file "package")
-                 (:file "load-libs")))
+  ((:file "extensions/blas/package")
+   (:file "extensions/blas/load-libs")
    (:module "bindings"
     :components ((:file "blas-cffi")))))
 
@@ -83,15 +74,16 @@
 
 (asdf:defsystem #:magicl/ext-lapack
   :description "Native LAPACK routines in MAGICL."
-  :depends-on (#:magicl/ext
+  :depends-on (#:magicl
+               #:magicl/ext
                #:magicl/ext-blas
-               #:cffi)
+               #:cffi
+               #:policy-cond)
   :serial t
   :pathname "src/"
   :components
-  ((:module "extensions/lapack"
-    :components ((:file "package")
-                 (:file "load-libs")))
+  ((:file "extensions/lapack/package")
+   (:file "extensions/lapack/load-libs")
    (:module "bindings"
     :components ((:file "lapack00-cffi")
                  (:file "lapack01-cffi")
@@ -100,7 +92,11 @@
                  (:file "lapack04-cffi")
                  (:file "lapack05-cffi")
                  (:file "lapack06-cffi")
-                 (:file "lapack07-cffi")))))
+                 (:file "lapack07-cffi")))
+   (:module "extensions/lapack"
+    :components ((:file "lapack-generics")
+                 (:file "lapack-templates")
+                 (:file "lapack-bindings")))))
 
 
 ;;; EXPOKIT

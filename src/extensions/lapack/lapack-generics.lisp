@@ -2,11 +2,7 @@
 ;;;;
 ;;;; Author: Cole Scott
 
-(in-package #:magicl)
-
-(defgeneric mult (a b &key target alpha beta transa transb)
-  (:documentation "Multiply a by b, storing in target or creating a new tensor if target is not specified.
-Target cannot be the same as a or b."))
+(in-package #:magicl-lapack)
 
 (defgeneric lapack-eig (matrix))
 
