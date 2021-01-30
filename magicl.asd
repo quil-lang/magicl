@@ -96,7 +96,8 @@
    (:module "extensions/lapack"
     :components ((:file "lapack-generics")
                  (:file "lapack-templates")
-                 (:file "lapack-bindings")))))
+                 (:file "lapack-bindings")
+                 (:file "lapack-csd")))))
 
 
 ;;; EXPOKIT
