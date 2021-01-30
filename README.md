@@ -3,12 +3,15 @@
 
 _Matrix Algebra proGrams In Common Lisp_ by [Rigetti Computing](http://www.rigetti.com). (née FLAIL: _Finally, Linear Algebra In Lisp!_)
 
-(**Note**: The high-level interface is experimental and subject to rapid change.)
+(**Note**: The high-level interface is experimental and subject to change.)
 
 ## Requirements
 
  * SBCL (> 1.3.19) or CCL (>= 1.11) on AMD64
  * quicklisp
+ 
+If you'll want to use BLAS/LAPACK for extended functionality, you'll need:
+
  * libffi
  * BLAS and LAPACK
 
@@ -29,18 +32,34 @@ running `sbcl` and evaluating `ql:*local-project-directories*`. Once
 installed, confirm that MAGICL is working properly by running the
 tests, as described in the next section.
 
+## Lisp-Only vs Accelerated MAGICL
+
+MAGICL by default only uses pure ANSI Common Lisp code. If you with to
+accelerate it or extend the functionality, you may load *MAGICL
+extensions*. The available ones are:
+
+- `MAGICL/FANCY`: for every extension we've got under the kitchen sink
+- `MAGICL/EXT-BLAS`: for BLAS functions
+- `MAGICL/EXT-LAPACK`: for LAPACK functions
+- `MAGICL/EXT-EXPOKIT`: for expokit (matrix `exp()`) functions
+
+If you use extensions, you'll need the requisite C/Fortran
+libraries. Expokit will automatically build for you, as it's included
+in the distribution of MAGICL.
+
 ## Testing MAGICL
 
 You can run the MAGICL tests from your Lisp REPL with:
 
 ```
-(ql:quickload :magicl-tests)
 (asdf:test-system :magicl)
 ```
 
+You currently need all of the extensions working for the tests to run.
+
 ## High-level Interface
 
-See [high-level doc](doc/high-level.md).
+See [high-level doc](doc/high-level.md) for an extensive discussion and comparison of MAGICL functions with those of MATLAB and NumPy.
 
 ## Showing Available Functions
 
