@@ -219,6 +219,11 @@ ELEMENT-TYPE, CAST, COPY-TENSOR, DEEP-COPY-TENSOR, TREF, SETF TREF)"
   "Whether MATRIX is a unitary matrix"
   (= matrix (conjugate-transpose matrix) epsilon))
 
+(defun block-matrix-p (matrix)
+  (and (square-matrix-p matrix)
+       (let ((dim (nrows matrix)))
+         (cl:= dim (expt (isqrt dim) 2)))))
+
 (defmacro assert-square-matrix (&rest matrices)
   `(progn
      ,@(loop :for matrix in matrices
@@ -381,6 +386,17 @@ If fast is t then just change layout. Fast can cause problems when you want to m
         (loop :for i :below rows
               :collect (tref matrix i i))))))
 
+(defgeneric block-diag (matrix)
+  (:documentation "Get a list of the diagonal block elements of MATRIX")
+  (:method ((matrix matrix))
+    (policy-cond:with-expectations (> speed safety)
+        ((assertion (block-matrix-p matrix)))
+      (let* ((dim (floor (sqrt (nrows matrix)))))
+        (loop :for i :from 0 :below dim
+              :for from := (list (* i dim) (* i dim))
+              :for to := (list (* (1+ i) dim) (* (1+ i) dim))
+              :collect (slice matrix from to))))))
+
 (defgeneric trace (matrix)
   (:documentation "Get the trace of MATRIX (sum of diagonals)")
   (:method ((matrix matrix))
@@ -388,6 +404,24 @@ If fast is t then just change layout. Fast can cause problems when you want to m
         ((assertion (square-matrix-p matrix)))
       (loop :for i :below (nrows matrix)
             :sum (tref matrix i i)))))
+
+(defgeneric map-blocks (function matrix &key type)
+  (:documentation "Map FUNCTION over the NxN blocks of the N²xN² MATRIX, returning a fresh matrix of dimension NxN.")
+  (:method (function (matrix matrix) &key (type (element-type matrix)))
+    (policy-cond:with-expectations (> speed safety)
+        ((assertion (block-matrix-p matrix)))
+      (let* ((dim (floor (sqrt (nrows matrix))))
+             (freiche (zeros (list dim dim) :type type)))
+        (loop :for i :from 0 :below dim :do
+          (loop :for j :from 0 :below dim :do
+            (let ((from (list (* i dim) (* j dim)))
+                  (to (list (* (1+ i) dim) (* (1+ j) dim))))
+              (setf (tref freiche i j)
+                    (funcall function (slice matrix from to))))))
+        freiche))))
+
+(defun partial-trace (matrix)
+  (map-blocks #'trace matrix))
 
 (defgeneric det (matrix)
   (:documentation "Compute the determinant of a square matrix MATRIX")
