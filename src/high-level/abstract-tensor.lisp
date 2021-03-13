@@ -125,15 +125,15 @@ If LAYOUT is specified then traverse TENSOR in the specified order (column major
       (foreach (lambda (x) (incf sum x)) tensor)
       sum)))
 
-(defgeneric scale (tensor factor)
-  (:documentation "Scale TENSOR by FACTOR, returning a new tensor of the same type as TENSOR")
-  (:method ((tensor abstract-tensor) (factor number))
-    (map! (lambda (x) (* x factor)) (deep-copy-tensor tensor))))
-
 (defgeneric scale! (tensor factor)
   (:documentation "Scale TENSOR by FACTOR, storing back into the tensor")
   (:method ((tensor abstract-tensor) (factor number))
     (map! (lambda (x) (* x factor)) tensor)))
+
+(defgeneric scale (tensor factor)
+  (:documentation "Scale TENSOR by FACTOR, returning a new tensor of the same type as TENSOR")
+  (:method ((tensor abstract-tensor) (factor number))
+    (scale! (deep-copy-tensor tensor) factor)))
 
 (defgeneric slice (tensor from to)
   (:documentation "Slice a tensor from FROM to TO, returning a new tensor with the contained elements")

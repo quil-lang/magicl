@@ -53,5 +53,6 @@
                  (:file "lapack-bindings")
                  (:file "constructors")
                  (:file "specialize-constructor")
-                 (:file "polynomial-solver")))
+                 (:file "polynomial-solver")
+                 (:file "blas-bindings")))
    (:file "magicl")))
