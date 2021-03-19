@@ -1,8 +1,33 @@
+(in-package #:cl)
+
+(defpackage #:magicl.backends
+  (:use #:cl)
+  (:export
+   #:define-compatible-no-applicable-method-behavior
+
+   #:*backend*
+   #:active-backends
+   #:define-backend
+   #:with-backends
+
+   #:backend-function-p
+   #:backend-implementation
+
+   #:define-backend-function
+   #:define-backend-implementation))
+
 (defpackage #:magicl
   (:use #:common-lisp
         #:abstract-classes)
   (:import-from #:magicl.foreign-libraries
                 #:print-availability-report)
+  (:import-from #:magicl.backends
+                #:define-backend
+                #:define-backend-function
+                #:define-backend-implementation)
+  (:export #:define-backend
+           #:define-backend-function
+           #:define-backend-implementation)
   (:shadow #:vector
            #:=
            #:map
@@ -12,7 +37,7 @@
            #:notevery
            #:notany)
   (:export #:with-blapack
-           
+
            ;; abstract-tensor protocol
            #:specialize-tensor
            #:generalize-tensor
@@ -37,7 +62,7 @@
 
            #:reshape
            #:slice
-           
+
            ;; Classes
            #:tensor
            #:matrix
@@ -84,7 +109,7 @@
            #:.^
            #:=
            #:map
-           
+
            ;; Matrix operators
            #:square-matrix-p
            #:identity-matrix-p
@@ -125,7 +150,7 @@
            #:lq
            #:expm
            #:logm
-           
+
            #:polynomial
            #:make-polynomial
            #:polynomial-coefficients

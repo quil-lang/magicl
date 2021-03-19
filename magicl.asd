@@ -11,7 +11,8 @@
   :depends-on (#:alexandria
                #:abstract-classes
                #:policy-cond
-               
+               #:interface              ; for CALLING-FORM
+
                #:magicl/ext             ; Allow extensions
                )
   :in-order-to ((asdf:test-op (asdf:test-op #:magicl-tests)))
@@ -22,6 +23,7 @@
   :serial t
   :components
   ((:file "packages")
+   (:file "backend-function")
    (:module "high-level"
     :serial t
     :components ((:file "util")

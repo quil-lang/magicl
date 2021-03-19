@@ -21,3 +21,7 @@
 (unless *expokit-libs-loaded*
   (cffi:load-foreign-library 'libexpokit)
   (setf *expokit-libs-loaded* nil))
+
+(magicl:define-backend :expokit
+  :documentation "Functions available from Expokit."
+  :default t)
