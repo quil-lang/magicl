@@ -112,9 +112,8 @@ It is preferable to use WITH-BACKENDS instead of this.")
   (check-type default boolean)
   `(progn
      (pushnew ',name *known-backends*)
-     (when (and ',default
-                (not (member ',name *backend*)))
-       (setf *backend* (append *backend* (list ',name))))))
+     (when ',default
+       (pushnew ',name *backend*))))
 
 (define-backend :lisp
   :documentation "The pure Lisp backend."
