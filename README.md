@@ -34,9 +34,12 @@ tests, as described in the next section.
 
 ## Lisp-Only vs Accelerated MAGICL
 
-MAGICL by default only uses pure ANSI Common Lisp code. If you with to
+### Extensions
+
+MAGICL by default only uses pure ANSI Common Lisp code. If you wish to
 accelerate it or extend the functionality, you may load *MAGICL
-extensions*. The available ones are:
+extensions*. These extensions typically install new backends to MAGICL
+functions. The available extensions are:
 
 - `MAGICL/FANCY`: for every extension we've got under the kitchen sink
 - `MAGICL/EXT-BLAS`: for BLAS functions
@@ -46,6 +49,38 @@ extensions*. The available ones are:
 If you use extensions, you'll need the requisite C/Fortran
 libraries. Expokit will automatically build for you, as it's included
 in the distribution of MAGICL.
+
+### Backends
+
+New functionality is installed with a notion called "backends". A
+*backend* is a name of a group of functionality, typically denoted by
+a symbol or keyword. The `:lisp` backend is the defualt one, and
+several backends can be active all at once. Each extension above adds
+a new backend. The current backends are:
+
+- `:lisp`: Pure Lisp code
+- `:lapack`: LAPACK-backed code
+- `:expokit`: expokit-backed code
+
+In most cases, one does not need to concern themselves with backends;
+MAGICL functionality should "just work" and dispatch to the
+appropriate backend.
+
+The active backends can be found with the function
+`magicl.backends:active-backends`, which lists the backends to use in
+priority order. One can limit the backends in use over a dynamic scope
+with the macro `magicl.backends:with-backends`.
+
+Given a function `f` which has many backend implementations, one can
+get a specific implementation by using the function
+
+```
+(magicl.backends:backend-implementation 'f :backend-name)
+```
+
+If both the function name and the backend name are (quoted) constants,
+this will be looked up at compile-time, which is useful for writing
+efficient code.
 
 ## Testing MAGICL
 
@@ -59,17 +94,35 @@ You currently need all of the extensions working for the tests to run.
 
 ## High-level Interface
 
-See [high-level doc](doc/high-level.md) for an extensive discussion and comparison of MAGICL functions with those of MATLAB and NumPy.
+See the [high-level doc](doc/high-level.md) for an extensive discussion
+and comparison of MAGICL functions with those of MATLAB and NumPy.
+
+## Developer's Guide: How to Add New Functions
+
+See the [developer how-to](doc/dev-how-to.md) to understand how to add
+new functionality to MAGICL.
 
 ## Showing Available Functions
 
-Some distributions of a library don't actually provide all of the functions of the reference BLAS and LAPACK. One can look at a summary of available and unavailable functions with the function `magicl:print-availability-report`. By default, it will show all functions and their availability. There are three arguments to fine-tune this behavior:
+Some distributions of a library don't actually provide all of the
+functions of the reference BLAS and LAPACK. One can look at a summary
+of available and unavailable functions with the function
+`magicl:print-availability-report`. By default, it will show all
+functions and their availability. There are three arguments to
+fine-tune this behavior:
 
-1. Key `:show-available <boolean>` (default `t`): show available functions
-2. Key `:show-unavailable <boolean>` (default `t`): show unavailable functions
-3. Key `:search <string>`: only show functions which have `<string>` as a substring. **This argument takes into account the previous two arguments.**
+1. Key `:show-available <boolean>` (default `t`): show available
+functions
 
-For example, we can look for all available functions which might relate to `svd` by doing the following:
+2. Key `:show-unavailable <boolean>` (default `t`): show unavailable
+functions
+
+3. Key `:search <string>`: only show functions which have `<string>`
+as a substring. **This argument takes into account the previous two
+arguments.**
+
+For example, we can look for all available functions which might
+relate to `svd` by doing the following:
 
 ```
 CL-USER> (magicl:print-availability-report :search "svd" :show-unavailable nil)
@@ -97,11 +150,16 @@ Library LIBLAPACK: /usr/local/opt/lapack/lib/liblapack.dylib
 
 ## Generating BLAS and LAPACK Bindings
 
-This library takes the approach of automatically generating the bindings to BLAS, LAPACK, and Expokit without relying on any special tools.
+This library takes the approach of automatically generating the
+bindings to BLAS, LAPACK, and Expokit without relying on any special
+tools.
 
-In order to generate the bindings, you will need to download the Fortran 90 source tarballs for
-[BLAS/LAPACK](http://www.netlib.org/lapack/) and [Expokit](https://www.maths.uq.edu.au/expokit/download.html).
-Once downloaded, extract the tarballs into a directory and re-generate the bindings with the following commands:
+In order to generate the bindings, you will need to download the
+Fortran 90 source tarballs for
+[BLAS/LAPACK](http://www.netlib.org/lapack/) and
+[Expokit](https://www.maths.uq.edu.au/expokit/download.html).  Once
+downloaded, extract the tarballs into a directory and re-generate the
+bindings with the following commands:
 
 ```
 (ql:quickload :magicl-gen)
@@ -117,16 +175,28 @@ MAGICL, namely the files `blas-cffi.lisp`, `lapack*-cffi.lisp`, and
 
 ## History and Credits
 
-MAGICL development started at Rigetti Computing by Robert Smith and Joe Lin in 2017.
+MAGICL development started at Rigetti Computing by Robert Smith and
+Joe Lin in 2017.
 
-[CL-BLAPACK](https://github.com/blindglobe/cl-blapack) is a library developed by Ryan Rifkin and Evan Monroig. Rigetti Computing created a fork of this library and renamed it MAGICL, and made significant changes that departed from the original design, including:
+[CL-BLAPACK](https://github.com/blindglobe/cl-blapack) is a library
+developed by Ryan Rifkin and Evan Monroig. Rigetti Computing created a
+fork of this library and renamed it MAGICL, and made significant
+changes that departed from the original design, including:
 
-* Fixing several bugs in the Fortran parsing to make it work with the latest reference BLAS and LAPACK, leading to significant refactoring.
+* Fixing several bugs in the Fortran parsing to make it work with the
+latest reference BLAS and LAPACK, leading to significant refactoring.
+
 * Adding support for matrix exponentiation with Expokit.
+
 * Adding support for loading various BLAS and LAPACK implementations.
+
 * Removing the use of the FNV library in favor of native Lisp arrays.
+
 * Adding a high-level interface to various functions.
+
 * Adding function availability reporting.
 
-The most important common design decision between CL-BLAPACK and MAGICL is allowing direct access
-to the Fortran library functions by way of automatically generated Lisp bindings from the reference sources.
+The most important common design decision between CL-BLAPACK and
+MAGICL is allowing direct access to the Fortran library functions by
+way of automatically generated Lisp bindings from the reference
+sources.
