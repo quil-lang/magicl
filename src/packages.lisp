@@ -3,6 +3,7 @@
 (defpackage #:magicl.backends
   (:use #:cl)
   (:export
+   #:no-applicable-implementation
    #:define-compatible-no-applicable-method-behavior
 
    #:*backend*
@@ -22,6 +23,8 @@
   (:import-from #:magicl.foreign-libraries
                 #:print-availability-report)
   (:import-from #:magicl.backends
+                #:no-applicable-implementation
+                #:define-compatible-no-applicable-method-behavior
                 #:define-backend
                 #:define-backend-function
                 #:define-backend-implementation)
