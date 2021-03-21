@@ -1,25 +1,32 @@
 # MAGICL
 
-
 _Matrix Algebra proGrams In Common Lisp_ by [Rigetti Computing](http://www.rigetti.com). (née FLAIL: _Finally, Linear Algebra In Lisp!_)
 
 (**Note**: The high-level interface is experimental and subject to change.)
 
 ## Requirements
 
- * SBCL (> 1.3.19) or CCL (>= 1.11) on AMD64
- * quicklisp
- 
-If you'll want to use BLAS/LAPACK for extended functionality, you'll need:
+MAGICL has two main systems:
+
+- `MAGICL/CORE`: This is pure Lisp code with no foreign dependencies.
+- `MAGICL`: This is the core MAGICL with all extensions loaded.
+
+The system `MAGICL/CORE` requires:
+
+* SBCL (> 1.3.19) or CCL (>= 1.11) on AMD64
+* quicklisp
+
+The system `MAGICL`, on the other hand, requires several foreign
+dependencies not shipped with MAGICL, like:
 
  * libffi
  * BLAS and LAPACK
 
- Detailed instructions on how to install `libffi` and BLAS/LAPACK can
- be found [here](doc/requirements.md).
+Detailed instructions on how to install `libffi` and BLAS/LAPACK can
+be found [here](doc/requirements.md).
 
- Currently this library is SBCL- and CCL-only. The non-portable code
- is in `with-array-pointers.lisp` and `magicl.lisp`.
+Currently this library is SBCL- and CCL-only. The non-portable code is
+in `with-array-pointers.lisp` and `magicl.lisp`.
 
 ## Installation
 
@@ -36,15 +43,17 @@ tests, as described in the next section.
 
 ### Extensions
 
-MAGICL by default only uses pure ANSI Common Lisp code. If you wish to
-accelerate it or extend the functionality, you may load *MAGICL
-extensions*. These extensions typically install new backends to MAGICL
-functions. The available extensions are:
+`MAGICL/CORE` by default only uses pure ANSI Common Lisp code. If you
+wish to accelerate it or extend the functionality, you may load
+*MAGICL extensions*. These extensions typically install new backends
+to MAGICL functions. The available extensions are:
 
-- `MAGICL/FANCY`: for every extension we've got under the kitchen sink
 - `MAGICL/EXT-BLAS`: for BLAS functions
 - `MAGICL/EXT-LAPACK`: for LAPACK functions
 - `MAGICL/EXT-EXPOKIT`: for expokit (matrix `exp()`) functions
+
+For backwards compatibility, `MAGICL` loads every extension under the
+kitchen sink. **This may change in future versions of MAGICL!**
 
 If you use extensions, you'll need the requisite C/Fortran
 libraries. Expokit will automatically build for you, as it's included
@@ -59,6 +68,7 @@ several backends can be active all at once. Each extension above adds
 a new backend. The current backends are:
 
 - `:lisp`: Pure Lisp code
+- `:blas`: BLAS-backed code
 - `:lapack`: LAPACK-backed code
 - `:expokit`: expokit-backed code
 

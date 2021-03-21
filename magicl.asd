@@ -2,9 +2,26 @@
 ;;;;
 ;;;; Author: Robert Smith
 
+;;; XXX: For now, load all extensions when loading MAGICL so as to not
+;;; break users' code. In the future, however, we may make MAGICL a
+;;; synonym for MAGICL/CORE.
 (asdf:defsystem #:magicl
   :license "BSD 3-Clause (See LICENSE.txt)"
   :description "Matrix Algebra proGrams In Common Lisp"
+  :maintainer "Rigetti Computing"
+  :author "Rigetti Computing"
+  :version (:read-file-form "VERSION.txt")
+  :in-order-to ((asdf:test-op (asdf:test-op #:magicl-tests)))
+  :depends-on (#:magicl/core
+               #:magicl/ext-blas
+               #:magicl/ext-lapack
+               #:magicl/ext-expokit)
+  :serial t
+  :components ())
+
+(asdf:defsystem #:magicl/core
+  :license "BSD 3-Clause (See LICENSE.txt)"
+  :description "Matrix Algebra proGrams In Common Lisp (pure Lisp core)"
   :maintainer "Rigetti Computing"
   :author "Rigetti Computing"
   :version (:read-file-form "VERSION.txt")
@@ -15,7 +32,6 @@
 
                #:magicl/ext             ; Allow extensions
                )
-  :in-order-to ((asdf:test-op (asdf:test-op #:magicl-tests)))
   :around-compile (lambda (compile)
                     (let (#+sbcl (sb-ext:*derive-function-types* t))
                       (funcall compile)))
@@ -76,7 +92,7 @@
 
 (asdf:defsystem #:magicl/ext-lapack
   :description "Native LAPACK routines in MAGICL."
-  :depends-on (#:magicl
+  :depends-on (#:magicl/core
                #:magicl/ext
                #:magicl/ext-blas
                #:cffi
@@ -146,7 +162,7 @@
   :depends-on (#:alexandria
                #:cffi
                #:cffi-libffi
-               #:magicl
+               #:magicl/core
                #:magicl/ext
                #:magicl/ext-blas
                #:magicl/ext-lapack)
@@ -159,15 +175,3 @@
                  (:file "load-libs")))
    (:file "src/bindings/expokit-cffi")
    (:file "src/extensions/expokit/expm")))
-
-
-;;; Fancy - Load everything
-
-(asdf:defsystem #:magicl/fancy
-  :description "MAGICL with all extensions."
-  :depends-on (#:magicl
-               #:magicl/ext-blas
-               #:magicl/ext-lapack
-               #:magicl/ext-expokit)
-  :serial t
-  :components ())
