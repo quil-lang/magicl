@@ -128,12 +128,12 @@ that in good coding style, `matmul-lisp` should always conform to the
 documentation of the _backend function_, **not** the _generic
 function_.
 
-**Important**: Do _not_ write methods in extensions! Methods are *not*
-the way to extend functionality for different backends. Using methods
-like this is problematic because extensions might inadvertently
-overwrite one another's methods. Instead, we recommend limiting the
-scope of a generic function to a extension or backend, as described
-above.
+**Important**: Do _not_ write generic functions in `MAGICL/CORE` and
+methods in extensions! Methods are *not* the way to extend
+functionality for different backends. Using methods like this is
+problematic because extensions might inadvertently overwrite one
+another's definitions. Instead, we recommend limiting the scope of a
+generic function to an extension or backend, as described above.
 
 If we wanted to forego making a generic function, we can instead just
 write a lambda directly in the backend implementation:
