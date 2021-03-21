@@ -103,7 +103,11 @@
                          nil
                          (second doc-option))))
     `(progn
-       (define-backend-function ,fun-name ,lambda-list ,@(if doc-string (list doc-string)))
+       ;; Only define backend functions for :LISP. We don't want to
+       ;; re-generate these for other backends.
+       ,@(when (eq backend :lisp)
+           (list
+            `(define-backend-function ,fun-name ,lambda-list ,@(if doc-string (list doc-string)))))
        (define-compatible-no-applicable-method-behavior ,fun-name-backend)
        (defgeneric ,fun-name-backend ,lambda-list ,@options)
        (define-backend-implementation ,fun-name ,backend ',fun-name-backend))))
