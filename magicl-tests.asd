@@ -8,7 +8,7 @@
   :author "Rigetti Computing"
   :depends-on (#:alexandria
                #:uiop
-               #:magicl/fancy
+               #:magicl
                #:magicl-examples
                #:fiasco)
   :perform (asdf:test-op (o s)

@@ -52,15 +52,15 @@ Now we can tell MAGICL that `matmul-lisp` implements `matmul` in the
 (define-backend-implementation matmul :lisp 'matmul-lisp)
 ```
 
-In the LAPACK extension, we might write:
+In the BLAS extension, we might write:
 
 ```
-(define-compatible-no-applicable-method-behavior matmul-lapack)
+(define-compatible-no-applicable-method-behavior matmul-blas)
 (defgeneric matmul-lapack (a b)
   (:method ((a matrix/double-float) (b matrix/double-float))
     ;; ...
     ))
-(define-backend-implementation matmul :lapack 'matmul-lapack)
+(define-backend-implementation matmul :lapack 'matmul-blas)
 ```
 
 In this scenario, we've presented *two* extension points for `matmul`:
@@ -87,7 +87,7 @@ write a lambda directly in the backend implementation:
     ))
 ```
 
-Of course, if no extensibility is desired whatsoever, one can just write 
+Of course, if no extensibility is desired whatsoever, one can just write
 
 **Important**: Do _not_ use generic functions for which methods are
 implemented in extensions. This is problematic because extensions
@@ -105,7 +105,7 @@ write is pure Lisp, then an extension is probably not appropriate.
 Let's suppose we are making an extension called `FOO`. You'll need to
 create a new ASDF system. In `magicl.asd`, add `#:magicl/ext-foo` and
 create a folder `src/extensions/foo`. (If you see it as a good
-default, also add your system as a dependency to `#:magicl/fancy`.)
+default, also add your system as a dependency to `#:magicl`.)
 You should define a new package for your extension, like
 `#:magicl-foo`. If your extension has C bindings, then you'll want a
 `load-libs.lisp` file. Use `src/extensions/expokit/load-libs.lisp` as
