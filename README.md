@@ -8,7 +8,10 @@ _Matrix Algebra proGrams In Common Lisp_ by [Rigetti Computing](http://www.riget
 
 MAGICL has two main systems:
 
-- `MAGICL/CORE`: This is pure Lisp code with no foreign dependencies.
+- `MAGICL/CORE`: This is pure Lisp code with no foreign
+dependencies. This system establishes the API of the library nearly
+completely..
+
 - `MAGICL`: This is the core MAGICL with all extensions loaded.
 
 The system `MAGICL/CORE` requires:
@@ -19,8 +22,8 @@ The system `MAGICL/CORE` requires:
 The system `MAGICL`, on the other hand, requires several foreign
 dependencies not shipped with MAGICL, like:
 
- * libffi
- * BLAS and LAPACK
+- libffi
+- BLAS and LAPACK
 
 Detailed instructions on how to install `libffi` and BLAS/LAPACK can
 be found [here](doc/requirements.md).
@@ -56,12 +59,12 @@ For backwards compatibility, `MAGICL` loads every extension under the
 kitchen sink. **This may change in future versions of MAGICL!**
 
 If you use extensions, you'll need the requisite C/Fortran
-libraries. Expokit will automatically build for you, as it's included
-in the distribution of MAGICL.
+libraries. Expokit will automatically build for you, as its source is
+included in the distribution of MAGICL.
 
 ### Backends
 
-New functionality is installed with a notion called "backends". A
+Accelerated functionality is installed with a notion called "backends". A
 *backend* is a name of a group of functionality, typically denoted by
 a symbol or keyword. The `:lisp` backend is the defualt one, and
 several backends can be active all at once. Each extension above adds
@@ -74,23 +77,56 @@ a new backend. The current backends are:
 
 In most cases, one does not need to concern themselves with backends;
 MAGICL functionality should "just work" and dispatch to the
-appropriate backend.
+appropriate backend. However, the programmer always has control, even
+dynamically in the program, of which backends should be used at a
+given time with the `magicl.backends:with-backends` macro. For instance,
+
+```
+(magicl.backends:with-backends (:blas :lisp)
+  ;; ... code ...
+  )
+```
+
+says that the code should be executed, always preferring
+`:blas`-accelerated functions, and using `:lisp`-implemented functions
+as a fall-back.
+
+```
+(magicl.backends:with-backends (:lisp)
+  ;; ... code ...
+  )
+```
+
+says to *only* use `:lisp`-implemented functions, even if other
+backends are loaded.
+
 
 The active backends can be found with the function
 `magicl.backends:active-backends`, which lists the backends to use in
-priority order. One can limit the backends in use over a dynamic scope
-with the macro `magicl.backends:with-backends`.
+priority order.
 
-Given a function `f` which has many backend implementations, one can
-get a specific implementation by using the function
+One can be even finer-grained than `with-backends`. Given a function
+`f` which has many backend implementations, one can get a specific
+implementation by using the function:
 
 ```
 (magicl.backends:backend-implementation 'f :backend-name)
 ```
 
-If both the function name and the backend name are (quoted) constants,
-this will be looked up at compile-time, which is useful for writing
-efficient code.
+For instance
+
+```
+(magicl.backends:backend-implementation 'magicl:csd :lapack)
+```
+
+will give the implementation of the cosine-sine decomposition function
+in LAPACK. This can be called in exactly the same way `magicl:csd` can
+be called.
+
+In `backend-implementation`, if both the function name and the backend
+name are (quoted) constants, this will be looked up at compile-time,
+which is useful for writing efficient code that does not dispatch. But
+note that by doing this, `with-backends` will not be respected.
 
 ## Testing MAGICL
 
