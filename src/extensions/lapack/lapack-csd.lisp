@@ -102,7 +102,7 @@
           (jobu2 "Y")
           (jobv1t "Y")
           (jobv2t "Y")
-          (trans 
+          (trans
             (if (eq :row-major layout)
                 "T"
                 "F"))
@@ -168,7 +168,7 @@
                   (from-array v2t (list (- m q) (- m q)) :input-layout layout)
                   (coerce theta 'list)))))))
 
-(defmethod magicl:csd ((matrix matrix/complex-double-float) p q)
+(defmethod csd-extension ((matrix matrix/complex-double-float) p q)
   (labels ((csd-from-blocks (u1 u2 v1t v2t theta)
              "Calculates the matrices U, SIGMA, and VT of the CSD of a matrix from its intermediate representation, as calculated from LAPACK-CSD."
              (let ((p (nrows u1))

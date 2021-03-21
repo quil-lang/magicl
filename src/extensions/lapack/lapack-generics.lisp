@@ -4,17 +4,32 @@
 
 (in-package #:magicl-lapack)
 
-(defgeneric lapack-eig (matrix))
+;;; We use the convention "FOO-EXTENSION" to refer to this extension's
+;;; generic function implementation of MAGICL:FOO.
 
-(defgeneric lapack-hermitian-eig (matrix))
+(magicl:define-extensible-function (magicl:mult mult-extension :lapack) (a b &key target alpha beta transa transb))
 
-(defgeneric lapack-lu (matrix))
+(magicl:define-extensible-function (magicl:eig lapack-eig :lapack) (matrix))
 
-(defgeneric lapack-inv (matrix))
+(magicl:define-extensible-function (magicl:hermitian-eig lapack-hermitian-eig :lapack) (matrix))
+
+(magicl:define-extensible-function (magicl:lu lapack-lu :lapack) (matrix))
+
+(magicl:define-extensible-function (magicl:inv lapack-inv :lapack) (matrix))
+
+(magicl:define-extensible-function (magicl:csd csd-extension :lapack) (matrix p q))
 
 (defgeneric lapack-csd (matrix p q))
 
-(defgeneric lapack-svd (matrix &key reduced))
+(magicl:define-extensible-function (magicl:svd lapack-svd :lapack) (matrix &key reduced))
+
+(magicl:define-extensible-function (magicl:ql ql-extension :lapack) (matrix))
+
+(magicl:define-extensible-function (magicl:qr qr-extension :lapack) (matrix))
+
+(magicl:define-extensible-function (magicl:rq rq-extension :lapack) (matrix))
+
+(magicl:define-extensible-function (magicl:lq lq-extension :lapack) (matrix))
 
 (defgeneric lapack-ql (matrix)
   (:documentation "Find the LAPACK intermediate representation of ql of a matrix"))
