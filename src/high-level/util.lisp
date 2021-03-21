@@ -95,3 +95,15 @@
 
 (defun normalize-type (type)
   (upgraded-array-element-type type))
+
+(defmacro define-extensible-function ((fun-name fun-name-backend &optional (backend :lisp)) lambda-list &body options)
+  "This macro mimics DEFGENERIC, except instead it makes FUN-NAME a backend function whose BACKEND implementation (default :LISP) is a generic function named FUN-NAME-BACKEND."
+  (let* ((doc-option (assoc ':documentation options))
+         (doc-string (if (null doc-option)
+                         nil
+                         (second doc-option))))
+    `(progn
+       (define-backend-function ,fun-name ,lambda-list ,@(if doc-string (list doc-string)))
+       (define-compatible-no-applicable-method-behavior ,fun-name-backend)
+       (defgeneric ,fun-name-backend ,lambda-list ,@options)
+       (define-backend-implementation ,fun-name ,backend ',fun-name-backend))))

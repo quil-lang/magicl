@@ -95,6 +95,25 @@ might inadvertently overwrite one another's methods. Instead, we
 recommend limiting the scope of a generic function to a backend, as
 described above.
 
+For convenience, one can use `define-extensible-function` in MAGICL to
+do the ceremony of defining the backend function, defining compatible
+method behavior, and defining a generic function implementing the
+backend function for `:lisp` (or any other backend):
+
+```
+;; in MAGICL core
+(define-extensible-function (matmul matmul-lisp) (a b)
+  (:method (a b)
+    ;; ...
+    ))
+
+;; in BLAS extension
+(define-extensible-function (matmul matmul-blas :blas) (a b)
+  (:method (a b)
+    ;; ...
+    ))
+```
+
 ## Writing an Extension
 
 Extensions are intended to add "foreign" functionality to MAGICL that
