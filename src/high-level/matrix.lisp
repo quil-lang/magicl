@@ -212,11 +212,11 @@ ELEMENT-TYPE, CAST, COPY-TENSOR, DEEP-COPY-TENSOR, TREF, SETF TREF)"
   t)
 
 (defun unitary-matrix-p (matrix &optional (epsilon *double-comparison-threshold*))
-  "Whether MATRIX is a unitary matrix"
+  "Is MATRIX is a unitary matrix?"
   (identity-matrix-p (@ matrix (conjugate-transpose matrix)) epsilon))
 
 (defun hermitian-matrix-p (matrix &optional (epsilon *double-comparison-threshold*))
-  "Whether MATRIX is a unitary matrix"
+  "Is MATRIX is a hermitian matrix?"
   (= matrix (conjugate-transpose matrix) epsilon))
 
 (defmacro assert-square-matrix (&rest matrices)
@@ -224,7 +224,9 @@ ELEMENT-TYPE, CAST, COPY-TENSOR, DEEP-COPY-TENSOR, TREF, SETF TREF)"
      ,@(loop :for matrix in matrices
              :collect `(assert (square-matrix-p ,matrix)
                                ()
-                               ,"The shape of ~a is ~a, which is not a square" ,(symbol-name matrix) (shape ,matrix)))))
+                               "The shape of ~a is ~a, which is not a square"
+                               ,(symbol-name matrix)
+                               (shape ,matrix)))))
 
 ;;; Required abstract-tensor methods
 
@@ -296,7 +298,7 @@ Multiply a by b, storing in target or creating a new tensor if target is not spe
 Target cannot be the same as a or b."))
 
 (defgeneric @ (matrix &rest matrices)
-    (:documentation "Multiplication of matrices")
+  (:documentation "Multiplication of matrices")
   (:method (matrix &rest matrices)
     (reduce #'mult matrices
             :initial-value matrix)))
@@ -329,8 +331,9 @@ Target cannot be the same as a or b."))
           (mb (nrows b))
           (na (ncols a))
           (nb (ncols b)))
-      (flet ((calc-i-j (i j) (* (tref a (floor i mb) (floor j nb))
-                                (tref b (mod i mb) (mod j nb)))))
+      (flet ((calc-i-j (i j)
+               (* (tref a (floor i mb) (floor j nb))
+                  (tref b (mod i mb) (mod j nb)))))
         (reduce #'kron rest :initial-value (into! #'calc-i-j
                                                   (empty (list (* ma mb) (* na nb))
                                                          :type '(complex double-float))))))))
