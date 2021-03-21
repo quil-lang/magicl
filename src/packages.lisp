@@ -28,7 +28,9 @@
                 #:define-backend
                 #:define-backend-function
                 #:define-backend-implementation)
-  (:export #:define-backend
+  (:export #:no-applicable-implementation
+           #:define-compatible-no-applicable-method-behavior
+           #:define-backend
            #:define-backend-function
            #:define-backend-implementation)
   (:shadow #:vector
@@ -40,6 +42,7 @@
            #:notevery
            #:notany)
   (:export #:with-blapack
+           #:define-extensible-function ; For extensions, not users...
 
            ;; abstract-tensor protocol
            #:specialize-tensor
