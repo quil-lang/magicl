@@ -17,3 +17,7 @@
 (unless *blas-loaded*
   (cffi:load-foreign-library 'libblas)
   (setf *blas-loaded* t))
+
+(magicl:define-backend :blas
+  :documentation "Backend for BLAS functionality written in Fortran."
+  :default t)

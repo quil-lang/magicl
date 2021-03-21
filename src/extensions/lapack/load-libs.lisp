@@ -23,5 +23,5 @@
   (setf *blapack-libs-loaded* t))
 
 (magicl:define-backend :lapack
-  :documentation "Backend for BLAS and LAPACK functionality written in Fortran."
+  :documentation "Backend for LAPACK functionality written in Fortran."
   :default t)
