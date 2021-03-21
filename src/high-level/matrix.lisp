@@ -290,12 +290,15 @@ ELEMENT-TYPE, CAST, COPY-TENSOR, DEEP-COPY-TENSOR, TREF, SETF TREF)"
            (list 0 index)
            (list (nrows m) (1+ index)))))
 
-(defgeneric mult (a b &key target alpha beta transa transb)
-  (:documentation "Library users: consider using MAGICL:@ instead.
+(define-extensible-function (mult mult-lisp) (a b &key target alpha beta transa transb)
+  (:documentation
+   "Library users: consider using MAGICL:@ instead.
 
 Multiply a by b, storing in target or creating a new tensor if target is not specified.
 
-Target cannot be the same as a or b."))
+Target cannot be the same as a or b.")
+  ;; TODO: write a lisp impl of this
+  )
 
 (defgeneric @ (matrix &rest matrices)
   (:documentation "Multiplication of matrices")
@@ -305,9 +308,9 @@ Target cannot be the same as a or b."))
 
 ;;; Generic matrix methods
 
-(defgeneric direct-sum (a b)
+(define-extensible-function (direct-sum direct-sum-lisp) (a b)
+  (:documentation "Compute the direct sum of A and B")
   (:method ((a matrix) (b matrix))
-    "Compute the direct sum of A and B"
     (let* ((arows (nrows a))
            (acols (ncols a))
            (brows (nrows b))
@@ -324,7 +327,7 @@ Target cannot be the same as a or b."))
           (setf (tref result r c) (tref b (- r arows) (- c acols)))))
       result)))
 
-(defgeneric kron (a b &rest rest)
+(define-extensible-function (kron kron-lisp) (a b &rest rest)
   (:documentation "Compute the Kronecker product of A and B")
   (:method (a b &rest rest)
     (let ((ma (nrows a))
@@ -338,7 +341,7 @@ Target cannot be the same as a or b."))
                                                   (empty (list (* ma mb) (* na nb))
                                                          :type '(complex double-float))))))))
 
-(defgeneric transpose! (matrix &key fast)
+(define-extensible-function (transpose! transpose!-lisp) (matrix &key fast)
   (:documentation "Transpose MATRIX, replacing the elements of MATRIX, optionally performing a faster change of layout if FAST is specified")
   (:method ((matrix matrix) &key fast)
     "Transpose a matrix by copying values.
@@ -361,7 +364,7 @@ If FAST is t then just change layout. Fast can cause problems when you want to m
           (rotatef (matrix-ncols matrix) (matrix-nrows matrix))))
     matrix))
 
-(defgeneric transpose (matrix)
+(define-extensible-function (transpose transpose-lisp) (matrix)
   (:documentation "Create a new matrix containing the transpose of MATRIX")
   (:method ((matrix matrix))
     "Transpose a matrix by copying values.
@@ -382,7 +385,7 @@ If fast is t then just change layout. Fast can cause problems when you want to m
       new-matrix)))
 
 ;; TODO: allow setf on matrix diag
-(defgeneric diag (matrix)
+(define-extensible-function (diag diag-lisp) (matrix)
   (:documentation "Get a list of the diagonal elements of MATRIX")
   (:method ((matrix matrix))
     (policy-cond:with-expectations (> speed safety)
@@ -391,7 +394,7 @@ If fast is t then just change layout. Fast can cause problems when you want to m
         (loop :for i :below rows
               :collect (tref matrix i i))))))
 
-(defgeneric trace (matrix)
+(define-extensible-function (trace trace-lisp) (matrix)
   (:documentation "Get the trace of MATRIX (sum of diagonals)")
   (:method ((matrix matrix))
     (policy-cond:with-expectations (> speed safety)
@@ -399,7 +402,7 @@ If fast is t then just change layout. Fast can cause problems when you want to m
       (loop :for i :below (nrows matrix)
             :sum (tref matrix i i)))))
 
-(defgeneric det (matrix)
+(define-extensible-function (det det-lisp) (matrix)
   (:documentation "Compute the determinant of a square matrix MATRIX")
   (:method ((matrix matrix))
     (policy-cond:with-expectations (> speed safety)
@@ -413,7 +416,7 @@ If fast is t then just change layout. Fast can cause problems when you want to m
               (setq d (- d))))
           d)))))
 
-(defgeneric upper-triangular (matrix &key square)
+(define-extensible-function (upper-triangular upper-triangular-lisp) (matrix &key square)
   (:documentation "Get the upper triangular portion of the matrix.
 
 If :SQUARE is T, then the result will be restricted to the upper rightmost square submatrix of the input.")
@@ -433,7 +436,7 @@ If :SQUARE is T, then the result will be restricted to the upper rightmost squar
 ;;; Synonym for upper-triangular
 (setf (fdefinition 'triu) #'upper-triangular)
 
-(defgeneric lower-triangular (matrix &key square)
+(define-extensible-function (lower-triangular lower-triangular-lisp) (matrix &key square)
   (:documentation "Get the lower triangular portion of the matrix.
 
 If :SQUARE is T, then the result will be restricted to the lower leftmost square submatrix of the input.")
@@ -453,81 +456,54 @@ If :SQUARE is T, then the result will be restricted to the lower leftmost square
 ;;; Synonym for lower-triangular
 (setf (fdefinition 'tril) #'lower-triangular)
 
-(defgeneric conjugate-transpose (matrix)
+(define-extensible-function (conjugate-transpose conjugate-transpose-lisp) (matrix)
   (:documentation "Compute the conjugate transpose of a matrix")
   (:method ((matrix matrix))
     (map #'conjugate (transpose matrix))))
 (setf (fdefinition 'dagger) #'conjugate-transpose)
 
-(defgeneric conjugate-transpose! (matrix)
+(define-extensible-function (conjugate-transpose! conjugate-transpose!-lisp) (matrix)
   (:documentation "Compute the conjugate transpose of a matrix, replacing the elements")
   (:method ((matrix matrix))
     (map! #'conjugate (transpose! matrix))))
 (setf (fdefinition 'dagger!) #'conjugate-transpose!)
 
-(defgeneric eig (matrix)
-  (:documentation "Find the (right) eigenvectors and corresponding eigenvalues of a square matrix M. Returns a list and a tensor (EIGENVALUES, EIGENVECTORS)")
-  (:method ((matrix matrix))
-    (declare (ignore matrix))
-    (error "EIG is not defined for the generic matrix type.")))
+(define-backend-function eig (matrix)
+  "Find the (right) eigenvectors and corresponding eigenvalues of a square matrix M. Returns a list and a tensor (EIGENVALUES, EIGENVECTORS)")
 
-(defgeneric lu (matrix)
-  (:documentation "Get the LU decomposition of MATRIX. Returns two tensors (LU, IPIV)")
-  (:method ((matrix matrix))
-    (declare (ignore matrix))
-    (error "LU is not defined for the generic matrix type.")))
+(define-backend-function lu (matrix)
+  "Get the LU decomposition of MATRIX. Returns two tensors (LU, IPIV)")
 
 ;; TODO: Make this one generic and move to lapack-macros
 ;;       This is being blocked by the ZUNCSD shenanigans
-(defgeneric csd (matrix p q)
-  (:documentation "Find the Cosine-Sine Decomposition of a matrix X given that it is to be partitioned with upper left block of dimension P-by-Q. Returns the CSD elements (VALUES U SIGMA VT) such that X=U*SIGMA*VT.")
-  (:method ((matrix matrix) p q)
-    (declare (ignore matrix p q))
-    (error "CSD is not defined for the generic matrix type.")))
+(define-backend-function csd (matrix p q)
+  "Find the Cosine-Sine Decomposition of a matrix X given that it is to be partitioned with upper left block of dimension P-by-Q. Returns the CSD elements (VALUES U SIGMA VT) such that X=U*SIGMA*VT.")
 
-(defgeneric inv (matrix)
-  (:documentation "Get the inverse of the matrix")
-  (:method ((matrix matrix))
-    (declare (ignore matrix))
-    (error "INV is not defined for the generic matrix type.")))
+(define-backend-function inv (matrix)
+  "Get the inverse of the matrix")
 
-(defgeneric svd (matrix &key reduced)
-  (:documentation "Find the SVD of a matrix M. Return (VALUES U SIGMA Vt) where M = U*SIGMA*Vt")
-  (:method ((matrix matrix) &key reduced)
-    (declare (ignore matrix reduced))
-    (error "SVD is not defined for the generic matrix type.")))
+(define-backend-function svd (matrix &key reduced)
+  "Find the SVD of a matrix M. Return (VALUES U SIGMA Vt) where M = U*SIGMA*Vt")
 
-(defgeneric qr (matrix)
-  (:documentation "Finds the QR factorization of MATRIX. Returns two matrices (Q, R).
+(define-backend-function qr (matrix)
+  "Finds the QR factorization of MATRIX. Returns two matrices (Q, R).
 
-NOTE: If MATRIX is not square, this will compute the reduced QR factoriation.")
-  (:method ((matrix matrix))
-    (declare (ignore matrix))
-    (error "QR is not defined for the generic matrix type.")))
+NOTE: If MATRIX is not square, this will compute the reduced QR factorization.")
 
-(defgeneric ql (matrix)
-  (:documentation "Finds the QL factorization of MATRIX. Returns two matrices (Q, L).
+(define-backend-function ql (matrix)
+  "Finds the QL factorization of MATRIX. Returns two matrices (Q, L).
 
-NOTE: If MATRIX is not square, this will compute the reduced QL factoriation.")
-  (:method ((matrix matrix))
-    (declare (ignore matrix))
-    (error "QL is not defined for the generic matrix type.")))
+NOTE: If MATRIX is not square, this will compute the reduced QL factorization.")
 
-(defgeneric rq (matrix)
-  (:documentation "Finds the RQ factorization of MATRIX. Returns two matrices (R, Q).
+(define-backend-function rq (matrix)
+  "Finds the RQ factorization of MATRIX. Returns two matrices (R, Q).
 
-NOTE: If MATRIX is not square, this will compute the reduced RQ factoriation.")
-  (:method ((matrix matrix))
-    (declare (ignore matrix))
-    (error "RQ is not defined for the generic matrix type.")))
+NOTE: If MATRIX is not square, this will compute the reduced RQ factorization.")
 
-(defgeneric lq (matrix)
-  (:documentation "Finds the LQ factorization of MATRIX. Returns two matrices (L, Q).
+(define-backend-function lq (matrix)
+  "Finds the LQ factorization of MATRIX. Returns two matrices (L, Q).
 
-NOTE: If MATRIX is not square, this will compute the reduced LQ factoriation.")
-  (:method ((matrix matrix))
-    (declare (ignore matrix))
-    (error "LQ is not defined for the generic matrix type.")))
+NOTE: If MATRIX is not square, this will compute the reduced LQ factorization.")
 
 (define-backend-function expm (matrix)
   "Computes the exponential of a square matrix M.")
