@@ -12,6 +12,9 @@
                "libblas.so.3"))
   (t (:default "libblas")))
 
+(pushnew 'libblas *foreign-libraries*)
+(export 'libblas)
+
 (defvar *blas-loaded* nil)
 
 (unless *blas-loaded*

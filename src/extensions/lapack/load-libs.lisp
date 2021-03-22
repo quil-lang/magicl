@@ -16,6 +16,9 @@
                "liblapack.so.3"))
   (t (:default "liblapack")))
 
+(pushnew 'liblapack *foreign-libraries*)
+(export 'liblapack)
+
 (defvar *blapack-libs-loaded* nil)
 
 (unless *blapack-libs-loaded*

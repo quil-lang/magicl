@@ -2,7 +2,7 @@
 ;;;;
 ;;;; Author: Robert Smith
 
-(in-package #:magicl-expokit.foreign-libraries)
+(in-package #:magicl.foreign-libraries)
 
 (cffi:define-foreign-library libexpokit
   (:darwin (:or #.(asdf:system-relative-pathname '#:magicl "expokit/libexpokit.dylib")
@@ -11,10 +11,10 @@
   (:unix  (:or #.(asdf:system-relative-pathname '#:magicl "expokit/libexpokit.so")
                "libexpokit.so"
                "expokit.so"))
-
   (t (:default "expokit")))
 
-(push 'libexpokit magicl.foreign-libraries::*foreign-libraries*)
+(pushnew 'libexpokit *foreign-libraries*)
+(export 'libexpokit)
 
 (defvar *expokit-libs-loaded* nil)
 
