@@ -4,8 +4,7 @@
 
 (in-package #:magicl-transcendental)
 
-(magicl.backends:define-compatible-no-applicable-method-behavior expm)
-(defgeneric expm (matrix)
+(magicl:define-extensible-function (magicl:expm expm-expokit :expokit) (matrix)
   (:method ((m magicl:matrix/complex-double-float))
     (let ((ideg 6)
           (rows (magicl:nrows m))
@@ -46,5 +45,4 @@
                     (row-major-aref wsp (+ i (1- iexph)))))
             (values (magicl:from-array exph (list rows rows) :input-layout :column-major))))))))
 
-(magicl:define-backend-implementation magicl:expm :expokit 'expm)
 
