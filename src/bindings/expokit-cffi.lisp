@@ -431,19 +431,17 @@
   %%ZHPADM %ZHPADM %%DGCHBV %DGCHBV %%DNCHBV %DNCHBV %%DSCHBV %DSCHBV %%ZGCHBV
   %ZGCHBV %%ZNCHBV %ZNCHBV))
 
-(COMMON-LISP:SETF (COMMON-LISP:GETF
-                   (COMMON-LISP:SYMBOL-PLIST
-                    'MAGICL.FOREIGN-LIBRARIES:LIBEXPOKIT)
-                   ':MAGICL)
-                    '(("DGPADM" "dgpadm_" %%DGPADM %DGPADM)
-                      ("DSPADM" "dspadm_" %%DSPADM %DSPADM)
-                      ("ZGPADM" "zgpadm_" %%ZGPADM %ZGPADM)
-                      ("ZHPADM" "zhpadm_" %%ZHPADM %ZHPADM)
-                      ("DGCHBV" "dgchbv_" %%DGCHBV %DGCHBV)
-                      ("DNCHBV" "dnchbv_" %%DNCHBV %DNCHBV)
-                      ("DSCHBV" "dschbv_" %%DSCHBV %DSCHBV)
-                      ("ZGCHBV" "zgchbv_" %%ZGCHBV %ZGCHBV)
-                      ("ZNCHBV" "znchbv_" %%ZNCHBV %ZNCHBV)))
+(MAGICL.FOREIGN-LIBRARIES::TRACK-SYMBOLS
+ 'MAGICL.FOREIGN-LIBRARIES:LIBEXPOKIT
+ '(("DGPADM" "dgpadm_" %%DGPADM %DGPADM)
+   ("DSPADM" "dspadm_" %%DSPADM %DSPADM)
+   ("ZGPADM" "zgpadm_" %%ZGPADM %ZGPADM)
+   ("ZHPADM" "zhpadm_" %%ZHPADM %ZHPADM)
+   ("DGCHBV" "dgchbv_" %%DGCHBV %DGCHBV)
+   ("DNCHBV" "dnchbv_" %%DNCHBV %DNCHBV)
+   ("DSCHBV" "dschbv_" %%DSCHBV %DSCHBV)
+   ("ZGCHBV" "zgchbv_" %%ZGCHBV %ZGCHBV)
+   ("ZNCHBV" "znchbv_" %%ZNCHBV %ZNCHBV)))
 
 (COMMON-LISP:EXPORT
  '(%DGPADM %DSPADM %ZGPADM %ZHPADM %DGCHBV %DNCHBV %DSCHBV %ZGCHBV %ZNCHBV)

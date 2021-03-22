@@ -526,8 +526,9 @@ the CFFI binding file."
                                             (fortran-function-name ff))
                                            (raw-call-name ff)
                                            (lisp-fun-name ff)))))
-         `(setf (cl:getf (cl:symbol-plist ',originating-library) ':magicl)
-                ',entries)))
+         `(magicl.foreign-libraries::track-sybmols
+           ',originating-library
+           ',entries)))
 
       ;; Exports
       (list
