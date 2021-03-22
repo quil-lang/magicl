@@ -144,7 +144,7 @@ If you need fine-grained control over the backends selected, you may instead dir
   (and (symbolp x)
        (fboundp x)
        (not (eq '#1=#:not-found
-                (getf (symbol-plist x) +backends-key+ #1#)))))
+                (getf (symbol-plist x) +backends-key+ '#1#)))))
 
 (defun initialize-function-for-implementations (x)
   (check-type x symbol)
