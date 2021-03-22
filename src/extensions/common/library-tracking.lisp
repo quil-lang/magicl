@@ -14,6 +14,12 @@ Each new MAGICL extension is expected to PUSHNEW the library symbols to this var
          (not (cffi:null-pointer-p found))
          t)))
 
+(defun track-symbols (library symbol-quadruples)
+  (dolist (quad symbol-quadruples)
+    (pushnew quad (getf (symbol-plist library) ':magicl)
+             :test #'string=
+             :key #'first)))
+
 (defun print-availability-report (&key (stream *standard-output*)
                                        (show-available t)
                                        (show-unavailable t)
