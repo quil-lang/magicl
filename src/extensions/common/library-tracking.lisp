@@ -1,7 +1,9 @@
 (in-package #:magicl.foreign-libraries)
 
 (defvar *foreign-libraries* nil
-  "Foreign library names (designated by symbols) that exist.")
+  "Foreign library names (designated by symbols) that exist.
+
+Each new MAGICL extension is expected to PUSHNEW the library symbols to this variable.")
 
 (defun foreign-symbol-available-p (name library)
   "Check that NAME is available from the libarary LIBRARY."
@@ -28,7 +30,7 @@
   (terpri stream)
 
   ;; Print symbol information
-  (dolist (lib *foreign-libraries*)
+  (dolist (lib (sort (remove-duplicates (copy-list *foreign-libraries*)) #'string<))
     (let ((symbols (sort (copy-seq (getf (symbol-plist lib) ':magicl))
                          #'string<
                          :key #'first)))

@@ -14,10 +14,6 @@
 
 (defpackage #:magicl.foreign-libraries
   (:use #:common-lisp)
-  (:export #:libgfortran
-           #:libblas
-           #:liblapack
-           #:libexpokit
+  (:export #:*foreign-libraries*
            #:foreign-symbol-available-p
            #:print-availability-report))
-
