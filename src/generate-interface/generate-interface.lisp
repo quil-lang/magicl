@@ -258,7 +258,7 @@ remaining lines."
 
 (defvar *basedir*)
 (defparameter *outdir*
-  (asdf:system-relative-pathname :magicl-gen ""))
+  (asdf:system-relative-pathname :magicl-gen "src/bindings/"))
 
 (defun parse-blas-files (&optional (basedir *basedir*))
   (let ((files
@@ -536,7 +536,7 @@ the CFFI binding file."
                    ',package-name)))
 
      ;; Specify target directory
-     (merge-pathnames "src/bindings/" *outdir*))))
+     *outdir*)))
 
 (defun generate-blas-file ()
   (generate-file "blas-cffi"
