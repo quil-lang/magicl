@@ -9,10 +9,10 @@ _Matrix Algebra proGrams In Common Lisp_ by [Rigetti Computing](http://www.riget
 MAGICL has two main systems:
 
 - `MAGICL/CORE`: This is pure Lisp code with no foreign
-dependencies. This system establishes the API of the library nearly
-completely..
+dependencies. This system establishes MAGICL's API (for the most
+part).
 
-- `MAGICL`: This is the core MAGICL with all extensions loaded.
+- `MAGICL`: This is MAGICL with all extensions loaded.
 
 The system `MAGICL/CORE` requires:
 
@@ -46,17 +46,18 @@ tests, as described in the next section.
 
 ### Extensions
 
-`MAGICL/CORE` by default only uses pure ANSI Common Lisp code. If you
-wish to accelerate it or extend the functionality, you may load
-*MAGICL extensions*. These extensions typically install new backends
-to MAGICL functions. The available extensions are:
+`MAGICL/CORE` only uses pure ANSI Common Lisp code. If you wish to
+accelerate it or extend the functionality, you may load *MAGICL
+extensions*. These extensions typically install new backends to MAGICL
+functions. The available extensions are:
 
 - `MAGICL/EXT-BLAS`: for BLAS functions
 - `MAGICL/EXT-LAPACK`: for LAPACK functions
 - `MAGICL/EXT-EXPOKIT`: for expokit (matrix `exp()`) functions
 
 For backwards compatibility, `MAGICL` loads every extension under the
-kitchen sink. **This may change in future versions of MAGICL!**
+kitchen sink. **This may change in future versions of MAGICL! If you
+depend on an extension, depend on it explicitly!**
 
 If you use extensions, you'll need the requisite C/Fortran
 libraries. Expokit will automatically build for you, as its source is
