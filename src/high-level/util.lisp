@@ -103,9 +103,7 @@
                          nil
                          (second doc-option))))
     `(progn
-       ;; Only define backend functions for :LISP. We don't want to
-       ;; re-generate these for other backends.
-       ,@(when (eq backend :lisp)
+       ,@(unless (magicl.backends:backend-function-p fun-name)
            (list
             `(define-backend-function ,fun-name ,lambda-list ,@(if doc-string (list doc-string)))))
        (define-compatible-no-applicable-method-behavior ,fun-name-backend)
