@@ -2,7 +2,7 @@
 ;;;;
 ;;;; Author: Robert Smith
 
-(in-package #:magicl-transcendental)
+(in-package #:magicl-expokit)
 
 (magicl:define-extensible-function (magicl:expm expm-expokit :expokit) (matrix)
   (:method ((m magicl:matrix/complex-double-float))

@@ -1,8 +1,8 @@
-;;;; transcendental/load-libs.lisp
+;;;; load-libs.lisp
 ;;;;
 ;;;; Author: Robert Smith
 
-(in-package #:magicl-transcendental.foreign-libraries)
+(in-package #:magicl-expokit.foreign-libraries)
 
 (cffi:define-foreign-library libexpokit
   (:darwin (:or #.(asdf:system-relative-pathname '#:magicl "expokit/libexpokit.dylib")
