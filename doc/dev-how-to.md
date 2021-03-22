@@ -17,6 +17,36 @@ scenarios to help you get started.
 The following sections describe these scenarios.
 
 
+## Writing a New Function - Quick and Lazy Guide
+
+This is the quick and lazy explanation. See the next section for the
+full explanation.
+
+Let's say we want to add a fused multiply-add function called
+`fma`. All we need to do is write:
+
+```
+(define-extensible-function (fma fma-lisp) (a x b)
+  (:method (a x b)
+    (+ b (* a x))))
+```
+
+This defines `fma` as the main API function, and `fma-lisp` as the
+generic function implementing `fma`. If we want to implement `fma` in
+a specific backend, we can use the same form, but adding the backend's
+name as an option. For example, if we are implementing this function
+with BLAS acceleration, we can specify the `:blas` backend:
+
+```
+(define-extensible-function (fma fma-blas :blas) (a x b)
+  (:method (a x b)
+    (some-funny-blas-function a x b)))
+```
+
+For a full explanation of this, as well as different and possibly more
+efficient ways of doing this, see the next section.
+
+
 ## Writing a New Function
 
 If you want to add an entirely new linear algebra routine, then there
@@ -179,9 +209,7 @@ for.
     ))
 ```
 
-The critical difference is that since the backend is *not* `:lisp`,
-`define-extensible-function` will *not* (re-)create the backend
-function.
+In general, we suggest always having a pure Lisp version if feasible.
 
 
 ## Implementing a Backend for an Existing Function
