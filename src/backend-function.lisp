@@ -188,7 +188,7 @@ If you need fine-grained control over the backends selected, you may instead dir
 Backend implementations are defined with DEFINE-BACKEND-IMPLEMENTATION."
   (check-type name symbol)
   (check-type doc (or null string))
-  (unless (string= "MAGICL" (package-name *package*))
+  (unless (eq (symbol-package name) (find-package "MAGICL"))
     (warn "Defining a backend function ~S in ~
            a package that's not MAGICL. Are you sure?"
           name))
