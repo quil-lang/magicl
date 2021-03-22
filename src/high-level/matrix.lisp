@@ -196,27 +196,29 @@ ELEMENT-TYPE, CAST, COPY-TENSOR, DEEP-COPY-TENSOR, TREF, SETF TREF)"
 (set-pprint-dispatch 'matrix 'pprint-matrix)
 
 (defun square-matrix-p (matrix)
-  "Whether the MATRIX is square"
+  "Is MATRIX square?"
   (cl:= (nrows matrix) (ncols matrix)))
 
 (defun identity-matrix-p (matrix &optional (epsilon *double-comparison-threshold*))
-  "Whether MATRIX is an identity matrix"
-  (unless (square-matrix-p matrix) (return-from identity-matrix-p nil))
+  "Is the MATRIX an identity matrix"
+  (unless (square-matrix-p matrix)
+    (return-from identity-matrix-p nil))
   (map-indexes (shape matrix)
                (lambda (r c)
                  (unless (<= (abs (- (tref matrix r c)
                                      (if (cl:= r c)
-                                         1 0)))
+                                         1
+                                         0)))
                              epsilon)
                    (return-from identity-matrix-p nil))))
   t)
 
 (defun unitary-matrix-p (matrix &optional (epsilon *double-comparison-threshold*))
-  "Is MATRIX is a unitary matrix?"
+  "Is MATRIX a unitary matrix?"
   (identity-matrix-p (@ matrix (conjugate-transpose matrix)) epsilon))
 
 (defun hermitian-matrix-p (matrix &optional (epsilon *double-comparison-threshold*))
-  "Is MATRIX is a hermitian matrix?"
+  "Is MATRIX a hermitian matrix?"
   (= matrix (conjugate-transpose matrix) epsilon))
 
 (defmacro assert-square-matrix (&rest matrices)
