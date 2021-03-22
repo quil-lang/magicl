@@ -20,8 +20,19 @@
 (defpackage #:magicl
   (:use #:common-lisp
         #:abstract-classes)
+  (:shadow #:vector
+           #:=
+           #:map
+           #:trace
+           #:every
+           #:some
+           #:notevery
+           #:notany)
+
   (:import-from #:magicl.foreign-libraries
                 #:print-availability-report)
+  (:export #:print-availability-report)
+
   (:import-from #:magicl.backends
                 #:no-applicable-implementation
                 #:define-compatible-no-applicable-method-behavior
@@ -33,14 +44,7 @@
            #:define-backend
            #:define-backend-function
            #:define-backend-implementation)
-  (:shadow #:vector
-           #:=
-           #:map
-           #:trace
-           #:every
-           #:some
-           #:notevery
-           #:notany)
+
   (:export #:with-blapack
            #:define-extensible-function ; For extensions, not users...
 
