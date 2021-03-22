@@ -12,9 +12,10 @@
                #:cffi-libffi)
   :serial t
   :components
-  ((:file "src/packages")
-   (:module "transcendental"
-    :serial t
-    :components ((:file "package")))
-   (:file "src/cffi-types")
+  ((:file "src/extensions/common/package")
+   (:file "src/packages")
+   (:file "src/extensions/blas/package")
+   (:file "src/extensions/lapack/package")
+   (:file "src/extensions/expokit/package")
+   (:file "src/extensions/common/cffi-types")
    (:file "src/generate-interface/generate-interface")))
