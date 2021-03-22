@@ -1,7 +1,5 @@
 (defpackage #:magicl.lapack-cffi
-  (:use)
-  #-package-local-nicknames
-  (:nicknames #:lapack))
+  (:use))
 
 (defpackage #:magicl-lapack
   (:use #:cl #:magicl)
@@ -29,4 +27,3 @@
    #:lapack-rq-q
    #:lapack-lq-q
    #:lapack-csd))
-
