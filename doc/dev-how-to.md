@@ -68,7 +68,7 @@ MAGICL primitives. With that said, it's always possible to take a
 non-extensible function and turn it into an extensible one.)
 
 Since we answered yes, you'll want to begin with a *backend function
-definition*. a **backend function** is sort of like a Common Lisp
+definition*. A **backend function** is sort of like a Common Lisp
 generic function in that it can have multiple implementations. Backend
 functions themselves don't actually implement anything, they instead
 just stipulate the existence and documented behavior of a
