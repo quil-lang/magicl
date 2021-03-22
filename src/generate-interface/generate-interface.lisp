@@ -258,11 +258,7 @@ remaining lines."
 
 (defvar *basedir*)
 (defparameter *outdir*
-  (make-pathname :directory
-                 (pathname-directory
-                  (truename (asdf:system-definition-pathname
-                             (asdf:find-system
-                              :magicl-gen))))))
+  (asdf:system-relative-pathname :magicl-gen ""))
 
 (defun parse-blas-files (&optional (basedir *basedir*))
   (let ((files
