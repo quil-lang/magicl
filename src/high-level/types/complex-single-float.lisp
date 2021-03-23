@@ -29,9 +29,9 @@
   (loop :for i :below (size vector1)
         :sum (* (tref vector1 i) (conjugate (tref vector2 i)))))
 
-(defmethod = ((tensor1 tensor/complex-single-float) (tensor2 tensor/complex-single-float) &optional (epsilon *float-comparison-threshold*))
+(defmethod =-lisp ((tensor1 tensor/complex-single-float) (tensor2 tensor/complex-single-float) &optional (epsilon *float-comparison-threshold*))
   (unless (equal (shape tensor1) (shape tensor2))
-    (return-from = nil))
+    (return-from =-lisp nil))
   (map-indexes
    (shape tensor1)
    (lambda (&rest pos)
@@ -41,12 +41,12 @@
                   (<= (abs (- (imagpart (apply #'tref tensor1 pos))
                               (imagpart (apply #'tref tensor2 pos))))
                       epsilon))
-       (return-from = nil))))
+       (return-from =-lisp nil))))
   t)
 
-(defmethod = ((tensor1 matrix/complex-single-float) (tensor2 matrix/complex-single-float) &optional (epsilon *float-comparison-threshold*))
+(defmethod =-lisp ((tensor1 matrix/complex-single-float) (tensor2 matrix/complex-single-float) &optional (epsilon *float-comparison-threshold*))
   (unless (equal (shape tensor1) (shape tensor2))
-    (return-from = nil))
+    (return-from =-lisp nil))
   (map-indexes
    (shape tensor1)
    (lambda (&rest pos)
@@ -56,12 +56,12 @@
                   (<= (abs (- (imagpart (apply #'tref tensor1 pos))
                               (imagpart (apply #'tref tensor2 pos))))
                       epsilon))
-       (return-from = nil))))
+       (return-from =-lisp nil))))
   t)
 
-(defmethod = ((tensor1 vector/complex-single-float) (tensor2 vector/complex-single-float) &optional (epsilon *float-comparison-threshold*))
+(defmethod =-lisp ((tensor1 vector/complex-single-float) (tensor2 vector/complex-single-float) &optional (epsilon *float-comparison-threshold*))
   (unless (equal (shape tensor1) (shape tensor2))
-    (return-from = nil))
+    (return-from =-lisp nil))
   (map-indexes
    (shape tensor1)
    (lambda (&rest pos)
@@ -71,5 +71,5 @@
                   (<= (abs (- (imagpart (apply #'tref tensor1 pos))
                               (imagpart (apply #'tref tensor2 pos))))
                       epsilon))
-       (return-from = nil))))
+       (return-from =-lisp nil))))
   t)

@@ -49,6 +49,7 @@
            #:define-extensible-function ; For extensions, not users...
 
            ;; abstract-tensor protocol
+           #:abstract-tensor
            #:specialize-tensor
            #:generalize-tensor
            #:shape

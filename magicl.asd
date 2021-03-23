@@ -75,7 +75,8 @@
 
 (asdf:defsystem #:magicl/ext-blas
   :description "Native BLAS routines in MAGICL."
-  :depends-on (#:magicl/ext
+  :depends-on (#:magicl/core
+               #:magicl/ext
                #:cffi)
   :serial t
   :pathname "src/"
@@ -83,7 +84,8 @@
   ((:file "extensions/blas/package")
    (:file "extensions/blas/load-libs")
    (:module "bindings"
-    :components ((:file "blas-cffi")))))
+    :components ((:file "blas-cffi")))
+   (:file "extensions/blas/arithmetic")))
 
 
 ;;; LAPACK
