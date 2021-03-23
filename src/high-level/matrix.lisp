@@ -522,3 +522,9 @@ NOTE: If MATRIX is not square, this will compute the reduced LQ factorization.")
         (magicl:@ vects
                   new-log-diag
                   (magicl:inv vects))))))
+
+(defmethod map!-lisp (function (tensor matrix))
+  ;; XXX: If we ever have a "stride" or the like, this could be
+  ;; dangerous.
+  (map-into (storage tensor) function (storage tensor))
+  tensor)

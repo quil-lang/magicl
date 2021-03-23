@@ -172,3 +172,9 @@ Special values of P are: :INFINITY :INF :POSITIVE-INFINITY"
                    (storage vector)
                    :initial-value 0)
            (/ p)))))
+
+(defmethod map!-lisp (function (tensor vector))
+  ;; XXX: If we ever have a "stride" or the like, this could be
+  ;; dangerous.
+  (map-into (storage tensor) function (storage tensor))
+  tensor)

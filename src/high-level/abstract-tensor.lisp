@@ -69,7 +69,7 @@ In the event TARGET is not specified, the result may return an array sharing mem
              (apply #'(setf aref) val arr pos))))
         arr))))
 
-(defgeneric map! (function tensor)
+(define-extensible-function (map! map!-lisp) (function tensor)
   (:documentation "Map elements of TENSOR by replacing the value with the output of FUNCTION on the element")
   (:method ((function function) (tensor abstract-tensor))
     (map-indexes
@@ -125,15 +125,19 @@ If LAYOUT is specified then traverse TENSOR in the specified order (column major
       (foreach (lambda (x) (incf sum x)) tensor)
       sum)))
 
-(defgeneric scale (tensor factor)
-  (:documentation "Scale TENSOR by FACTOR, returning a new tensor of the same type as TENSOR")
-  (:method ((tensor abstract-tensor) (factor number))
-    (map! (lambda (x) (* x factor)) (deep-copy-tensor tensor))))
+(define-backend-function scale! (tensor factor)
+  "Scale TENSOR by FACTOR, storing back into the tensor")
 
-(defgeneric scale! (tensor factor)
-  (:documentation "Scale TENSOR by FACTOR, storing back into the tensor")
-  (:method ((tensor abstract-tensor) (factor number))
+(define-backend-implementation scale! :lisp
+  (lambda (tensor factor)
     (map! (lambda (x) (* x factor)) tensor)))
+
+(define-backend-function scale (tensor factor)
+  "Scale TENSOR by FACTOR, returning a new tensor of the same type as TENSOR")
+
+(define-backend-implementation scale :lisp
+  (lambda (tensor factor)
+    (scale! (deep-copy-tensor tensor) factor)))
 
 (defgeneric slice (tensor from to)
   (:documentation "Slice a tensor from FROM to TO, returning a new tensor with the contained elements")
@@ -173,53 +177,68 @@ If TARGET is not specified then a new tensor is created with the same element ty
                   target dims)))
         target))))
 
-(defgeneric .+ (source1 source2 &optional target)
-  (:documentation "Add tensors elementwise, optionally storing the result in TARGET.
+(define-backend-function .+ (source1 source2 &optional target)
+  "Add tensors elementwise, optionally storing the result in TARGET.
 If TARGET is not specified then a new tensor is created with the same element type as the first source tensor")
-  (:method ((source1 abstract-tensor) (source2 abstract-tensor) &optional target)
+
+(define-backend-implementation .+ :lisp
+  (lambda (source1 source2 &optional target)
     (binary-operator #'+ source1 source2 target)))
 
-(defgeneric .- (source1 source2 &optional target)
-  (:documentation "Subtract tensors elementwise, optionally storing the result in TARGET.
+(define-backend-function .- (source1 source2 &optional target)
+  "Subtract tensors elementwise, optionally storing the result in TARGET.
 If TARGET is not specified then a new tensor is created with the same element type as the first source tensor")
-  (:method ((source1 abstract-tensor) (source2 abstract-tensor) &optional target)
+
+(define-backend-implementation .- :lisp
+  (lambda (source1 source2 &optional target)
     (binary-operator #'- source1 source2 target)))
 
-(defgeneric .* (source1 source2 &optional target)
-  (:documentation "Multiply tensors elementwise, optionally storing the result in TARGET.
+(define-backend-function .* (source1 source2 &optional target)
+  "Multiply tensors elementwise, optionally storing the result in TARGET.
 If TARGET is not specified then a new tensor is created with the same element type as the first source tensor")
-  (:method ((source1 abstract-tensor) (source2 abstract-tensor) &optional target)
+
+(define-backend-implementation .* :lisp
+  (lambda (source1 source2 &optional target)
     (binary-operator #'* source1 source2 target)))
 
-(defgeneric ./ (source1 source2 &optional target)
-  (:documentation "Add tensors elementwise, optionally storing the result in TARGET.
+(define-backend-function ./ (source1 source2 &optional target)
+  "Add tensors elementwise, optionally storing the result in TARGET.
 If TARGET is not specified then a new tensor is created with the same element type as the first source tensor")
-  (:method ((source1 abstract-tensor) (source2 abstract-tensor) &optional target)
+
+(define-backend-implementation ./ :lisp
+  (lambda (source1 source2 &optional target)
+    ;; This won't do the right thing if / is not closed in the set of
+    ;; choice, like integers.
     (binary-operator #'/ source1 source2 target)))
 
-(defgeneric .^ (source1 source2 &optional target)
-  (:documentation "Exponentiate SOURCE1 by SOURCE2 elementwise, optionally storing the result in TARGET.
+(define-backend-function .^ (source1 source2 &optional target)
+  "Exponentiate SOURCE1 by SOURCE2 elementwise, optionally storing the result in TARGET.
 If TARGET is not specified then a new tensor is created with the same element type as the first source tensor")
-  (:method ((source1 abstract-tensor) (source2 abstract-tensor) &optional target)
-    (binary-operator #'expt source2 source1 target)))
 
-(defgeneric = (source1 source2 &optional epsilon)
+(define-backend-implementation .^ :lisp
+  (lambda (source1 source2 &optional target)
+    ;; This won't do the right thing if / is not closed in the set of
+    ;; choice, like integers.
+    (binary-operator #'expt source1 source2 target)))
+
+
+(define-extensible-function (= =-lisp) (source1 source2 &optional epsilon)
   (:documentation "Check the equality of tensors with an optional EPSILON")
   (:method ((source1 abstract-tensor) (source2 abstract-tensor) &optional epsilon)
     (unless (equal (shape source1) (shape source2))
-      (return-from = nil))
+      (return-from =-lisp nil))
     (map-indexes
      (shape source1)
      (if (null epsilon)
          (lambda (&rest pos)
            (unless (equal (apply #'tref source1 pos)
                           (apply #'tref source2 pos))
-             (return-from = nil)))
+             (return-from =-lisp nil)))
          (lambda (&rest pos)
            (unless (<= (abs (- (apply #'tref source1 pos)
                                (apply #'tref source2 pos)))
                        epsilon)
-             (return-from = nil)))))
+             (return-from =-lisp nil)))))
     t))
 
 (defgeneric every (predicate tensor &rest more-tensors)
