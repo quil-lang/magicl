@@ -65,6 +65,7 @@
   (:documentation "The error to signal when there's no applicable implementation, whether from a backend function or a CLOS generic function."))
 
 (defun no-applicable-implementation (name)
+  "Call this function to signal an error indicating the caller (or any callers above it) are not applicable to the current backend function being invoked."
   (error 'no-applicable-implementation
          :format-control (format nil "~S is not implemented in any of ~
                                       the current active backends: ~
@@ -73,6 +74,11 @@
          :format-arguments (list (active-backends))))
 
 (defmacro define-compatible-no-applicable-method-behavior (&rest generic-function-names)
+  "Ensure the (unquoted symbol) generic function names GENERIC-FUNCTION-NAMES will behave correctly when used as implementations for backend functions.
+
+The specific behavior that is made \"compatible\" is ensuring that if generic function dispatch reaches a call to NO-APPLIABLE-METHOD, then an appropriate condition will be signaled to instruct the backend function to continue searching.
+
+Without using this, a backend function may error if no method is found."
   (assert (every #'symbolp generic-function-names))
   `(progn
      ,@(loop
