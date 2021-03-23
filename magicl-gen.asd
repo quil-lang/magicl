@@ -9,7 +9,8 @@
   :author "Rigetti Computing"
   :depends-on (#:abstract-classes
                #:cffi
-               #:cffi-libffi)
+               #:cffi-libffi
+               #:magicl/ext)
   :serial t
   :components
   ((:file "src/extensions/common/package")

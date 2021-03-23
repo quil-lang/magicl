@@ -15,5 +15,6 @@
 (defpackage #:magicl.foreign-libraries
   (:use #:common-lisp)
   (:export #:*foreign-libraries*
+           #:track-symbols              ; used in MAGICL-GEN
            #:foreign-symbol-available-p
            #:print-availability-report))
