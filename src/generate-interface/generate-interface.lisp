@@ -526,7 +526,7 @@ the CFFI binding file."
                                             (fortran-function-name ff))
                                            (raw-call-name ff)
                                            (lisp-fun-name ff)))))
-         `(magicl.foreign-libraries::track-sybmols
+         `(magicl.foreign-libraries:track-symbols
            ',originating-library
            ',entries)))
 
@@ -542,7 +542,7 @@ the CFFI binding file."
 (defun generate-blas-file ()
   (generate-file "blas-cffi"
                  '#:magicl.blas-cffi
-                 'magicl.foreign-libraries:libblas
+                 'magicl.foreign-libraries::libblas
                  #'parse-blas-files))
 
 (defun generate-blas-files (lapack-dir)
@@ -552,13 +552,13 @@ the CFFI binding file."
 (defun generate-lapack-file ()
   (generate-file "lapack-cffi"
                  '#:magicl.lapack-cffi
-                 'magicl.foreign-libraries:liblapack
+                 'magicl.foreign-libraries::liblapack
                  #'parse-lapack-files))
 
 (defun generate-lapack-files (file-name parser)
   (generate-file file-name
                  '#:magicl.lapack-cffi
-                 'magicl.foreign-libraries:liblapack
+                 'magicl.foreign-libraries::liblapack
                  parser))
 
 (defun generate-lapack-files* (lapack-dir)
@@ -570,7 +570,7 @@ the CFFI binding file."
      for file-name = (format nil "lapack~2,'0d-cffi" i)
      do (generate-file file-name
                        '#:magicl.lapack-cffi
-                       'magicl.foreign-libraries:liblapack
+                       'magicl.foreign-libraries::liblapack
                        parser)))
 
 (defun parse-expokit-files (&optional (basedir *basedir*))
@@ -583,7 +583,7 @@ the CFFI binding file."
 (defun generate-expokit-file ()
   (generate-file "expokit-cffi"
                  '#:magicl.expokit-cffi
-                 'magicl-expokit.foreign-libraries:libexpokit
+                 'magicl.foreign-libraries::libexpokit
                  #'parse-expokit-files))
 
 (defun generate-expokit-files (expokit-dir)
