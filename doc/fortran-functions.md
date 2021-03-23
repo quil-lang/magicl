@@ -16,8 +16,8 @@ bindings with the following commands:
 ```
 (ql:quickload :magicl-gen)
 (in-package :magicl.generate-interface)
-(generate-blas-files #P"/path/to/lapack-3.7.1/")
-(generate-lapack-files* #P"/path/to/lapack-3.7.1/")     ; note the '*'!
+(generate-blas-files #P"/path/to/lapack-3.9.0/")
+(generate-lapack-files* #P"/path/to/lapack-3.9.0/")     ; note the '*'!
 (generate-expokit-files #P"/path/to/expokit/")
 ```
 
