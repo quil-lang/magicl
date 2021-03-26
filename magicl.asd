@@ -38,6 +38,7 @@
   :components
   ((:file "packages")
    (:file "backend-function")
+   (:file "benchmark-utilities")
    (:module "high-level"
     :serial t
     :components ((:file "util")

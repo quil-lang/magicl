@@ -46,6 +46,7 @@
            #:define-backend-implementation)
 
   (:export #:with-blapack
+           #:time-backends
            #:define-extensible-function ; For extensions, not users...
 
            ;; abstract-tensor protocol
