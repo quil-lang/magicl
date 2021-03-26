@@ -84,7 +84,7 @@ Without using this, a backend function may error if no method is found."
      ,@(loop
          :for name :in generic-function-names
          :collect
-         `(defmethod cl:no-applicable-method ((gf (eql ',name)) &rest args)
+         `(defmethod cl:no-applicable-method ((gf (eql #',name)) &rest args)
             (declare (ignore args))
             (no-applicable-implementation ',name)))))
 
