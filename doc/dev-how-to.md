@@ -106,11 +106,11 @@ alternative implementations of `matmul`. We can do this by "defining
 MAGICL-compatible behavior" on the generic function, like so:
 
 ```
-(define-compatible-no-applicable-method-behavior matmul-lisp)
 (defgeneric matmul-lisp (a b)
   (:method ((a matrix) (b matrix))
     ; ...
     ))
+(define-compatible-no-applicable-method-behavior matmul-lisp)
 ```
 
 Without the `define-compat...` line, a failure to find the method will
@@ -131,11 +131,11 @@ If we wanted to accelerate `matmul` with BLAS, we could implement
 `matmul` in the BLAS extension. There, we might write:
 
 ```
-(magicl:define-compatible-no-applicable-method-behavior matmul-blas)
 (defgeneric matmul-blas (a b)
   (:method ((a matrix/double-float) (b matrix/double-float))
     ;; ...
     ))
+(magicl:define-compatible-no-applicable-method-behavior matmul-blas)
 (magicl:define-backend-implementation magicl:matmul :blas 'matmul-blas)
 ```
 
