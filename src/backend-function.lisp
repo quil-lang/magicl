@@ -90,25 +90,31 @@ Without using this, a backend function may error if no method is found."
 
 ;;; Backend Names
 
-(defvar *known-backends* '()
-  "A list of known backends.")
+;;; Eval at compile-time because DEFINE-BACKEND and the DEFTYPE below
+;;; will need it for proper expansion later in the file.
+;;;
+;;; (h/t phoe 3/31/21)
+(eval-when (:compile-toplevel :load-toplevel :execute)
+  (defvar *known-backends* '()
+    "A list of known backends.")
 
-(defun backend-name-p (x)
-  (and (symbolp x)
-       (find x *known-backends*)
-       t))
-
-(deftype backend-name ()
-  '(satisfies backend-name-p))
-
-(defvar *backend* '()
-  "A list in priority order the backends that MAGICL should use for functionality.
+  (defvar *backend* '()
+    "A list in priority order the backends that MAGICL should use for functionality.
 
 It is preferable to use WITH-BACKENDS instead of this.")
+  
+  (defun backend-name-p (x)
+    (and (symbolp x)
+         (find x *known-backends*)
+         t))
+)                                       ; EVAL-WHEN
 
 (defun active-backends ()
   "Return a list of the active backends in priority order. Useful for debugging."
   *backend*)
+
+(deftype backend-name ()
+  '(satisfies backend-name-p))
 
 (defmacro define-backend (name &key documentation
                                     (default nil))
