@@ -51,6 +51,17 @@ This table was adapted largely from the [NumPy Equivalents Table](https://docs.s
 | `(from-diag a)`                                 | `diag(a)`          | `diag(a)`                         | Create a square matrix from the diagonal entries in `a` with zeroes everywhere else. |
 | `(rand '(3 4))`                                 | `rand(3,4)`        | `random.rand(3,4)`                | Create a random 3x4 array.                                                           |
 
+#### Block Matrix Constructors
+
+Magicl provides some "block matrix" constructors: these construct matrices from their constituent blocks. In what follows, `A,B,C,D` denote matrices.
+
+| MAGICL                                  | MATLAB           | NumPy                              | Description                                            |
+|-----------------------------------------|------------------|------------------------------------|--------------------------------------------------------|
+| `(block-matrix (list A B C D) '(2 2))`  | `[A B; C D]`     | `block([[A,B], [C, D]])`           | Create a block matrix from matrices A,B,C,D.           | 
+| `(block-diag A B C)`                    | `blkdiag(A,B,C)` | `scipy.linalg.block_diag([A,B,C])` | Create a block diagonal matrix from matrices A,B,C.    |
+| `(hstack A B C)`                        | `[A B C]`        | `hstack((A,B,C))`                  | Concatenate matrices A,B,C horizontally (column-wise). |
+| `(vstack A B C)`                        | `[A; B; C]`      | `vstack((A,B,C))`                  | Concatenate matrices A,B,C vertically (row-wise).      |
+
 ### Basic Operations
 
 | MAGICL     | MATLAB   | NumPy            | Description                 |
