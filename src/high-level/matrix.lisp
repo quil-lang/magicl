@@ -313,7 +313,7 @@ Target cannot be the same as a or b.")
 (define-extensible-function (block-diag block-diag-lisp) (mat &rest blocks)
   (:documentation "Construct a matrix from its diagonal blocks.")
   (:method (mat &rest blocks)
-      (push mat blocks)
+    (push mat blocks)
     (let ((nrows 0)
           (ncols 0)
           (type (element-type mat)))
@@ -344,24 +344,26 @@ Target cannot be the same as a or b.")
                 (loop :with ncols := (second shape)
                       :and tail := blocks
                       :while tail
-                      :collect (apply #'hstack
-                                      (loop :for elts :on tail
-                                            :for i :below ncols
-                                            :collect (first elts)
-                                            :finally (setf tail elts))))))
-          (apply #'vstack block-rows))))))
+                      :collect (hstack
+                                (loop :for elts :on tail
+                                      :for i :below ncols
+                                      :collect (first elts)
+                                      :finally (setf tail elts))))))
+          (vstack block-rows))))))
 
-(define-extensible-function (hstack hstack-lisp) (mat &rest matrices)
+(define-extensible-function (hstack hstack-lisp) (matrices)
   (:documentation "Concatenate matrices 'horizontally' (column-wise).")
-  (:method (mat &rest matrices)
-    (push mat matrices)
-    (let* ((rows (nrows mat))
+  (:method (matrices)
+    (when (null matrices)
+      (error "Unable to concatenate empty matrix list."))
+    (let* ((mat (first matrices))
+           (rows (nrows mat))
            (type (element-type mat))
            (cols
              (loop :for mat :in matrices
                    :unless (cl:= rows (nrows mat))
                      :do (error "Matrices have conflicting number of rows: ~D vs ~D." rows (nrows mat))
-                   :unless (eq type (element-type mat))
+                   :unless (equalp type (element-type mat))
                      :do (error "Matrices have conflicting types: ~A vs ~A." type (element-type mat))
                    :summing (ncols mat))))
       (loop :with result := (zeros (list rows cols) :type type)
@@ -371,11 +373,13 @@ Target cannot be the same as a or b.")
             :do (incf j (ncols mat))
             :finally (return result)))))
 
-(define-extensible-function (vstack vstack-lisp) (mat &rest matrices)
+(define-extensible-function (vstack vstack-lisp) (matrices)
   (:documentation "Concatenate matrices 'vertically' (row wise).")
-  (:method (mat &rest matrices)
-    (push mat matrices)
-    (let* ((cols (ncols mat))
+  (:method (matrices)
+    (when (null matrices)
+      (error "Unable to concatenate empty matrix list."))
+    (let* ((mat (first matrices))
+           (cols (ncols mat))
            (type (element-type mat))
            (rows
              (loop :for mat :in matrices

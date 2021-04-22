@@ -59,8 +59,8 @@ Magicl provides some "block matrix" constructors: these construct matrices from 
 |-----------------------------------------|------------------|------------------------------------|--------------------------------------------------------|
 | `(block-matrix (list A B C D) '(2 2))`  | `[A B; C D]`     | `block([[A,B], [C, D]])`           | Create a block matrix from matrices A,B,C,D.           | 
 | `(block-diag A B C)`                    | `blkdiag(A,B,C)` | `scipy.linalg.block_diag([A,B,C])` | Create a block diagonal matrix from matrices A,B,C.    |
-| `(hstack A B C)`                        | `[A B C]`        | `hstack((A,B,C))`                  | Concatenate matrices A,B,C horizontally (column-wise). |
-| `(vstack A B C)`                        | `[A; B; C]`      | `vstack((A,B,C))`                  | Concatenate matrices A,B,C vertically (row-wise).      |
+| `(hstack (list A B C))`                 | `[A B C]`        | `hstack((A,B,C))`                  | Concatenate matrices A,B,C horizontally (column-wise). |
+| `(vstack (list A B C))`                 | `[A; B; C]`      | `vstack((A,B,C))`                  | Concatenate matrices A,B,C vertically (row-wise).      |
 
 ### Basic Operations
 

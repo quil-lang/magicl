@@ -169,13 +169,13 @@
                                       4 5 6)
                                     '(2 3))))
     (is (magicl:= expected
-                  (apply #'magicl:hstack
-                         (loop :for j :below 3
-                               :collect (magicl:column expected j)))))
+                  (magicl:hstack
+                   (loop :for j :below 3
+                         :collect (magicl:column expected j)))))
     (is (magicl:= expected
-                  (apply #'magicl:vstack
-                         (loop :for i :below 2
-                               :collect (magicl:row expected i)))))))
+                  (magicl:vstack
+                   (loop :for i :below 2
+                         :collect (magicl:row expected i)))))))
 
 
 (deftest test-block-matrix-construction ()
