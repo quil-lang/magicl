@@ -161,7 +161,9 @@
                                       0d0 1d0 1d0)
                                     '(3 3))))
     (is (magicl:= expected
-                  (magicl:block-diag (magicl:zeros '(1 1)) (magicl:ones '(2 2)))))))
+                  (magicl:block-diag
+                   (list (magicl:zeros '(1 1))
+                         (magicl:ones '(2 2))))))))
 
 (deftest test-matrix-stacking ()
   "Test that we can stack matrices 'horizontally' and 'vertically'."
