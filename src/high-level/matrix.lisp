@@ -258,6 +258,21 @@ ELEMENT-TYPE, CAST, COPY-TENSOR, DEEP-COPY-TENSOR, TREF, SETF TREF)"
           (setf d (cl:map 'list (lambda (di) (/ di (sqrt (* di (conjugate di))))) d))
           (@ q (funcall #'from-diag d)))))))
 
+(defun hilbert-matrix (n &key type)
+  "Generate the N by N Hilbert matrix."
+  (let ((H (empty (list n n) :type type)))
+    (into! (lambda (i j) (/ (+ i j 1)))
+           H)
+    H))
+
+(defun random-hermitian (n)
+  "Generate a random N by N complex Hermitian matrix."
+  (let ((a (rand (list n n) :type '(complex double-float)))
+        (b (rand (list n n) :type '(complex double-float))))
+    (scale! b #C(0d0 1d0))
+    (let ((c (.+ a b)))
+      (.+ c (conjugate-transpose c)))))
+
 ;; TODO: This should be generic to abstract-tensor
 (defgeneric ptr-ref (m base i j)
   (:documentation
@@ -589,6 +604,7 @@ NOTE: If MATRIX is not square, this will compute the reduced LQ factorization.")
 (define-backend-function logm (matrix)
   "Finds the matrix logarithm of a given square matrix M assumed to be diagonalizable, with nonzero eigenvalues.")
 
+;;; TODO: do something better here
 (define-backend-implementation logm :lisp
   (lambda (matrix)
     (multiple-value-bind (vals vects) (magicl:eig matrix)
@@ -604,3 +620,4 @@ NOTE: If MATRIX is not square, this will compute the reduced LQ factorization.")
   ;; dangerous.
   (map-into (storage tensor) function (storage tensor))
   tensor)
+

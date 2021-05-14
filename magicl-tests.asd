@@ -1,15 +1,15 @@
 ;;;; magicl-tests.asd
 ;;;;
 ;;;; Author: Joseph Lin
+;;;;         Erik Davis
 
-(asdf:defsystem #:magicl-tests
+(asdf:defsystem #:magicl-tests/core
   :license "BSD 3-Clause (See LICENSE.txt)"
   :description "Regression tests for MAGICL."
   :author "Rigetti Computing"
   :depends-on (#:alexandria
                #:uiop
-               #:magicl
-               #:magicl-examples
+               #:magicl/core
                #:fiasco)
   :perform (asdf:test-op (o s)
                          (uiop:symbol-call :magicl-tests
@@ -24,4 +24,20 @@
                (:file "specialization-tests")
                (:file "constructor-tests")
                (:file "matrix-tests")
-               (:file "high-level-tests")))
+               (:file "polynomial-solver-tests")))
+
+(asdf:defsystem #:magicl-tests
+  :license "BSD 3-Clause (See LICENSE.txt)"
+  :description "Regression tests for MAGICL."
+  :author "Rigetti Computing"
+  :depends-on (#:magicl
+               #:magicl-tests/core
+               #:magicl-examples)
+  :perform (asdf:test-op (o s)
+                         (uiop:symbol-call :magicl-tests
+                                           '#:run-magicl-tests))
+  :pathname "tests/"
+  :serial t
+  :components ((:module "extensions"
+                :serial t
+                :components ((:file "high-level-tests")))))
