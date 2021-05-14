@@ -542,11 +542,14 @@ If :SQUARE is T, then the result will be restricted to the lower leftmost square
     (map! #'conjugate (transpose! matrix))))
 (setf (fdefinition 'dagger!) #'conjugate-transpose!)
 
-(define-backend-function eig (matrix)
-  "Find the (right) eigenvectors and corresponding eigenvalues of a square matrix M. Returns a list and a tensor (EIGENVALUES, EIGENVECTORS)")
+(define-extensible-function (eig eig-lisp) (matrix)
+  (:documentation "Find the (right) eigenvectors and corresponding eigenvalues of a square matrix M. Returns a list and a tensor (EIGENVALUES, EIGENVECTORS)"))
 
-(define-backend-function lu (matrix)
-  "Get the LU decomposition of MATRIX. Returns two tensors (LU, IPIV)")
+(define-extensible-function (hermitian-eig hermitian-eig-lisp) (matrix)
+  (:documentation "Find the (right) eigenvectors and corresponding eigenvalues of a (complex) hermitian matrix M. Returns a list and a tensor (EIGENVALUES, EIGENVECTORS)"))
+
+(define-extensible-function (lu lu-lisp) (matrix)
+  (:documentation "Get the LU decomposition of MATRIX. Returns two tensors (LU, IPIV)"))
 
 ;; TODO: Make this one generic and move to lapack-macros
 ;;       This is being blocked by the ZUNCSD shenanigans
@@ -556,13 +559,14 @@ If :SQUARE is T, then the result will be restricted to the lower leftmost square
 (define-backend-function inv (matrix)
   "Get the inverse of the matrix")
 
-(define-backend-function svd (matrix &key reduced)
-  "Find the SVD of a matrix M. Return (VALUES U SIGMA Vt) where M = U*SIGMA*Vt")
 
-(define-backend-function qr (matrix)
-  "Finds the QR factorization of MATRIX. Returns two matrices (Q, R).
+(define-extensible-function (svd svd-lisp) (matrix &key reduced)
+  (:documentation "Find the SVD of a matrix M. Return (VALUES U SIGMA Vt) where M = U*SIGMA*Vt"))
 
-NOTE: If MATRIX is not square, this will compute the reduced QR factorization.")
+(define-extensible-function (qr qr-extension-lisp) (matrix)
+  (:documentation "Finds the QR factorization of MATRIX. Returns two matrices (Q, R).
+
+NOTE: If MATRIX is not square, this will compute the reduced QR factorization."))
 
 (define-backend-function ql (matrix)
   "Finds the QL factorization of MATRIX. Returns two matrices (Q, L).
