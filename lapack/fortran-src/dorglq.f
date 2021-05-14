@@ -182,12 +182,12 @@
 *              Form the triangular factor of the block reflector
 *              H = H(i) H(i+1) . . . H(i+ib-1)
 *
-               CALL DLARFT( 'F', 'Rowwise', N-I+1, IB, A( I, I ),
+               CALL DLARFT( 'F', 'R', N-I+1, IB, A( I, I ),
      $                      LDA, TAU( I ), WORK, LDWORK )
 *
 *              Apply H' to A(i+ib:m,i:n) from the right
 *
-               CALL DLARFB( 'R', 'T', 'F', 'Rowwise',
+               CALL DLARFB( 'R', 'T', 'F', 'R',
      $                      M-I-IB+1, N-I+1, IB, A( I, I ), LDA, WORK,
      $                      LDWORK, A( I+IB, I ), LDA, WORK( IB+1 ),
      $                      LDWORK )

@@ -229,7 +229,7 @@
 *
 *                 T(1:i-1,i) := - tau(i) * V(i:j,1:i-1)**H * V(i:j,i)
 *
-                  CALL ZGEMV( 'Conjugate transpose', J-I+1, I-1,
+                  CALL ZGEMV( 'C', J-I+1, I-1,
      $                        -TAU( I ), V( I, 1 ), LDV, V( I, I ), 1,
      $                        ZERO, T( 1, I ), 1 )
                ELSE
@@ -290,7 +290,7 @@
 *                    T(i+1:k,i) :=
 *                            - tau(i) * V(j:n-k+i,i+1:k)**H * V(j:n-k+i,i)
 *
-                     CALL ZGEMV( 'Conjugate transpose', N-K+I-J+1, K-I,
+                     CALL ZGEMV( 'C', N-K+I-J+1, K-I,
      $                           -TAU( I ), V( J, I+1 ), LDV, V( J, I ),
      $                           1, ZERO, T( I+1, I ), 1 )
                      V( N-K+I, I ) = VII

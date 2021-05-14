@@ -242,19 +242,19 @@
 *           w := V1**H * b1
 *
             CALL ZCOPY( I-1, A( K+1, I ), 1, T( 1, NB ), 1 )
-            CALL ZTRMV( 'L', 'Conjugate transpose', 'UNIT', 
+            CALL ZTRMV( 'L', 'C', 'UNIT', 
      $                  I-1, A( K+1, 1 ),
      $                  LDA, T( 1, NB ), 1 )
 *
 *           w := w + V2**H * b2
 *
-            CALL ZGEMV( 'Conjugate transpose', N-K-I+1, I-1, 
+            CALL ZGEMV( 'C', N-K-I+1, I-1, 
      $                  ONE, A( K+I, 1 ),
      $                  LDA, A( K+I, I ), 1, ONE, T( 1, NB ), 1 )
 *
 *           w := T**H * w
 *
-            CALL ZTRMV( 'U', 'Conjugate transpose', 'NON-UNIT', 
+            CALL ZTRMV( 'U', 'C', 'NON-UNIT', 
      $                  I-1, T, LDT,
      $                  T( 1, NB ), 1 )
 *
@@ -287,7 +287,7 @@
          CALL ZGEMV( 'NO TRANSPOSE', N-K, N-K-I+1, 
      $               ONE, A( K+1, I+1 ),
      $               LDA, A( K+I, I ), 1, ZERO, Y( K+1, I ), 1 )
-         CALL ZGEMV( 'Conjugate transpose', N-K-I+1, I-1, 
+         CALL ZGEMV( 'C', N-K-I+1, I-1, 
      $               ONE, A( K+I, 1 ), LDA,
      $               A( K+I, I ), 1, ZERO, T( 1, I ), 1 )
          CALL ZGEMV( 'NO TRANSPOSE', N-K, I-1, -ONE, 

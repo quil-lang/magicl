@@ -440,7 +440,7 @@
   100       CONTINUE
 *
             IF( KI.LT.N ) THEN
-               CALL ZLATRS( 'U', 'Conjugate transpose', 'N',
+               CALL ZLATRS( 'U', 'C', 'N',
      $                      'Y', N-KI, T( KI+1, KI+1 ), LDT,
      $                      WORK( KI+1 ), SCALE, RWORK, INFO )
                WORK( KI ) = SCALE
