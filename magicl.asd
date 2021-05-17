@@ -25,12 +25,12 @@
   :version (:read-file-form "VERSION.txt")
   :depends-on (#:alexandria
                #:abstract-classes
+               #:cffi                   ; for extension support
                #:policy-cond
                #:interface              ; for CALLING-FORM
 
                #:magicl/lisp-blas       ; for Lisp fallbacks
                #:magicl/lisp-lapack     ; for Lisp fallbacks
-               #:magicl/ext             ; Allow extensions
                )
   :around-compile (lambda (compile)
                     (let (#+sbcl (sb-ext:*derive-function-types* t))
@@ -40,6 +40,7 @@
   :components
   ((:file "packages")
    (:file "backend-function")
+   (:file "library-tracking")
    (:file "benchmark-utilities")
    (:module "high-level"
     :serial t
@@ -72,7 +73,6 @@
   :pathname "src/extensions/common"
   :components
   ((:file "package")
-   (:file "library-tracking")
    (:file "with-array-pointers")
    (:file "cffi-types")))
 
