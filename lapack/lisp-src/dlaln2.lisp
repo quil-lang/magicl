@@ -525,6 +525,6 @@
                                               fortran-to-lisp::xnorm
                                               fortran-to-lisp::info)
                                             :calls
-                                            '(fortran-to-lisp::dladiv
-                                              fortran-to-lisp::dlamch))))
+                                            '(fortran-to-lisp::dlamch
+                                              fortran-to-lisp::dladiv))))
 

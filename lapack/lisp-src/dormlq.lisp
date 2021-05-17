@@ -127,8 +127,7 @@
                       (min (the f2cl-lib:integer4 nb)
                            (the f2cl-lib:integer4
                                 (f2cl-lib:int-add (f2cl-lib:int-sub k i) 1))))
-              (dlarft "F" "Rowwise"
-               (f2cl-lib:int-add (f2cl-lib:int-sub nq i) 1) ib
+              (dlarft "F" "R" (f2cl-lib:int-add (f2cl-lib:int-sub nq i) 1) ib
                (f2cl-lib:array-slice a-%data% double-float (i i)
                                      ((1 lda) (1 *)) a-%offset%)
                lda
@@ -143,7 +142,7 @@
               (multiple-value-bind
                   (var-0 var-1 var-2 var-3 var-4 var-5 var-6 var-7 var-8 var-9
                    var-10 var-11 var-12 var-13 var-14)
-                  (dlarfb side transt "F" "Rowwise" mi ni ib
+                  (dlarfb side transt "F" "R" mi ni ib
                    (f2cl-lib:array-slice a-%data% double-float (i i)
                                          ((1 lda) (1 *)) a-%offset%)
                    lda t$ ldt
@@ -185,10 +184,10 @@
                                               nil nil nil nil
                                               fortran-to-lisp::info)
                                             :calls
-                                            '(fortran-to-lisp::dlarfb
-                                              fortran-to-lisp::dlarft
-                                              fortran-to-lisp::dorml2
-                                              fortran-to-lisp::xerbla
+                                            '(fortran-to-lisp::xerbla
                                               fortran-to-lisp::ilaenv
-                                              fortran-to-lisp::lsame))))
+                                              fortran-to-lisp::lsame
+                                              fortran-to-lisp::dlarfb
+                                              fortran-to-lisp::dlarft
+                                              fortran-to-lisp::dorml2))))
 

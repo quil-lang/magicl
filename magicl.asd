@@ -56,6 +56,7 @@
                  (:file "types/complex-double-float")
                  (:file "types/int32")
                  (:file "lisp-lapack")
+                 (:file "csd")
                  (:file "constructors")
                  (:file "specialize-constructor")
                  (:file "polynomial-solver")))
@@ -153,14 +154,10 @@
 ;;; LAPACK
 
 (asdf:defsystem #:magicl/lisp-lapack
-  :description
-  "Lisp LAPACK routines in MAGICL"
-  :depends-on
-  (#:f2cl #:magicl/lisp-blas)
-  :serial
-  t
-  :pathname
-  "lapack/"
+  :description "Lisp LAPACK routines in MAGICL"
+  :depends-on (#:f2cl #:magicl/lisp-blas)
+  :serial t
+  :pathname "lapack/"
   :components
   ((:file "package") (:file "fortran-intrinsics") (:file "lisp-src/dbdsdc")
    (:file "lisp-src/dbdsqr") (:file "lisp-src/ddisna")
@@ -185,8 +182,9 @@
    (:file "lisp-src/dlapy2") (:file "lisp-src/dlapy3")
    (:file "lisp-src/dlaqtr") (:file "lisp-src/dlarf") (:file "lisp-src/dlarfb")
    (:file "lisp-src/dlarfg") (:file "lisp-src/dlarft")
-   (:file "lisp-src/dlarfx") (:file "lisp-src/dlartg") (:file "lisp-src/dlas2")
-   (:file "lisp-src/dlascl") (:file "lisp-src/dlasd0")
+   (:file "lisp-src/dlarfx") (:file "lisp-src/dlartg")
+   (:file "lisp-src/dlartgp") (:file "lisp-src/dlartgs")
+   (:file "lisp-src/dlas2") (:file "lisp-src/dlascl") (:file "lisp-src/dlasd0")
    (:file "lisp-src/dlasd1") (:file "lisp-src/dlasd2")
    (:file "lisp-src/dlasd3") (:file "lisp-src/dlasd4")
    (:file "lisp-src/dlasd5") (:file "lisp-src/dlasd6")
@@ -208,29 +206,38 @@
    (:file "lisp-src/dtrexc") (:file "lisp-src/dtrsna")
    (:file "lisp-src/ieeeck") (:file "lisp-src/ilaenv")
    (:file "lisp-src/ilazlc") (:file "lisp-src/ilazlr")
-   (:file "lisp-src/zgebak") (:file "lisp-src/zgebal") (:file "lisp-src/zgeev")
+   (:file "lisp-src/zbbcsd") (:file "lisp-src/zbdsqr")
+   (:file "lisp-src/zgebak") (:file "lisp-src/zgebal")
+   (:file "lisp-src/zgebd2") (:file "lisp-src/zgebrd") (:file "lisp-src/zgeev")
    (:file "lisp-src/zgehd2") (:file "lisp-src/zgehrd")
+   (:file "lisp-src/zgelq2") (:file "lisp-src/zgelqf")
    (:file "lisp-src/zgeqr2") (:file "lisp-src/zgeqrf")
-   (:file "lisp-src/zgetf2") (:file "lisp-src/zgetrf") (:file "lisp-src/zheev")
-   (:file "lisp-src/zhetd2") (:file "lisp-src/zhetrd")
-   (:file "lisp-src/zhseqr") (:file "lisp-src/zlacgv")
+   (:file "lisp-src/zgesvd") (:file "lisp-src/zgetf2")
+   (:file "lisp-src/zgetrf") (:file "lisp-src/zheev") (:file "lisp-src/zhetd2")
+   (:file "lisp-src/zhetrd") (:file "lisp-src/zhseqr")
+   (:file "lisp-src/zlabrd") (:file "lisp-src/zlacgv")
    (:file "lisp-src/zlacpy") (:file "lisp-src/zladiv")
    (:file "lisp-src/zlahqr") (:file "lisp-src/zlahr2")
    (:file "lisp-src/zlange") (:file "lisp-src/zlanhe")
+   (:file "lisp-src/zlapmr") (:file "lisp-src/zlapmt")
    (:file "lisp-src/zlaqr0") (:file "lisp-src/zlaqr1")
    (:file "lisp-src/zlaqr2") (:file "lisp-src/zlaqr3")
    (:file "lisp-src/zlaqr4") (:file "lisp-src/zlaqr5") (:file "lisp-src/zlarf")
    (:file "lisp-src/zlarfb") (:file "lisp-src/zlarfg")
-   (:file "lisp-src/zlarft") (:file "lisp-src/zlartg")
-   (:file "lisp-src/zlascl") (:file "lisp-src/zlaset") (:file "lisp-src/zlasr")
-   (:file "lisp-src/zlassq") (:file "lisp-src/zlaswp")
-   (:file "lisp-src/zlatrd") (:file "lisp-src/zlatrs") (:file "lisp-src/zrot")
-   (:file "lisp-src/zsteqr") (:file "lisp-src/ztrevc")
-   (:file "lisp-src/ztrexc") (:file "lisp-src/zung2l")
-   (:file "lisp-src/zung2r") (:file "lisp-src/zunghr")
-   (:file "lisp-src/zungql") (:file "lisp-src/zungqr")
-   (:file "lisp-src/zungtr") (:file "lisp-src/zunm2r")
-   (:file "lisp-src/zunmhr") (:file "lisp-src/zunmqr")))   
+   (:file "lisp-src/zlarfgp") (:file "lisp-src/zlarft")
+   (:file "lisp-src/zlartg") (:file "lisp-src/zlascl")
+   (:file "lisp-src/zlaset") (:file "lisp-src/zlasr") (:file "lisp-src/zlassq")
+   (:file "lisp-src/zlaswp") (:file "lisp-src/zlatrd")
+   (:file "lisp-src/zlatrs") (:file "lisp-src/zrot") (:file "lisp-src/zsteqr")
+   (:file "lisp-src/ztrevc") (:file "lisp-src/ztrexc")
+   (:file "lisp-src/zunbdb") (:file "lisp-src/zung2l")
+   (:file "lisp-src/zung2r") (:file "lisp-src/zungbr")
+   (:file "lisp-src/zunghr") (:file "lisp-src/zungl2")
+   (:file "lisp-src/zunglq") (:file "lisp-src/zungql")
+   (:file "lisp-src/zungqr") (:file "lisp-src/zungtr")
+   (:file "lisp-src/zunm2r") (:file "lisp-src/zunmbr")
+   (:file "lisp-src/zunmhr") (:file "lisp-src/zunml2")
+   (:file "lisp-src/zunmlq") (:file "lisp-src/zunmqr")))    
 
 (asdf:defsystem #:magicl/ext-lapack
   :description "Native LAPACK routines in MAGICL."

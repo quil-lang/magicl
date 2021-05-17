@@ -300,8 +300,7 @@
                   (multiple-value-bind
                       (var-0 var-1 var-2 var-3 var-4 var-5 var-6 var-7 var-8
                        var-9 var-10)
-                      (zlatrs "U" "Conjugate transpose" "N" "Y"
-                       (f2cl-lib:int-sub n ki)
+                      (zlatrs "U" "C" "N" "Y" (f2cl-lib:int-sub n ki)
                        (f2cl-lib:array-slice t$-%data% f2cl-lib:complex16
                                              ((+ ki 1) (f2cl-lib:int-add ki 1))
                                              ((1 ldt) (1 *)) t$-%offset%)
@@ -429,14 +428,14 @@
                                               nil nil nil fortran-to-lisp::m
                                               nil nil fortran-to-lisp::info)
                                             :calls
-                                            '(fortran-to-lisp::zlatrs
-                                              fortran-to-lisp::zgemv
+                                            '(fortran-to-lisp::zgemv
                                               fortran-to-lisp::zdscal
                                               fortran-to-lisp::izamax
                                               fortran-to-lisp::zcopy
                                               fortran-to-lisp::dzasum
-                                              fortran-to-lisp::dlabad
-                                              fortran-to-lisp::dlamch
                                               fortran-to-lisp::xerbla
-                                              fortran-to-lisp::lsame))))
+                                              fortran-to-lisp::lsame
+                                              fortran-to-lisp::zlatrs
+                                              fortran-to-lisp::dlabad
+                                              fortran-to-lisp::dlamch))))
 

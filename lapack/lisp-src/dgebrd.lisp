@@ -210,9 +210,9 @@
                                             '(nil nil nil nil nil nil nil nil
                                               nil nil fortran-to-lisp::info)
                                             :calls
-                                            '(fortran-to-lisp::dgebd2
-                                              fortran-to-lisp::dgemm
+                                            '(fortran-to-lisp::dgemm
                                               fortran-to-lisp::dlabrd
                                               fortran-to-lisp::xerbla
-                                              fortran-to-lisp::ilaenv))))
+                                              fortran-to-lisp::ilaenv
+                                              fortran-to-lisp::dgebd2))))
 

@@ -117,6 +117,6 @@
                                               fortran-to-lisp::info)
                                             :calls
                                             '(fortran-to-lisp::zscal
-                                              fortran-to-lisp::zlarf
-                                              fortran-to-lisp::xerbla))))
+                                              fortran-to-lisp::xerbla
+                                              fortran-to-lisp::zlarf))))
 

@@ -136,8 +136,7 @@
                  1)
                 (cond
                  ((< i n)
-                  (zgemv "Conjugate transpose" (f2cl-lib:int-sub i 1)
-                   (f2cl-lib:int-sub n i) one
+                  (zgemv "C" (f2cl-lib:int-sub i 1) (f2cl-lib:int-sub n i) one
                    (f2cl-lib:array-slice w-%data% f2cl-lib:complex16
                                          (1 (f2cl-lib:int-add iw 1))
                                          ((1 ldw) (1 *)) w-%offset%)
@@ -162,8 +161,7 @@
                    (f2cl-lib:array-slice w-%data% f2cl-lib:complex16 (1 iw)
                                          ((1 ldw) (1 *)) w-%offset%)
                    1)
-                  (zgemv "Conjugate transpose" (f2cl-lib:int-sub i 1)
-                   (f2cl-lib:int-sub n i) one
+                  (zgemv "C" (f2cl-lib:int-sub i 1) (f2cl-lib:int-sub n i) one
                    (f2cl-lib:array-slice a-%data% f2cl-lib:complex16
                                          (1 (f2cl-lib:int-add i 1))
                                          ((1 lda) (1 *)) a-%offset%)
@@ -300,8 +298,7 @@
                  (f2cl-lib:array-slice w-%data% f2cl-lib:complex16 ((+ i 1) i)
                                        ((1 ldw) (1 *)) w-%offset%)
                  1)
-                (zgemv "Conjugate transpose" (f2cl-lib:int-sub n i)
-                 (f2cl-lib:int-sub i 1) one
+                (zgemv "C" (f2cl-lib:int-sub n i) (f2cl-lib:int-sub i 1) one
                  (f2cl-lib:array-slice w-%data% f2cl-lib:complex16 ((+ i 1) 1)
                                        ((1 ldw) (1 *)) w-%offset%)
                  ldw
@@ -322,8 +319,7 @@
                  (f2cl-lib:array-slice w-%data% f2cl-lib:complex16 ((+ i 1) i)
                                        ((1 ldw) (1 *)) w-%offset%)
                  1)
-                (zgemv "Conjugate transpose" (f2cl-lib:int-sub n i)
-                 (f2cl-lib:int-sub i 1) one
+                (zgemv "C" (f2cl-lib:int-sub n i) (f2cl-lib:int-sub i 1) one
                  (f2cl-lib:array-slice a-%data% f2cl-lib:complex16 ((+ i 1) 1)
                                        ((1 lda) (1 *)) a-%offset%)
                  lda
@@ -399,8 +395,8 @@
                                               fortran-to-lisp::zdotc
                                               fortran-to-lisp::zscal
                                               fortran-to-lisp::zhemv
-                                              fortran-to-lisp::zlarfg
                                               fortran-to-lisp::zgemv
-                                              fortran-to-lisp::zlacgv
-                                              fortran-to-lisp::lsame))))
+                                              fortran-to-lisp::lsame
+                                              fortran-to-lisp::zlarfg
+                                              fortran-to-lisp::zlacgv))))
 

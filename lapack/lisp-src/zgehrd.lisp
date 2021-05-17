@@ -149,7 +149,7 @@
                                           (f2cl-lib:int-add i ib) 1))
                                         ((1 lda) (1 *)) a-%offset%)
                            one)
-                   (zgemm "N" "Conjugate transpose" ihi
+                   (zgemm "N" "C" ihi
                     (f2cl-lib:int-add (f2cl-lib:int-sub ihi i ib) 1) ib (- one)
                     work ldwork
                     (f2cl-lib:array-slice a-%data% f2cl-lib:complex16
@@ -166,8 +166,7 @@
                                           (f2cl-lib:int-add i ib) 1))
                                         ((1 lda) (1 *)) a-%offset%)
                            ei)
-                   (ztrmm "R" "L" "Conjugate transpose" "U" i
-                    (f2cl-lib:int-sub ib 1) one
+                   (ztrmm "R" "L" "C" "U" i (f2cl-lib:int-sub ib 1) one
                     (f2cl-lib:array-slice a-%data% f2cl-lib:complex16
                                           ((+ i 1) i) ((1 lda) (1 *))
                                           a-%offset%)
@@ -189,8 +188,7 @@
                                               ((1 lda) (1 *)) a-%offset%)
                         1)
                       label30))
-                   (zlarfb "L" "Conjugate transpose" "F" "C"
-                    (f2cl-lib:int-sub ihi i)
+                   (zlarfb "L" "C" "F" "C" (f2cl-lib:int-sub ihi i)
                     (f2cl-lib:int-add (f2cl-lib:int-sub n i ib) 1) ib
                     (f2cl-lib:array-slice a-%data% f2cl-lib:complex16
                                           ((+ i 1) i) ((1 lda) (1 *))
@@ -234,11 +232,11 @@
                                               fortran-to-lisp::info)
                                             :calls
                                             '(fortran-to-lisp::zlarfb
-                                              fortran-to-lisp::zgehd2
                                               fortran-to-lisp::zaxpy
                                               fortran-to-lisp::ztrmm
                                               fortran-to-lisp::zgemm
                                               fortran-to-lisp::zlahr2
                                               fortran-to-lisp::xerbla
+                                              fortran-to-lisp::zgehd2
                                               fortran-to-lisp::ilaenv))))
 

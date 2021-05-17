@@ -63,9 +63,7 @@
         (cond
          (applyleft
           (cond
-           ((> lastv 0)
-            (zgemv "Conjugate transpose" lastv lastc one c ldc v incv zero work
-             1)
+           ((> lastv 0) (zgemv "C" lastv lastc one c ldc v incv zero work 1)
             (zgerc lastv lastc (- tau) v incv work 1 c ldc))))
          (t
           (cond
@@ -96,9 +94,9 @@
                                             '(nil nil nil nil nil nil nil nil
                                               nil)
                                             :calls
-                                            '(fortran-to-lisp::ilazlr
-                                              fortran-to-lisp::ilazlc
-                                              fortran-to-lisp::zgerc
+                                            '(fortran-to-lisp::zgerc
                                               fortran-to-lisp::zgemv
-                                              fortran-to-lisp::lsame))))
+                                              fortran-to-lisp::lsame
+                                              fortran-to-lisp::ilazlr
+                                              fortran-to-lisp::ilazlc))))
 

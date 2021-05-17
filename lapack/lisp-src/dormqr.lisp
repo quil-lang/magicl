@@ -179,10 +179,10 @@
                                               nil nil nil nil nil nil nil nil
                                               nil fortran-to-lisp::info)
                                             :calls
-                                            '(fortran-to-lisp::dlarfb
-                                              fortran-to-lisp::dlarft
-                                              fortran-to-lisp::dorm2r
-                                              fortran-to-lisp::xerbla
+                                            '(fortran-to-lisp::xerbla
                                               fortran-to-lisp::ilaenv
-                                              fortran-to-lisp::lsame))))
+                                              fortran-to-lisp::lsame
+                                              fortran-to-lisp::dlarfb
+                                              fortran-to-lisp::dlarft
+                                              fortran-to-lisp::dorm2r))))
 

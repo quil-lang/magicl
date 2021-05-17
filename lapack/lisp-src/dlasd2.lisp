@@ -461,12 +461,12 @@
                                               nil nil nil nil nil nil nil nil
                                               nil nil fortran-to-lisp::info)
                                             :calls
-                                            '(fortran-to-lisp::dlacpy
-                                              fortran-to-lisp::dlaset
+                                            '(fortran-to-lisp::dlaset
                                               fortran-to-lisp::dcopy
                                               fortran-to-lisp::drot
+                                              fortran-to-lisp::xerbla
+                                              fortran-to-lisp::dlacpy
                                               fortran-to-lisp::dlapy2
                                               fortran-to-lisp::dlamch
-                                              fortran-to-lisp::dlamrg
-                                              fortran-to-lisp::xerbla))))
+                                              fortran-to-lisp::dlamrg))))
 

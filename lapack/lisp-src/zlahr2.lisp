@@ -68,15 +68,14 @@
                (f2cl-lib:array-slice t$-%data% f2cl-lib:complex16 (1 nb)
                                      ((1 ldt) (1 nb)) t$-%offset%)
                1)
-              (ztrmv "L" "Conjugate transpose" "UNIT" (f2cl-lib:int-sub i 1)
+              (ztrmv "L" "C" "UNIT" (f2cl-lib:int-sub i 1)
                (f2cl-lib:array-slice a-%data% f2cl-lib:complex16 ((+ k 1) 1)
                                      ((1 lda) (1 *)) a-%offset%)
                lda
                (f2cl-lib:array-slice t$-%data% f2cl-lib:complex16 (1 nb)
                                      ((1 ldt) (1 nb)) t$-%offset%)
                1)
-              (zgemv "Conjugate transpose"
-               (f2cl-lib:int-add (f2cl-lib:int-sub n k i) 1)
+              (zgemv "C" (f2cl-lib:int-add (f2cl-lib:int-sub n k i) 1)
                (f2cl-lib:int-sub i 1) one
                (f2cl-lib:array-slice a-%data% f2cl-lib:complex16 ((+ k i) 1)
                                      ((1 lda) (1 *)) a-%offset%)
@@ -87,8 +86,7 @@
                (f2cl-lib:array-slice t$-%data% f2cl-lib:complex16 (1 nb)
                                      ((1 ldt) (1 nb)) t$-%offset%)
                1)
-              (ztrmv "U" "Conjugate transpose" "NON-UNIT"
-               (f2cl-lib:int-sub i 1) t$ ldt
+              (ztrmv "U" "C" "NON-UNIT" (f2cl-lib:int-sub i 1) t$ ldt
                (f2cl-lib:array-slice t$-%data% f2cl-lib:complex16 (1 nb)
                                      ((1 ldt) (1 nb)) t$-%offset%)
                1)
@@ -155,8 +153,7 @@
              (f2cl-lib:array-slice y-%data% f2cl-lib:complex16 ((+ k 1) i)
                                    ((1 ldy) (1 nb)) y-%offset%)
              1)
-            (zgemv "Conjugate transpose"
-             (f2cl-lib:int-add (f2cl-lib:int-sub n k i) 1)
+            (zgemv "C" (f2cl-lib:int-add (f2cl-lib:int-sub n k i) 1)
              (f2cl-lib:int-sub i 1) one
              (f2cl-lib:array-slice a-%data% f2cl-lib:complex16 ((+ k i) 1)
                                    ((1 lda) (1 *)) a-%offset%)
@@ -245,14 +242,14 @@
                                             '(nil nil nil nil nil nil nil nil
                                               nil nil)
                                             :calls
-                                            '(fortran-to-lisp::zlacpy
-                                              fortran-to-lisp::zlacgv
-                                              fortran-to-lisp::zgemm
+                                            '(fortran-to-lisp::zgemm
                                               fortran-to-lisp::ztrmm
                                               fortran-to-lisp::zscal
                                               fortran-to-lisp::zlarfg
                                               fortran-to-lisp::zaxpy
                                               fortran-to-lisp::ztrmv
                                               fortran-to-lisp::zcopy
-                                              fortran-to-lisp::zgemv))))
+                                              fortran-to-lisp::zgemv
+                                              fortran-to-lisp::zlacpy
+                                              fortran-to-lisp::zlacgv))))
 

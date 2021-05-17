@@ -468,18 +468,18 @@
                                               fortran-to-lisp::idamax
                                               fortran-to-lisp::zdscal
                                               fortran-to-lisp::dznrm2
-                                              fortran-to-lisp::zgebak
                                               fortran-to-lisp::ztrevc
                                               fortran-to-lisp::zunghr
                                               fortran-to-lisp::zlacpy
                                               fortran-to-lisp::zgehrd
-                                              fortran-to-lisp::zgebal
                                               fortran-to-lisp::zlascl
                                               fortran-to-lisp::zlange
-                                              fortran-to-lisp::dlabad
-                                              fortran-to-lisp::dlamch
                                               fortran-to-lisp::xerbla
                                               fortran-to-lisp::zhseqr
-                                              fortran-to-lisp::ilaenv
-                                              fortran-to-lisp::lsame))))
+                                              fortran-to-lisp::lsame
+                                              fortran-to-lisp::zgebak
+                                              fortran-to-lisp::zgebal
+                                              fortran-to-lisp::dlabad
+                                              fortran-to-lisp::dlamch
+                                              fortran-to-lisp::ilaenv))))
 

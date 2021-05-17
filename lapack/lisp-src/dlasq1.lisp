@@ -149,10 +149,10 @@
                                               fortran-to-lisp::info)
                                             :calls
                                             '(fortran-to-lisp::dlasq2
-                                              fortran-to-lisp::dlascl
                                               fortran-to-lisp::dcopy
-                                              fortran-to-lisp::dlamch
                                               fortran-to-lisp::dlasrt
-                                              fortran-to-lisp::dlas2
-                                              fortran-to-lisp::xerbla))))
+                                              fortran-to-lisp::xerbla
+                                              fortran-to-lisp::dlascl
+                                              fortran-to-lisp::dlamch
+                                              fortran-to-lisp::dlas2))))
 

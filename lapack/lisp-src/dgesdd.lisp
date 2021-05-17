@@ -2085,20 +2085,20 @@
                                               fortran-to-lisp::info)
                                             :calls
                                             '(fortran-to-lisp::dorglq
-                                              fortran-to-lisp::dgelqf
                                               fortran-to-lisp::dorgbr
                                               fortran-to-lisp::dgemm
                                               fortran-to-lisp::dormbr
                                               fortran-to-lisp::dorgqr
                                               fortran-to-lisp::dlacpy
-                                              fortran-to-lisp::dbdsdc
-                                              fortran-to-lisp::dgebrd
                                               fortran-to-lisp::dlaset
-                                              fortran-to-lisp::dgeqrf
                                               fortran-to-lisp::dlascl
                                               fortran-to-lisp::dlange
                                               fortran-to-lisp::dlamch
                                               fortran-to-lisp::xerbla
                                               fortran-to-lisp::ilaenv
-                                              fortran-to-lisp::lsame))))
+                                              fortran-to-lisp::lsame
+                                              fortran-to-lisp::dgelqf
+                                              fortran-to-lisp::dbdsdc
+                                              fortran-to-lisp::dgebrd
+                                              fortran-to-lisp::dgeqrf))))
 

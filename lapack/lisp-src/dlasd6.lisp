@@ -202,10 +202,10 @@
                                               fortran-to-lisp::s nil nil
                                               fortran-to-lisp::info)
                                             :calls
-                                            '(fortran-to-lisp::dlamrg
-                                              fortran-to-lisp::dcopy
+                                            '(fortran-to-lisp::dcopy
                                               fortran-to-lisp::dlasd8
                                               fortran-to-lisp::dlasd7
-                                              fortran-to-lisp::dlascl
-                                              fortran-to-lisp::xerbla))))
+                                              fortran-to-lisp::xerbla
+                                              fortran-to-lisp::dlamrg
+                                              fortran-to-lisp::dlascl))))
 

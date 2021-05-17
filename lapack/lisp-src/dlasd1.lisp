@@ -182,9 +182,9 @@
                                               nil nil nil nil
                                               fortran-to-lisp::info)
                                             :calls
-                                            '(fortran-to-lisp::dlamrg
-                                              fortran-to-lisp::dlasd3
+                                            '(fortran-to-lisp::dlasd3
                                               fortran-to-lisp::dlasd2
-                                              fortran-to-lisp::dlascl
-                                              fortran-to-lisp::xerbla))))
+                                              fortran-to-lisp::xerbla
+                                              fortran-to-lisp::dlamrg
+                                              fortran-to-lisp::dlascl))))
 

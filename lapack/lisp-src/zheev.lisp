@@ -187,12 +187,12 @@
                                             '(fortran-to-lisp::dscal
                                               fortran-to-lisp::zsteqr
                                               fortran-to-lisp::zungtr
-                                              fortran-to-lisp::dsterf
                                               fortran-to-lisp::zhetrd
                                               fortran-to-lisp::zlascl
                                               fortran-to-lisp::zlanhe
-                                              fortran-to-lisp::dlamch
                                               fortran-to-lisp::xerbla
-                                              fortran-to-lisp::ilaenv
-                                              fortran-to-lisp::lsame))))
+                                              fortran-to-lisp::lsame
+                                              fortran-to-lisp::dsterf
+                                              fortran-to-lisp::dlamch
+                                              fortran-to-lisp::ilaenv))))
 

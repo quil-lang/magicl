@@ -872,13 +872,13 @@
                                               fortran-to-lisp::scale nil nil
                                               fortran-to-lisp::info)
                                             :calls
-                                            '(fortran-to-lisp::dladiv
-                                              fortran-to-lisp::ddot
-                                              fortran-to-lisp::dlaln2
+                                            '(fortran-to-lisp::ddot
                                               fortran-to-lisp::daxpy
                                               fortran-to-lisp::dscal
                                               fortran-to-lisp::idamax
                                               fortran-to-lisp::dasum
+                                              fortran-to-lisp::dladiv
+                                              fortran-to-lisp::dlaln2
                                               fortran-to-lisp::dlange
                                               fortran-to-lisp::dlamch))))
 

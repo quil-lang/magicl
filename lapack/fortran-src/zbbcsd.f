@@ -450,8 +450,8 @@
 *
 *     Get machine constants
 *
-      EPS = DLAMCH( 'Epsilon' )
-      UNFL = DLAMCH( 'Safe minimum' )
+      EPS = DLAMCH( 'E' )
+      UNFL = DLAMCH( 'S' )
       TOLMUL = MAX( TEN, MIN( HUNDRED, EPS**MEIGHTH ) )
       TOL = TOLMUL*EPS
       THRESH = MAX( TOL, MAXITR*Q*Q*UNFL )
@@ -480,12 +480,9 @@
          IMAX = IMAX - 1
       END DO
       IMIN = IMAX - 1
-      IF  ( IMIN .GT. 1 ) THEN
-         DO WHILE( PHI(IMIN-1) .NE. ZERO )
-            IMIN = IMIN - 1
-            IF  ( IMIN .LE. 1 ) EXIT
-         END DO
-      END IF
+      DO WHILE( ( IMIN .GT. 1 ) .AND. ( PHI(IMIN-1) .NE. ZERO ) )
+         IMIN = IMIN - 1
+      END DO
 *
 *     Initialize iteration counter
 *
@@ -1015,20 +1012,14 @@
 *
 *        Deflate
 *
-         IF (IMAX .GT. 1) THEN
-            DO WHILE( PHI(IMAX-1) .EQ. ZERO )
-               IMAX = IMAX - 1
-               IF (IMAX .LE. 1) EXIT
-            END DO
-         END IF
+         DO WHILE( ( IMAX .GT. 1 ) .AND. ( PHI(IMAX-1) .EQ. ZERO ) )
+            IMAX = IMAX - 1
+         END DO
          IF( IMIN .GT. IMAX - 1 )
-     $      IMIN = IMAX - 1
-         IF (IMIN .GT. 1) THEN
-            DO WHILE (PHI(IMIN-1) .NE. ZERO)
-                IMIN = IMIN - 1
-                IF (IMIN .LE. 1) EXIT
-            END DO
-         END IF
+     $        IMIN = IMAX - 1
+         DO WHILE ( ( IMIN .GT. 1 ) .AND. ( PHI(IMIN-1) .NE. ZERO ) )
+            IMIN = IMIN - 1
+         END DO
 *
 *        Repeat main iteration loop
 *

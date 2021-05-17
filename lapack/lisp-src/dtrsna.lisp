@@ -527,15 +527,15 @@
                                               fortran-to-lisp::m nil nil nil
                                               fortran-to-lisp::info)
                                             :calls
-                                            '(fortran-to-lisp::dlaqtr
+                                            '(fortran-to-lisp::dnrm2
+                                              fortran-to-lisp::ddot
+                                              fortran-to-lisp::xerbla
+                                              fortran-to-lisp::lsame
+                                              fortran-to-lisp::dlaqtr
                                               fortran-to-lisp::dlacon
                                               fortran-to-lisp::dtrexc
                                               fortran-to-lisp::dlacpy
                                               fortran-to-lisp::dlapy2
-                                              fortran-to-lisp::dnrm2
-                                              fortran-to-lisp::ddot
                                               fortran-to-lisp::dlabad
-                                              fortran-to-lisp::dlamch
-                                              fortran-to-lisp::xerbla
-                                              fortran-to-lisp::lsame))))
+                                              fortran-to-lisp::dlamch))))
 

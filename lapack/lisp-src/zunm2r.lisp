@@ -121,7 +121,7 @@
                                               nil nil nil
                                               fortran-to-lisp::info)
                                             :calls
-                                            '(fortran-to-lisp::zlarf
-                                              fortran-to-lisp::xerbla
-                                              fortran-to-lisp::lsame))))
+                                            '(fortran-to-lisp::xerbla
+                                              fortran-to-lisp::lsame
+                                              fortran-to-lisp::zlarf))))
 

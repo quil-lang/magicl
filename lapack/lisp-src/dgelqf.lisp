@@ -92,15 +92,14 @@
               (setf iinfo var-6))
             (cond
              ((<= (f2cl-lib:int-add i ib) m)
-              (dlarft "F" "Rowwise" (f2cl-lib:int-add (f2cl-lib:int-sub n i) 1)
-               ib
+              (dlarft "F" "R" (f2cl-lib:int-add (f2cl-lib:int-sub n i) 1) ib
                (f2cl-lib:array-slice a-%data% double-float (i i)
                                      ((1 lda) (1 *)) a-%offset%)
                lda
                (f2cl-lib:array-slice tau-%data% double-float (i) ((1 *))
                                      tau-%offset%)
                work ldwork)
-              (dlarfb "R" "N" "F" "Rowwise"
+              (dlarfb "R" "N" "F" "R"
                (f2cl-lib:int-add (f2cl-lib:int-sub m i ib) 1)
                (f2cl-lib:int-add (f2cl-lib:int-sub n i) 1) ib
                (f2cl-lib:array-slice a-%data% double-float (i i)
@@ -152,7 +151,7 @@
                                             :calls
                                             '(fortran-to-lisp::dlarfb
                                               fortran-to-lisp::dlarft
-                                              fortran-to-lisp::dgelq2
                                               fortran-to-lisp::xerbla
-                                              fortran-to-lisp::ilaenv))))
+                                              fortran-to-lisp::ilaenv
+                                              fortran-to-lisp::dgelq2))))
 

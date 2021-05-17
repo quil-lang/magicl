@@ -292,10 +292,10 @@
                                             :calls
                                             '(fortran-to-lisp::dcopy
                                               fortran-to-lisp::ddot
-                                              fortran-to-lisp::dlasd4
                                               fortran-to-lisp::dlaset
-                                              fortran-to-lisp::dlascl
                                               fortran-to-lisp::dnrm2
-                                              fortran-to-lisp::dlamc3
-                                              fortran-to-lisp::xerbla))))
+                                              fortran-to-lisp::xerbla
+                                              fortran-to-lisp::dlasd4
+                                              fortran-to-lisp::dlascl
+                                              fortran-to-lisp::dlamc3))))
 

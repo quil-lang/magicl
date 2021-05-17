@@ -536,10 +536,10 @@
                                               nil nil nil nil nil nil nil
                                               fortran-to-lisp::info)
                                             :calls
-                                            '(fortran-to-lisp::dlasdt
-                                              fortran-to-lisp::dlasd6
-                                              fortran-to-lisp::dcopy
+                                            '(fortran-to-lisp::dcopy
                                               fortran-to-lisp::dlaset
+                                              fortran-to-lisp::dlasdt
                                               fortran-to-lisp::dlasdq
-                                              fortran-to-lisp::xerbla))))
+                                              fortran-to-lisp::xerbla
+                                              fortran-to-lisp::dlasd6))))
 

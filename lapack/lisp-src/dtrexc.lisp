@@ -324,7 +324,7 @@
                                               fortran-to-lisp::ilst nil
                                               fortran-to-lisp::info)
                                             :calls
-                                            '(fortran-to-lisp::dlaexc
-                                              fortran-to-lisp::xerbla
-                                              fortran-to-lisp::lsame))))
+                                            '(fortran-to-lisp::xerbla
+                                              fortran-to-lisp::lsame
+                                              fortran-to-lisp::dlaexc))))
 

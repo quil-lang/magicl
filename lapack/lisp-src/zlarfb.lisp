@@ -71,8 +71,7 @@
               (ztrmm "R" "L" "N" "U" lastc k one v ldv work ldwork)
               (cond
                ((> lastv k)
-                (zgemm "Conjugate transpose" "N" lastc k
-                 (f2cl-lib:int-sub lastv k) one
+                (zgemm "C" "N" lastc k (f2cl-lib:int-sub lastv k) one
                  (f2cl-lib:array-slice c-%data% f2cl-lib:complex16 ((+ k 1) 1)
                                        ((1 ldc) (1 *)) c-%offset%)
                  ldc
@@ -82,16 +81,14 @@
               (ztrmm "R" "U" transt "N" lastc k one t$ ldt work ldwork)
               (cond
                ((> m k)
-                (zgemm "N" "Conjugate transpose" (f2cl-lib:int-sub lastv k)
-                 lastc k (- one)
+                (zgemm "N" "C" (f2cl-lib:int-sub lastv k) lastc k (- one)
                  (f2cl-lib:array-slice v-%data% f2cl-lib:complex16 ((+ k 1) 1)
                                        ((1 ldv) (1 *)) v-%offset%)
                  ldv work ldwork one
                  (f2cl-lib:array-slice c-%data% f2cl-lib:complex16 ((+ k 1) 1)
                                        ((1 ldc) (1 *)) c-%offset%)
                  ldc)))
-              (ztrmm "R" "L" "Conjugate transpose" "U" lastc k one v ldv work
-               ldwork)
+              (ztrmm "R" "L" "C" "U" lastc k one v ldv work ldwork)
               (f2cl-lib:fdo (j 1 (f2cl-lib:int-add j 1))
                             ((> j k) nil)
                 (tagbody
@@ -139,8 +136,8 @@
               (ztrmm "R" "U" trans "N" lastc k one t$ ldt work ldwork)
               (cond
                ((> lastv k)
-                (zgemm "N" "Conjugate transpose" lastc
-                 (f2cl-lib:int-sub lastv k) k (- one) work ldwork
+                (zgemm "N" "C" lastc (f2cl-lib:int-sub lastv k) k (- one) work
+                 ldwork
                  (f2cl-lib:array-slice v-%data% f2cl-lib:complex16 ((+ k 1) 1)
                                        ((1 ldv) (1 *)) v-%offset%)
                  ldv one
@@ -148,8 +145,7 @@
                                        (1 (f2cl-lib:int-add k 1))
                                        ((1 ldc) (1 *)) c-%offset%)
                  ldc)))
-              (ztrmm "R" "L" "Conjugate transpose" "U" lastc k one v ldv work
-               ldwork)
+              (ztrmm "R" "L" "C" "U" lastc k one v ldv work ldwork)
               (f2cl-lib:fdo (j 1 (f2cl-lib:int-add j 1))
                             ((> j k) nil)
                 (tagbody
@@ -196,14 +192,14 @@
                ldv work ldwork)
               (cond
                ((> lastv k)
-                (zgemm "Conjugate transpose" "N" lastc k
-                 (f2cl-lib:int-sub lastv k) one c ldc v ldv one work ldwork)))
+                (zgemm "C" "N" lastc k (f2cl-lib:int-sub lastv k) one c ldc v
+                 ldv one work ldwork)))
               (ztrmm "R" "L" transt "N" lastc k one t$ ldt work ldwork)
               (cond
                ((> lastv k)
-                (zgemm "N" "Conjugate transpose" (f2cl-lib:int-sub lastv k)
-                 lastc k (- one) v ldv work ldwork one c ldc)))
-              (ztrmm "R" "U" "Conjugate transpose" "U" lastc k one
+                (zgemm "N" "C" (f2cl-lib:int-sub lastv k) lastc k (- one) v ldv
+                 work ldwork one c ldc)))
+              (ztrmm "R" "U" "C" "U" lastc k one
                (f2cl-lib:array-slice v-%data% f2cl-lib:complex16
                                      ((+ lastv (f2cl-lib:int-sub k) 1) 1)
                                      ((1 ldv) (1 *)) v-%offset%)
@@ -262,10 +258,9 @@
               (ztrmm "R" "L" trans "N" lastc k one t$ ldt work ldwork)
               (cond
                ((> lastv k)
-                (zgemm "N" "Conjugate transpose" lastc
-                 (f2cl-lib:int-sub lastv k) k (- one) work ldwork v ldv one c
-                 ldc)))
-              (ztrmm "R" "U" "Conjugate transpose" "U" lastc k one
+                (zgemm "N" "C" lastc (f2cl-lib:int-sub lastv k) k (- one) work
+                 ldwork v ldv one c ldc)))
+              (ztrmm "R" "U" "C" "U" lastc k one
                (f2cl-lib:array-slice v-%data% f2cl-lib:complex16
                                      ((+ lastv (f2cl-lib:int-sub k) 1) 1)
                                      ((1 ldv) (1 *)) v-%offset%)
@@ -316,12 +311,10 @@
                                          ((1 ldwork) (1 *)) work-%offset%)
                    1)
                  label130))
-              (ztrmm "R" "U" "Conjugate transpose" "U" lastc k one v ldv work
-               ldwork)
+              (ztrmm "R" "U" "C" "U" lastc k one v ldv work ldwork)
               (cond
                ((> lastv k)
-                (zgemm "Conjugate transpose" "Conjugate transpose" lastc k
-                 (f2cl-lib:int-sub lastv k) one
+                (zgemm "C" "C" lastc k (f2cl-lib:int-sub lastv k) one
                  (f2cl-lib:array-slice c-%data% f2cl-lib:complex16 ((+ k 1) 1)
                                        ((1 ldc) (1 *)) c-%offset%)
                  ldc
@@ -332,8 +325,7 @@
               (ztrmm "R" "U" transt "N" lastc k one t$ ldt work ldwork)
               (cond
                ((> lastv k)
-                (zgemm "Conjugate transpose" "Conjugate transpose"
-                 (f2cl-lib:int-sub lastv k) lastc k (- one)
+                (zgemm "C" "C" (f2cl-lib:int-sub lastv k) lastc k (- one)
                  (f2cl-lib:array-slice v-%data% f2cl-lib:complex16
                                        (1 (f2cl-lib:int-add k 1))
                                        ((1 ldv) (1 *)) v-%offset%)
@@ -375,12 +367,10 @@
                                          ((1 ldwork) (1 *)) work-%offset%)
                    1)
                  label160))
-              (ztrmm "R" "U" "Conjugate transpose" "U" lastc k one v ldv work
-               ldwork)
+              (ztrmm "R" "U" "C" "U" lastc k one v ldv work ldwork)
               (cond
                ((> lastv k)
-                (zgemm "N" "Conjugate transpose" lastc k
-                 (f2cl-lib:int-sub lastv k) one
+                (zgemm "N" "C" lastc k (f2cl-lib:int-sub lastv k) one
                  (f2cl-lib:array-slice c-%data% f2cl-lib:complex16
                                        (1 (f2cl-lib:int-add k 1))
                                        ((1 ldc) (1 *)) c-%offset%)
@@ -442,7 +432,7 @@
                                          ((1 ldwork) (1 *)) work-%offset%)
                    1)
                  label190))
-              (ztrmm "R" "L" "Conjugate transpose" "U" lastc k one
+              (ztrmm "R" "L" "C" "U" lastc k one
                (f2cl-lib:array-slice v-%data% f2cl-lib:complex16
                                      (1
                                       (f2cl-lib:int-add
@@ -451,14 +441,13 @@
                ldv work ldwork)
               (cond
                ((> lastv k)
-                (zgemm "Conjugate transpose" "Conjugate transpose" lastc k
-                 (f2cl-lib:int-sub lastv k) one c ldc v ldv one work ldwork)))
+                (zgemm "C" "C" lastc k (f2cl-lib:int-sub lastv k) one c ldc v
+                 ldv one work ldwork)))
               (ztrmm "R" "L" transt "N" lastc k one t$ ldt work ldwork)
               (cond
                ((> lastv k)
-                (zgemm "Conjugate transpose" "Conjugate transpose"
-                 (f2cl-lib:int-sub lastv k) lastc k (- one) v ldv work ldwork
-                 one c ldc)))
+                (zgemm "C" "C" (f2cl-lib:int-sub lastv k) lastc k (- one) v ldv
+                 work ldwork one c ldc)))
               (ztrmm "R" "L" "N" "U" lastc k one
                (f2cl-lib:array-slice v-%data% f2cl-lib:complex16
                                      (1
@@ -508,7 +497,7 @@
                                          ((1 ldwork) (1 *)) work-%offset%)
                    1)
                  label220))
-              (ztrmm "R" "L" "Conjugate transpose" "U" lastc k one
+              (ztrmm "R" "L" "C" "U" lastc k one
                (f2cl-lib:array-slice v-%data% f2cl-lib:complex16
                                      (1
                                       (f2cl-lib:int-add
@@ -517,8 +506,8 @@
                ldv work ldwork)
               (cond
                ((> lastv k)
-                (zgemm "N" "Conjugate transpose" lastc k
-                 (f2cl-lib:int-sub lastv k) one c ldc v ldv one work ldwork)))
+                (zgemm "N" "C" lastc k (f2cl-lib:int-sub lastv k) one c ldc v
+                 ldv one work ldwork)))
               (ztrmm "R" "L" trans "N" lastc k one t$ ldt work ldwork)
               (cond
                ((> lastv k)
@@ -588,9 +577,9 @@
                                             :calls
                                             '(fortran-to-lisp::zgemm
                                               fortran-to-lisp::ztrmm
-                                              fortran-to-lisp::zlacgv
                                               fortran-to-lisp::zcopy
+                                              fortran-to-lisp::lsame
+                                              fortran-to-lisp::zlacgv
                                               fortran-to-lisp::ilazlc
-                                              fortran-to-lisp::ilazlr
-                                              fortran-to-lisp::lsame))))
+                                              fortran-to-lisp::ilazlr))))
 

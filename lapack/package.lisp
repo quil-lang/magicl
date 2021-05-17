@@ -53,6 +53,8 @@
            #:dlarft
            #:dlarfx
            #:dlartg
+           #:dlartgp
+           #:dlartgs
            #:dlas2
            #:dlascl
            #:dlasd0
@@ -99,19 +101,27 @@
            #:ilaenv
            #:ilazlc
            #:ilazlr
+           #:zbbcsd
+           #:zbdsqr
            #:zgebak
            #:zgebal
+           #:zgebd2
+           #:zgebrd
            #:zgeev
            #:zgehd2
            #:zgehrd
+           #:zgelq2
+           #:zgelqf
            #:zgeqr2
            #:zgeqrf
+           #:zgesvd
            #:zgetf2
            #:zgetrf
            #:zheev
            #:zhetd2
            #:zhetrd
            #:zhseqr
+           #:zlabrd
            #:zlacgv
            #:zlacpy
            #:zladiv
@@ -119,6 +129,8 @@
            #:zlahr2
            #:zlange
            #:zlanhe
+           #:zlapmr
+           #:zlapmt
            #:zlaqr0
            #:zlaqr1
            #:zlaqr2
@@ -128,6 +140,7 @@
            #:zlarf
            #:zlarfb
            #:zlarfg
+           #:zlarfgp
            #:zlarft
            #:zlartg
            #:zlascl
@@ -141,12 +154,19 @@
            #:zsteqr
            #:ztrevc
            #:ztrexc
+           #:zunbdb
            #:zung2l
            #:zung2r
+           #:zungbr
            #:zunghr
+           #:zungl2
+           #:zunglq
            #:zungql
            #:zungqr
            #:zungtr
            #:zunm2r
+           #:zunmbr
            #:zunmhr
-           #:zunmqr)) 
+           #:zunml2
+           #:zunmlq
+           #:zunmqr))  

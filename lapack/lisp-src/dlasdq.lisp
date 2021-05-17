@@ -285,9 +285,9 @@
                                               fortran-to-lisp::info)
                                             :calls
                                             '(fortran-to-lisp::dswap
-                                              fortran-to-lisp::dbdsqr
                                               fortran-to-lisp::dlasr
-                                              fortran-to-lisp::dlartg
                                               fortran-to-lisp::xerbla
-                                              fortran-to-lisp::lsame))))
+                                              fortran-to-lisp::lsame
+                                              fortran-to-lisp::dbdsqr
+                                              fortran-to-lisp::dlartg))))
 

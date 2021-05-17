@@ -626,19 +626,19 @@
                                               fortran-to-lisp::dlapy2
                                               fortran-to-lisp::dscal
                                               fortran-to-lisp::dnrm2
-                                              fortran-to-lisp::dgebak
                                               fortran-to-lisp::dtrsna
                                               fortran-to-lisp::dtrevc
                                               fortran-to-lisp::dhseqr
                                               fortran-to-lisp::dorghr
                                               fortran-to-lisp::dlacpy
                                               fortran-to-lisp::dgehrd
-                                              fortran-to-lisp::dgebal
                                               fortran-to-lisp::dlascl
                                               fortran-to-lisp::dlange
                                               fortran-to-lisp::dlabad
                                               fortran-to-lisp::dlamch
                                               fortran-to-lisp::xerbla
                                               fortran-to-lisp::ilaenv
-                                              fortran-to-lisp::lsame))))
+                                              fortran-to-lisp::lsame
+                                              fortran-to-lisp::dgebak
+                                              fortran-to-lisp::dgebal))))
 

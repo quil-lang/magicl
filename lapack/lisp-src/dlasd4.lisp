@@ -1238,7 +1238,7 @@
                                               fortran-to-lisp::sigma nil
                                               fortran-to-lisp::info)
                                             :calls
-                                            '(fortran-to-lisp::dlaed6
-                                              fortran-to-lisp::dlamch
-                                              fortran-to-lisp::dlasd5))))
+                                            '(fortran-to-lisp::dlasd5
+                                              fortran-to-lisp::dlaed6
+                                              fortran-to-lisp::dlamch))))
 

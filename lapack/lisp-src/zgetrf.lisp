@@ -92,24 +92,15 @@
                                                            ((1 *))
                                                            ipiv-%offset%)))
                  label10))
-              (multiple-value-bind (var-0 var-1 var-2 var-3 var-4 var-5 var-6)
-                  (zlaswp (f2cl-lib:int-sub j 1) a lda j
-                   (f2cl-lib:int-sub (f2cl-lib:int-add j jb) 1) ipiv 1)
-                (declare (ignore var-0 var-1 var-4 var-5 var-6))
-                (when var-2 (setf lda var-2))
-                (when var-3 (setf j var-3)))
+              (zlaswp (f2cl-lib:int-sub j 1) a lda j
+               (f2cl-lib:int-sub (f2cl-lib:int-add j jb) 1) ipiv 1)
               (cond
                ((<= (f2cl-lib:int-add j jb) n)
-                (multiple-value-bind
-                    (var-0 var-1 var-2 var-3 var-4 var-5 var-6)
-                    (zlaswp (f2cl-lib:int-add (f2cl-lib:int-sub n j jb) 1)
-                     (f2cl-lib:array-slice a-%data% f2cl-lib:complex16
-                                           (1 (f2cl-lib:int-add j jb))
-                                           ((1 lda) (1 *)) a-%offset%)
-                     lda j (f2cl-lib:int-sub (f2cl-lib:int-add j jb) 1) ipiv 1)
-                  (declare (ignore var-0 var-1 var-4 var-5 var-6))
-                  (when var-2 (setf lda var-2))
-                  (when var-3 (setf j var-3)))
+                (zlaswp (f2cl-lib:int-add (f2cl-lib:int-sub n j jb) 1)
+                 (f2cl-lib:array-slice a-%data% f2cl-lib:complex16
+                                       (1 (f2cl-lib:int-add j jb))
+                                       ((1 lda) (1 *)) a-%offset%)
+                 lda j (f2cl-lib:int-sub (f2cl-lib:int-add j jb) 1) ipiv 1)
                 (ztrsm "L" "L" "N" "U" jb
                  (f2cl-lib:int-add (f2cl-lib:int-sub n j jb) 1) one
                  (f2cl-lib:array-slice a-%data% f2cl-lib:complex16 (j j)
@@ -138,7 +129,7 @@
              label20))))
         (go end_label)
        end_label
-        (return (values nil nil nil lda nil info))))))
+        (return (values nil nil nil nil nil info))))))
 
 (in-package #-gcl #:cl-user #+gcl "CL-USER")
 #+#.(cl:if (cl:find-package '#:f2cl) '(and) '(or))
@@ -155,12 +146,13 @@
                                                (*))
                                               (fortran-to-lisp::integer4))
                                             :return-values
-                                            '(nil nil nil fortran-to-lisp::lda
-                                              nil fortran-to-lisp::info)
+                                            '(nil nil nil nil nil
+                                              fortran-to-lisp::info)
                                             :calls
-                                            '(fortran-to-lisp::zgetf2
-                                              fortran-to-lisp::zgemm
+                                            '(fortran-to-lisp::zgemm
                                               fortran-to-lisp::ztrsm
-                                              fortran-to-lisp::ilaenv
-                                              fortran-to-lisp::xerbla))))
+                                              fortran-to-lisp::zlaswp
+                                              fortran-to-lisp::xerbla
+                                              fortran-to-lisp::zgetf2
+                                              fortran-to-lisp::ilaenv))))
 

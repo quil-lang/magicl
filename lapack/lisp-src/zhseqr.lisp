@@ -233,10 +233,10 @@
                                             :calls
                                             '(fortran-to-lisp::zlacpy
                                               fortran-to-lisp::zlahqr
-                                              fortran-to-lisp::ilaenv
                                               fortran-to-lisp::zlaset
                                               fortran-to-lisp::zcopy
                                               fortran-to-lisp::zlaqr0
                                               fortran-to-lisp::xerbla
-                                              fortran-to-lisp::lsame))))
+                                              fortran-to-lisp::lsame
+                                              fortran-to-lisp::ilaenv))))
 

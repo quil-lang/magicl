@@ -162,6 +162,7 @@
            #:inv
            #:lu
            #:csd
+           #:csd-blocks
            #:svd
            #:ql
            #:qr

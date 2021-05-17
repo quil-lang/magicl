@@ -222,8 +222,9 @@
                V( I, I ) = ONE
                IF( LSAME( STOREV, 'C' ) ) THEN
 !                 Skip any trailing zeros.
-                  DO LASTV = N, I+1, -1
-                     IF( V( LASTV, I ).NE.ZERO ) EXIT
+                  LASTV = N
+                  DO WHILE((LASTV .GT. I).AND.(V( LASTV, I ).NE.ZERO))
+                     LASTV = LASTV - 1
                   END DO
                   J = MIN( LASTV, PREVLASTV )
 *
@@ -234,8 +235,9 @@
      $                        ZERO, T( 1, I ), 1 )
                ELSE
 !                 Skip any trailing zeros.
-                  DO LASTV = N, I+1, -1
-                     IF( V( I, LASTV ).NE.ZERO ) EXIT
+                  LASTV = N
+                  DO WHILE((LASTV .GT. I).AND.(V( LASTV, I ).NE.ZERO))
+                     LASTV = LASTV - 1
                   END DO
                   J = MIN( LASTV, PREVLASTV )
 *
@@ -282,8 +284,9 @@
                      VII = V( N-K+I, I )
                      V( N-K+I, I ) = ONE
 !                    Skip any leading zeros.
-                     DO LASTV = 1, I-1
-                        IF( V( LASTV, I ).NE.ZERO ) EXIT
+                     LASTV = 1
+                     DO WHILE((LASTV .LT. I).AND.(V( LASTV, I).NE.ZERO))
+                        LASTV = LASTV + 1
                      END DO
                      J = MAX( LASTV, PREVLASTV )
 *
@@ -298,8 +301,8 @@
                      VII = V( I, N-K+I )
                      V( I, N-K+I ) = ONE
 !                    Skip any leading zeros.
-                     DO LASTV = 1, I-1
-                        IF( V( I, LASTV ).NE.ZERO ) EXIT
+                     DO WHILE((LASTV .LT. I).AND.(V( LASTV, I).NE.ZERO))
+                        LASTV = LASTV + 1
                      END DO
                      J = MAX( LASTV, PREVLASTV )
 *

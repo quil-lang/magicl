@@ -454,7 +454,7 @@
                                               fortran-to-lisp::dlasy2
                                               fortran-to-lisp::dlamch
                                               fortran-to-lisp::dlange
-                                              fortran-to-lisp::dlacpy
                                               fortran-to-lisp::drot
-                                              fortran-to-lisp::dlartg))))
+                                              fortran-to-lisp::dlartg
+                                              fortran-to-lisp::dlacpy))))
 

@@ -568,12 +568,33 @@ If :SQUARE is T, then the result will be restricted to the lower leftmost square
 
 ;; TODO: Make this one generic and move to lapack-macros
 ;;       This is being blocked by the ZUNCSD shenanigans
-(define-backend-function csd (matrix p q)
-  "Find the Cosine-Sine Decomposition of a matrix X given that it is to be partitioned with upper left block of dimension P-by-Q. Returns the CSD elements (VALUES U SIGMA VT) such that X=U*SIGMA*VT.")
+(define-extensible-function (csd csd-lisp) (matrix p q)
+  (:documentation "Find the Cosine-Sine Decomposition of a matrix X given that it is to be partitioned with upper left block of dimension P-by-Q. Returns the CSD elements (VALUES U SIGMA VT) such that X=U*SIGMA*VT.")
+  (:method ((matrix matrix) p q)
+    (multiple-value-bind (u1 u2 v1h v2h angles) (csd-blocks matrix p q)
+      (values (block-diag (list u1 u2))
+              (from-diag angles :type (element-type matrix))
+              (block-diag (list v1h v2h))))))
+
+(define-extensible-function (csd-blocks csd-blocks-lisp) (matrix p q)
+  (:documentation "Compute the 2x2 Cosine-Sine decomposition of MATRIX (assumed to be unitary and 2n×2n) partitioned into n×n blocks A1 A2 A3 A4 as shown below:
+       ⎡ A1  A3 ⎤        ⎡ A1  A3 ⎤   ⎡ U1     ⎤ ⎡ C  -S ⎤ ⎡ V1     ⎤H
+If A = ⎢        ⎥, then  ⎢        ⎥ = ⎢        ⎥ ⎢       ⎥ ⎢        ⎥,
+       ⎣ A2  A4 ⎦        ⎣ A2  A4 ⎦   ⎣     U2 ⎦ ⎣ S   C ⎦ ⎣     V2 ⎦
+where U1, U2, V1, and V2 are unitary and C^2 + S^2 = I. The values of P and Q determine the size of the partition of A or, in other words, the dimensions of the blocks A1, A2, A3, and A4.
+When the partition is P = Q = 1, we have
+⎡ a1  A3 ⎤   ⎡ u1     ⎤ ⎡ c  -Sᵀ ⎤ ⎡ v1     ⎤H
+⎢        ⎥ = ⎢        ⎥ ⎢        ⎥ ⎢        ⎥,
+⎣ A2  A4 ⎦   ⎣     U2 ⎦ ⎣ S   C  ⎦ ⎣     V2 ⎦
+where a1, u1, and, v1 are complex numbers, c = cos θ, s = sin θ, Sᵀ = [ 0ᵀ s ], and
+    ⎡ I   0 ⎤
+C = ⎢       ⎥.
+    ⎣ 0ᵀ  c ⎦
+The function returns the matrices U1, U2, V1H, V2H, and the list of principal angles.
+See also http://www.netlib.org/lapack/explore-html/de/d0d/zuncsd_8f.html."))
 
 (define-backend-function inv (matrix)
   "Get the inverse of the matrix")
-
 
 (define-extensible-function (svd svd-lisp) (matrix &key reduced)
   (:documentation "Find the SVD of a matrix M. Return (VALUES U SIGMA Vt) where M = U*SIGMA*Vt"))

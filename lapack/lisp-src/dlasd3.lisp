@@ -456,12 +456,12 @@
                                               nil nil nil
                                               fortran-to-lisp::info)
                                             :calls
-                                            '(fortran-to-lisp::dlacpy
-                                              fortran-to-lisp::dgemm
+                                            '(fortran-to-lisp::dgemm
                                               fortran-to-lisp::dlasd4
-                                              fortran-to-lisp::dlascl
                                               fortran-to-lisp::dnrm2
-                                              fortran-to-lisp::dlamc3
                                               fortran-to-lisp::dcopy
-                                              fortran-to-lisp::xerbla))))
+                                              fortran-to-lisp::xerbla
+                                              fortran-to-lisp::dlacpy
+                                              fortran-to-lisp::dlascl
+                                              fortran-to-lisp::dlamc3))))
 

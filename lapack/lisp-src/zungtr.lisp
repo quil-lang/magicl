@@ -165,9 +165,9 @@
                                             '(nil nil nil nil nil nil nil
                                               fortran-to-lisp::info)
                                             :calls
-                                            '(fortran-to-lisp::zungqr
+                                            '(fortran-to-lisp::xerbla
+                                              fortran-to-lisp::lsame
+                                              fortran-to-lisp::zungqr
                                               fortran-to-lisp::zungql
-                                              fortran-to-lisp::xerbla
-                                              fortran-to-lisp::ilaenv
-                                              fortran-to-lisp::lsame))))
+                                              fortran-to-lisp::ilaenv))))
 

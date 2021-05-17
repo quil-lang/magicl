@@ -131,8 +131,8 @@
                                             '(nil nil nil nil nil nil nil nil
                                               fortran-to-lisp::info)
                                             :calls
-                                            '(fortran-to-lisp::zrot
-                                              fortran-to-lisp::zlartg
-                                              fortran-to-lisp::xerbla
-                                              fortran-to-lisp::lsame))))
+                                            '(fortran-to-lisp::xerbla
+                                              fortran-to-lisp::lsame
+                                              fortran-to-lisp::zrot
+                                              fortran-to-lisp::zlartg))))
 

@@ -24,6 +24,7 @@
                (:file "specialization-tests")
                (:file "constructor-tests")
                (:file "matrix-tests")
+               (:file "csd-tests")
                (:file "polynomial-solver-tests")))
 
 (asdf:defsystem #:magicl-tests
