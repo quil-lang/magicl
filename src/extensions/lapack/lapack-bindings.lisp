@@ -21,19 +21,23 @@
                                    (generate-routine-symbol 'magicl.lapack-cffi routine)))
                           (let ((complex (not (null real-type))))
                             (list
-                             (generate-lapack-mult-for-type
+                             (magicl::generate-lapack-mult-for-type
+                              'mult-extension
                               matrix-class vector-class type
                               (blas-routine "gemm") (blas-routine "gemv"))
-                             (generate-lapack-lu-for-type
+                             (magicl::generate-lapack-lu-for-type
+                              'lapack-lu
                               matrix-class type (lapack-routine "getrf"))
                              (generate-lapack-inv-for-type
                               matrix-class type
                               (lapack-routine "getrf") (lapack-routine "getri"))
-                             (generate-lapack-svd-for-type
+                             (magicl::generate-lapack-svd-for-type
+                              'lapack-svd
                               matrix-class type
                               (lapack-routine "gesvd")
                               real-type)
-                             (generate-lapack-eig-for-type
+                             (magicl::generate-lapack-eig-for-type
+                              'lapack-eig
                               matrix-class type
                               (lapack-routine "geev")
                               real-type)
@@ -46,7 +50,8 @@
                               (lapack-routine (if complex "ungrq" "orgrq"))
                               (lapack-routine (if complex "unglq" "orglq")))
                              (when complex
-                               (generate-lapack-hermitian-eig-for-type
+                               (magicl::generate-lapack-hermitian-eig-for-type
+                                'lapack-hermitian-eig
                                 matrix-class type
                                 (lapack-routine "heev")
                                 real-type)))))))))

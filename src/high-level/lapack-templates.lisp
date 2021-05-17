@@ -1,9 +1,19 @@
+;;;; lapack-templates.lisp
+;;;;
+;;;; Authors: Cole Scott
+;;;;          Erik Davis
+
+;;; NOTE: This file is emulating C++-style templates to generate
+;;;       methods to call LAPACK functions. This is done to avoid
+;;;       writing the same method four times but results in
+;;;       less-than-perfect use of macros.
+
 (in-package #:magicl)
 
 (eval-when (:compile-toplevel :load-toplevel :execute)
-  (defun generate-lisp-mult-for-type (matrix-class vector-class type matrix-matrix-function matrix-vector-function)
+  (defun generate-lapack-mult-for-type (generic-function matrix-class vector-class type matrix-matrix-function matrix-vector-function)
     `(progn
-       (defmethod mult-lisp ((a ,matrix-class) (b ,matrix-class) &key target (alpha ,(coerce 1 type)) (beta ,(coerce 0 type)) (transa :n) (transb :n))
+       (defmethod ,generic-function ((a ,matrix-class) (b ,matrix-class) &key target (alpha ,(coerce 1 type)) (beta ,(coerce 0 type)) (transa :n) (transb :n))
          (policy-cond:with-expectations (> speed safety)
              ((type (member nil :n :t :c) transa)
               (type (member nil :n :t :c) transb))
@@ -52,7 +62,7 @@
                   (magicl::storage target)
                   m)
                  target)))))
-       (defmethod mult-lisp ((a ,matrix-class) (x ,vector-class) &key target (alpha ,(coerce 1 type)) (beta ,(coerce 0 type)) (transa :n) transb)
+       (defmethod ,generic-function ((a ,matrix-class) (x ,vector-class) &key target (alpha ,(coerce 1 type)) (beta ,(coerce 0 type)) (transa :n) transb)
          (policy-cond:with-expectations (> speed safety)
              ((type (member nil :n :t :c) transa)
               (assertion (null transb)))
@@ -90,9 +100,9 @@
                   )
                  target)))))))
 
-  (defun generate-lisp-lu-for-type (class type lu-function)
+  (defun generate-lapack-lu-for-type (generic-function class type lu-function)
     (declare (ignore type))
-    `(defmethod lu-lisp ((a ,class))
+    `(defmethod ,generic-function ((a ,class))
        (let* ((a-tensor (deep-copy-tensor a))
               (a (magicl::storage a-tensor))
               (m (nrows a-tensor))
@@ -111,8 +121,8 @@
           info)
          (values a-tensor ipiv-tensor))))
 
-  (defun generate-lisp-svd-for-type (class type svd-function &optional real-type)
-    `(defmethod svd-lisp ((m ,class) &key reduced)
+  (defun generate-lapack-svd-for-type (generic-function class type svd-function &optional real-type)
+    `(defmethod ,generic-function ((m ,class) &key reduced)
        "Find the SVD of a matrix M. Return (VALUES U SIGMA Vt) where M = U*SIGMA*Vt. If REDUCED is non-NIL, return the reduced SVD (where either U or V are just partial isometries and not necessarily unitary matrices)."
        (let* ((jobu (if reduced "S" "A"))
               (jobvt (if reduced "S" "A"))
@@ -149,9 +159,11 @@
              (values (from-array u (list rows u-cols) :input-layout :column-major)
                      (from-array smat (list u-cols vt-rows) :input-layout :column-major)
                      (from-array vt (list vt-rows cols) :input-layout :column-major)))))))
-  
-  (defun generate-lisp-eig-for-type (class type eig-function &optional real-type)
-    ` (defmethod eig-lisp ((m ,class))
+
+  ;; TODO: This returns only the real parts when with non-complex
+  ;; numbers. Should do something different?
+  (defun generate-lapack-eig-for-type (generic-function class type eig-function &optional real-type)
+    ` (defmethod ,generic-function ((m ,class))
         (policy-cond:with-expectations (> speed safety)
             ((assertion (square-matrix-p m)))
           (let ((rows (nrows m))
@@ -181,8 +193,8 @@
                 (,eig-function jobvl jobvr rows a rows ,@(if real-type `(w) `(wr wi))
                                vl 1 vr rows work lwork ,@(when real-type `(rwork)) info)
                 (values (coerce ,@(if real-type `(w) `(wr)) 'list) (from-array vr (list rows cols) :input-layout :column-major))))))))
-  (defun generate-lisp-hermitian-eig-for-type (class type eig-function real-type)
-    `(defmethod hermitian-eig-lisp ((m ,class))
+  (defun generate-lapack-hermitian-eig-for-type (generic-function class type eig-function real-type)
+    `(defmethod ,generic-function ((m ,class))
        (policy-cond:with-expectations (> speed safety)
            ((assertion (square-matrix-p m))
             (assertion (hermitian-matrix-p m)))
@@ -297,16 +309,20 @@
                                    (let ((complex (not (null real-type))))
                                      (declare (ignorable complex))
                                      (list
-                                      (generate-lisp-mult-for-type
+                                      (generate-lapack-mult-for-type
+                                       'mult-lisp
                                        matrix-class vector-class type
                                        (blas-routine "gemm") (blas-routine "gemv"))
-                                      (generate-lisp-lu-for-type
+                                      (generate-lapack-lu-for-type
+                                       'lu-lisp
                                        matrix-class type (lapack-routine "getrf"))
-                                      (generate-lisp-eig-for-type
+                                      (generate-lapack-eig-for-type
+                                       'eig-lisp
                                        matrix-class type
                                        (lapack-routine "geev")
                                        real-type)
-                                      (generate-lisp-svd-for-type
+                                      (generate-lapack-svd-for-type
+                                       'svd-lisp
                                        matrix-class type
                                        (lapack-routine "gesvd")
                                        real-type)
@@ -315,7 +331,8 @@
                                        (lapack-routine "geqrf")
                                        (lapack-routine (if complex "ungqr" "orgqr")))
                                       (when complex
-                                        (generate-lisp-hermitian-eig-for-type
+                                        (generate-lapack-hermitian-eig-for-type
+                                         'hermitian-eig-lisp
                                          matrix-class type
                                          (lapack-routine "heev")
                                          real-type)))))))))

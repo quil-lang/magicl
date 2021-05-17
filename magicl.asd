@@ -56,7 +56,7 @@
                  (:file "types/complex-single-float")
                  (:file "types/complex-double-float")
                  (:file "types/int32")
-                 (:file "lisp-lapack")
+                 (:file "lapack-templates")
                  (:file "csd")
                  (:file "constructors")
                  (:file "specialize-constructor")
