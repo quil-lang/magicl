@@ -734,14 +734,14 @@
                                               fortran-to-lisp::zdotu
                                               fortran-to-lisp::izamax
                                               fortran-to-lisp::zaxpy
+                                              fortran-to-lisp::zladiv
                                               fortran-to-lisp::zdscal
                                               fortran-to-lisp::ztrsv
                                               fortran-to-lisp::dscal
                                               fortran-to-lisp::idamax
                                               fortran-to-lisp::dzasum
-                                              fortran-to-lisp::xerbla
-                                              fortran-to-lisp::lsame
-                                              fortran-to-lisp::zladiv
                                               fortran-to-lisp::dlabad
-                                              fortran-to-lisp::dlamch))))
+                                              fortran-to-lisp::dlamch
+                                              fortran-to-lisp::xerbla
+                                              fortran-to-lisp::lsame))))
 

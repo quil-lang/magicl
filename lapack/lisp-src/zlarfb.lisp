@@ -577,9 +577,9 @@
                                             :calls
                                             '(fortran-to-lisp::zgemm
                                               fortran-to-lisp::ztrmm
-                                              fortran-to-lisp::zcopy
-                                              fortran-to-lisp::lsame
                                               fortran-to-lisp::zlacgv
+                                              fortran-to-lisp::zcopy
                                               fortran-to-lisp::ilazlc
-                                              fortran-to-lisp::ilazlr))))
+                                              fortran-to-lisp::ilazlr
+                                              fortran-to-lisp::lsame))))
 

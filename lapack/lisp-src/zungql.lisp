@@ -204,9 +204,9 @@
                                             '(nil nil nil nil nil nil nil nil
                                               fortran-to-lisp::info)
                                             :calls
-                                            '(fortran-to-lisp::xerbla
-                                              fortran-to-lisp::zlarfb
+                                            '(fortran-to-lisp::zlarfb
                                               fortran-to-lisp::zlarft
                                               fortran-to-lisp::zung2l
+                                              fortran-to-lisp::xerbla
                                               fortran-to-lisp::ilaenv))))
 

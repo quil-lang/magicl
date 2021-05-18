@@ -231,12 +231,12 @@
                                             '(nil nil nil nil nil nil nil nil
                                               fortran-to-lisp::info)
                                             :calls
-                                            '(fortran-to-lisp::zlarfb
+                                            '(fortran-to-lisp::zgehd2
+                                              fortran-to-lisp::zlarfb
                                               fortran-to-lisp::zaxpy
                                               fortran-to-lisp::ztrmm
                                               fortran-to-lisp::zgemm
                                               fortran-to-lisp::zlahr2
                                               fortran-to-lisp::xerbla
-                                              fortran-to-lisp::zgehd2
                                               fortran-to-lisp::ilaenv))))
 

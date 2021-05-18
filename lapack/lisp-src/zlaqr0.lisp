@@ -559,8 +559,8 @@
                                             :calls
                                             '(fortran-to-lisp::zlaqr5
                                               fortran-to-lisp::zlaqr4
-                                              fortran-to-lisp::zlaqr3
                                               fortran-to-lisp::zlacpy
+                                              fortran-to-lisp::zlaqr3
                                               fortran-to-lisp::ilaenv
                                               fortran-to-lisp::zlahqr))))
 

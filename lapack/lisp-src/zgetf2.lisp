@@ -139,6 +139,6 @@
                                               fortran-to-lisp::zscal
                                               fortran-to-lisp::zswap
                                               fortran-to-lisp::izamax
-                                              fortran-to-lisp::xerbla
-                                              fortran-to-lisp::dlamch))))
+                                              fortran-to-lisp::dlamch
+                                              fortran-to-lisp::xerbla))))
 

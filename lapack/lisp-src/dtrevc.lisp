@@ -1621,9 +1621,9 @@
                                               fortran-to-lisp::dcopy
                                               fortran-to-lisp::daxpy
                                               fortran-to-lisp::dscal
-                                              fortran-to-lisp::xerbla
-                                              fortran-to-lisp::lsame
                                               fortran-to-lisp::dlaln2
                                               fortran-to-lisp::dlabad
-                                              fortran-to-lisp::dlamch))))
+                                              fortran-to-lisp::dlamch
+                                              fortran-to-lisp::xerbla
+                                              fortran-to-lisp::lsame))))
 

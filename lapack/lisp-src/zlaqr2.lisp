@@ -435,12 +435,12 @@
                                               fortran-to-lisp::zlarf
                                               fortran-to-lisp::zlarfg
                                               fortran-to-lisp::ztrexc
+                                              fortran-to-lisp::zlahqr
                                               fortran-to-lisp::zlaset
                                               fortran-to-lisp::zcopy
-                                              fortran-to-lisp::zunmhr
-                                              fortran-to-lisp::zlahqr
                                               fortran-to-lisp::zlacpy
                                               fortran-to-lisp::dlabad
                                               fortran-to-lisp::dlamch
+                                              fortran-to-lisp::zunmhr
                                               fortran-to-lisp::zgehrd))))
 

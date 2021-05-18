@@ -150,7 +150,7 @@
                                             '(fortran-to-lisp::dgemm
                                               fortran-to-lisp::dtrsm
                                               fortran-to-lisp::dlaswp
+                                              fortran-to-lisp::dgetf2
                                               fortran-to-lisp::ilaenv
-                                              fortran-to-lisp::xerbla
-                                              fortran-to-lisp::dgetf2))))
+                                              fortran-to-lisp::xerbla))))
 

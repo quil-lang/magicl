@@ -244,12 +244,12 @@
                                             :calls
                                             '(fortran-to-lisp::zgemm
                                               fortran-to-lisp::ztrmm
+                                              fortran-to-lisp::zlacpy
                                               fortran-to-lisp::zscal
                                               fortran-to-lisp::zlarfg
                                               fortran-to-lisp::zaxpy
                                               fortran-to-lisp::ztrmv
                                               fortran-to-lisp::zcopy
                                               fortran-to-lisp::zgemv
-                                              fortran-to-lisp::zlacpy
                                               fortran-to-lisp::zlacgv))))
 

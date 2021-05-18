@@ -205,10 +205,10 @@
                                             '(nil nil nil nil nil nil nil nil
                                               nil fortran-to-lisp::info)
                                             :calls
-                                            '(fortran-to-lisp::zher2k
+                                            '(fortran-to-lisp::zhetd2
+                                              fortran-to-lisp::zher2k
                                               fortran-to-lisp::zlatrd
                                               fortran-to-lisp::xerbla
-                                              fortran-to-lisp::lsame
-                                              fortran-to-lisp::zhetd2
-                                              fortran-to-lisp::ilaenv))))
+                                              fortran-to-lisp::ilaenv
+                                              fortran-to-lisp::lsame))))
 

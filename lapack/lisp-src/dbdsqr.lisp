@@ -94,7 +94,8 @@
          ((not rotate)
           (multiple-value-bind (var-0 var-1 var-2 var-3 var-4)
               (dlasq1 n d e work info)
-            (declare (ignore var-0 var-1 var-2 var-3))
+            (declare (ignore var-1 var-2 var-3))
+            (setf n var-0)
             (setf info var-4))
           (go end_label)))
         (setf nm1 (f2cl-lib:int-sub n 1))
@@ -946,7 +947,7 @@
         (go end_label)
        end_label
         (return
-         (values nil nil nil nil nil nil nil nil nil nil nil nil nil nil
+         (values nil n nil nil nil nil nil nil nil nil nil nil nil nil
                  info))))))
 
 (in-package #-gcl #:cl-user #+gcl "CL-USER")
@@ -971,9 +972,9 @@
                                               (array double-float (*))
                                               (fortran-to-lisp::integer4))
                                             :return-values
-                                            '(nil nil nil nil nil nil nil nil
-                                              nil nil nil nil nil nil
-                                              fortran-to-lisp::info)
+                                            '(nil fortran-to-lisp::n nil nil
+                                              nil nil nil nil nil nil nil nil
+                                              nil nil fortran-to-lisp::info)
                                             :calls
                                             '(fortran-to-lisp::dswap
                                               fortran-to-lisp::dscal

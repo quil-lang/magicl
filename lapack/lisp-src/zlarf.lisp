@@ -96,7 +96,7 @@
                                             :calls
                                             '(fortran-to-lisp::zgerc
                                               fortran-to-lisp::zgemv
-                                              fortran-to-lisp::lsame
                                               fortran-to-lisp::ilazlr
-                                              fortran-to-lisp::ilazlc))))
+                                              fortran-to-lisp::ilazlc
+                                              fortran-to-lisp::lsame))))
 

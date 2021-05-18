@@ -192,9 +192,9 @@
                                             '(nil nil nil nil nil nil nil nil
                                               fortran-to-lisp::info)
                                             :calls
-                                            '(fortran-to-lisp::xerbla
-                                              fortran-to-lisp::ilaenv
-                                              fortran-to-lisp::dlarfb
+                                            '(fortran-to-lisp::dlarfb
                                               fortran-to-lisp::dlarft
-                                              fortran-to-lisp::dorgl2))))
+                                              fortran-to-lisp::dorgl2
+                                              fortran-to-lisp::xerbla
+                                              fortran-to-lisp::ilaenv))))
 

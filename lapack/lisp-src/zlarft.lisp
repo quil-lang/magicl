@@ -328,7 +328,7 @@
                                               nil)
                                             :calls
                                             '(fortran-to-lisp::ztrmv
+                                              fortran-to-lisp::zlacgv
                                               fortran-to-lisp::zgemv
-                                              fortran-to-lisp::lsame
-                                              fortran-to-lisp::zlacgv))))
+                                              fortran-to-lisp::lsame))))
 

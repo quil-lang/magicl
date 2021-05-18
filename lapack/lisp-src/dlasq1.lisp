@@ -94,9 +94,10 @@
             (dlascl "G" 0 0 sigmx scale
              (f2cl-lib:int-sub (f2cl-lib:int-mul 2 n) 1) 1 work
              (f2cl-lib:int-sub (f2cl-lib:int-mul 2 n) 1) iinfo)
-          (declare
-           (ignore var-0 var-1 var-2 var-3 var-4 var-5 var-6 var-7 var-8))
-          (setf iinfo var-9))
+          (declare (ignore var-0 var-1 var-2 var-5 var-6 var-7 var-8))
+          (when var-3 (setf sigmx var-3))
+          (when var-4 (setf scale var-4))
+          (when var-9 (setf iinfo var-9)))
         (f2cl-lib:fdo (i 1 (f2cl-lib:int-add i 1))
                       ((> i
                           (f2cl-lib:int-add (f2cl-lib:int-mul 2 n)
@@ -126,12 +127,15 @@
           (multiple-value-bind
               (var-0 var-1 var-2 var-3 var-4 var-5 var-6 var-7 var-8 var-9)
               (dlascl "G" 0 0 scale sigmx n 1 d n iinfo)
-            (declare
-             (ignore var-0 var-1 var-2 var-3 var-4 var-5 var-6 var-7 var-8))
-            (setf iinfo var-9))))
+            (declare (ignore var-0 var-1 var-2 var-6 var-7))
+            (when var-3 (setf scale var-3))
+            (when var-4 (setf sigmx var-4))
+            (when var-5 (setf n var-5))
+            (when var-8 (setf n var-8))
+            (when var-9 (setf iinfo var-9)))))
         (go end_label)
        end_label
-        (return (values nil nil nil nil info))))))
+        (return (values n nil nil nil info))))))
 
 (in-package #-gcl #:cl-user #+gcl "CL-USER")
 #+#.(cl:if (cl:find-package '#:f2cl) '(and) '(or))
@@ -145,14 +149,13 @@
                                               (array double-float (*))
                                               (fortran-to-lisp::integer4))
                                             :return-values
-                                            '(nil nil nil nil
+                                            '(fortran-to-lisp::n nil nil nil
                                               fortran-to-lisp::info)
                                             :calls
                                             '(fortran-to-lisp::dlasq2
                                               fortran-to-lisp::dcopy
-                                              fortran-to-lisp::dlasrt
-                                              fortran-to-lisp::xerbla
-                                              fortran-to-lisp::dlascl
                                               fortran-to-lisp::dlamch
-                                              fortran-to-lisp::dlas2))))
+                                              fortran-to-lisp::dlasrt
+                                              fortran-to-lisp::dlas2
+                                              fortran-to-lisp::xerbla))))
 

@@ -395,8 +395,8 @@
                                               fortran-to-lisp::zdotc
                                               fortran-to-lisp::zscal
                                               fortran-to-lisp::zhemv
-                                              fortran-to-lisp::zgemv
-                                              fortran-to-lisp::lsame
                                               fortran-to-lisp::zlarfg
-                                              fortran-to-lisp::zlacgv))))
+                                              fortran-to-lisp::zgemv
+                                              fortran-to-lisp::zlacgv
+                                              fortran-to-lisp::lsame))))
 

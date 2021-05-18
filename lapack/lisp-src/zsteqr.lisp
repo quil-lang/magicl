@@ -624,8 +624,6 @@
                                               fortran-to-lisp::info)
                                             :calls
                                             '(fortran-to-lisp::zswap
-                                              fortran-to-lisp::xerbla
-                                              fortran-to-lisp::lsame
                                               fortran-to-lisp::dlasrt
                                               fortran-to-lisp::dlartg
                                               fortran-to-lisp::dlapy2
@@ -635,5 +633,7 @@
                                               fortran-to-lisp::dlascl
                                               fortran-to-lisp::dlanst
                                               fortran-to-lisp::zlaset
-                                              fortran-to-lisp::dlamch))))
+                                              fortran-to-lisp::dlamch
+                                              fortran-to-lisp::xerbla
+                                              fortran-to-lisp::lsame))))
 

@@ -131,7 +131,8 @@
 *     ..
 *     .. External Subroutines ..
       EXTERNAL           DGEBAK, DGEBAL, DGEHRD, DHSEQR, DLACPY, DLARTG,
-     $                   DLASCL, DORGHR, DROT, DSCAL, DTREVC, XERBLA
+     $                   DLASCL, DORGHR, DROT, DSCAL, DTREVC, XERBLA,
+     $                   DLABAD
 *     ..
 *     .. External Functions ..
       LOGICAL            LSAME

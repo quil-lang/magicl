@@ -1551,11 +1551,11 @@
                                               nil nil nil nil nil nil nil nil)
                                             :calls
                                             '(fortran-to-lisp::ztrmm
+                                              fortran-to-lisp::zlacpy
                                               fortran-to-lisp::zgemm
                                               fortran-to-lisp::zlarfg
-                                              fortran-to-lisp::zlaset
-                                              fortran-to-lisp::zlacpy
                                               fortran-to-lisp::zlaqr1
+                                              fortran-to-lisp::zlaset
                                               fortran-to-lisp::dlabad
                                               fortran-to-lisp::dlamch))))
 

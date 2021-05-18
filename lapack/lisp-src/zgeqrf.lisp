@@ -155,7 +155,7 @@
                                             :calls
                                             '(fortran-to-lisp::zlarfb
                                               fortran-to-lisp::zlarft
-                                              fortran-to-lisp::xerbla
                                               fortran-to-lisp::zgeqr2
+                                              fortran-to-lisp::xerbla
                                               fortran-to-lisp::ilaenv))))
 

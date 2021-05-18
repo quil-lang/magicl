@@ -607,8 +607,8 @@
                                             :calls
                                             '(fortran-to-lisp::zlarfg
                                               fortran-to-lisp::zcopy
-                                              fortran-to-lisp::zscal
                                               fortran-to-lisp::zladiv
                                               fortran-to-lisp::dlabad
-                                              fortran-to-lisp::dlamch))))
+                                              fortran-to-lisp::dlamch
+                                              fortran-to-lisp::zscal))))
 

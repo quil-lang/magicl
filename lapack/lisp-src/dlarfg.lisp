@@ -79,7 +79,7 @@
                                               nil fortran-to-lisp::tau)
                                             :calls
                                             '(fortran-to-lisp::dscal
-                                              fortran-to-lisp::dnrm2
                                               fortran-to-lisp::dlamch
-                                              fortran-to-lisp::dlapy2))))
+                                              fortran-to-lisp::dlapy2
+                                              fortran-to-lisp::dnrm2))))
 

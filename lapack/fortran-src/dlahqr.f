@@ -119,7 +119,7 @@
       EXTERNAL           DLAMCH, DLANHS
 *     ..
 *     .. External Subroutines ..
-      EXTERNAL           DCOPY, DLANV2, DLARFG, DROT
+      EXTERNAL           DCOPY, DLANV2, DLARFG, DROT, DLABAD
 *     ..
 *     .. Intrinsic Functions ..
       INTRINSIC          ABS, MAX, MIN, SIGN, SQRT

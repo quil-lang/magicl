@@ -432,10 +432,10 @@
                                               fortran-to-lisp::zdscal
                                               fortran-to-lisp::izamax
                                               fortran-to-lisp::zcopy
-                                              fortran-to-lisp::dzasum
-                                              fortran-to-lisp::xerbla
-                                              fortran-to-lisp::lsame
                                               fortran-to-lisp::zlatrs
+                                              fortran-to-lisp::dzasum
                                               fortran-to-lisp::dlabad
-                                              fortran-to-lisp::dlamch))))
+                                              fortran-to-lisp::dlamch
+                                              fortran-to-lisp::xerbla
+                                              fortran-to-lisp::lsame))))
 

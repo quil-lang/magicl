@@ -405,11 +405,11 @@
                                             '(nil nil nil
                                               fortran-to-lisp::info)
                                             :calls
-                                            '(fortran-to-lisp::xerbla
-                                              fortran-to-lisp::dlasrt
+                                            '(fortran-to-lisp::dlasrt
                                               fortran-to-lisp::dlapy2
                                               fortran-to-lisp::dlae2
                                               fortran-to-lisp::dlascl
                                               fortran-to-lisp::dlanst
-                                              fortran-to-lisp::dlamch))))
+                                              fortran-to-lisp::dlamch
+                                              fortran-to-lisp::xerbla))))
 

@@ -585,6 +585,6 @@
                                               fortran-to-lisp::dlarfg
                                               fortran-to-lisp::dcopy
                                               fortran-to-lisp::dlanhs
-                                              fortran-to-lisp::dlamch
-                                              fortran-to-lisp::dlabad))))
+                                              fortran-to-lisp::dlabad
+                                              fortran-to-lisp::dlamch))))
 

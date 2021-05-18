@@ -2,73 +2,48 @@
 
 (defpackage #:magicl.lisp-lapack
   (:use #:cl #:magicl.lisp-blas)
-  (:export #:dbdsdc
-           #:dbdsqr
-           #:ddisna
+  (:export #:dbdsqr
            #:dgebak
            #:dgebal
            #:dgebd2
            #:dgebrd
            #:dgeev
-           #:dgeevx
            #:dgehd2
            #:dgehrd
            #:dgelq2
            #:dgelqf
            #:dgeqr2
            #:dgeqrf
-           #:dgesdd
-           #:dgesv
            #:dgesvd
            #:dgetf2
            #:dgetrf
-           #:dgetrs
            #:dhseqr
            #:disnan
            #:dlabad
            #:dlabrd
-           #:dlacon
            #:dlacpy
            #:dladiv
            #:dlae2
-           #:dlaed6
            #:dlaev2
-           #:dlaexc
            #:dlahqr
            #:dlahrd
            #:dlaisnan
            #:dlaln2
            #:dlamch
-           #:dlamrg
            #:dlange
            #:dlanhs
            #:dlanst
            #:dlanv2
            #:dlapy2
            #:dlapy3
-           #:dlaqtr
            #:dlarf
            #:dlarfb
            #:dlarfg
            #:dlarft
            #:dlarfx
            #:dlartg
-           #:dlartgp
-           #:dlartgs
            #:dlas2
            #:dlascl
-           #:dlasd0
-           #:dlasd1
-           #:dlasd2
-           #:dlasd3
-           #:dlasd4
-           #:dlasd5
-           #:dlasd6
-           #:dlasd7
-           #:dlasd8
-           #:dlasda
-           #:dlasdq
-           #:dlasdt
            #:dlaset
            #:dlasq1
            #:dlasq2
@@ -81,7 +56,6 @@
            #:dlassq
            #:dlasv2
            #:dlaswp
-           #:dlasy2
            #:dorg2r
            #:dorgbr
            #:dorghr
@@ -95,13 +69,10 @@
            #:dormqr
            #:dsterf
            #:dtrevc
-           #:dtrexc
-           #:dtrsna
            #:ieeeck
            #:ilaenv
            #:ilazlc
            #:ilazlr
-           #:zbbcsd
            #:zbdsqr
            #:zgebak
            #:zgebal
@@ -129,8 +100,6 @@
            #:zlahr2
            #:zlange
            #:zlanhe
-           #:zlapmr
-           #:zlapmt
            #:zlaqr0
            #:zlaqr1
            #:zlaqr2
@@ -140,7 +109,6 @@
            #:zlarf
            #:zlarfb
            #:zlarfg
-           #:zlarfgp
            #:zlarft
            #:zlartg
            #:zlascl
@@ -154,7 +122,6 @@
            #:zsteqr
            #:ztrevc
            #:ztrexc
-           #:zunbdb
            #:zung2l
            #:zung2r
            #:zungbr
@@ -169,4 +136,4 @@
            #:zunmhr
            #:zunml2
            #:zunmlq
-           #:zunmqr))  
+           #:zunmqr))    

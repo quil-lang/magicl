@@ -139,7 +139,7 @@
 *     ..
 *     .. External Subroutines ..
       EXTERNAL           DCOPY, DGEMV, DLACPY, DLAHQR, DLARFG, DLARFX,
-     $                   DLASET, DSCAL, XERBLA
+     $                   DLASET, DSCAL, XERBLA, DLABAD
 *     ..
 *     .. Intrinsic Functions ..
       INTRINSIC          ABS, MAX, MIN

@@ -267,8 +267,8 @@
                                             '(nil nil nil nil nil nil nil nil
                                               nil fortran-to-lisp::info)
                                             :calls
-                                            '(fortran-to-lisp::xerbla
-                                              fortran-to-lisp::lsame
-                                              fortran-to-lisp::dlamch
-                                              fortran-to-lisp::disnan))))
+                                            '(fortran-to-lisp::dlamch
+                                              fortran-to-lisp::xerbla
+                                              fortran-to-lisp::disnan
+                                              fortran-to-lisp::lsame))))
 

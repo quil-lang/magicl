@@ -143,6 +143,6 @@
                                             :calls
                                             '(fortran-to-lisp::zunmqr
                                               fortran-to-lisp::xerbla
-                                              fortran-to-lisp::lsame
-                                              fortran-to-lisp::ilaenv))))
+                                              fortran-to-lisp::ilaenv
+                                              fortran-to-lisp::lsame))))
 

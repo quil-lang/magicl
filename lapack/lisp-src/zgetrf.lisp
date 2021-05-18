@@ -152,7 +152,7 @@
                                             '(fortran-to-lisp::zgemm
                                               fortran-to-lisp::ztrsm
                                               fortran-to-lisp::zlaswp
-                                              fortran-to-lisp::xerbla
                                               fortran-to-lisp::zgetf2
-                                              fortran-to-lisp::ilaenv))))
+                                              fortran-to-lisp::ilaenv
+                                              fortran-to-lisp::xerbla))))
 

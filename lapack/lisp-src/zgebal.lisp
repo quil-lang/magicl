@@ -304,10 +304,10 @@
                                               fortran-to-lisp::info)
                                             :calls
                                             '(fortran-to-lisp::zdscal
+                                              fortran-to-lisp::disnan
                                               fortran-to-lisp::izamax
+                                              fortran-to-lisp::dlamch
                                               fortran-to-lisp::zswap
                                               fortran-to-lisp::xerbla
-                                              fortran-to-lisp::lsame
-                                              fortran-to-lisp::disnan
-                                              fortran-to-lisp::dlamch))))
+                                              fortran-to-lisp::lsame))))
 

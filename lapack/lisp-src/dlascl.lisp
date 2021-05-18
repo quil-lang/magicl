@@ -45,7 +45,8 @@
               ((lsame type "Q") (setf itype 5))
               ((lsame type "Z") (setf itype 6)) (t (setf itype -1)))
         (cond ((= itype (f2cl-lib:int-sub 1)) (setf info -1))
-              ((= cfrom zero) (setf info -4)) ((< m 0) (setf info -6))
+              ((or (= cfrom zero) (disnan cfrom)) (setf info -4))
+              ((disnan cto) (setf info -5)) ((< m 0) (setf info -6))
               ((or (< n 0) (and (= itype 4) (/= n m))
                    (and (= itype 5) (/= n m)))
                (setf info -7))
@@ -88,13 +89,18 @@
         (setf ctoc cto)
        label10
         (setf cfrom1 (* cfromc smlnum))
-        (setf cto1 (/ ctoc bignum))
         (cond
-         ((and (> (abs cfrom1) (abs ctoc)) (/= ctoc zero)) (setf mul smlnum)
-          (setf done f2cl-lib:%false%) (setf cfromc cfrom1))
-         ((> (abs cto1) (abs cfromc)) (setf mul bignum)
-          (setf done f2cl-lib:%false%) (setf ctoc cto1))
-         (t (setf mul (/ ctoc cfromc)) (setf done f2cl-lib:%true%)))
+         ((= cfrom1 cfromc) (setf mul (/ ctoc cfromc))
+          (setf done f2cl-lib:%true%) (setf cto1 ctoc))
+         (t (setf cto1 (/ ctoc bignum))
+          (cond
+           ((= cto1 ctoc) (setf mul ctoc) (setf done f2cl-lib:%true%)
+            (setf cfromc one))
+           ((and (> (abs cfrom1) (abs ctoc)) (/= ctoc zero)) (setf mul smlnum)
+            (setf done f2cl-lib:%false%) (setf cfromc cfrom1))
+           ((> (abs cto1) (abs cfromc)) (setf mul bignum)
+            (setf done f2cl-lib:%false%) (setf ctoc cto1))
+           (t (setf mul (/ ctoc cfromc)) (setf done f2cl-lib:%true%)))))
         (cond
          ((= itype 0)
           (f2cl-lib:fdo (j 1 (f2cl-lib:int-add j 1))
@@ -260,7 +266,8 @@
                                             '(nil nil nil nil nil nil nil nil
                                               nil fortran-to-lisp::info)
                                             :calls
-                                            '(fortran-to-lisp::xerbla
-                                              fortran-to-lisp::lsame
-                                              fortran-to-lisp::dlamch))))
+                                            '(fortran-to-lisp::dlamch
+                                              fortran-to-lisp::xerbla
+                                              fortran-to-lisp::disnan
+                                              fortran-to-lisp::lsame))))
 

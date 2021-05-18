@@ -94,7 +94,8 @@
          ((not rotate)
           (multiple-value-bind (var-0 var-1 var-2 var-3 var-4)
               (dlasq1 n d e rwork info)
-            (declare (ignore var-0 var-1 var-2 var-3))
+            (declare (ignore var-1 var-2 var-3))
+            (setf n var-0)
             (setf info var-4))
           (if (/= info 2)
               (go end_label))
@@ -946,7 +947,7 @@
         (go end_label)
        end_label
         (return
-         (values nil nil nil nil nil nil nil nil nil nil nil nil nil nil
+         (values nil n nil nil nil nil nil nil nil nil nil nil nil nil
                  info))))))
 
 (in-package #-gcl #:cl-user #+gcl "CL-USER")
@@ -974,19 +975,19 @@
                                               (array double-float (*))
                                               (fortran-to-lisp::integer4))
                                             :return-values
-                                            '(nil nil nil nil nil nil nil nil
-                                              nil nil nil nil nil nil
-                                              fortran-to-lisp::info)
+                                            '(nil fortran-to-lisp::n nil nil
+                                              nil nil nil nil nil nil nil nil
+                                              nil nil fortran-to-lisp::info)
                                             :calls
                                             '(fortran-to-lisp::zswap
                                               fortran-to-lisp::zdscal
-                                              fortran-to-lisp::zdrot
-                                              fortran-to-lisp::zlasr
-                                              fortran-to-lisp::xerbla
-                                              fortran-to-lisp::lsame
                                               fortran-to-lisp::dlas2
+                                              fortran-to-lisp::zdrot
                                               fortran-to-lisp::dlasv2
+                                              fortran-to-lisp::zlasr
                                               fortran-to-lisp::dlartg
                                               fortran-to-lisp::dlamch
-                                              fortran-to-lisp::dlasq1))))
+                                              fortran-to-lisp::dlasq1
+                                              fortran-to-lisp::xerbla
+                                              fortran-to-lisp::lsame))))
 

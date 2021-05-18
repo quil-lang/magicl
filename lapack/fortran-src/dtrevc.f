@@ -186,6 +186,7 @@
 *     ..
 *     .. External Subroutines ..
       EXTERNAL           DAXPY, DCOPY, DGEMV, DLALN2, DSCAL, XERBLA
+     $                   DLABAD
 *     ..
 *     .. Intrinsic Functions ..
       INTRINSIC          ABS, MAX, SQRT
