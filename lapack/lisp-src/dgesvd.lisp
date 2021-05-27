@@ -1224,9 +1224,8 @@
                                          ((1 *)) work-%offset%)
                    info)
                 (declare
-                 (ignore var-0 var-2 var-3 var-4 var-5 var-6 var-7 var-8 var-9
-                  var-10 var-11 var-12 var-13))
-                (setf n var-1)
+                 (ignore var-0 var-1 var-2 var-3 var-4 var-5 var-6 var-7 var-8
+                  var-9 var-10 var-11 var-12 var-13))
                 (setf info var-14))
               (if wntvas
                   (dlacpy "F" n n a lda vt ldvt)))
@@ -1347,9 +1346,8 @@
                                            ((1 *)) work-%offset%)
                      info)
                   (declare
-                   (ignore var-0 var-2 var-3 var-4 var-5 var-6 var-7 var-8
-                    var-9 var-10 var-11 var-12 var-13))
-                  (setf n var-1)
+                   (ignore var-0 var-1 var-2 var-3 var-4 var-5 var-6 var-7
+                    var-8 var-9 var-10 var-11 var-12 var-13))
                   (setf info var-14))
                 (setf iu (f2cl-lib:int-add ie n))
                 (f2cl-lib:fdo (i 1 (f2cl-lib:int-add i ldwrku))
@@ -1423,9 +1421,8 @@
                                            ((1 *)) work-%offset%)
                      info)
                   (declare
-                   (ignore var-0 var-2 var-3 var-4 var-5 var-6 var-7 var-8
-                    var-9 var-10 var-11 var-12 var-13))
-                  (setf n var-1)
+                   (ignore var-0 var-1 var-2 var-3 var-4 var-5 var-6 var-7
+                    var-8 var-9 var-10 var-11 var-12 var-13))
                   (setf info var-14)))))
              ((and wntuo wntvas)
               (cond
@@ -1555,9 +1552,8 @@
                                            ((1 *)) work-%offset%)
                      info)
                   (declare
-                   (ignore var-0 var-2 var-3 var-4 var-5 var-6 var-7 var-8
-                    var-9 var-10 var-11 var-12 var-13))
-                  (setf n var-1)
+                   (ignore var-0 var-1 var-2 var-3 var-4 var-5 var-6 var-7
+                    var-8 var-9 var-10 var-11 var-12 var-13))
                   (setf info var-14))
                 (setf iu (f2cl-lib:int-add ie n))
                 (f2cl-lib:fdo (i 1 (f2cl-lib:int-add i ldwrku))
@@ -1673,9 +1669,8 @@
                                            ((1 *)) work-%offset%)
                      info)
                   (declare
-                   (ignore var-0 var-2 var-3 var-4 var-5 var-6 var-7 var-8
-                    var-9 var-10 var-11 var-12 var-13))
-                  (setf n var-1)
+                   (ignore var-0 var-1 var-2 var-3 var-4 var-5 var-6 var-7
+                    var-8 var-9 var-10 var-11 var-12 var-13))
                   (setf info var-14)))))
              (wntus
               (cond
@@ -1784,9 +1779,8 @@
                                              ((1 *)) work-%offset%)
                        info)
                     (declare
-                     (ignore var-0 var-2 var-3 var-4 var-5 var-6 var-7 var-8
-                      var-9 var-10 var-11 var-12 var-13))
-                    (setf n var-1)
+                     (ignore var-0 var-1 var-2 var-3 var-4 var-5 var-6 var-7
+                      var-8 var-9 var-10 var-11 var-12 var-13))
                     (setf info var-14))
                   (dgemm "N" "N" m n n one a lda
                    (f2cl-lib:array-slice work-%data% double-float (ir) ((1 *))
@@ -1871,9 +1865,8 @@
                                              ((1 *)) work-%offset%)
                        info)
                     (declare
-                     (ignore var-0 var-2 var-3 var-4 var-5 var-6 var-7 var-8
-                      var-9 var-10 var-11 var-12 var-13))
-                    (setf n var-1)
+                     (ignore var-0 var-1 var-2 var-3 var-4 var-5 var-6 var-7
+                      var-8 var-9 var-10 var-11 var-12 var-13))
                     (setf info var-14)))))
                (wntvo
                 (cond
@@ -2017,9 +2010,8 @@
                                              ((1 *)) work-%offset%)
                        info)
                     (declare
-                     (ignore var-0 var-2 var-3 var-4 var-5 var-6 var-7 var-8
-                      var-9 var-10 var-11 var-12 var-13))
-                    (setf n var-1)
+                     (ignore var-0 var-1 var-2 var-3 var-4 var-5 var-6 var-7
+                      var-8 var-9 var-10 var-11 var-12 var-13))
                     (setf info var-14))
                   (dgemm "N" "N" m n n one a lda
                    (f2cl-lib:array-slice work-%data% double-float (iu) ((1 *))
@@ -2122,9 +2114,8 @@
                                              ((1 *)) work-%offset%)
                        info)
                     (declare
-                     (ignore var-0 var-2 var-3 var-4 var-5 var-6 var-7 var-8
-                      var-9 var-10 var-11 var-12 var-13))
-                    (setf n var-1)
+                     (ignore var-0 var-1 var-2 var-3 var-4 var-5 var-6 var-7
+                      var-8 var-9 var-10 var-11 var-12 var-13))
                     (setf info var-14)))))
                (wntvas
                 (cond
@@ -2249,9 +2240,8 @@
                                              ((1 *)) work-%offset%)
                        info)
                     (declare
-                     (ignore var-0 var-2 var-3 var-4 var-5 var-6 var-7 var-8
-                      var-9 var-10 var-11 var-12 var-13))
-                    (setf n var-1)
+                     (ignore var-0 var-1 var-2 var-3 var-4 var-5 var-6 var-7
+                      var-8 var-9 var-10 var-11 var-12 var-13))
                     (setf info var-14))
                   (dgemm "N" "N" m n n one a lda
                    (f2cl-lib:array-slice work-%data% double-float (iu) ((1 *))
@@ -2351,9 +2341,8 @@
                                              ((1 *)) work-%offset%)
                        info)
                     (declare
-                     (ignore var-0 var-2 var-3 var-4 var-5 var-6 var-7 var-8
-                      var-9 var-10 var-11 var-12 var-13))
-                    (setf n var-1)
+                     (ignore var-0 var-1 var-2 var-3 var-4 var-5 var-6 var-7
+                      var-8 var-9 var-10 var-11 var-12 var-13))
                     (setf info var-14)))))))
              (wntua
               (cond
@@ -2465,9 +2454,8 @@
                                              ((1 *)) work-%offset%)
                        info)
                     (declare
-                     (ignore var-0 var-2 var-3 var-4 var-5 var-6 var-7 var-8
-                      var-9 var-10 var-11 var-12 var-13))
-                    (setf n var-1)
+                     (ignore var-0 var-1 var-2 var-3 var-4 var-5 var-6 var-7
+                      var-8 var-9 var-10 var-11 var-12 var-13))
                     (setf info var-14))
                   (dgemm "N" "N" m n n one u ldu
                    (f2cl-lib:array-slice work-%data% double-float (ir) ((1 *))
@@ -2553,9 +2541,8 @@
                                              ((1 *)) work-%offset%)
                        info)
                     (declare
-                     (ignore var-0 var-2 var-3 var-4 var-5 var-6 var-7 var-8
-                      var-9 var-10 var-11 var-12 var-13))
-                    (setf n var-1)
+                     (ignore var-0 var-1 var-2 var-3 var-4 var-5 var-6 var-7
+                      var-8 var-9 var-10 var-11 var-12 var-13))
                     (setf info var-14)))))
                (wntvo
                 (cond
@@ -2702,9 +2689,8 @@
                                              ((1 *)) work-%offset%)
                        info)
                     (declare
-                     (ignore var-0 var-2 var-3 var-4 var-5 var-6 var-7 var-8
-                      var-9 var-10 var-11 var-12 var-13))
-                    (setf n var-1)
+                     (ignore var-0 var-1 var-2 var-3 var-4 var-5 var-6 var-7
+                      var-8 var-9 var-10 var-11 var-12 var-13))
                     (setf info var-14))
                   (dgemm "N" "N" m n n one u ldu
                    (f2cl-lib:array-slice work-%data% double-float (iu) ((1 *))
@@ -2808,9 +2794,8 @@
                                              ((1 *)) work-%offset%)
                        info)
                     (declare
-                     (ignore var-0 var-2 var-3 var-4 var-5 var-6 var-7 var-8
-                      var-9 var-10 var-11 var-12 var-13))
-                    (setf n var-1)
+                     (ignore var-0 var-1 var-2 var-3 var-4 var-5 var-6 var-7
+                      var-8 var-9 var-10 var-11 var-12 var-13))
                     (setf info var-14)))))
                (wntvas
                 (cond
@@ -2938,9 +2923,8 @@
                                              ((1 *)) work-%offset%)
                        info)
                     (declare
-                     (ignore var-0 var-2 var-3 var-4 var-5 var-6 var-7 var-8
-                      var-9 var-10 var-11 var-12 var-13))
-                    (setf n var-1)
+                     (ignore var-0 var-1 var-2 var-3 var-4 var-5 var-6 var-7
+                      var-8 var-9 var-10 var-11 var-12 var-13))
                     (setf info var-14))
                   (dgemm "N" "N" m n n one u ldu
                    (f2cl-lib:array-slice work-%data% double-float (iu) ((1 *))
@@ -3041,9 +3025,8 @@
                                              ((1 *)) work-%offset%)
                        info)
                     (declare
-                     (ignore var-0 var-2 var-3 var-4 var-5 var-6 var-7 var-8
-                      var-9 var-10 var-11 var-12 var-13))
-                    (setf n var-1)
+                     (ignore var-0 var-1 var-2 var-3 var-4 var-5 var-6 var-7
+                      var-8 var-9 var-10 var-11 var-12 var-13))
                     (setf info var-14)))))))))
            (t (setf ie 1) (setf itauq (f2cl-lib:int-add ie n))
             (setf itaup (f2cl-lib:int-add itauq n))
@@ -3147,9 +3130,8 @@
                                          ((1 *)) work-%offset%)
                    info)
                 (declare
-                 (ignore var-0 var-2 var-3 var-4 var-5 var-6 var-7 var-8 var-9
-                  var-10 var-11 var-12 var-13))
-                (setf n var-1)
+                 (ignore var-0 var-1 var-2 var-3 var-4 var-5 var-6 var-7 var-8
+                  var-9 var-10 var-11 var-12 var-13))
                 (setf info var-14)))
              ((and (not wntuo) wntvo)
               (multiple-value-bind
@@ -3163,9 +3145,8 @@
                                          ((1 *)) work-%offset%)
                    info)
                 (declare
-                 (ignore var-0 var-2 var-3 var-4 var-5 var-6 var-7 var-8 var-9
-                  var-10 var-11 var-12 var-13))
-                (setf n var-1)
+                 (ignore var-0 var-1 var-2 var-3 var-4 var-5 var-6 var-7 var-8
+                  var-9 var-10 var-11 var-12 var-13))
                 (setf info var-14)))
              (t
               (multiple-value-bind
@@ -3179,9 +3160,8 @@
                                          ((1 *)) work-%offset%)
                    info)
                 (declare
-                 (ignore var-0 var-2 var-3 var-4 var-5 var-6 var-7 var-8 var-9
-                  var-10 var-11 var-12 var-13))
-                (setf n var-1)
+                 (ignore var-0 var-1 var-2 var-3 var-4 var-5 var-6 var-7 var-8
+                  var-9 var-10 var-11 var-12 var-13))
                 (setf info var-14)))))))
          (t
           (cond
@@ -3252,9 +3232,8 @@
                                          ((1 *)) work-%offset%)
                    info)
                 (declare
-                 (ignore var-0 var-2 var-3 var-4 var-5 var-6 var-7 var-8 var-9
-                  var-10 var-11 var-12 var-13))
-                (setf m var-1)
+                 (ignore var-0 var-1 var-2 var-3 var-4 var-5 var-6 var-7 var-8
+                  var-9 var-10 var-11 var-12 var-13))
                 (setf info var-14))
               (if wntuas
                   (dlacpy "F" m m a lda u ldu)))
@@ -3374,9 +3353,8 @@
                                            ((1 *)) work-%offset%)
                      info)
                   (declare
-                   (ignore var-0 var-2 var-3 var-4 var-5 var-6 var-7 var-8
-                    var-9 var-10 var-11 var-12 var-13))
-                  (setf m var-1)
+                   (ignore var-0 var-1 var-2 var-3 var-4 var-5 var-6 var-7
+                    var-8 var-9 var-10 var-11 var-12 var-13))
                   (setf info var-14))
                 (setf iu (f2cl-lib:int-add ie m))
                 (f2cl-lib:fdo (i 1 (f2cl-lib:int-add i chunk))
@@ -3450,9 +3428,8 @@
                                            ((1 *)) work-%offset%)
                      info)
                   (declare
-                   (ignore var-0 var-2 var-3 var-4 var-5 var-6 var-7 var-8
-                    var-9 var-10 var-11 var-12 var-13))
-                  (setf m var-1)
+                   (ignore var-0 var-1 var-2 var-3 var-4 var-5 var-6 var-7
+                    var-8 var-9 var-10 var-11 var-12 var-13))
                   (setf info var-14)))))
              ((and wntvo wntuas)
               (cond
@@ -3581,9 +3558,8 @@
                                            ((1 *)) work-%offset%)
                      info)
                   (declare
-                   (ignore var-0 var-2 var-3 var-4 var-5 var-6 var-7 var-8
-                    var-9 var-10 var-11 var-12 var-13))
-                  (setf m var-1)
+                   (ignore var-0 var-1 var-2 var-3 var-4 var-5 var-6 var-7
+                    var-8 var-9 var-10 var-11 var-12 var-13))
                   (setf info var-14))
                 (setf iu (f2cl-lib:int-add ie m))
                 (f2cl-lib:fdo (i 1 (f2cl-lib:int-add i chunk))
@@ -3699,9 +3675,8 @@
                                            ((1 *)) work-%offset%)
                      info)
                   (declare
-                   (ignore var-0 var-2 var-3 var-4 var-5 var-6 var-7 var-8
-                    var-9 var-10 var-11 var-12 var-13))
-                  (setf m var-1)
+                   (ignore var-0 var-1 var-2 var-3 var-4 var-5 var-6 var-7
+                    var-8 var-9 var-10 var-11 var-12 var-13))
                   (setf info var-14)))))
              (wntvs
               (cond
@@ -3809,9 +3784,8 @@
                                              ((1 *)) work-%offset%)
                        info)
                     (declare
-                     (ignore var-0 var-2 var-3 var-4 var-5 var-6 var-7 var-8
-                      var-9 var-10 var-11 var-12 var-13))
-                    (setf m var-1)
+                     (ignore var-0 var-1 var-2 var-3 var-4 var-5 var-6 var-7
+                      var-8 var-9 var-10 var-11 var-12 var-13))
                     (setf info var-14))
                   (dgemm "N" "N" m n m one
                    (f2cl-lib:array-slice work-%data% double-float (ir) ((1 *))
@@ -3896,9 +3870,8 @@
                                              ((1 *)) work-%offset%)
                        info)
                     (declare
-                     (ignore var-0 var-2 var-3 var-4 var-5 var-6 var-7 var-8
-                      var-9 var-10 var-11 var-12 var-13))
-                    (setf m var-1)
+                     (ignore var-0 var-1 var-2 var-3 var-4 var-5 var-6 var-7
+                      var-8 var-9 var-10 var-11 var-12 var-13))
                     (setf info var-14)))))
                (wntuo
                 (cond
@@ -4042,9 +4015,8 @@
                                              ((1 *)) work-%offset%)
                        info)
                     (declare
-                     (ignore var-0 var-2 var-3 var-4 var-5 var-6 var-7 var-8
-                      var-9 var-10 var-11 var-12 var-13))
-                    (setf m var-1)
+                     (ignore var-0 var-1 var-2 var-3 var-4 var-5 var-6 var-7
+                      var-8 var-9 var-10 var-11 var-12 var-13))
                     (setf info var-14))
                   (dgemm "N" "N" m n m one
                    (f2cl-lib:array-slice work-%data% double-float (iu) ((1 *))
@@ -4147,9 +4119,8 @@
                                              ((1 *)) work-%offset%)
                        info)
                     (declare
-                     (ignore var-0 var-2 var-3 var-4 var-5 var-6 var-7 var-8
-                      var-9 var-10 var-11 var-12 var-13))
-                    (setf m var-1)
+                     (ignore var-0 var-1 var-2 var-3 var-4 var-5 var-6 var-7
+                      var-8 var-9 var-10 var-11 var-12 var-13))
                     (setf info var-14)))))
                (wntuas
                 (cond
@@ -4273,9 +4244,8 @@
                                              ((1 *)) work-%offset%)
                        info)
                     (declare
-                     (ignore var-0 var-2 var-3 var-4 var-5 var-6 var-7 var-8
-                      var-9 var-10 var-11 var-12 var-13))
-                    (setf m var-1)
+                     (ignore var-0 var-1 var-2 var-3 var-4 var-5 var-6 var-7
+                      var-8 var-9 var-10 var-11 var-12 var-13))
                     (setf info var-14))
                   (dgemm "N" "N" m n m one
                    (f2cl-lib:array-slice work-%data% double-float (iu) ((1 *))
@@ -4375,9 +4345,8 @@
                                              ((1 *)) work-%offset%)
                        info)
                     (declare
-                     (ignore var-0 var-2 var-3 var-4 var-5 var-6 var-7 var-8
-                      var-9 var-10 var-11 var-12 var-13))
-                    (setf m var-1)
+                     (ignore var-0 var-1 var-2 var-3 var-4 var-5 var-6 var-7
+                      var-8 var-9 var-10 var-11 var-12 var-13))
                     (setf info var-14)))))))
              (wntva
               (cond
@@ -4488,9 +4457,8 @@
                                              ((1 *)) work-%offset%)
                        info)
                     (declare
-                     (ignore var-0 var-2 var-3 var-4 var-5 var-6 var-7 var-8
-                      var-9 var-10 var-11 var-12 var-13))
-                    (setf m var-1)
+                     (ignore var-0 var-1 var-2 var-3 var-4 var-5 var-6 var-7
+                      var-8 var-9 var-10 var-11 var-12 var-13))
                     (setf info var-14))
                   (dgemm "N" "N" m n m one
                    (f2cl-lib:array-slice work-%data% double-float (ir) ((1 *))
@@ -4576,9 +4544,8 @@
                                              ((1 *)) work-%offset%)
                        info)
                     (declare
-                     (ignore var-0 var-2 var-3 var-4 var-5 var-6 var-7 var-8
-                      var-9 var-10 var-11 var-12 var-13))
-                    (setf m var-1)
+                     (ignore var-0 var-1 var-2 var-3 var-4 var-5 var-6 var-7
+                      var-8 var-9 var-10 var-11 var-12 var-13))
                     (setf info var-14)))))
                (wntuo
                 (cond
@@ -4725,9 +4692,8 @@
                                              ((1 *)) work-%offset%)
                        info)
                     (declare
-                     (ignore var-0 var-2 var-3 var-4 var-5 var-6 var-7 var-8
-                      var-9 var-10 var-11 var-12 var-13))
-                    (setf m var-1)
+                     (ignore var-0 var-1 var-2 var-3 var-4 var-5 var-6 var-7
+                      var-8 var-9 var-10 var-11 var-12 var-13))
                     (setf info var-14))
                   (dgemm "N" "N" m n m one
                    (f2cl-lib:array-slice work-%data% double-float (iu) ((1 *))
@@ -4831,9 +4797,8 @@
                                              ((1 *)) work-%offset%)
                        info)
                     (declare
-                     (ignore var-0 var-2 var-3 var-4 var-5 var-6 var-7 var-8
-                      var-9 var-10 var-11 var-12 var-13))
-                    (setf m var-1)
+                     (ignore var-0 var-1 var-2 var-3 var-4 var-5 var-6 var-7
+                      var-8 var-9 var-10 var-11 var-12 var-13))
                     (setf info var-14)))))
                (wntuas
                 (cond
@@ -4960,9 +4925,8 @@
                                              ((1 *)) work-%offset%)
                        info)
                     (declare
-                     (ignore var-0 var-2 var-3 var-4 var-5 var-6 var-7 var-8
-                      var-9 var-10 var-11 var-12 var-13))
-                    (setf m var-1)
+                     (ignore var-0 var-1 var-2 var-3 var-4 var-5 var-6 var-7
+                      var-8 var-9 var-10 var-11 var-12 var-13))
                     (setf info var-14))
                   (dgemm "N" "N" m n m one
                    (f2cl-lib:array-slice work-%data% double-float (iu) ((1 *))
@@ -5063,9 +5027,8 @@
                                              ((1 *)) work-%offset%)
                        info)
                     (declare
-                     (ignore var-0 var-2 var-3 var-4 var-5 var-6 var-7 var-8
-                      var-9 var-10 var-11 var-12 var-13))
-                    (setf m var-1)
+                     (ignore var-0 var-1 var-2 var-3 var-4 var-5 var-6 var-7
+                      var-8 var-9 var-10 var-11 var-12 var-13))
                     (setf info var-14)))))))))
            (t (setf ie 1) (setf itauq (f2cl-lib:int-add ie m))
             (setf itaup (f2cl-lib:int-add itauq m))
@@ -5169,9 +5132,8 @@
                                          ((1 *)) work-%offset%)
                    info)
                 (declare
-                 (ignore var-0 var-2 var-3 var-4 var-5 var-6 var-7 var-8 var-9
-                  var-10 var-11 var-12 var-13))
-                (setf m var-1)
+                 (ignore var-0 var-1 var-2 var-3 var-4 var-5 var-6 var-7 var-8
+                  var-9 var-10 var-11 var-12 var-13))
                 (setf info var-14)))
              ((and (not wntuo) wntvo)
               (multiple-value-bind
@@ -5185,9 +5147,8 @@
                                          ((1 *)) work-%offset%)
                    info)
                 (declare
-                 (ignore var-0 var-2 var-3 var-4 var-5 var-6 var-7 var-8 var-9
-                  var-10 var-11 var-12 var-13))
-                (setf m var-1)
+                 (ignore var-0 var-1 var-2 var-3 var-4 var-5 var-6 var-7 var-8
+                  var-9 var-10 var-11 var-12 var-13))
                 (setf info var-14)))
              (t
               (multiple-value-bind
@@ -5201,9 +5162,8 @@
                                          ((1 *)) work-%offset%)
                    info)
                 (declare
-                 (ignore var-0 var-2 var-3 var-4 var-5 var-6 var-7 var-8 var-9
-                  var-10 var-11 var-12 var-13))
-                (setf m var-1)
+                 (ignore var-0 var-1 var-2 var-3 var-4 var-5 var-6 var-7 var-8
+                  var-9 var-10 var-11 var-12 var-13))
                 (setf info var-14))))))))
         (cond
          ((/= info 0)
@@ -5278,7 +5238,7 @@
         (go end_label)
        end_label
         (return
-         (values nil nil m n nil nil nil nil nil nil nil nil nil info))))))
+         (values nil nil nil nil nil nil nil nil nil nil nil nil nil info))))))
 
 (in-package #-gcl #:cl-user #+gcl "CL-USER")
 #+#.(cl:if (cl:find-package '#:f2cl) '(and) '(or))
@@ -5300,9 +5260,8 @@
                                               (fortran-to-lisp::integer4)
                                               (fortran-to-lisp::integer4))
                                             :return-values
-                                            '(nil nil fortran-to-lisp::m
-                                              fortran-to-lisp::n nil nil nil
-                                              nil nil nil nil nil nil
+                                            '(nil nil nil nil nil nil nil nil
+                                              nil nil nil nil nil
                                               fortran-to-lisp::info)
                                             :calls
                                             '(fortran-to-lisp::dorglq

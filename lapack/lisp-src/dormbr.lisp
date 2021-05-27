@@ -112,9 +112,8 @@
                var-10 var-11 var-12)
               (dormqr side trans m n k a lda tau c ldc work lwork iinfo)
             (declare
-             (ignore var-0 var-2 var-3 var-4 var-5 var-6 var-7 var-8 var-9
-              var-10 var-11))
-            (setf trans var-1)
+             (ignore var-0 var-1 var-2 var-3 var-4 var-5 var-6 var-7 var-8
+              var-9 var-10 var-11))
             (setf iinfo var-12)))
          ((> nq 1)
           (cond
@@ -133,9 +132,8 @@
                                      ((1 ldc) (1 *)) c-%offset%)
                ldc work lwork iinfo)
             (declare
-             (ignore var-0 var-2 var-3 var-4 var-5 var-6 var-7 var-8 var-9
-              var-10 var-11))
-            (setf trans var-1)
+             (ignore var-0 var-1 var-2 var-3 var-4 var-5 var-6 var-7 var-8
+              var-9 var-10 var-11))
             (setf iinfo var-12)))))
        (t
         (cond (notran (f2cl-lib:f2cl-set-string transt "T" (string 1)))
@@ -175,7 +173,7 @@
       (go end_label)
      end_label
       (return
-       (values nil nil trans nil nil nil nil nil nil nil nil nil nil info)))))
+       (values nil nil nil nil nil nil nil nil nil nil nil nil nil info)))))
 
 (in-package #-gcl #:cl-user #+gcl "CL-USER")
 #+#.(cl:if (cl:find-package '#:f2cl) '(and) '(or))
@@ -196,9 +194,9 @@
                                               (fortran-to-lisp::integer4)
                                               (fortran-to-lisp::integer4))
                                             :return-values
-                                            '(nil nil fortran-to-lisp::trans
-                                              nil nil nil nil nil nil nil nil
-                                              nil nil fortran-to-lisp::info)
+                                            '(nil nil nil nil nil nil nil nil
+                                              nil nil nil nil nil
+                                              fortran-to-lisp::info)
                                             :calls
                                             '(fortran-to-lisp::dormlq
                                               fortran-to-lisp::dormqr

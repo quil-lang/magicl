@@ -101,7 +101,7 @@
                                        (1 (f2cl-lib:int-add j jb))
                                        ((1 lda) (1 *)) a-%offset%)
                  lda j (f2cl-lib:int-sub (f2cl-lib:int-add j jb) 1) ipiv 1)
-                (ztrsm "L" "L" "N" "U" jb
+                (ztrsm "L" "L" "N" "Unit" jb
                  (f2cl-lib:int-add (f2cl-lib:int-sub n j jb) 1) one
                  (f2cl-lib:array-slice a-%data% f2cl-lib:complex16 (j j)
                                        ((1 lda) (1 *)) a-%offset%)

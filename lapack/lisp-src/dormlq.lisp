@@ -139,20 +139,13 @@
                 (setf ic i))
                (t (setf ni (f2cl-lib:int-add (f2cl-lib:int-sub n i) 1))
                 (setf jc i)))
-              (multiple-value-bind
-                  (var-0 var-1 var-2 var-3 var-4 var-5 var-6 var-7 var-8 var-9
-                   var-10 var-11 var-12 var-13 var-14)
-                  (dlarfb side transt "F" "R" mi ni ib
-                   (f2cl-lib:array-slice a-%data% double-float (i i)
-                                         ((1 lda) (1 *)) a-%offset%)
-                   lda t$ ldt
-                   (f2cl-lib:array-slice c-%data% double-float (ic jc)
-                                         ((1 ldc) (1 *)) c-%offset%)
-                   ldc work ldwork)
-                (declare
-                 (ignore var-0 var-2 var-3 var-4 var-5 var-6 var-7 var-8 var-9
-                  var-10 var-11 var-12 var-13 var-14))
-                (setf transt var-1))
+              (dlarfb side transt "F" "R" mi ni ib
+               (f2cl-lib:array-slice a-%data% double-float (i i)
+                                     ((1 lda) (1 *)) a-%offset%)
+               lda t$ ldt
+               (f2cl-lib:array-slice c-%data% double-float (ic jc)
+                                     ((1 ldc) (1 *)) c-%offset%)
+               ldc work ldwork)
              label10))))
         (setf (f2cl-lib:fref work-%data% (1) ((1 *)) work-%offset%)
                 (coerce (the f2cl-lib:integer4 lwkopt) 'double-float))

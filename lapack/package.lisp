@@ -1,8 +1,49 @@
 (in-package #:cl)
 
 (defpackage #:magicl.lisp-lapack
-  (:use #:cl #:magicl.lisp-blas)
-  (:export #:dbdsqr
+  (:use #:cl)
+  (:export #:caxpy
+           #:ccopy
+           #:cdotc
+           #:cdotu
+           #:cgbmv
+           #:cgemm
+           #:cgemv
+           #:cgerc
+           #:cgeru
+           #:chbmv
+           #:chemm
+           #:chemv
+           #:cher
+           #:cher2
+           #:cher2k
+           #:cherk
+           #:chpmv
+           #:chpr
+           #:chpr2
+           #:crotg
+           #:cscal
+           #:csrot
+           #:csscal
+           #:cswap
+           #:csymm
+           #:csyr2k
+           #:csyrk
+           #:ctbmv
+           #:ctbsv
+           #:ctpmv
+           #:ctpsv
+           #:ctrmm
+           #:ctrmv
+           #:ctrsm
+           #:ctrsv
+           #:dasum
+           #:daxpy
+           #:dbdsqr
+           #:dcabs1
+           #:dcopy
+           #:ddot
+           #:dgbmv
            #:dgebak
            #:dgebal
            #:dgebd2
@@ -12,8 +53,11 @@
            #:dgehrd
            #:dgelq2
            #:dgelqf
+           #:dgemm
+           #:dgemv
            #:dgeqr2
            #:dgeqrf
+           #:dger
            #:dgesvd
            #:dgetf2
            #:dgetrf
@@ -56,6 +100,7 @@
            #:dlassq
            #:dlasv2
            #:dlaswp
+           #:dnrm2
            #:dorg2r
            #:dorgbr
            #:dorghr
@@ -67,13 +112,90 @@
            #:dorml2
            #:dormlq
            #:dormqr
+           #:drot
+           #:drotg
+           #:drotm
+           #:drotmg
+           #:dsbmv
+           #:dscal
+           #:dsdot
+           #:dspmv
+           #:dspr
+           #:dspr2
            #:dsterf
+           #:dswap
+           #:dsymm
+           #:dsymv
+           #:dsyr
+           #:dsyr2
+           #:dsyr2k
+           #:dsyrk
+           #:dtbmv
+           #:dtbsv
+           #:dtpmv
+           #:dtpsv
            #:dtrevc
+           #:dtrmm
+           #:dtrmv
+           #:dtrsm
+           #:dtrsv
+           #:dzasum
+           #:dznrm2
+           #:icamax
+           #:idamax
            #:ieeeck
            #:ilaenv
            #:ilazlc
            #:ilazlr
+           #:isamax
+           #:izamax
+           #:lsame
+           #:sasum
+           #:saxpy
+           #:scabs1
+           #:scasum
+           #:scnrm2
+           #:scopy
+           #:sdot
+           #:sdsdot
+           #:sgbmv
+           #:sgemm
+           #:sgemv
+           #:sger
+           #:snrm2
+           #:srot
+           #:srotg
+           #:srotm
+           #:srotmg
+           #:ssbmv
+           #:sscal
+           #:sspmv
+           #:sspr
+           #:sspr2
+           #:sswap
+           #:ssymm
+           #:ssymv
+           #:ssyr
+           #:ssyr2
+           #:ssyr2k
+           #:ssyrk
+           #:stbmv
+           #:stbsv
+           #:stpmv
+           #:stpsv
+           #:strmm
+           #:strmv
+           #:strsm
+           #:strsv
+           #:xerbla
+           #:zaxpy
            #:zbdsqr
+           #:zcopy
+           #:zdotc
+           #:zdotu
+           #:zdrot
+           #:zdscal
+           #:zgbmv
            #:zgebak
            #:zgebal
            #:zgebd2
@@ -83,14 +205,28 @@
            #:zgehrd
            #:zgelq2
            #:zgelqf
+           #:zgemm
+           #:zgemv
            #:zgeqr2
            #:zgeqrf
+           #:zgerc
+           #:zgeru
            #:zgesvd
            #:zgetf2
            #:zgetrf
+           #:zhbmv
            #:zheev
+           #:zhemm
+           #:zhemv
+           #:zher
+           #:zher2
+           #:zher2k
+           #:zherk
            #:zhetd2
            #:zhetrd
+           #:zhpmv
+           #:zhpr
+           #:zhpr2
            #:zhseqr
            #:zlabrd
            #:zlacgv
@@ -119,9 +255,23 @@
            #:zlatrd
            #:zlatrs
            #:zrot
+           #:zrotg
+           #:zscal
            #:zsteqr
+           #:zswap
+           #:zsymm
+           #:zsyr2k
+           #:zsyrk
+           #:ztbmv
+           #:ztbsv
+           #:ztpmv
+           #:ztpsv
            #:ztrevc
            #:ztrexc
+           #:ztrmm
+           #:ztrmv
+           #:ztrsm
+           #:ztrsv
            #:zung2l
            #:zung2r
            #:zungbr

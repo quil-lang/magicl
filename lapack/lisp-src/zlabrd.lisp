@@ -47,7 +47,7 @@
                (f2cl-lib:array-slice y-%data% f2cl-lib:complex16 (i 1)
                                      ((1 ldy) (1 *)) y-%offset%)
                ldy)
-              (zgemv "No transpose" (f2cl-lib:int-add (f2cl-lib:int-sub m i) 1)
+              (zgemv "N" (f2cl-lib:int-add (f2cl-lib:int-sub m i) 1)
                (f2cl-lib:int-sub i 1) (- one)
                (f2cl-lib:array-slice a-%data% f2cl-lib:complex16 (i 1)
                                      ((1 lda) (1 *)) a-%offset%)
@@ -62,7 +62,7 @@
                (f2cl-lib:array-slice y-%data% f2cl-lib:complex16 (i 1)
                                      ((1 ldy) (1 *)) y-%offset%)
                ldy)
-              (zgemv "No transpose" (f2cl-lib:int-add (f2cl-lib:int-sub m i) 1)
+              (zgemv "N" (f2cl-lib:int-add (f2cl-lib:int-sub m i) 1)
                (f2cl-lib:int-sub i 1) (- one)
                (f2cl-lib:array-slice x-%data% f2cl-lib:complex16 (i 1)
                                      ((1 ldx) (1 *)) x-%offset%)
@@ -92,8 +92,7 @@
                ((< i n)
                 (setf (f2cl-lib:fref a-%data% (i i) ((1 lda) (1 *)) a-%offset%)
                         one)
-                (zgemv "Conjugate transpose"
-                 (f2cl-lib:int-add (f2cl-lib:int-sub m i) 1)
+                (zgemv "C" (f2cl-lib:int-add (f2cl-lib:int-sub m i) 1)
                  (f2cl-lib:int-sub n i) one
                  (f2cl-lib:array-slice a-%data% f2cl-lib:complex16
                                        (i (f2cl-lib:int-add i 1))
@@ -105,8 +104,7 @@
                  (f2cl-lib:array-slice y-%data% f2cl-lib:complex16 ((+ i 1) i)
                                        ((1 ldy) (1 *)) y-%offset%)
                  1)
-                (zgemv "Conjugate transpose"
-                 (f2cl-lib:int-add (f2cl-lib:int-sub m i) 1)
+                (zgemv "C" (f2cl-lib:int-add (f2cl-lib:int-sub m i) 1)
                  (f2cl-lib:int-sub i 1) one
                  (f2cl-lib:array-slice a-%data% f2cl-lib:complex16 (i 1)
                                        ((1 lda) (1 *)) a-%offset%)
@@ -117,8 +115,8 @@
                  (f2cl-lib:array-slice y-%data% f2cl-lib:complex16 (1 i)
                                        ((1 ldy) (1 *)) y-%offset%)
                  1)
-                (zgemv "No transpose" (f2cl-lib:int-sub n i)
-                 (f2cl-lib:int-sub i 1) (- one)
+                (zgemv "N" (f2cl-lib:int-sub n i) (f2cl-lib:int-sub i 1)
+                 (- one)
                  (f2cl-lib:array-slice y-%data% f2cl-lib:complex16 ((+ i 1) 1)
                                        ((1 ldy) (1 *)) y-%offset%)
                  ldy
@@ -128,8 +126,7 @@
                  (f2cl-lib:array-slice y-%data% f2cl-lib:complex16 ((+ i 1) i)
                                        ((1 ldy) (1 *)) y-%offset%)
                  1)
-                (zgemv "Conjugate transpose"
-                 (f2cl-lib:int-add (f2cl-lib:int-sub m i) 1)
+                (zgemv "C" (f2cl-lib:int-add (f2cl-lib:int-sub m i) 1)
                  (f2cl-lib:int-sub i 1) one
                  (f2cl-lib:array-slice x-%data% f2cl-lib:complex16 (i 1)
                                        ((1 ldx) (1 *)) x-%offset%)
@@ -140,8 +137,8 @@
                  (f2cl-lib:array-slice y-%data% f2cl-lib:complex16 (1 i)
                                        ((1 ldy) (1 *)) y-%offset%)
                  1)
-                (zgemv "Conjugate transpose" (f2cl-lib:int-sub i 1)
-                 (f2cl-lib:int-sub n i) (- one)
+                (zgemv "C" (f2cl-lib:int-sub i 1) (f2cl-lib:int-sub n i)
+                 (- one)
                  (f2cl-lib:array-slice a-%data% f2cl-lib:complex16
                                        (1 (f2cl-lib:int-add i 1))
                                        ((1 lda) (1 *)) a-%offset%)
@@ -166,7 +163,7 @@
                  (f2cl-lib:array-slice a-%data% f2cl-lib:complex16 (i 1)
                                        ((1 lda) (1 *)) a-%offset%)
                  lda)
-                (zgemv "No transpose" (f2cl-lib:int-sub n i) i (- one)
+                (zgemv "N" (f2cl-lib:int-sub n i) i (- one)
                  (f2cl-lib:array-slice y-%data% f2cl-lib:complex16 ((+ i 1) 1)
                                        ((1 ldy) (1 *)) y-%offset%)
                  ldy
@@ -185,8 +182,8 @@
                  (f2cl-lib:array-slice x-%data% f2cl-lib:complex16 (i 1)
                                        ((1 ldx) (1 *)) x-%offset%)
                  ldx)
-                (zgemv "Conjugate transpose" (f2cl-lib:int-sub i 1)
-                 (f2cl-lib:int-sub n i) (- one)
+                (zgemv "C" (f2cl-lib:int-sub i 1) (f2cl-lib:int-sub n i)
+                 (- one)
                  (f2cl-lib:array-slice a-%data% f2cl-lib:complex16
                                        (1 (f2cl-lib:int-add i 1))
                                        ((1 lda) (1 *)) a-%offset%)
@@ -224,8 +221,7 @@
                 (setf (f2cl-lib:fref a-%data% (i (f2cl-lib:int-add i 1))
                                      ((1 lda) (1 *)) a-%offset%)
                         one)
-                (zgemv "No transpose" (f2cl-lib:int-sub m i)
-                 (f2cl-lib:int-sub n i) one
+                (zgemv "N" (f2cl-lib:int-sub m i) (f2cl-lib:int-sub n i) one
                  (f2cl-lib:array-slice a-%data% f2cl-lib:complex16
                                        ((+ i 1) (f2cl-lib:int-add i 1))
                                        ((1 lda) (1 *)) a-%offset%)
@@ -237,7 +233,7 @@
                  (f2cl-lib:array-slice x-%data% f2cl-lib:complex16 ((+ i 1) i)
                                        ((1 ldx) (1 *)) x-%offset%)
                  1)
-                (zgemv "Conjugate transpose" (f2cl-lib:int-sub n i) i one
+                (zgemv "C" (f2cl-lib:int-sub n i) i one
                  (f2cl-lib:array-slice y-%data% f2cl-lib:complex16 ((+ i 1) 1)
                                        ((1 ldy) (1 *)) y-%offset%)
                  ldy
@@ -248,7 +244,7 @@
                  (f2cl-lib:array-slice x-%data% f2cl-lib:complex16 (1 i)
                                        ((1 ldx) (1 *)) x-%offset%)
                  1)
-                (zgemv "No transpose" (f2cl-lib:int-sub m i) i (- one)
+                (zgemv "N" (f2cl-lib:int-sub m i) i (- one)
                  (f2cl-lib:array-slice a-%data% f2cl-lib:complex16 ((+ i 1) 1)
                                        ((1 lda) (1 *)) a-%offset%)
                  lda
@@ -258,8 +254,7 @@
                  (f2cl-lib:array-slice x-%data% f2cl-lib:complex16 ((+ i 1) i)
                                        ((1 ldx) (1 *)) x-%offset%)
                  1)
-                (zgemv "No transpose" (f2cl-lib:int-sub i 1)
-                 (f2cl-lib:int-sub n i) one
+                (zgemv "N" (f2cl-lib:int-sub i 1) (f2cl-lib:int-sub n i) one
                  (f2cl-lib:array-slice a-%data% f2cl-lib:complex16
                                        (1 (f2cl-lib:int-add i 1))
                                        ((1 lda) (1 *)) a-%offset%)
@@ -271,8 +266,8 @@
                  (f2cl-lib:array-slice x-%data% f2cl-lib:complex16 (1 i)
                                        ((1 ldx) (1 *)) x-%offset%)
                  1)
-                (zgemv "No transpose" (f2cl-lib:int-sub m i)
-                 (f2cl-lib:int-sub i 1) (- one)
+                (zgemv "N" (f2cl-lib:int-sub m i) (f2cl-lib:int-sub i 1)
+                 (- one)
                  (f2cl-lib:array-slice x-%data% f2cl-lib:complex16 ((+ i 1) 1)
                                        ((1 ldx) (1 *)) x-%offset%)
                  ldx
@@ -305,7 +300,7 @@
                (f2cl-lib:array-slice a-%data% f2cl-lib:complex16 (i 1)
                                      ((1 lda) (1 *)) a-%offset%)
                lda)
-              (zgemv "No transpose" (f2cl-lib:int-add (f2cl-lib:int-sub n i) 1)
+              (zgemv "N" (f2cl-lib:int-add (f2cl-lib:int-sub n i) 1)
                (f2cl-lib:int-sub i 1) (- one)
                (f2cl-lib:array-slice y-%data% f2cl-lib:complex16 (i 1)
                                      ((1 ldy) (1 *)) y-%offset%)
@@ -324,7 +319,7 @@
                (f2cl-lib:array-slice x-%data% f2cl-lib:complex16 (i 1)
                                      ((1 ldx) (1 *)) x-%offset%)
                ldx)
-              (zgemv "Conjugate transpose" (f2cl-lib:int-sub i 1)
+              (zgemv "C" (f2cl-lib:int-sub i 1)
                (f2cl-lib:int-add (f2cl-lib:int-sub n i) 1) (- one)
                (f2cl-lib:array-slice a-%data% f2cl-lib:complex16 (1 i)
                                      ((1 lda) (1 *)) a-%offset%)
@@ -362,7 +357,7 @@
                ((< i m)
                 (setf (f2cl-lib:fref a-%data% (i i) ((1 lda) (1 *)) a-%offset%)
                         one)
-                (zgemv "No transpose" (f2cl-lib:int-sub m i)
+                (zgemv "N" (f2cl-lib:int-sub m i)
                  (f2cl-lib:int-add (f2cl-lib:int-sub n i) 1) one
                  (f2cl-lib:array-slice a-%data% f2cl-lib:complex16 ((+ i 1) i)
                                        ((1 lda) (1 *)) a-%offset%)
@@ -373,8 +368,7 @@
                  (f2cl-lib:array-slice x-%data% f2cl-lib:complex16 ((+ i 1) i)
                                        ((1 ldx) (1 *)) x-%offset%)
                  1)
-                (zgemv "Conjugate transpose"
-                 (f2cl-lib:int-add (f2cl-lib:int-sub n i) 1)
+                (zgemv "C" (f2cl-lib:int-add (f2cl-lib:int-sub n i) 1)
                  (f2cl-lib:int-sub i 1) one
                  (f2cl-lib:array-slice y-%data% f2cl-lib:complex16 (i 1)
                                        ((1 ldy) (1 *)) y-%offset%)
@@ -385,8 +379,8 @@
                  (f2cl-lib:array-slice x-%data% f2cl-lib:complex16 (1 i)
                                        ((1 ldx) (1 *)) x-%offset%)
                  1)
-                (zgemv "No transpose" (f2cl-lib:int-sub m i)
-                 (f2cl-lib:int-sub i 1) (- one)
+                (zgemv "N" (f2cl-lib:int-sub m i) (f2cl-lib:int-sub i 1)
+                 (- one)
                  (f2cl-lib:array-slice a-%data% f2cl-lib:complex16 ((+ i 1) 1)
                                        ((1 lda) (1 *)) a-%offset%)
                  lda
@@ -396,7 +390,7 @@
                  (f2cl-lib:array-slice x-%data% f2cl-lib:complex16 ((+ i 1) i)
                                        ((1 ldx) (1 *)) x-%offset%)
                  1)
-                (zgemv "No transpose" (f2cl-lib:int-sub i 1)
+                (zgemv "N" (f2cl-lib:int-sub i 1)
                  (f2cl-lib:int-add (f2cl-lib:int-sub n i) 1) one
                  (f2cl-lib:array-slice a-%data% f2cl-lib:complex16 (1 i)
                                        ((1 lda) (1 *)) a-%offset%)
@@ -407,8 +401,8 @@
                  (f2cl-lib:array-slice x-%data% f2cl-lib:complex16 (1 i)
                                        ((1 ldx) (1 *)) x-%offset%)
                  1)
-                (zgemv "No transpose" (f2cl-lib:int-sub m i)
-                 (f2cl-lib:int-sub i 1) (- one)
+                (zgemv "N" (f2cl-lib:int-sub m i) (f2cl-lib:int-sub i 1)
+                 (- one)
                  (f2cl-lib:array-slice x-%data% f2cl-lib:complex16 ((+ i 1) 1)
                                        ((1 ldx) (1 *)) x-%offset%)
                  ldx
@@ -431,8 +425,8 @@
                  (f2cl-lib:array-slice y-%data% f2cl-lib:complex16 (i 1)
                                        ((1 ldy) (1 *)) y-%offset%)
                  ldy)
-                (zgemv "No transpose" (f2cl-lib:int-sub m i)
-                 (f2cl-lib:int-sub i 1) (- one)
+                (zgemv "N" (f2cl-lib:int-sub m i) (f2cl-lib:int-sub i 1)
+                 (- one)
                  (f2cl-lib:array-slice a-%data% f2cl-lib:complex16 ((+ i 1) 1)
                                        ((1 lda) (1 *)) a-%offset%)
                  lda
@@ -446,7 +440,7 @@
                  (f2cl-lib:array-slice y-%data% f2cl-lib:complex16 (i 1)
                                        ((1 ldy) (1 *)) y-%offset%)
                  ldy)
-                (zgemv "No transpose" (f2cl-lib:int-sub m i) i (- one)
+                (zgemv "N" (f2cl-lib:int-sub m i) i (- one)
                  (f2cl-lib:array-slice x-%data% f2cl-lib:complex16 ((+ i 1) 1)
                                        ((1 ldx) (1 *)) x-%offset%)
                  ldx
@@ -474,8 +468,7 @@
                 (setf (f2cl-lib:fref a-%data% ((f2cl-lib:int-add i 1) i)
                                      ((1 lda) (1 *)) a-%offset%)
                         one)
-                (zgemv "Conjugate transpose" (f2cl-lib:int-sub m i)
-                 (f2cl-lib:int-sub n i) one
+                (zgemv "C" (f2cl-lib:int-sub m i) (f2cl-lib:int-sub n i) one
                  (f2cl-lib:array-slice a-%data% f2cl-lib:complex16
                                        ((+ i 1) (f2cl-lib:int-add i 1))
                                        ((1 lda) (1 *)) a-%offset%)
@@ -486,8 +479,7 @@
                  (f2cl-lib:array-slice y-%data% f2cl-lib:complex16 ((+ i 1) i)
                                        ((1 ldy) (1 *)) y-%offset%)
                  1)
-                (zgemv "Conjugate transpose" (f2cl-lib:int-sub m i)
-                 (f2cl-lib:int-sub i 1) one
+                (zgemv "C" (f2cl-lib:int-sub m i) (f2cl-lib:int-sub i 1) one
                  (f2cl-lib:array-slice a-%data% f2cl-lib:complex16 ((+ i 1) 1)
                                        ((1 lda) (1 *)) a-%offset%)
                  lda
@@ -497,8 +489,8 @@
                  (f2cl-lib:array-slice y-%data% f2cl-lib:complex16 (1 i)
                                        ((1 ldy) (1 *)) y-%offset%)
                  1)
-                (zgemv "No transpose" (f2cl-lib:int-sub n i)
-                 (f2cl-lib:int-sub i 1) (- one)
+                (zgemv "N" (f2cl-lib:int-sub n i) (f2cl-lib:int-sub i 1)
+                 (- one)
                  (f2cl-lib:array-slice y-%data% f2cl-lib:complex16 ((+ i 1) 1)
                                        ((1 ldy) (1 *)) y-%offset%)
                  ldy
@@ -508,7 +500,7 @@
                  (f2cl-lib:array-slice y-%data% f2cl-lib:complex16 ((+ i 1) i)
                                        ((1 ldy) (1 *)) y-%offset%)
                  1)
-                (zgemv "Conjugate transpose" (f2cl-lib:int-sub m i) i one
+                (zgemv "C" (f2cl-lib:int-sub m i) i one
                  (f2cl-lib:array-slice x-%data% f2cl-lib:complex16 ((+ i 1) 1)
                                        ((1 ldx) (1 *)) x-%offset%)
                  ldx
@@ -518,7 +510,7 @@
                  (f2cl-lib:array-slice y-%data% f2cl-lib:complex16 (1 i)
                                        ((1 ldy) (1 *)) y-%offset%)
                  1)
-                (zgemv "Conjugate transpose" i (f2cl-lib:int-sub n i) (- one)
+                (zgemv "C" i (f2cl-lib:int-sub n i) (- one)
                  (f2cl-lib:array-slice a-%data% f2cl-lib:complex16
                                        (1 (f2cl-lib:int-add i 1))
                                        ((1 lda) (1 *)) a-%offset%)

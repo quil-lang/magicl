@@ -113,7 +113,7 @@
                                 (f2cl-lib:int-add (f2cl-lib:int-sub k i) 1))))
               (cond
                ((> (f2cl-lib:int-add n (f2cl-lib:int-sub k) i) 1)
-                (zlarft "Backward" "C"
+                (zlarft "B" "C"
                  (f2cl-lib:int-sub
                   (f2cl-lib:int-add (f2cl-lib:int-sub m k) i ib) 1)
                  ib
@@ -126,7 +126,7 @@
                  (f2cl-lib:array-slice tau-%data% f2cl-lib:complex16 (i)
                                        ((1 *)) tau-%offset%)
                  work ldwork)
-                (zlarfb "L" "N" "Backward" "C"
+                (zlarfb "L" "N" "B" "C"
                  (f2cl-lib:int-sub
                   (f2cl-lib:int-add (f2cl-lib:int-sub m k) i ib) 1)
                  (f2cl-lib:int-sub (f2cl-lib:int-add (f2cl-lib:int-sub n k) i)

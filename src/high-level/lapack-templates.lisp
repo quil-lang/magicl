@@ -303,7 +303,8 @@
                          :append (labels ((generate-routine-symbol (package routine)
                                             (find-symbol (format nil "~:@(~A~A~)" prefix routine) package))
                                           (blas-routine (routine)
-                                            (generate-routine-symbol 'magicl.lisp-blas routine))
+                                            ;; we've stashed these with the LAPACK routines
+                                            (lapack-routine routine))
                                           (lapack-routine (routine)
                                             (generate-routine-symbol 'magicl.lisp-lapack routine)))
                                    (let ((complex (not (null real-type))))

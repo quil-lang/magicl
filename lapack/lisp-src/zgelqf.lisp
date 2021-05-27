@@ -92,15 +92,14 @@
               (setf iinfo var-6))
             (cond
              ((<= (f2cl-lib:int-add i ib) m)
-              (zlarft "Forward" "Rowwise"
-               (f2cl-lib:int-add (f2cl-lib:int-sub n i) 1) ib
+              (zlarft "F" "R" (f2cl-lib:int-add (f2cl-lib:int-sub n i) 1) ib
                (f2cl-lib:array-slice a-%data% f2cl-lib:complex16 (i i)
                                      ((1 lda) (1 *)) a-%offset%)
                lda
                (f2cl-lib:array-slice tau-%data% f2cl-lib:complex16 (i) ((1 *))
                                      tau-%offset%)
                work ldwork)
-              (zlarfb "R" "No transpose" "Forward" "Rowwise"
+              (zlarfb "R" "N" "F" "R"
                (f2cl-lib:int-add (f2cl-lib:int-sub m i ib) 1)
                (f2cl-lib:int-add (f2cl-lib:int-sub n i) 1) ib
                (f2cl-lib:array-slice a-%data% f2cl-lib:complex16 (i i)

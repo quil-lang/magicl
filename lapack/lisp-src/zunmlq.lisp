@@ -127,8 +127,7 @@
                       (min (the f2cl-lib:integer4 nb)
                            (the f2cl-lib:integer4
                                 (f2cl-lib:int-add (f2cl-lib:int-sub k i) 1))))
-              (zlarft "Forward" "Rowwise"
-               (f2cl-lib:int-add (f2cl-lib:int-sub nq i) 1) ib
+              (zlarft "F" "R" (f2cl-lib:int-add (f2cl-lib:int-sub nq i) 1) ib
                (f2cl-lib:array-slice a-%data% f2cl-lib:complex16 (i i)
                                      ((1 lda) (1 *)) a-%offset%)
                lda
@@ -140,7 +139,7 @@
                 (setf ic i))
                (t (setf ni (f2cl-lib:int-add (f2cl-lib:int-sub n i) 1))
                 (setf jc i)))
-              (zlarfb side transt "Forward" "Rowwise" mi ni ib
+              (zlarfb side transt "F" "R" mi ni ib
                (f2cl-lib:array-slice a-%data% f2cl-lib:complex16 (i i)
                                      ((1 lda) (1 *)) a-%offset%)
                lda t$ ldt

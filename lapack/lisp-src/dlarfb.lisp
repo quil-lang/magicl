@@ -70,14 +70,7 @@
                  (f2cl-lib:array-slice v-%data% double-float ((+ k 1) 1)
                                        ((1 ldv) (1 *)) v-%offset%)
                  ldv one work ldwork)))
-              (multiple-value-bind
-                  (var-0 var-1 var-2 var-3 var-4 var-5 var-6 var-7 var-8 var-9
-                   var-10)
-                  (dtrmm "R" "U" transt "N" n k one t$ ldt work ldwork)
-                (declare
-                 (ignore var-0 var-1 var-3 var-4 var-5 var-6 var-7 var-8 var-9
-                  var-10))
-                (setf transt var-2))
+              (dtrmm "R" "U" transt "N" n k one t$ ldt work ldwork)
               (cond
                ((> m k)
                 (dgemm "N" "T" (f2cl-lib:int-sub m k) n k (- one)
@@ -127,14 +120,7 @@
                  (f2cl-lib:array-slice v-%data% double-float ((+ k 1) 1)
                                        ((1 ldv) (1 *)) v-%offset%)
                  ldv one work ldwork)))
-              (multiple-value-bind
-                  (var-0 var-1 var-2 var-3 var-4 var-5 var-6 var-7 var-8 var-9
-                   var-10)
-                  (dtrmm "R" "U" trans "N" m k one t$ ldt work ldwork)
-                (declare
-                 (ignore var-0 var-1 var-3 var-4 var-5 var-6 var-7 var-8 var-9
-                  var-10))
-                (setf trans var-2))
+              (dtrmm "R" "U" trans "N" m k one t$ ldt work ldwork)
               (cond
                ((> n k)
                 (dgemm "N" "T" m (f2cl-lib:int-sub n k) k (- one) work ldwork
@@ -186,14 +172,7 @@
                ((> m k)
                 (dgemm "T" "N" n k (f2cl-lib:int-sub m k) one c ldc v ldv one
                  work ldwork)))
-              (multiple-value-bind
-                  (var-0 var-1 var-2 var-3 var-4 var-5 var-6 var-7 var-8 var-9
-                   var-10)
-                  (dtrmm "R" "L" transt "N" n k one t$ ldt work ldwork)
-                (declare
-                 (ignore var-0 var-1 var-3 var-4 var-5 var-6 var-7 var-8 var-9
-                  var-10))
-                (setf transt var-2))
+              (dtrmm "R" "L" transt "N" n k one t$ ldt work ldwork)
               (cond
                ((> m k)
                 (dgemm "N" "T" (f2cl-lib:int-sub m k) n k (- one) v ldv work
@@ -249,14 +228,7 @@
                ((> n k)
                 (dgemm "N" "N" m k (f2cl-lib:int-sub n k) one c ldc v ldv one
                  work ldwork)))
-              (multiple-value-bind
-                  (var-0 var-1 var-2 var-3 var-4 var-5 var-6 var-7 var-8 var-9
-                   var-10)
-                  (dtrmm "R" "L" trans "N" m k one t$ ldt work ldwork)
-                (declare
-                 (ignore var-0 var-1 var-3 var-4 var-5 var-6 var-7 var-8 var-9
-                  var-10))
-                (setf trans var-2))
+              (dtrmm "R" "L" trans "N" m k one t$ ldt work ldwork)
               (cond
                ((> n k)
                 (dgemm "N" "T" m (f2cl-lib:int-sub n k) k (- one) work ldwork v
@@ -315,14 +287,7 @@
                                        (1 (f2cl-lib:int-add k 1))
                                        ((1 ldv) (1 *)) v-%offset%)
                  ldv one work ldwork)))
-              (multiple-value-bind
-                  (var-0 var-1 var-2 var-3 var-4 var-5 var-6 var-7 var-8 var-9
-                   var-10)
-                  (dtrmm "R" "U" transt "N" n k one t$ ldt work ldwork)
-                (declare
-                 (ignore var-0 var-1 var-3 var-4 var-5 var-6 var-7 var-8 var-9
-                  var-10))
-                (setf transt var-2))
+              (dtrmm "R" "U" transt "N" n k one t$ ldt work ldwork)
               (cond
                ((> m k)
                 (dgemm "T" "T" (f2cl-lib:int-sub m k) n k (- one)
@@ -374,14 +339,7 @@
                                        (1 (f2cl-lib:int-add k 1))
                                        ((1 ldv) (1 *)) v-%offset%)
                  ldv one work ldwork)))
-              (multiple-value-bind
-                  (var-0 var-1 var-2 var-3 var-4 var-5 var-6 var-7 var-8 var-9
-                   var-10)
-                  (dtrmm "R" "U" trans "N" m k one t$ ldt work ldwork)
-                (declare
-                 (ignore var-0 var-1 var-3 var-4 var-5 var-6 var-7 var-8 var-9
-                  var-10))
-                (setf trans var-2))
+              (dtrmm "R" "U" trans "N" m k one t$ ldt work ldwork)
               (cond
                ((> n k)
                 (dgemm "N" "N" m (f2cl-lib:int-sub n k) k (- one) work ldwork
@@ -436,14 +394,7 @@
                ((> m k)
                 (dgemm "T" "T" n k (f2cl-lib:int-sub m k) one c ldc v ldv one
                  work ldwork)))
-              (multiple-value-bind
-                  (var-0 var-1 var-2 var-3 var-4 var-5 var-6 var-7 var-8 var-9
-                   var-10)
-                  (dtrmm "R" "L" transt "N" n k one t$ ldt work ldwork)
-                (declare
-                 (ignore var-0 var-1 var-3 var-4 var-5 var-6 var-7 var-8 var-9
-                  var-10))
-                (setf transt var-2))
+              (dtrmm "R" "L" transt "N" n k one t$ ldt work ldwork)
               (cond
                ((> m k)
                 (dgemm "T" "T" (f2cl-lib:int-sub m k) n k (- one) v ldv work
@@ -503,14 +454,7 @@
                ((> n k)
                 (dgemm "N" "T" m k (f2cl-lib:int-sub n k) one c ldc v ldv one
                  work ldwork)))
-              (multiple-value-bind
-                  (var-0 var-1 var-2 var-3 var-4 var-5 var-6 var-7 var-8 var-9
-                   var-10)
-                  (dtrmm "R" "L" trans "N" m k one t$ ldt work ldwork)
-                (declare
-                 (ignore var-0 var-1 var-3 var-4 var-5 var-6 var-7 var-8 var-9
-                  var-10))
-                (setf trans var-2))
+              (dtrmm "R" "L" trans "N" m k one t$ ldt work ldwork)
               (cond
                ((> n k)
                 (dgemm "N" "N" m (f2cl-lib:int-sub n k) k (- one) work ldwork v
@@ -547,7 +491,7 @@
         (go end_label)
        end_label
         (return
-         (values nil trans nil nil nil nil nil nil nil nil nil nil nil nil
+         (values nil nil nil nil nil nil nil nil nil nil nil nil nil nil
                  nil))))))
 
 (in-package #-gcl #:cl-user #+gcl "CL-USER")
@@ -570,9 +514,8 @@
                                               (array double-float (*))
                                               (fortran-to-lisp::integer4))
                                             :return-values
-                                            '(nil fortran-to-lisp::trans nil
-                                              nil nil nil nil nil nil nil nil
-                                              nil nil nil nil)
+                                            '(nil nil nil nil nil nil nil nil
+                                              nil nil nil nil nil nil nil)
                                             :calls
                                             '(fortran-to-lisp::dgemm
                                               fortran-to-lisp::dtrmm

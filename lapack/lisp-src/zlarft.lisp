@@ -61,75 +61,69 @@
                         one)
                 (cond
                  ((lsame storev "C")
-                  (tagbody
-                    (setf lastv n)
-                   label100000
-                    (if (not
-                         (and (> lastv i)
-                              (/=
-                               (f2cl-lib:fref v-%data% (lastv i)
-                                              ((1 ldv) (1 *)) v-%offset%)
-                               zero)))
-                        (go label100001))
-                    (setf lastv (f2cl-lib:int-sub lastv 1))
-                    (go label100000)
-                   label100001
-                    (setf j
-                            (min (the f2cl-lib:integer4 lastv)
-                                 (the f2cl-lib:integer4 prevlastv)))
-                    (zgemv "C" (f2cl-lib:int-add (f2cl-lib:int-sub j i) 1)
-                     (f2cl-lib:int-sub i 1)
-                     (- (f2cl-lib:fref tau-%data% (i) ((1 *)) tau-%offset%))
-                     (f2cl-lib:array-slice v-%data% f2cl-lib:complex16 (i 1)
-                                           ((1 ldv) (1 *)) v-%offset%)
-                     ldv
-                     (f2cl-lib:array-slice v-%data% f2cl-lib:complex16 (i i)
-                                           ((1 ldv) (1 *)) v-%offset%)
-                     1 zero
-                     (f2cl-lib:array-slice t$-%data% f2cl-lib:complex16 (1 i)
-                                           ((1 ldt) (1 *)) t$-%offset%)
-                     1)))
+                  (f2cl-lib:fdo (lastv n
+                                 (f2cl-lib:int-add lastv (f2cl-lib:int-sub 1)))
+                                ((> lastv (f2cl-lib:int-add i 1)) nil)
+                    (tagbody
+                      (if (/=
+                           (f2cl-lib:fref v-%data% (lastv i) ((1 ldv) (1 *))
+                                          v-%offset%)
+                           zero)
+                          (go f2cl-lib::exit))
+                     label100000))
+                  (setf j
+                          (min (the f2cl-lib:integer4 lastv)
+                               (the f2cl-lib:integer4 prevlastv)))
+                  (zgemv "C" (f2cl-lib:int-add (f2cl-lib:int-sub j i) 1)
+                   (f2cl-lib:int-sub i 1)
+                   (- (f2cl-lib:fref tau-%data% (i) ((1 *)) tau-%offset%))
+                   (f2cl-lib:array-slice v-%data% f2cl-lib:complex16 (i 1)
+                                         ((1 ldv) (1 *)) v-%offset%)
+                   ldv
+                   (f2cl-lib:array-slice v-%data% f2cl-lib:complex16 (i i)
+                                         ((1 ldv) (1 *)) v-%offset%)
+                   1 zero
+                   (f2cl-lib:array-slice t$-%data% f2cl-lib:complex16 (1 i)
+                                         ((1 ldt) (1 *)) t$-%offset%)
+                   1))
                  (t
-                  (tagbody
-                    (setf lastv n)
-                   label100002
-                    (if (not
-                         (and (> lastv i)
-                              (/=
-                               (f2cl-lib:fref v-%data% (lastv i)
-                                              ((1 ldv) (1 *)) v-%offset%)
-                               zero)))
-                        (go label100003))
-                    (setf lastv (f2cl-lib:int-sub lastv 1))
-                    (go label100002)
-                   label100003
-                    (setf j
-                            (min (the f2cl-lib:integer4 lastv)
-                                 (the f2cl-lib:integer4 prevlastv)))
-                    (if (< i j)
-                        (zlacgv (f2cl-lib:int-sub j i)
-                         (f2cl-lib:array-slice v-%data% f2cl-lib:complex16
-                                               (i (f2cl-lib:int-add i 1))
-                                               ((1 ldv) (1 *)) v-%offset%)
-                         ldv))
-                    (zgemv "N" (f2cl-lib:int-sub i 1)
-                     (f2cl-lib:int-add (f2cl-lib:int-sub j i) 1)
-                     (- (f2cl-lib:fref tau-%data% (i) ((1 *)) tau-%offset%))
-                     (f2cl-lib:array-slice v-%data% f2cl-lib:complex16 (1 i)
-                                           ((1 ldv) (1 *)) v-%offset%)
-                     ldv
-                     (f2cl-lib:array-slice v-%data% f2cl-lib:complex16 (i i)
-                                           ((1 ldv) (1 *)) v-%offset%)
-                     ldv zero
-                     (f2cl-lib:array-slice t$-%data% f2cl-lib:complex16 (1 i)
-                                           ((1 ldt) (1 *)) t$-%offset%)
-                     1)
-                    (if (< i j)
-                        (zlacgv (f2cl-lib:int-sub j i)
-                         (f2cl-lib:array-slice v-%data% f2cl-lib:complex16
-                                               (i (f2cl-lib:int-add i 1))
-                                               ((1 ldv) (1 *)) v-%offset%)
-                         ldv)))))
+                  (f2cl-lib:fdo (lastv n
+                                 (f2cl-lib:int-add lastv (f2cl-lib:int-sub 1)))
+                                ((> lastv (f2cl-lib:int-add i 1)) nil)
+                    (tagbody
+                      (if (/=
+                           (f2cl-lib:fref v-%data% (i lastv) ((1 ldv) (1 *))
+                                          v-%offset%)
+                           zero)
+                          (go f2cl-lib::exit))
+                     label100001))
+                  (setf j
+                          (min (the f2cl-lib:integer4 lastv)
+                               (the f2cl-lib:integer4 prevlastv)))
+                  (if (< i j)
+                      (zlacgv (f2cl-lib:int-sub j i)
+                       (f2cl-lib:array-slice v-%data% f2cl-lib:complex16
+                                             (i (f2cl-lib:int-add i 1))
+                                             ((1 ldv) (1 *)) v-%offset%)
+                       ldv))
+                  (zgemv "N" (f2cl-lib:int-sub i 1)
+                   (f2cl-lib:int-add (f2cl-lib:int-sub j i) 1)
+                   (- (f2cl-lib:fref tau-%data% (i) ((1 *)) tau-%offset%))
+                   (f2cl-lib:array-slice v-%data% f2cl-lib:complex16 (1 i)
+                                         ((1 ldv) (1 *)) v-%offset%)
+                   ldv
+                   (f2cl-lib:array-slice v-%data% f2cl-lib:complex16 (i i)
+                                         ((1 ldv) (1 *)) v-%offset%)
+                   ldv zero
+                   (f2cl-lib:array-slice t$-%data% f2cl-lib:complex16 (1 i)
+                                         ((1 ldt) (1 *)) t$-%offset%)
+                   1)
+                  (if (< i j)
+                      (zlacgv (f2cl-lib:int-sub j i)
+                       (f2cl-lib:array-slice v-%data% f2cl-lib:complex16
+                                             (i (f2cl-lib:int-add i 1))
+                                             ((1 ldv) (1 *)) v-%offset%)
+                       ldv))))
                 (setf (f2cl-lib:fref v-%data% (i i) ((1 ldv) (1 *)) v-%offset%)
                         vii)
                 (ztrmv "U" "N" "N" (f2cl-lib:int-sub i 1) t$ ldt
@@ -164,125 +158,124 @@
                  ((< i k)
                   (cond
                    ((lsame storev "C")
-                    (tagbody
-                      (setf vii
-                              (f2cl-lib:fref v-%data%
-                                             ((f2cl-lib:int-add
-                                               (f2cl-lib:int-sub n k) i)
-                                              i)
-                                             ((1 ldv) (1 *)) v-%offset%))
-                      (setf (f2cl-lib:fref v-%data%
+                    (setf vii
+                            (f2cl-lib:fref v-%data%
                                            ((f2cl-lib:int-add
                                              (f2cl-lib:int-sub n k) i)
                                             i)
+                                           ((1 ldv) (1 *)) v-%offset%))
+                    (setf (f2cl-lib:fref v-%data%
+                                         ((f2cl-lib:int-add
+                                           (f2cl-lib:int-sub n k) i)
+                                          i)
+                                         ((1 ldv) (1 *)) v-%offset%)
+                            one)
+                    (f2cl-lib:fdo (lastv 1 (f2cl-lib:int-add lastv 1))
+                                  ((> lastv
+                                      (f2cl-lib:int-add i
+                                                        (f2cl-lib:int-sub 1)))
+                                   nil)
+                      (tagbody
+                        (if (/=
+                             (f2cl-lib:fref v-%data% (lastv i) ((1 ldv) (1 *))
+                                            v-%offset%)
+                             zero)
+                            (go f2cl-lib::exit))
+                       label100002))
+                    (setf j
+                            (max (the f2cl-lib:integer4 lastv)
+                                 (the f2cl-lib:integer4 prevlastv)))
+                    (zgemv "C"
+                     (f2cl-lib:int-add
+                      (f2cl-lib:int-sub
+                       (f2cl-lib:int-add (f2cl-lib:int-sub n k) i) j)
+                      1)
+                     (f2cl-lib:int-sub k i)
+                     (- (f2cl-lib:fref tau-%data% (i) ((1 *)) tau-%offset%))
+                     (f2cl-lib:array-slice v-%data% f2cl-lib:complex16
+                                           (j (f2cl-lib:int-add i 1))
                                            ((1 ldv) (1 *)) v-%offset%)
-                              one)
-                      (setf lastv 1)
-                     label100004
-                      (if (not
-                           (and (< lastv i)
-                                (/=
-                                 (f2cl-lib:fref v-%data% (lastv i)
-                                                ((1 ldv) (1 *)) v-%offset%)
-                                 zero)))
-                          (go label100005))
-                      (setf lastv (f2cl-lib:int-add lastv 1))
-                      (go label100004)
-                     label100005
-                      (setf j
-                              (max (the f2cl-lib:integer4 lastv)
-                                   (the f2cl-lib:integer4 prevlastv)))
-                      (zgemv "C"
-                       (f2cl-lib:int-add
-                        (f2cl-lib:int-sub
-                         (f2cl-lib:int-add (f2cl-lib:int-sub n k) i) j)
-                        1)
-                       (f2cl-lib:int-sub k i)
-                       (- (f2cl-lib:fref tau-%data% (i) ((1 *)) tau-%offset%))
-                       (f2cl-lib:array-slice v-%data% f2cl-lib:complex16
-                                             (j (f2cl-lib:int-add i 1))
-                                             ((1 ldv) (1 *)) v-%offset%)
-                       ldv
-                       (f2cl-lib:array-slice v-%data% f2cl-lib:complex16 (j i)
-                                             ((1 ldv) (1 *)) v-%offset%)
-                       1 zero
-                       (f2cl-lib:array-slice t$-%data% f2cl-lib:complex16
-                                             ((+ i 1) i) ((1 ldt) (1 *))
-                                             t$-%offset%)
-                       1)
-                      (setf (f2cl-lib:fref v-%data%
-                                           ((f2cl-lib:int-add
-                                             (f2cl-lib:int-sub n k) i)
-                                            i)
+                     ldv
+                     (f2cl-lib:array-slice v-%data% f2cl-lib:complex16 (j i)
                                            ((1 ldv) (1 *)) v-%offset%)
-                              vii)))
+                     1 zero
+                     (f2cl-lib:array-slice t$-%data% f2cl-lib:complex16
+                                           ((+ i 1) i) ((1 ldt) (1 *))
+                                           t$-%offset%)
+                     1)
+                    (setf (f2cl-lib:fref v-%data%
+                                         ((f2cl-lib:int-add
+                                           (f2cl-lib:int-sub n k) i)
+                                          i)
+                                         ((1 ldv) (1 *)) v-%offset%)
+                            vii))
                    (t
-                    (tagbody
-                      (setf vii
-                              (f2cl-lib:fref v-%data%
-                                             (i
-                                              (f2cl-lib:int-add
-                                               (f2cl-lib:int-sub n k) i))
-                                             ((1 ldv) (1 *)) v-%offset%))
-                      (setf (f2cl-lib:fref v-%data%
+                    (setf vii
+                            (f2cl-lib:fref v-%data%
                                            (i
                                             (f2cl-lib:int-add
                                              (f2cl-lib:int-sub n k) i))
+                                           ((1 ldv) (1 *)) v-%offset%))
+                    (setf (f2cl-lib:fref v-%data%
+                                         (i
+                                          (f2cl-lib:int-add
+                                           (f2cl-lib:int-sub n k) i))
+                                         ((1 ldv) (1 *)) v-%offset%)
+                            one)
+                    (f2cl-lib:fdo (lastv 1 (f2cl-lib:int-add lastv 1))
+                                  ((> lastv
+                                      (f2cl-lib:int-add i
+                                                        (f2cl-lib:int-sub 1)))
+                                   nil)
+                      (tagbody
+                        (if (/=
+                             (f2cl-lib:fref v-%data% (i lastv) ((1 ldv) (1 *))
+                                            v-%offset%)
+                             zero)
+                            (go f2cl-lib::exit))
+                       label100003))
+                    (setf j
+                            (max (the f2cl-lib:integer4 lastv)
+                                 (the f2cl-lib:integer4 prevlastv)))
+                    (zlacgv
+                     (f2cl-lib:int-add
+                      (f2cl-lib:int-sub
+                       (f2cl-lib:int-add (f2cl-lib:int-sub n k) i) 1 j)
+                      1)
+                     (f2cl-lib:array-slice v-%data% f2cl-lib:complex16 (i j)
                                            ((1 ldv) (1 *)) v-%offset%)
-                              one)
-                     label100006
-                      (if (not
-                           (and (< lastv i)
-                                (/=
-                                 (f2cl-lib:fref v-%data% (lastv i)
-                                                ((1 ldv) (1 *)) v-%offset%)
-                                 zero)))
-                          (go label100007))
-                      (setf lastv (f2cl-lib:int-add lastv 1))
-                      (go label100006)
-                     label100007
-                      (setf j
-                              (max (the f2cl-lib:integer4 lastv)
-                                   (the f2cl-lib:integer4 prevlastv)))
-                      (zlacgv
-                       (f2cl-lib:int-add
-                        (f2cl-lib:int-sub
-                         (f2cl-lib:int-add (f2cl-lib:int-sub n k) i) 1 j)
-                        1)
-                       (f2cl-lib:array-slice v-%data% f2cl-lib:complex16 (i j)
-                                             ((1 ldv) (1 *)) v-%offset%)
-                       ldv)
-                      (zgemv "N" (f2cl-lib:int-sub k i)
-                       (f2cl-lib:int-add
-                        (f2cl-lib:int-sub
-                         (f2cl-lib:int-add (f2cl-lib:int-sub n k) i) j)
-                        1)
-                       (- (f2cl-lib:fref tau-%data% (i) ((1 *)) tau-%offset%))
-                       (f2cl-lib:array-slice v-%data% f2cl-lib:complex16
-                                             ((+ i 1) j) ((1 ldv) (1 *))
-                                             v-%offset%)
-                       ldv
-                       (f2cl-lib:array-slice v-%data% f2cl-lib:complex16 (i j)
-                                             ((1 ldv) (1 *)) v-%offset%)
-                       ldv zero
-                       (f2cl-lib:array-slice t$-%data% f2cl-lib:complex16
-                                             ((+ i 1) i) ((1 ldt) (1 *))
-                                             t$-%offset%)
-                       1)
-                      (zlacgv
-                       (f2cl-lib:int-add
-                        (f2cl-lib:int-sub
-                         (f2cl-lib:int-add (f2cl-lib:int-sub n k) i) 1 j)
-                        1)
-                       (f2cl-lib:array-slice v-%data% f2cl-lib:complex16 (i j)
-                                             ((1 ldv) (1 *)) v-%offset%)
-                       ldv)
-                      (setf (f2cl-lib:fref v-%data%
-                                           (i
-                                            (f2cl-lib:int-add
-                                             (f2cl-lib:int-sub n k) i))
+                     ldv)
+                    (zgemv "N" (f2cl-lib:int-sub k i)
+                     (f2cl-lib:int-add
+                      (f2cl-lib:int-sub
+                       (f2cl-lib:int-add (f2cl-lib:int-sub n k) i) j)
+                      1)
+                     (- (f2cl-lib:fref tau-%data% (i) ((1 *)) tau-%offset%))
+                     (f2cl-lib:array-slice v-%data% f2cl-lib:complex16
+                                           ((+ i 1) j) ((1 ldv) (1 *))
+                                           v-%offset%)
+                     ldv
+                     (f2cl-lib:array-slice v-%data% f2cl-lib:complex16 (i j)
                                            ((1 ldv) (1 *)) v-%offset%)
-                              vii))))
+                     ldv zero
+                     (f2cl-lib:array-slice t$-%data% f2cl-lib:complex16
+                                           ((+ i 1) i) ((1 ldt) (1 *))
+                                           t$-%offset%)
+                     1)
+                    (zlacgv
+                     (f2cl-lib:int-add
+                      (f2cl-lib:int-sub
+                       (f2cl-lib:int-add (f2cl-lib:int-sub n k) i) 1 j)
+                      1)
+                     (f2cl-lib:array-slice v-%data% f2cl-lib:complex16 (i j)
+                                           ((1 ldv) (1 *)) v-%offset%)
+                     ldv)
+                    (setf (f2cl-lib:fref v-%data%
+                                         (i
+                                          (f2cl-lib:int-add
+                                           (f2cl-lib:int-sub n k) i))
+                                         ((1 ldv) (1 *)) v-%offset%)
+                            vii)))
                   (ztrmv "L" "N" "N" (f2cl-lib:int-sub k i)
                    (f2cl-lib:array-slice t$-%data% f2cl-lib:complex16
                                          ((+ i 1) (f2cl-lib:int-add i 1))
