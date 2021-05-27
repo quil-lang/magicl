@@ -175,6 +175,7 @@
            #:qr
            #:rq
            #:lq
+           #:expi
            #:expm
            #:logm
 

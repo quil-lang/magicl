@@ -57,6 +57,7 @@
                  (:file "types/int32")
                  (:file "lapack-templates")
                  (:file "csd")
+                 (:file "expi")
                  (:file "constructors")
                  (:file "specialize-constructor")
                  (:file "polynomial-solver")))

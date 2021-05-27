@@ -340,3 +340,23 @@
     (is (= 6 (magicl:norm x :infinity)))
     (is (= 21 (magicl:norm x 1)))
     (is (= 9.539392 (magicl:norm x 2)))))
+
+(deftest test-expi ()
+  "Test that we can compute exp(iH) for Hermitian (or real symmetric) H."
+  (labels ((pauli-expi-theta (theta H)
+             ;; for hermitian H with H^2 = I, we have
+             ;; exp(itH) = cos(t)I + i sin(t)H
+             (let ((H (magicl::coerce-type H '(complex double-float))))
+               (magicl:.+ (magicl:eye (magicl:shape H)
+                                      :value (cos theta)
+                                      :type '(complex double-float))
+                          (magicl:scale H (* (sin theta) #C(0d0 1d0)))))))
+    (dolist (element-type '(double-float (complex double-float)))
+      (let ((x (magicl:from-list '(0d0 1d0 1d0 0d0) '(2 2) :type element-type))
+            (z (magicl:from-diag '(1d0 -1d0) :type element-type)))
+
+        (dolist (theta (list 0 (/ pi 4) (/ pi 2) pi))
+          (is (magicl:= (pauli-expi-theta theta x)
+                        (magicl:expi (magicl:scale x theta))))
+          (is (magicl:= (pauli-expi-theta theta z)
+                        (magicl:expi (magicl:scale z theta)))))))))
