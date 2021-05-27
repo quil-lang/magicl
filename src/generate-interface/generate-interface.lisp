@@ -589,3 +589,180 @@ the CFFI binding file."
 (defun generate-expokit-files (expokit-dir)
   (let ((*basedir* expokit-dir))
     (generate-expokit-file)))
+
+
+;;; Some helpers for F2CL stuff
+
+(defun external-declaration-p (line)
+  (string= "external" (string-downcase (first line))))
+
+(defun parse-external-declarations ()
+  (loop :with line := nil
+        :do (setf line (extract-continued-line))
+        :when (external-declaration-p line)
+          :append (cdr line)
+        :while line))
+
+(defun parse-fortran-file-dependencies (fortran-file)
+  (format *trace-output* "; Reading Fortran file: ~A~%" fortran-file)
+  (finish-output *trace-output*)
+  ;; Collect the lines
+  (setf *lines* (read-lines fortran-file))
+  ;; Remove comments
+  (setf *lines* (delete-if (lambda (line)
+                             (or (zerop (length line))
+                                 (char= #\* (char line 0))
+                                 (char= #\c (char line 0))))
+                           *lines*))
+  (multiple-value-bind (name vars return-type)
+      (parse-signature)
+    (declare (ignore vars return-type))
+    (values name (parse-external-declarations))))
+
+(defun generate-dependency-table (fortran-files)
+  (let ((all-dependencies (make-hash-table)))
+    (labels ((make-key (str)
+               (intern (string-upcase str) :keyword)))
+      (dolist (file fortran-files)
+        (multiple-value-bind (name dependencies)
+            (parse-fortran-file-dependencies file)
+          (setf (gethash (make-key name) all-dependencies)
+                (mapcar #'make-key dependencies)))))
+    all-dependencies))
+
+(defparameter *lapack-entry-points*
+  '(:dlabad
+    :dgemm :dgemv :dgetrf :dgeev :dgesvd :dgeqrf :dorgqr
+    :zgemm :zgemv :zgetrf :zgeev :zgesvd :zgeqrf :zungqr :zheev))
+
+(defun extract-fortran-dependencies (dir &optional entry-points)
+  "Extract Fortran dependencies from files in directory DIR.
+
+If ENTRY-POINTS is non-NIL, we restrict our attention to only dependencies reachable from a routine in ENTRY-POINTS."
+  (let* ((files (directory
+                 (pathname (concatenate 'string dir "*.f"))))
+         (dependencies (generate-dependency-table files))
+         (exported nil)
+         (status (make-hash-table)))
+    (labels ((input-file (routine)
+               (merge-pathnames (format nil "~(~A~).f" routine) dir))
+             (file->symbol (file)
+               (intern (string-upcase (pathname-name file)) :keyword))
+             (visit (routine)
+               (setf (gethash routine status) 'PROCESSING)
+               (loop :for fn :in (gethash routine dependencies)
+                     :do (ecase (gethash fn status)
+                           ((NIL) (visit fn))
+                           ((PROCESSING) (error "Cyclic dependency detected: ~A" fn))
+                           ((PROCESSED) nil)))
+               (setf (gethash routine status) 'PROCESSED)
+               (when (nth-value 1 (gethash routine dependencies))
+                 (push (cons routine (input-file routine))
+                       exported))))
+      (loop :for routine :in (or entry-points
+                                 (mapcar #'file->symbol files))
+            :when (null (gethash routine status))
+              :do (visit routine)))
+    (nreverse exported)))
+
+;;; one directory with all BLAS and LAPACK lisp code
+;;; all BLAS and LAPACK dependencies produced
+
+(defparameter *lisp-source-dir*
+  (asdf:system-relative-pathname '#:magicl "lapack/lisp-src/"))
+
+(defparameter *lapack-long-strings*
+  '("Right"
+    "Left"
+    "Epsilon"
+    "Eps"
+    "Safe minimum"
+    "Trans"
+    "Conjugate transpose"
+    "No transpose"
+    "Forward"
+    "Backward"
+    "Rowwise"
+    "Columnwise"
+    "Lower"
+    "Upper"
+    "Full"
+    "Nonunit"
+    "Non-unit"
+    "Precision"
+    ))
+
+(defun abbreviate-string-printer (abbrev-list &optional table)
+  (let ((string-printer (pprint-dispatch "dummy" table))
+        (table (copy-pprint-dispatch table)))
+    (labels ((abbrev-printer (stream obj)
+               (funcall string-printer stream
+                        (if (member obj abbrev-list :test #'string=)
+                            (subseq obj 0 1)
+                            obj))))
+      (set-pprint-dispatch 'string #'abbrev-printer 0 table)
+      table)))
+
+;;; TODO: don't hardcode "lapack/" below
+(defun print-system-definition (files)
+  "Print an ASDF system definition for Lisp LAPACK routines."
+  (let ((*print-case* :downcase))
+    (print
+     `(asdf:defsystem #:magicl/lisp-lapack
+        :description "Lisp LAPACK routines in MAGICL"
+        :depends-on (#:f2cl)
+        :serial t
+        :pathname "lapack/"
+        :components
+        ((:file "package")
+         (:file "fortran-intrinsics")
+         ,@(loop :for file :in files
+                 :for subpath := (car
+                                  (last
+                                   (cl-ppcre:split "lapack/" (namestring file))))
+                 :collect (list ':file
+                                (subseq subpath 0 (- (length subpath)
+                                                     5)))))))
+    nil))
+
+(defun print-package-definition (symbols)
+  "Print a package definition for exported Lisp LAPACK routines."
+  (let ((*print-case* :downcase))
+    (print
+     `(defpackage #:magicl.lisp-lapack
+        (:use #:cl)
+        (:export
+         ,@(sort (mapcar (lambda (s) (make-symbol (symbol-name s)))
+                         symbols)
+                 #'string< :key #'symbol-name))))
+    nil))
+
+(defun compile-lisp-lapack (&optional (basedir *basedir*))
+  "Compile LAPACK from Fortran to Lisp."
+  (uiop:delete-directory-tree *lisp-source-dir* :validate t :if-does-not-exist :ignore)
+  (ensure-directories-exist *lisp-source-dir*)
+  (let ((generated-files nil)
+        (generated-symbols nil)
+        (f2cl::*f2cl-pprint-dispatch* (abbreviate-string-printer *lapack-long-strings*
+                                                                 f2cl::*f2cl-pprint-dispatch*)))
+    (labels ((compile-fortran-files (dependency-list output-dir output-package)
+               (loop :for (routine . input-file) :in dependency-list
+                     :for output-name := (concatenate 'string (pathname-name input-file) ".lisp")
+                     :for output-file := (merge-pathnames output-name output-dir)
+                     :do (f2cl:f2cl input-file :output-file output-file
+                                               :package output-package
+                                               :common-as-array t ; per f2cl test suite
+                                               :relaxed-array-decls nil ; per f2cl test suite
+                                               )
+                         (push output-file generated-files)
+                         (push routine generated-symbols))))
+      ;; TODO: don't concatenate strings here
+      (loop :for source-dir :in (list "BLAS/SRC/" "INSTALL/" "SRC/")
+            :for entry-points :in (list nil (list ':dlamch) *lapack-entry-points*)
+            :for dependencies := (extract-fortran-dependencies
+                                  (concatenate 'string (namestring basedir) source-dir)
+                                  entry-points)
+            :do (compile-fortran-files dependencies *lisp-source-dir* :magicl.lisp-lapack))
+      (print-system-definition (nreverse generated-files))
+      (print-package-definition (nreverse generated-symbols))
+      nil)))
