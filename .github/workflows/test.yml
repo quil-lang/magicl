@@ -17,6 +17,7 @@ jobs:
       - name: Run MAGICL tests
         run: |
           sudo apt install sbcl
+          sudo make quicklisp
           sudo make install-test-deps
           make test
 
