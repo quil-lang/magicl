@@ -14,6 +14,8 @@ install-test-deps:
 ifeq ($(UNAME_S),Linux)
 ifeq ($(shell sed -n "s/^ID=//p" /etc/os-release),debian)
 	apt-get install -y libblas-dev libffi-dev liblapack-dev
+else ifeq ($(shell sed -n "s/^ID_LIKE=//p" /etc/os-release),debian)
+	apt-get install -y libblas-dev libffi-dev liblapack-dev
 else ifneq (,$(wildcard /etc/redhat-release))
 	yum install -y blas-devel libffi-devel lapack-devel
 else
