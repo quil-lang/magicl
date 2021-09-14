@@ -3,6 +3,7 @@
         #:cffi)
   (:export #+sbcl #:array-pointer       ; FUNCTION
            #:with-array-pointers        ; MACRO
+           #:ptr-ref                    ; GENERIC, METHOD
            #:complex-single-float
            #:complex-double-float
            #:fortran-int

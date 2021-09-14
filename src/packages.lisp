@@ -29,10 +29,6 @@
            #:notevery
            #:notany)
 
-  (:import-from #:magicl.foreign-libraries
-                #:print-availability-report)
-  (:export #:print-availability-report)
-
   (:import-from #:magicl.backends
                 #:no-applicable-implementation
                 #:define-compatible-no-applicable-method-behavior
@@ -180,4 +176,11 @@
 
            ;; Vector operators
            #:dot
-           #:norm))
+           #:norm
+
+           ;; Misc utilities
+           #:row-major-index
+           #:matrix-row-major-index
+           #:column-major-index
+           #:matrix-column-major-index
+           #:valid-index-p))

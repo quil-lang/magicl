@@ -131,9 +131,9 @@
       ;; HOURS WASTED HERE: 10
       (magicl.cffi-types:with-array-pointers ((xcopy-ptr (magicl::storage xcopy)))
         (let ((x11 xcopy-ptr)
-              (x12 (magicl::ptr-ref xcopy xcopy-ptr 0 q))
-              (x21 (magicl::ptr-ref xcopy xcopy-ptr p 0))
-              (x22 (magicl::ptr-ref xcopy xcopy-ptr p q))
+              (x12 (magicl.cffi-types:ptr-ref xcopy xcopy-ptr 0 q))
+              (x21 (magicl.cffi-types:ptr-ref xcopy xcopy-ptr p 0))
+              (x22 (magicl.cffi-types:ptr-ref xcopy xcopy-ptr p q))
               (theta (make-array r
                                  :element-type 'double-float))
               (u1 (make-array (* ldu1 p)

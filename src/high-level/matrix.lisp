@@ -258,25 +258,6 @@ ELEMENT-TYPE, CAST, COPY-TENSOR, DEEP-COPY-TENSOR, TREF, SETF TREF)"
           (setf d (cl:map 'list (lambda (di) (/ di (sqrt (* di (conjugate di))))) d))
           (@ q (funcall #'from-diag d)))))))
 
-;; TODO: This should be generic to abstract-tensor
-(defgeneric ptr-ref (m base i j)
-  (:documentation
-   "Accessor method for the pointer to the element in the I-th row and J-th column of a matrix M, assuming zero indexing.")
-  (:method ((m matrix) base i j)
-    (policy-cond:with-expectations (> speed safety)
-        ((assertion (valid-index-p (list i j) (shape m))))
-      (let ((type (element-type m)))
-        (let ((idx (apply (ecase (layout m)
-                            (:column-major #'matrix-column-major-index)
-                            (:row-major #'matrix-row-major-index))
-                          i j (shape m))))
-          (cond
-            ((subtypep type 'single-float) (cffi:mem-aptr base :float idx))
-            ((subtypep type 'double-float) (cffi:mem-aptr base :double idx))
-            ((subtypep type '(complex single-float)) (cffi:mem-aptr base :float (* 2 idx)))
-            ((subtypep type '(complex double-float)) (cffi:mem-aptr base :double (* 2 idx)))
-            (t (error "Incompatible element type ~a." type))))))))
-
 (defgeneric row (matrix index)
   (:documentation "Get row vector from a matrix")
   (:method ((m matrix) index)
