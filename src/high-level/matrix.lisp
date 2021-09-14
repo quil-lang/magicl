@@ -44,6 +44,7 @@ ELEMENT-TYPE, CAST, COPY-TENSOR, DEEP-COPY-TENSOR, TREF, SETF TREF)"
                          (:copier ,copy-sym))
          (storage nil :type (matrix-storage ,type)))
        #+sbcl (declaim (sb-ext:freeze-type ,name))
+       #+allegro (set-pprint-dispatch ',name 'pprint-matrix)
 
        (defmethod storage ((m ,name))
          (,storage-sym m))
@@ -56,9 +57,7 @@ ELEMENT-TYPE, CAST, COPY-TENSOR, DEEP-COPY-TENSOR, TREF, SETF TREF)"
          (apply #'make-array
                 size
                 :element-type ',type
-                (if initial-element
-                    (list :initial-element (coerce initial-element ',type))
-                    nil)))
+                (list :initial-element (coerce (if initial-element initial-element 0) ',type))))
 
        (defmethod make-tensor ((class (eql ',name)) shape &key initial-element layout storage)
          (declare (type list shape)
@@ -112,7 +111,7 @@ ELEMENT-TYPE, CAST, COPY-TENSOR, DEEP-COPY-TENSOR, TREF, SETF TREF)"
            (setf (,storage-sym new-m)
                  (copy-seq (,storage-sym m)))
            new-m))
-       
+
        (defmethod tref ((matrix ,name) &rest pos)
          (declare (dynamic-extent pos))
          (let ((numrows (matrix-nrows matrix))
@@ -128,7 +127,7 @@ ELEMENT-TYPE, CAST, COPY-TENSOR, DEEP-COPY-TENSOR, TREF, SETF TREF)"
                               (:column-major (+ row (the fixnum (* col numrows)))))))
                  (declare (type alexandria:array-index index))
                  (aref (,storage-sym matrix) index))))))
-       
+
        (defmethod (setf tref) (new-value (matrix ,name) &rest pos)
          (declare (dynamic-extent pos))
          (let ((numrows (matrix-nrows matrix))
@@ -145,7 +144,7 @@ ELEMENT-TYPE, CAST, COPY-TENSOR, DEEP-COPY-TENSOR, TREF, SETF TREF)"
                  (declare (type alexandria:array-index index))
                  (setf (aref (,storage-sym matrix) index)
                        (coerce new-value ',type)))))))
-       
+
        (defmethod into! ((function function) (matrix ,name))
          (let ((index 0) ;; TODO: make if less iffy
                (storage (storage matrix)))
