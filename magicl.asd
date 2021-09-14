@@ -13,6 +13,7 @@
   :version (:read-file-form "VERSION.txt")
   :in-order-to ((asdf:test-op (asdf:test-op #:magicl-tests)))
   :depends-on (#:magicl/core
+               #:magicl/ext
                #:magicl/ext-blas
                #:magicl/ext-lapack
                #:magicl/ext-expokit))
@@ -27,8 +28,6 @@
                #:abstract-classes
                #:policy-cond
                #:interface              ; for CALLING-FORM
-
-               #:magicl/ext             ; Allow extensions
                )
   :around-compile (lambda (compile)
                     (let (#+sbcl (sb-ext:*derive-function-types* t))
@@ -62,7 +61,8 @@
 
 (asdf:defsystem #:magicl/ext
   :description "Common code for extending MAGICL with foreign libraries."
-  :depends-on (#:cffi
+  :depends-on (#:magicl/core
+               #:cffi
                #:cffi-libffi)
   :serial t
   :pathname "src/extensions/common"
@@ -70,7 +70,8 @@
   ((:file "package")
    (:file "library-tracking")
    (:file "with-array-pointers")
-   (:file "cffi-types")))
+   (:file "cffi-types")
+   (:file "ptr-ref")))
 
 ;;; BLAS
 
