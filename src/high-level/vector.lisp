@@ -33,6 +33,7 @@ ELEMENT-TYPE, CAST, COPY-TENSOR, DEEP-COPY-TENSOR, TREF, SETF TREF)"
                          (:copier ,copy-sym))
          (storage nil :type (vector-storage ,type)))
        #+sbcl (declaim (sb-ext:freeze-type ,name))
+       #+allegro (set-pprint-dispatch ',name 'pprint-vector)
 
        (defmethod storage ((v ,name))
          (,storage-sym v))
@@ -54,9 +55,7 @@ ELEMENT-TYPE, CAST, COPY-TENSOR, DEEP-COPY-TENSOR, TREF, SETF TREF)"
                        (apply #'make-array
                               size
                               :element-type ',type
-                              (if initial-element
-                                  (list :initial-element (coerce initial-element ',type))
-                                  nil)))))))
+                              (list :initial-element (coerce (if initial-element initial-element 0) ',type))))))))
 
        (defmethod cast ((tensor ,name) (class (eql ',name)))
          (declare (ignore class))

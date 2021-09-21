@@ -130,6 +130,7 @@
       ;;
       ;; HOURS WASTED HERE: 10
       (magicl.cffi-types:with-array-pointers ((xcopy-ptr (magicl::storage xcopy)))
+        #+allegro (setq xcopy-ptr (ff:fslot-address-typed :unsigned-char :lisp (magicl::storage xcopy)))
         (let ((x11 xcopy-ptr)
               (x12 (magicl.cffi-types:ptr-ref xcopy xcopy-ptr 0 q))
               (x21 (magicl.cffi-types:ptr-ref xcopy xcopy-ptr p 0))
