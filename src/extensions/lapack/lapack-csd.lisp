@@ -74,10 +74,10 @@
 
     (let ((v2h (conjugate (/ 1.0d0 (- (* c (conjugate u2) a4)
                                       (* s (conjugate u1) a3)))))
-          (mu1 (empty '(1 1)))
-          (mu2 (empty '(1 1)))
-          (mv1h (empty '(1 1)))
-          (mv2h (empty '(1 1))))
+          (mu1 (empty '(1 1) :type '(complex double-float)))
+          (mu2 (empty '(1 1) :type '(complex double-float)))
+          (mv1h (empty '(1 1) :type '(complex double-float)))
+          (mv2h (empty '(1 1) :type '(complex double-float))))
 
       (macrolet ((matrix-1x1-data (matrix)
                    `(the (simple-array (complex double-float) (1)) (magicl::storage ,matrix))))
@@ -130,6 +130,7 @@
       ;;
       ;; HOURS WASTED HERE: 10
       (magicl.cffi-types:with-array-pointers ((xcopy-ptr (magicl::storage xcopy)))
+        #+allegro (setq xcopy-ptr (ff:fslot-address-typed :unsigned-char :lisp (magicl::storage xcopy)))
         (let ((x11 xcopy-ptr)
               (x12 (magicl.cffi-types:ptr-ref xcopy xcopy-ptr 0 q))
               (x21 (magicl.cffi-types:ptr-ref xcopy xcopy-ptr p 0))
