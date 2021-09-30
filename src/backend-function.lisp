@@ -67,11 +67,24 @@
 (defun no-applicable-implementation (name)
   "Call this function to signal an error indicating the caller (or any callers above it) are not applicable to the current backend function being invoked."
   (error 'no-applicable-implementation
-         :format-control (format nil "~S is not implemented in any of ~
-                                      the current active backends: ~
-                                      ~~{~~A~~^, ~~}."
-                                 name)
-         :format-arguments (list (active-backends))))
+         :format-control
+         (let ((*package* (find-package "KEYWORD")))
+           (with-output-to-string (s)
+             (format s "No applicable implementations found for the supposed ~
+                        backend function ~S.~2%" name)
+             (describe-backend-function name s)
+             (terpri s)
+             (format s "There was no implementation of ~S that was applicable to the given ~
+                        arguments. This may be because:~2%" name)
+             (format s "    * No implementation exists in a currently active backend,~2%")
+             (format s "    * A generic function implements the backend, but the generic ~
+                              function does not specialize on the argument, or~2%")
+             (format s "    * An implementation exists, but signaled that it wasn't ~
+                              applicable for the given arguments.~2%")
+             (format s "Ensure the proper backends are activated, and the implementations ~
+                        in those backends can handle the argument types appropriately. If ~
+                        an implementation does not exist, consider writing one!")))
+         :format-arguments nil))
 
 (defmacro define-compatible-no-applicable-method-behavior (&rest generic-function-names)
   "Ensure the (unquoted symbol) generic function names GENERIC-FUNCTION-NAMES will behave correctly when used as implementations for backend functions.
@@ -231,3 +244,55 @@ NOTE: If your implementation is a generic function, then the generic function's 
   `(progn
      (setf (%backend-implementation ',name ',backend) ,funcallable-expression)
      ',name))
+
+
+;;; For Error Output and Debugging
+
+(defun function-p (name)
+  (ignore-errors (fdefinition name)))
+
+(defun generic-function-p (name)
+  (and (function-p name)
+       (typep (fdefinition name) 'generic-function)))
+
+(defun describe-backend-function (name &optional (stream *standard-output*))
+  (assert (symbolp name))
+  (let ((*package* (find-package "KEYWORD")))
+    (cond
+      ((not (backend-function-p name))
+       (format stream "~S does not name a backend function.~%" name))
+      (t
+       (let* ((active (active-backends))
+              (inactive (set-difference *known-backends* active)))
+         (flet ((print-info (b)
+                  (let ((impl (backend-implementation name b)))
+                    (format stream "* Backend ~S has " b)
+                    (cond
+                      ((null impl)
+                       (format stream "no implementations"))
+                      ((generic-function-p impl)
+                       (format stream "~S [generic function]" impl))
+                      ((function-p impl)
+                       (format stream "~S [non-generic function]" impl))
+                      (t
+                       (format stream "~S [undefined]" impl))))))
+           (format stream "~S names a backend function.~2%" name)
+           (cond
+             ((null active)
+              (format stream "There are no active backends.~%"))
+             (t
+              (format stream "Active Backends:~%")
+              (dolist (b active)
+                (format stream "~4T")
+                (print-info b)
+                (terpri stream))))
+           (terpri stream)
+           (cond
+             ((null inactive)
+              (format stream "There are no inactive backends.~%"))
+             (t
+              (format stream "Inactive Backends:~%")
+              (dolist (b inactive)
+                (format stream "~4T")
+                (print-info b)
+                (terpri stream))))))))))
