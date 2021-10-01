@@ -222,3 +222,48 @@ If TYPE is not specified then *DEFAULT-TENSOR-TYPE* is used.
 LAYOUT specifies the internal storage representation ordering of the returned tensor.
 The tensor specialized on the specified SHAPE and TYPE."
   (const 1 shape :type type :layout layout))
+
+;;; Random Matrices
+;;;
+;;; See also RAND.
+
+(defgeneric fill-with-random-normal! (matrix)
+  (:method ((matrix matrix/single-float))
+    (into! (lambda (i j)
+             (declare (ignore i j))
+             (coerce (alexandria:gaussian-random) 'single-float))
+           matrix))
+  (:method ((matrix matrix/double-float))
+    (into! (lambda (i j)
+             (declare (ignore i j))
+             (values (alexandria:gaussian-random)))
+           matrix))
+  (:method ((matrix matrix/complex-single-float))
+    (into! (lambda (i j)
+             (declare (ignore i j))
+             (multiple-value-bind (re im) (alexandria:gaussian-random)
+               (complex (coerce re 'single-float)
+                        (coerce im 'single-float))))
+           matrix))
+  (:method ((matrix matrix/complex-double-float))
+    (into! (lambda (i j)
+             (declare (ignore i j))
+             (multiple-value-call #'complex (alexandria:gaussian-random)))
+           matrix)))
+
+(defun random-normal (shape &key (type *default-tensor-type*))
+  "Produce a matrix of entries which are normally distributed (mean 0, variance 1). Complex types will have their real and imaginary parts normally distributed."
+  (fill-with-random-normal! (zeros shape :type type)))
+
+(defun random-unitary (shape &key (type `(complex ,*default-tensor-type*)))
+  "Generate a uniformly random element of U(n)."
+  ;; See "How to generate random matrices from the classical compact
+  ;; groups" for details [https://arxiv.org/abs/math-ph/0609050], like
+  ;; why there is scaling.
+  (policy-cond:with-expectations (> speed safety)
+      ((assertion (square-shape-p shape)))
+    (multiple-value-bind (q r) (qr (random-normal shape :type type))
+      (let ((d (diag r)))
+        (setf d (cl:map 'list (lambda (di) (/ di (sqrt (* di (conjugate di))))) d))
+        (@ q (funcall #'from-diag d))))))
+

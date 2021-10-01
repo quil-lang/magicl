@@ -248,16 +248,6 @@ ELEMENT-TYPE, CAST, COPY-TENSOR, DEEP-COPY-TENSOR, TREF, SETF TREF)"
 
 ;; Specific constructors
 
-(defgeneric random-unitary (shape &key type)
-  (:documentation "Generate a uniformly random element of U(n).")
-  (:method (shape &key (type 'double-float))
-    (policy-cond:with-expectations (> speed safety)
-        ((assertion (square-shape-p shape)))
-      (multiple-value-bind (q r) (qr (rand shape :type type :distribution #'alexandria:gaussian-random))
-        (let ((d (diag r)))
-          (setf d (cl:map 'list (lambda (di) (/ di (sqrt (* di (conjugate di))))) d))
-          (@ q (funcall #'from-diag d)))))))
-
 (defgeneric row (matrix index)
   (:documentation "Get row vector from a matrix")
   (:method ((m matrix) index)

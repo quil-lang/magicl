@@ -139,6 +139,16 @@
     ;; Check that doing 2x1 @ 2x2 errors
     (signals error (magicl:@ x m))))
 
+(deftest test-random-unitary ()
+  "Test that random unitaries are unitary."
+  (loop :repeat 100
+        :for dim := (1+ (random 16))
+        :for shape := (list dim dim)
+        :for x := (magicl:random-unitary shape :type '(complex single-float))
+        :for y := (magicl:random-unitary shape :type '(complex double-float))
+        :do (is (magicl:unitary-matrix-p x))
+            (is (magicl:unitary-matrix-p y))))
+
 (deftest test-random-unitary-properties ()
   "Test calls to RANDOM-UNITARY for all float types and sizes 1x1 to 64x64 to check properties"
   (dolist (type +magicl-float-types+)
@@ -149,7 +159,7 @@
                           1))))
         (is (magicl:=
              (magicl:eye (list i i) :type type)
-             (magicl:@ m (magicl:transpose m))
+             (magicl:@ m (magicl:conjugate-transpose m))
              5e-5))))))
 
 ;;; Block Matrix Routines

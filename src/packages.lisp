@@ -107,6 +107,7 @@
            #:zeros
            #:ones
 
+           #:random-normal
            #:random-unitary
 
            ;; Block Matrix Constructors
