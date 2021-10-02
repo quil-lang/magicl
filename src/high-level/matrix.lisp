@@ -53,12 +53,6 @@ ELEMENT-TYPE, CAST, COPY-TENSOR, DEEP-COPY-TENSOR, TREF, SETF TREF)"
          (declare (ignore m))
          ',type)
 
-       (defmethod make-storage ((class (eql ',name)) size initial-element)
-         (apply #'make-array
-                size
-                :element-type ',type
-                (list :initial-element (coerce (if initial-element initial-element 0) ',type))))
-
        (defmethod make-tensor ((class (eql ',name)) shape &key initial-element layout storage)
          (declare (type list shape)
                   (optimize (speed 3) (safety 0))) ;; This is probably not what you want...
@@ -69,14 +63,21 @@ ELEMENT-TYPE, CAST, COPY-TENSOR, DEEP-COPY-TENSOR, TREF, SETF TREF)"
                  (cols (second shape)))
              (declare (type fixnum rows cols))
              (let ((size (the fixnum (* rows cols))))
-               (funcall #',constructor-sym
-                        rows
-                        cols
-                        size
-                        (or layout :column-major)
-                        (or
-                         storage
-                         (make-storage ',name size initial-element)))))))
+               (multiple-value-bind (actual-storage finalizer)
+                   (or storage
+                       (allocate size
+                                 :element-type ',type
+                                 :initial-element initial-element))
+                 (let ((matrix
+                         (funcall #',constructor-sym
+                                  rows
+                                  cols
+                                  size
+                                  (or layout :column-major)
+                                  actual-storage)))
+                   (when finalizer
+                     (tg:finalize matrix finalizer))
+                   matrix))))))
 
        (defmethod cast ((tensor ,name) (class (eql ',name)))
          (declare (ignore class))
@@ -101,15 +102,19 @@ ELEMENT-TYPE, CAST, COPY-TENSOR, DEEP-COPY-TENSOR, TREF, SETF TREF)"
        (defmethod copy-tensor ((m ,name) &rest args)
          (declare (ignore args))
          (let ((new-m (,copy-sym m)))
-           (setf (,storage-sym new-m)
-                 (make-array (matrix-size m) :element-type (element-type m)))
+           (multiple-value-bind (storage finalizer)
+               (allocate (matrix-size m)
+                         :element-type (element-type m))
+             (setf (,storage-sym new-m) storage)
+             (tg:finalize new-m finalizer))
            new-m))
 
        (defmethod deep-copy-tensor ((m ,name) &rest args)
          (declare (ignore args))
-         (let ((new-m (,copy-sym m)))
-           (setf (,storage-sym new-m)
-                 (copy-seq (,storage-sym m)))
+         (let ((new-m (copy-tensor m)))
+           (dotimes (i (matrix-size m))
+             (setf (aref (,storage-sym new-m) i)
+                   (aref (,storage-sym m) i)))
            new-m))
        
        (defmethod tref ((matrix ,name) &rest pos)

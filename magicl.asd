@@ -28,6 +28,8 @@
                #:abstract-classes
                #:policy-cond
                #:interface              ; for CALLING-FORM
+               #:static-vectors
+               #:trivial-garbage
                )
   :around-compile (lambda (compile)
                     (let (#+sbcl (sb-ext:*derive-function-types* t))
@@ -41,6 +43,7 @@
    (:module "high-level"
     :serial t
     :components ((:file "util")
+                 (:file "allocation")
                  (:file "shape")
                  (:file "abstract-tensor")
                  (:file "specialize-tensor")

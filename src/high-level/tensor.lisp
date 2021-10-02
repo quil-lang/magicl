@@ -59,18 +59,21 @@ COPY-TENSOR, DEEP-COPY-TENSOR, TREF, SETF TREF)"
          (policy-cond:with-expectations (> speed safety)
              ((type shape shape))
            (let ((size (reduce #'* shape)))
-             (funcall #',constructor-sym
-                      (length shape)
-                      shape
-                      size
-                      (or layout :column-major)
-                      (or
-                       storage
-                       (apply #'make-array
-                              size
-                              :element-type ',type
-                              (list :initial-element (coerce (if initial-element initial-element 0) ',type))))))))
-
+             (multiple-value-bind (actual-storage finalizer)
+                 (or storage
+                     (allocate size
+                               :element-type ',type
+                               :initial-element initial-element))
+               (let ((tensor
+                       (funcall #',constructor-sym
+                                (length shape)
+                                shape
+                                size
+                                (or layout :column-major)
+                                actual-storage)))
+                 (when finalizer
+                   (tg:finalize tensor finalizer))
+                 tensor)))))
        (defmethod cast ((tensor ,name) (class (eql ',name)))
          (declare (ignore class))
          tensor)
@@ -79,15 +82,19 @@ COPY-TENSOR, DEEP-COPY-TENSOR, TREF, SETF TREF)"
        (defmethod copy-tensor ((m ,name) &rest args)
          (declare (ignore args))
          (let ((new-m (,copy-sym m)))
-           (setf (,storage-sym new-m)
-                 (make-array (tensor-size m) :element-type (element-type m)))
+           (multiple-value-bind (storage finalizer)
+               (allocate (tensor-size m)
+                         :element-type (element-type m))             
+             (setf (,storage-sym new-m) storage)
+             (tg:finalize new-m finalizer))
            new-m))
 
        (defmethod deep-copy-tensor ((m ,name) &rest args)
          (declare (ignore args))
-         (let ((new-m (,copy-sym m)))
-           (setf (,storage-sym new-m)
-                 (copy-seq (,storage-sym m)))
+         (let ((new-m (copy-tensor m)))
+           (dotimes (i (tensor-size m))
+             (setf (aref (,storage-sym new-m) i)
+                   (aref (,storage-sym m) i)))
            new-m))
 
        (defmethod tref ((tensor ,name) &rest pos)
