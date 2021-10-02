@@ -187,7 +187,7 @@ suit different needs (e.g., LPARALLEL:PDOTIMES.)
                              ,expr))))
            (let-result-array (expr)
              "Evaluate EXPR and return the result erray."
-             `(let ((,result-array ,(or output-array `(make-array (list ,@output-dims) :initial-element 0.0))))
+             `(let ((,result-array ,(or output-array `(rray (list ,@output-dims) :initial-element 0.0))))
                 ,expr
                 ,result-array)))
       

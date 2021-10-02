@@ -45,6 +45,9 @@
            #:time-backends
            #:define-extensible-function ; For extensions, not users...
 
+           #:allocate-storage
+           #:*default-allocator*
+
            ;; abstract-tensor protocol
            #:abstract-tensor
            #:specialize-tensor

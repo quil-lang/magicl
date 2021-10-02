@@ -126,31 +126,36 @@ The tensor is specialized on SHAPE and TYPE."
       ((type shape shape))
     (let* ((tensor-class (infer-tensor-type type shape nil))
            (storage-size (reduce #'* shape))
-           (storage (make-array storage-size :element-type type))
            (array-dims (array-dimensions array)))
-      (let ((index-function
-              (if (eq layout ':row-major)
-                  #'row-major-index
-                  #'column-major-index))
-            (input-index-function
-              (if (eq input-layout ':row-major)
-                  #'row-major-index
-                  #'column-major-index)))
-        (cond
-          ((not (cdr array-dims))
-           (map-indexes
-            shape
-            (lambda (&rest pos)
-              (setf (aref storage (funcall index-function pos shape))
-                    (aref array (funcall input-index-function pos shape))))))
-          (t (map-indexes
+      (multiple-value-bind (storage finalizer)
+          (allocate storage-size
+                    :element-type type)
+        (let ((index-function
+                (if (eq layout ':row-major)
+                    #'row-major-index
+                    #'column-major-index))
+              (input-index-function
+                (if (eq input-layout ':row-major)
+                    #'row-major-index
+                    #'column-major-index)))
+          (cond
+            ((not (cdr array-dims))
+             (map-indexes
               shape
               (lambda (&rest pos)
                 (setf (aref storage (funcall index-function pos shape))
-                      (apply #'aref array pos)))))))
-      (make-tensor tensor-class shape
-                   :storage storage
-                   :layout layout))))
+                      (aref array (funcall input-index-function pos shape))))))
+            (t (map-indexes
+                shape
+                (lambda (&rest pos)
+                  (setf (aref storage (funcall index-function pos shape))
+                        (apply #'aref array pos)))))))
+        (let ((tensor
+                (make-tensor tensor-class shape
+                             :storage storage
+                             :layout layout)))
+          (tg:finalize tensor finalizer)
+          tensor)))))
 
 (defun from-list (list shape &key type layout (input-layout :row-major))
   "Create a tensor with the elements of LIST, placing in layout INPUT-LAYOUT

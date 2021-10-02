@@ -10,7 +10,8 @@
                #:uiop
                #:magicl
                #:magicl-examples
-               #:fiasco)
+               #:fiasco
+               #:trivial-garbage)
   :perform (asdf:test-op (o s)
                          (uiop:symbol-call :magicl-tests
                                            '#:run-magicl-tests))
@@ -20,6 +21,7 @@
                (:file "suite")
                (:file "constants")
                (:file "util-tests")
+               (:file "allocation-tests")
                (:file "abstract-tensor-tests")
                (:file "specialization-tests")
                (:file "constructor-tests")
