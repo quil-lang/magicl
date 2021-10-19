@@ -258,7 +258,8 @@ remaining lines."
 
 (defvar *basedir*)
 (defparameter *outdir*
-  (asdf:system-relative-pathname :magicl-gen "src/bindings/"))
+  (asdf:system-relative-pathname :magicl-gen #+allegro "src/bindings/allegro/"
+                                             #-allegro "src/bindings/"))
 
 (defun parse-blas-files (&optional (basedir *basedir*))
   (let ((files
@@ -341,7 +342,27 @@ need to be customized."
            (raw-call-name (raw-call-name ff))
            (lisp-fun-name (lisp-fun-name ff)))
       `(
+        ;; Allegro FFI form
+        #+allegro
+        (ff:def-foreign-call (,raw-call-name ,fortran-name)
+            ,(mapcar (lambda (var norm-type)
+                       `(,(sym var)
+                         ,@(if (eq norm-type :fortran-string) '((* :char) string) '(:foreign-address))))
+                     vars normalized-types)
+          :returning ,(ecase return-type
+                        (:fortran-string '((* :char) string))
+                        (:fortran-int :int)
+                        (:fortran-single-float '(:float single-float))
+                        (:fortran-double-float '(:double double-float))
+                        (:fortran-complex-single-float '(:foreign-address (complex single-float)))
+                        (:fortran-complex-double-float '(:foreign-address (complex double-float)))
+                        (:fortran-logical '(:int (signed-byte 32)))
+                        (:fortran-none :void))
+          :release-heap :never
+          :allow-gc :never)
+
         ;; CFFI form
+        #-allegro
         (cffi:defcfun (,fortran-name ,raw-call-name
                        ,@(if (not originating-library)
                              nil

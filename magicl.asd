@@ -85,7 +85,7 @@
   :components
   ((:file "extensions/blas/package")
    (:file "extensions/blas/load-libs")
-   (:module "bindings"
+   (:module #+allegro "bindings/allegro" #-allegro "bindings"
     :components ((:file "blas-cffi")))
    (:file "extensions/blas/arithmetic")))
 
@@ -104,7 +104,7 @@
   :components
   ((:file "extensions/lapack/package")
    (:file "extensions/lapack/load-libs")
-   (:module "bindings"
+   (:module #+allegro "bindings/allegro" #-allegro "bindings"
     :components ((:file "lapack00-cffi")
                  (:file "lapack01-cffi")
                  (:file "lapack02-cffi")
@@ -175,5 +175,6 @@
    (:module "src/extensions/expokit"
     :components ((:file "package")
                  (:file "load-libs")))
-   (:file "src/bindings/expokit-cffi")
+   (:file #+allegro "src/bindings/allegro/expokit-cffi"
+          #-allegro "src/bindings/expokit-cffi")
    (:file "src/extensions/expokit/expm")))
