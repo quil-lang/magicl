@@ -554,7 +554,9 @@ NOTE: If MATRIX is not square, this will compute the reduced LQ factorization.")
   "Computes the exponential of a square matrix M.")
 
 (define-backend-function expih (H)
-  "Compute the exponential exp(iH) of a hermitian matrix H.")
+  "Compute the exponential exp(iH) of a hermitian matrix H.
+
+NOTE: If H is not Hermitian, the behavior is undefined.")
 
 (define-backend-implementation expih :lisp
   (lambda (matrix)
@@ -563,9 +565,7 @@ NOTE: If MATRIX is not square, this will compute the reduced LQ factorization.")
     ;; of a Matrix" by Moler & van Loan. but here we are fine.
     (multiple-value-bind (lambdas V) (magicl:hermitian-eig matrix)
       (let ((D (magicl:from-diag
-                (mapcar (lambda (h)
-                          (exp (* #C(0d0 1d0) h)))
-                        lambdas)
+                (mapcar #'cis lambdas)
                 :type (element-type matrix))))
         (magicl:@ V D (magicl:dagger V))))))
 
