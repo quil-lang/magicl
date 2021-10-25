@@ -553,6 +553,22 @@ NOTE: If MATRIX is not square, this will compute the reduced LQ factorization.")
 (define-backend-function expm (matrix)
   "Computes the exponential of a square matrix M.")
 
+(define-backend-function expih (H)
+  "Compute the exponential exp(iH) of a hermitian matrix H.")
+
+(define-backend-implementation expih :lisp
+  (lambda (matrix)
+    ;; NOTE: doing this for non-normal matrices is a bad idea, cf. the
+    ;; discussion in "Nineteen Dubious Ways to Compute the Exponential
+    ;; of a Matrix" by Moler & van Loan. but here we are fine.
+    (multiple-value-bind (lambdas V) (magicl:hermitian-eig matrix)
+      (let ((D (magicl:from-diag
+                (mapcar (lambda (h)
+                          (exp (* #C(0d0 1d0) h)))
+                        lambdas)
+                :type (element-type matrix))))
+        (magicl:@ V D (magicl:dagger V))))))
+
 (define-backend-function logm (matrix)
   "Finds the matrix logarithm of a given square matrix M assumed to be diagonalizable, with nonzero eigenvalues.")
 
