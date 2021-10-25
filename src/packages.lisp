@@ -166,6 +166,7 @@
            #:lq
            #:expm
            #:logm
+           #:expih
 
            #:polynomial
            #:make-polynomial
