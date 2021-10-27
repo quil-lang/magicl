@@ -130,6 +130,10 @@
       ;;
       ;; HOURS WASTED HERE: 10
       (magicl.cffi-types:with-array-pointers ((xcopy-ptr (magicl::storage xcopy)))
+        ;; The next line is necessary for Allegro, because we are passing array objects directly in foreign calls.
+        ;; But in this function, `magicl.cffi-types:ptr-ref` needs to calculate pointer addresses by using `cffi:mem-aptr`, so it certainly expects an integer.
+        ;; If in the future more "weird MAGICL bindings" ("weird" in the sense that it needs to calculate more integer addresses from the given one) are required, --
+        ;; then it does need to be taken care of for Allegro.
         #+allegro (setq xcopy-ptr (ff:fslot-address-typed :unsigned-char :lisp (magicl::storage xcopy)))
         (let ((x11 xcopy-ptr)
               (x12 (magicl.cffi-types:ptr-ref xcopy xcopy-ptr 0 q))

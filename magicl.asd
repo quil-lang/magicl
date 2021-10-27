@@ -85,8 +85,10 @@
   :components
   ((:file "extensions/blas/package")
    (:file "extensions/blas/load-libs")
-   (:module #+allegro "bindings/allegro" #-allegro "bindings"
-    :components ((:file "blas-cffi")))
+   (:module "bindings/allegro" :if-feature :allegro
+    :components #1=((:file "blas-cffi")))
+   (:module "bindings" :if-feature (:not :allegro)
+    :components #1#)
    (:file "extensions/blas/arithmetic")))
 
 
@@ -104,15 +106,17 @@
   :components
   ((:file "extensions/lapack/package")
    (:file "extensions/lapack/load-libs")
-   (:module #+allegro "bindings/allegro" #-allegro "bindings"
-    :components ((:file "lapack00-cffi")
-                 (:file "lapack01-cffi")
-                 (:file "lapack02-cffi")
-                 (:file "lapack03-cffi")
-                 (:file "lapack04-cffi")
-                 (:file "lapack05-cffi")
-                 (:file "lapack06-cffi")
-                 (:file "lapack07-cffi")))
+   (:module "bindings/allegro" :if-feature :allegro
+    :components #1=((:file "lapack00-cffi")
+                    (:file "lapack01-cffi")
+                    (:file "lapack02-cffi")
+                    (:file "lapack03-cffi")
+                    (:file "lapack04-cffi")
+                    (:file "lapack05-cffi")
+                    (:file "lapack06-cffi")
+                    (:file "lapack07-cffi")))
+   (:module "bindings" :if-feature (:not :allegro)
+    :components #1#)
    (:module "extensions/lapack"
     :components ((:file "lapack-generics")
                  (:file "lapack-templates")
