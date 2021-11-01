@@ -81,7 +81,7 @@ If OFFSET is specified then the diagonal band will be offset by that much, posit
        ;; NOTE: We infer the tensor type this late to allow for
        ;; reassignment of SHAPE in the assertion.
        (let* ((tensor-class (infer-tensor-type type shape value))
-              (tensor (make-tensor tensor-class shape :layout layout))
+              (tensor (make-tensor tensor-class shape :layout layout :initial-element 0))
               (fill-value (coerce (or value 1) (element-type tensor)))) ;; TODO: use registry)
          (loop :for i :from (max 0 (- offset)) :below (first shape)
                :for j :from (max 0 offset) :below (second shape) :do
@@ -89,7 +89,7 @@ If OFFSET is specified then the diagonal band will be offset by that much, posit
          tensor))
       (t
        (let* ((tensor-class (infer-tensor-type type shape value))
-              (tensor (make-tensor tensor-class shape :layout layout))
+              (tensor (make-tensor tensor-class shape :layout layout :initial-element 0))
               (fill-value (coerce (or value 1) (element-type tensor))) ;; TODO: use registry
               (shape-length (length shape)))
          (dotimes (i (reduce #'min shape) tensor)
@@ -196,7 +196,7 @@ If OFFSET is specified then the diagonal band will be offset by that much, posit
      (let* ((length (+ (length list) (abs offset)))
             (shape (fixnum-to-shape length order))
             (tensor-class (infer-tensor-type type shape (first list)))
-            (tensor (make-tensor tensor-class shape :layout layout)))
+            (tensor (make-tensor tensor-class shape :layout layout :initial-element 0)))
        (loop :for i :from (max 0 (- offset)) :below (first shape)
              :for j :from (max 0 offset) :below (second shape) :do
                (setf (tref tensor i j) (pop list)))
@@ -205,7 +205,7 @@ If OFFSET is specified then the diagonal band will be offset by that much, posit
      (let* ((length (+ (length list) (abs offset)))
             (shape (fixnum-to-shape length order))
             (tensor-class (infer-tensor-type type shape (first list)))
-            (tensor (make-tensor tensor-class shape :layout layout)))
+            (tensor (make-tensor tensor-class shape :layout layout :initial-element 0)))
        (dotimes (i (reduce #'min shape) tensor)
          (setf (apply #'tref tensor (make-list order :initial-element i))
                (pop list)))))))
