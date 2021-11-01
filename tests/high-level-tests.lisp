@@ -95,7 +95,7 @@
                       (values matrix))
              (let* ((m (magicl:nrows diag))
                     (k (magicl:ncols matrix))
-                    (result (magicl:empty (list m k))))
+                    (result (magicl:zeros (list m k))))
                (dotimes (i (min m (magicl:ncols diag)) result)
                  (let ((dii (magicl:tref diag i i)))
                    (dotimes (j k)
