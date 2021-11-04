@@ -161,6 +161,7 @@
            #:hermitian-eig
            #:inv
            #:lu
+           #:lu-solve
            #:csd
            #:svd
            #:ql
@@ -170,6 +171,7 @@
            #:expm
            #:logm
            #:expih
+           #:linear-solve
 
            #:polynomial
            #:make-polynomial

@@ -38,6 +38,9 @@ ELEMENT-TYPE, CAST, COPY-TENSOR, DEEP-COPY-TENSOR, TREF, SETF TREF)"
        (defmethod storage ((v ,name))
          (,storage-sym v))
 
+       (defmethod (setf storage) (new-value (v ,name))
+         (setf (,storage-sym v) new-value))
+
        (defmethod element-type ((v ,name))
          (declare (ignore v))
          ',type)

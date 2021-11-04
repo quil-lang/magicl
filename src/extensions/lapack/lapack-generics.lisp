@@ -15,6 +15,8 @@
 
 (magicl:define-extensible-function (magicl:lu lapack-lu :lapack) (matrix))
 
+(magicl:define-extensible-function (magicl:lu-solve lapack-lu-solve :lapack) (lu ipiv b))
+
 (magicl:define-extensible-function (magicl:inv lapack-inv :lapack) (matrix))
 
 (magicl:define-extensible-function (magicl:csd csd-extension :lapack) (matrix p q))

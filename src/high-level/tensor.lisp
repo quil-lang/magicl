@@ -51,6 +51,9 @@ COPY-TENSOR, DEEP-COPY-TENSOR, TREF, SETF TREF)"
        (defmethod storage ((m ,name))
          (,storage-sym m))
 
+       (defmethod (setf storage) (new-value (m ,name))
+         (setf (,storage-sym m) new-value))
+
        (defmethod element-type ((m ,name))
          (declare (ignore m))
          ',type)

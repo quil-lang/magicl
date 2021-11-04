@@ -119,6 +119,36 @@
         info)
        (values a-tensor ipiv-tensor))))
 
+(defun generate-lapack-lu-solve-for-type (class type lu-solve-function)
+  (declare (ignore type))
+  `(defmethod lapack-lu-solve ((lu ,class) ipiv (b ,class))
+     (unless (square-matrix-p lu)
+       (error "Expected a square matrix encoding a valid LU factorization."))
+     (let* ((a (magicl::storage lu))
+            (b-tensor (deep-copy-tensor b))
+            (b (magicl::storage b-tensor))
+            (trans (ecase (layout lu)
+                     (:row-major "T")
+                     (:column-major "N")))
+            (lda (nrows lu))
+            (n lda)
+            (ldb (nrows b-tensor))
+            (nrhs (ncols b-tensor))
+            (ipiv (magicl::storage ipiv))
+            (info 0))
+       (when (eql :row-major (layout b-tensor)) (transpose! b-tensor))
+       (,lu-solve-function
+        trans
+        n
+        nrhs
+        a        
+        lda
+        ipiv
+        b
+        ldb
+        info)
+       b-tensor)))
+
 (defun generate-lapack-inv-for-type (class type lu-function inv-function)
   `(defmethod lapack-inv ((a ,class))
      (let ((a-tensor (deep-copy-tensor a)))
