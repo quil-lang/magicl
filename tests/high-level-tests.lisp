@@ -233,3 +233,13 @@
           (funcall factorization fat)
         (is (magicl:= (magicl:@ a b) fat)))
       (signals error (funcall factorization tall)))))
+
+(deftest test-linear-solve ()
+  "Check that we can solve a linear system."
+  (let ((A (magicl:from-list '(0d0 1d0 1d0 2d0) '(2 2)))
+        (b (magicl:from-list '(1d0 1d0) '(2))))
+    (let ((x (magicl:linear-solve A b)))
+      (is (magicl:= b (magicl:@ A x)))))
+
+  (signals magicl::rank-deficiency-error
+    (magicl:linear-solve (magicl:ones '(3 3)) (magicl:ones '(3)))))

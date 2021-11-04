@@ -49,6 +49,9 @@ ELEMENT-TYPE, CAST, COPY-TENSOR, DEEP-COPY-TENSOR, TREF, SETF TREF)"
        (defmethod storage ((m ,name))
          (,storage-sym m))
 
+       (defmethod (setf storage) (new-value (m ,name))
+         (setf (,storage-sym m) new-value))
+
        (defmethod element-type ((m ,name))
          (declare (ignore m))
          ',type)
@@ -523,6 +526,9 @@ If :SQUARE is T, then the result will be restricted to the lower leftmost square
 (define-backend-function lu (matrix)
   "Get the LU decomposition of MATRIX. Returns two tensors (LU, IPIV)")
 
+(define-backend-function lu-solve (lu ipiv b)
+  "Solve the system AX=B, where A is a square matrix, B is a compatibly shaped matrix, and A has PLU factorization indicated by the permutation vector IPIV and lower & upper triangular portions of the argument LU.")
+
 ;; TODO: Make this one generic and move to lapack-macros
 ;;       This is being blocked by the ZUNCSD shenanigans
 (define-backend-function csd (matrix p q)
@@ -591,3 +597,33 @@ NOTE: If H is not Hermitian, the behavior is undefined.")
   ;; dangerous.
   (map-into (storage tensor) function (storage tensor))
   tensor)
+
+(define-condition rank-deficiency-error (error)
+  ((message :initarg :message
+            :initform "Unable to handle rank-deficient matrix."
+            :reader rank-deficiency-error-message)
+   (matrix :initarg :matrix :reader rank-deficiency-error-matrix))
+  (:report (lambda (condition stream)
+             (format stream "~A~&" (rank-deficiency-error-message condition)))))
+
+(defun linear-solve (a b)
+  "Attempt to solve the linear system Ax=b, where A is an invertible matrix and b is a vector."
+  (unless (eq (element-type a) (element-type b))
+    (error "Type mismatch: A has element type ~A, but b has ~A"
+           (element-type a)
+           (element-type b)))
+  ;; Note that using the LU factorizaton is preferable to computing
+  ;; A^-1 * b, particularly in the case where A is poorly conditioned.
+  ;; Eventually, we could do sophisticated stuff here, e.g. all sorts
+  ;; of O(n^2) checks on the structure of A (banded, triangular,
+  ;; symmetric) and dispatch to specific solve routines.
+  (let ((bmat (from-storage (storage b) (list (size b) 1))))
+    (multiple-value-bind (lu ipiv)
+        (lu a)
+      (dotimes (i (nrows lu))
+        (when (zerop (tref lu i i))
+          (error 'rank-deficiency-error
+                 :message "Left-hand side is rank deficient; giving up."
+                 :matrix A)))
+      (let ((rmat (lu-solve lu ipiv bmat)))
+        (from-storage (storage rmat) (shape b))))))

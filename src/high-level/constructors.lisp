@@ -157,6 +157,22 @@ The tensor is specialized on SHAPE and TYPE."
           (tg:finalize tensor finalizer)
           tensor)))))
 
+(defun from-storage (storage shape &key layout)
+  "Create a tensor with the specified STORAGE and SHAPE.
+
+This shares STORAGE; mutate at your own peril!
+
+LAYOUT specifies the internal storage representation ordering of the returned tensor."
+  (policy-cond:with-expectations (> speed safety)
+      ((type shape shape)
+       (assertion (cl:= 1 (array-rank storage)))
+       (assertion (cl:= (reduce #'* shape)
+                        (array-total-size storage))))
+    (let* ((tensor-type (infer-tensor-type (array-element-type storage) shape nil))
+           (tensor (make-tensor tensor-type shape :layout layout)))
+      (setf (storage tensor) storage)
+      tensor)))
+
 (defun from-list (list shape &key type layout (input-layout :row-major))
   "Create a tensor with the elements of LIST, placing in layout INPUT-LAYOUT
 

@@ -26,6 +26,8 @@
                               (blas-routine "gemm") (blas-routine "gemv"))
                              (generate-lapack-lu-for-type
                               matrix-class type (lapack-routine "getrf"))
+                             (generate-lapack-lu-solve-for-type
+                              matrix-class type (lapack-routine "getrs"))
                              (generate-lapack-inv-for-type
                               matrix-class type
                               (lapack-routine "getrf") (lapack-routine "getri"))
