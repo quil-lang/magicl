@@ -67,7 +67,7 @@ included in the distribution of MAGICL.
 
 Accelerated functionality is installed with a notion called "backends". A
 *backend* is a name of a group of functionality, typically denoted by
-a symbol or keyword. The `:lisp` backend is the defualt one, and
+a symbol or keyword. The `:lisp` backend is the default one, and
 several backends can be active all at once. Each extension above adds
 a new backend. The current backends are:
 
