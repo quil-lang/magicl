@@ -62,6 +62,10 @@ ELEMENT-TYPE, CAST, COPY-TENSOR, DEEP-COPY-TENSOR, TREF, SETF TREF)"
                                 size
                                 actual-storage)))
                  (when finalizer
+                   #+allegro
+                   (unless (eq finalizer #'dummy-finalizer)
+                     (tg:finalize vector finalizer))
+                   #-allegro
                    (tg:finalize vector finalizer))
                  vector)))))
 
@@ -90,6 +94,10 @@ ELEMENT-TYPE, CAST, COPY-TENSOR, DEEP-COPY-TENSOR, TREF, SETF TREF)"
                (allocate (vector-size m)
                          :element-type (element-type m))
              (setf (,storage-sym new-m) storage)
+             #+allegro
+             (unless (eq finalizer #'dummy-finalizer)
+               (tg:finalize new-m finalizer))
+             #-allegro
              (tg:finalize new-m finalizer))
            new-m))
 

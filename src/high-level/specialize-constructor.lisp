@@ -8,6 +8,21 @@
 (defun infer-tensor-type (type shape val)
   (declare (type list shape)
            (optimize (speed 3) (safety 0)))
+  #+allegro
+  (when type
+    (case (length shape)
+      (1 (cond ((eq type 'single-float) (return-from infer-tensor-type 'vector/single-float))
+               ((eq type 'double-float) (return-from infer-tensor-type 'vector/double-float))
+               ((equal type '(complex single-float)) (return-from infer-tensor-type 'vector/complex-single-float))
+               ((equal type '(complex double-float)) (return-from infer-tensor-type 'vector/complex-double-float))))
+      (2 (cond ((eq type 'single-float) (return-from infer-tensor-type 'matrix/single-float))
+               ((eq type 'double-float) (return-from infer-tensor-type 'matrix/double-float))
+               ((equal type '(complex single-float)) (return-from infer-tensor-type 'matrix/complex-single-float))
+               ((equal type '(complex double-float)) (return-from infer-tensor-type 'matrix/complex-double-float))))
+      (t (cond ((eq type 'single-float) (return-from infer-tensor-type 'tensor/single-float))
+               ((eq type 'double-float) (return-from infer-tensor-type 'tensor/double-float))
+               ((equal type '(complex single-float)) (return-from infer-tensor-type 'tensor/complex-single-float))
+               ((equal type '(complex double-float)) (return-from infer-tensor-type 'tensor/complex-double-float))))))
   (if type
       (cond
         ((cl:= 1 (length shape))
@@ -55,4 +70,3 @@
              ((complex single-float) 'tensor/complex-single-float)
              ((complex double-float) 'tensor/complex-double-float)
              ((signed-byte 32) 'tensor/int32))))))
-

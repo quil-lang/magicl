@@ -20,14 +20,34 @@
     1. The allocated storage.
     2. A finalizer thunk of type FINALIZER, which should be called when the memory is OK to be freed.
 NOTE: Note that the finalizer may close over the allocated vector."
-  '(function (integer &key (:element-type t) (:initial-element t)) (values (simple-array *) finalizer)))
+  '(function (integer t t) (values (simple-array *) finalizer)))
 
 
 ;;;;;;;;;;;;;;;;;;;;;;;; Lisp Heap Allocation ;;;;;;;;;;;;;;;;;;;;;;;;
 
 (declaim (ftype allocator lisp-allocator))
-(defun lisp-allocator (size &key element-type initial-element)
+(defun lisp-allocator (size element-type initial-element)
   (let ((storage
+          #+allegro ;; low-level optimizations (inlining) for Allegro
+          (let ((init-element (if initial-element (coerce initial-element element-type))))
+            (cond ((eq element-type 'single-float)
+                   (excl::.primcall 'sys::make-svector size init-element #x71 initial-element nil))
+                  ((eq element-type 'double-float)
+                   (excl::.primcall 'sys::make-svector size init-element #x72 initial-element nil))
+                  ((equal element-type '(complex single-float))
+                   (excl::.primcall 'sys::make-svector size init-element #x73 initial-element nil))
+                  ((equal element-type '(complex double-float))
+                   (excl::.primcall 'sys::make-svector size init-element #x74 initial-element nil))
+                  ((equal element-type '(signed-byte 32))
+                   (excl::.primcall 'sys::make-svector size init-element #x7b initial-element nil))
+                  (t
+                   (apply #'make-array
+                          size
+                          :element-type element-type
+                          (if initial-element
+                              (list ':initial-element (coerce initial-element element-type))
+                              nil)))))
+          #-allegro
           (apply #'make-array
                  size
                  :element-type element-type
@@ -41,7 +61,7 @@ NOTE: Note that the finalizer may close over the allocated vector."
 ;;;;;;;;;;;;;;;;;;;;; Foreign Memory Allocation ;;;;;;;;;;;;;;;;;;;;;;
 
 (declaim (ftype allocator c-allocator))
-(defun c-allocator (size &key element-type initial-element)
+(defun c-allocator (size element-type initial-element)
   (let ((storage
           (apply #'static-vectors:make-static-vector
                  size
@@ -63,5 +83,5 @@ NOTE: Note that the finalizer may close over the allocated vector."
 (defun allocate (size &key element-type initial-element)
   "Allocate storage for a fresh tensor."
   (funcall *default-allocator* size
-           :element-type element-type
-           :initial-element initial-element))
+           element-type
+           initial-element))

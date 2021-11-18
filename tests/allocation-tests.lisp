@@ -12,7 +12,7 @@
 (deftest test-custom-allocation ()
   (let ((calls 0)
         (finals 0))
-    (flet ((alloc (size &key element-type initial-element)
+    (flet ((alloc (size element-type initial-element)
              (declare (ignore initial-element))
              (let ((storage
                      (make-array size :element-type element-type)))
