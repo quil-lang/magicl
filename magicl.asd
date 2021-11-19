@@ -139,10 +139,12 @@
 (defmethod perform ((operation compile-op) (component f->so))
   (flet ((nn (x) (uiop:native-namestring x)))
     (let* ((fortran-file (component-pathname component))
-           (object-file (make-pathname :type "o" :defaults fortran-file))
+           (object-file (apply-output-translations
+       		         (make-pathname :type "o" :defaults fortran-file)))
            (shared-object (make-pathname :type #+darwin "dylib" #-darwin "so"
                                          :name "libexpokit"
-                                         :defaults fortran-file)))
+                                         :defaults object-file)))
+      (ensure-directories-exist shared-object)
       (uiop:run-program
        (list "gfortran" "-fPIC" "-std=legacy"
              "-c"
