@@ -85,3 +85,11 @@ NOTE: Note that the finalizer may close over the allocated vector."
   (funcall *default-allocator* size
            element-type
            initial-element))
+
+(defun finalize (x finalizer)
+  (when finalizer
+    #+allegro
+    (unless (eq finalizer #'dummy-finalizer)
+      (tg:finalize x finalizer))
+    #-allegro
+    (tg:finalize x finalizer)))

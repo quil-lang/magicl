@@ -78,12 +78,7 @@ ELEMENT-TYPE, CAST, COPY-TENSOR, DEEP-COPY-TENSOR, TREF, SETF TREF)"
                                   size
                                   (or layout :column-major)
                                   actual-storage)))
-                   (when finalizer
-                     #+allegro
-                     (unless (eq finalizer #'dummy-finalizer)
-                       (tg:finalize matrix finalizer))
-                     #-allegro
-                     (tg:finalize matrix finalizer))
+                   (finalize matrix finalizer)
                    matrix))))))
 
        (defmethod cast ((tensor ,name) (class (eql ',name)))
@@ -113,11 +108,7 @@ ELEMENT-TYPE, CAST, COPY-TENSOR, DEEP-COPY-TENSOR, TREF, SETF TREF)"
                (allocate (matrix-size m)
                          :element-type (element-type m))
              (setf (,storage-sym new-m) storage)
-             #+allegro
-             (unless (eq finalizer #'dummy-finalizer)
-               (tg:finalize new-m finalizer))
-             #-allegro
-             (tg:finalize new-m finalizer))
+             (finalize new-m finalizer))
            new-m))
 
        (defmethod deep-copy-tensor ((m ,name) &rest args)
@@ -130,7 +121,7 @@ ELEMENT-TYPE, CAST, COPY-TENSOR, DEEP-COPY-TENSOR, TREF, SETF TREF)"
        
        (defmethod tref ((matrix ,name) &rest pos)
          (declare (dynamic-extent pos)
-                  #+allegro (optimize (speed 3) (safety 1)))
+                  (optimize (speed 3) (safety 1)))
          (let ((numrows (matrix-nrows matrix))
                (numcols (matrix-ncols matrix)))
            (declare (type fixnum numrows numcols))
@@ -147,7 +138,7 @@ ELEMENT-TYPE, CAST, COPY-TENSOR, DEEP-COPY-TENSOR, TREF, SETF TREF)"
        
        (defmethod (setf tref) (new-value (matrix ,name) &rest pos)
          (declare (dynamic-extent pos)
-                  #+allegro (optimize (speed 3) (safety 1)))
+                  (optimize (speed 3) (safety 1)))
          (let ((numrows (matrix-nrows matrix))
                (numcols (matrix-ncols matrix)))
            (declare (type alexandria:non-negative-fixnum numrows numcols))

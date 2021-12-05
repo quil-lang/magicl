@@ -74,12 +74,7 @@ COPY-TENSOR, DEEP-COPY-TENSOR, TREF, SETF TREF)"
                                 size
                                 (or layout :column-major)
                                 actual-storage)))
-                 (when finalizer
-                   #+allegro
-                   (unless (eq finalizer #'dummy-finalizer)
-                     (tg:finalize tensor finalizer))
-                   #-allegro
-                   (tg:finalize tensor finalizer))
+                 (finalize tensor finalizer)
                  tensor)))))
        (defmethod cast ((tensor ,name) (class (eql ',name)))
          (declare (ignore class))
@@ -93,11 +88,7 @@ COPY-TENSOR, DEEP-COPY-TENSOR, TREF, SETF TREF)"
                (allocate (tensor-size m)
                          :element-type (element-type m))             
              (setf (,storage-sym new-m) storage)
-             #+allegro
-             (unless (eq finalizer #'dummy-finalizer)
-               (tg:finalize new-m finalizer))
-             #-allegro
-             (tg:finalize new-m finalizer))
+             (finalize new-m finalizer))
            new-m))
 
        (defmethod deep-copy-tensor ((m ,name) &rest args)
