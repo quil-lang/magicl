@@ -22,6 +22,15 @@
   matrix/double-float
   vector/double-float)
 
+(defmethod =-lisp ((scalar1 double-float) (scalar2 double-float) &optional (epsilon *double-comparison-threshold*))
+  (%scalar= scalar1 scalar2 epsilon))
+
+(defmethod =-lisp ((scalar1 rational) (scalar2 double-float) &optional (epsilon *double-comparison-threshold*))
+ (%scalar= scalar1 scalar2 epsilon))
+
+(defmethod =-lisp ((scalar1 double-float) (scalar2 rational) &optional (epsilon *double-comparison-threshold*))
+  (%scalar= scalar1 scalar2 epsilon))
+
 (defmethod =-lisp ((tensor1 tensor/double-float) (tensor2 tensor/double-float) &optional (epsilon *double-comparison-threshold*))
   (unless (equal (shape tensor1) (shape tensor2))
     (return-from =-lisp nil))

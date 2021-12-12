@@ -11,24 +11,24 @@
   (let* ((x (magicl:from-list '(6 4 2 1 -2 8 1 5 7) '(3 3)
                               :type 'double-float))
          (d (magicl:det x)))
-    (is (= d -306d0))))
+    (is (magicl:= d -306d0))))
 
 (deftest test-p-norm ()
   "Test that the p-norm of vectors returns sane values."
   ;; Basic 3-4-5
-  (is (= 5 (magicl:norm (magicl:from-list '(3 4) '(2)))))
+  (is (magicl:= 5 (magicl:norm (magicl:from-list '(3 4) '(2)))))
   ;; One element vector should return element for all
   (loop :for val :in '(-3 0 10) :do
     (let ((x (magicl:from-list (list val) '(1))))
-      (is (= (abs val) (magicl:norm x 1)))
-      (is (= (abs val) (magicl:norm x 2)))
-      (is (= (abs val) (magicl:norm x 3)))
-      (is (= (abs val) (magicl:norm x :infinity)))))
+      (is (magicl:= (abs val) (magicl:norm x 1)))
+      (is (magicl:= (abs val) (magicl:norm x 2)))
+      (is (magicl:= (abs val) (magicl:norm x 3)))
+      (is (magicl:= (abs val) (magicl:norm x :infinity)))))
   ;; Test known values
   (let ((x (magicl:from-list '(1 -2 3 4 5 -6) '(6))))
-    (is (= 6 (magicl:norm x :infinity)))
-    (is (= 21 (magicl:norm x 1)))
-    (is (= 9.539392 (magicl:norm x 2)))))
+    (is (magicl:= 6 (magicl:norm x :infinity)))
+    (is (magicl:= 21 (magicl:norm x 1)))
+    (is (magicl:= 9.539392 (magicl:norm x 2)))))
 
 (deftest test-examples ()
   "Run all of the examples. Does not check for their correctness."
