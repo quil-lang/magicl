@@ -27,33 +27,12 @@ NOTE: Note that the finalizer may close over the allocated vector."
 
 (declaim (ftype allocator lisp-allocator))
 (defun lisp-allocator (size element-type initial-element)
-  (let ((storage
-          #+allegro ;; low-level optimizations (inlining) for Allegro
-          (let ((init-element (if initial-element (coerce initial-element element-type))))
-            (cond ((eq element-type 'single-float)
-                   (excl::.primcall 'sys::make-svector size init-element #x71 initial-element nil))
-                  ((eq element-type 'double-float)
-                   (excl::.primcall 'sys::make-svector size init-element #x72 initial-element nil))
-                  ((equal element-type '(complex single-float))
-                   (excl::.primcall 'sys::make-svector size init-element #x73 initial-element nil))
-                  ((equal element-type '(complex double-float))
-                   (excl::.primcall 'sys::make-svector size init-element #x74 initial-element nil))
-                  ((equal element-type '(signed-byte 32))
-                   (excl::.primcall 'sys::make-svector size init-element #x7b initial-element nil))
-                  (t
-                   (apply #'make-array
-                          size
-                          :element-type element-type
-                          (if initial-element
-                              (list ':initial-element (coerce initial-element element-type))
-                              nil)))))
-          #-allegro
-          (apply #'make-array
-                 size
-                 :element-type element-type
-                 (if initial-element
-                     (list ':initial-element (coerce initial-element element-type))
-                     nil))))
+  (let ((storage (apply #'make-array
+                        size
+                        :element-type element-type
+                        (if initial-element
+                            (list ':initial-element (coerce initial-element element-type))
+                            nil))))
     (values storage
             #'dummy-finalizer)))
 
@@ -88,8 +67,5 @@ NOTE: Note that the finalizer may close over the allocated vector."
 
 (defun finalize (x finalizer)
   (when finalizer
-    #+allegro
     (unless (eq finalizer #'dummy-finalizer)
-      (tg:finalize x finalizer))
-    #-allegro
-    (tg:finalize x finalizer)))
+      (tg:finalize x finalizer))))

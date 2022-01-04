@@ -44,6 +44,7 @@
     :serial t
     :components ((:file "util")
                  (:file "allocation")
+                 (:file "allocation-allegro" :if-feature :allegro)
                  (:file "shape")
                  (:file "abstract-tensor")
                  (:file "specialize-tensor")
