@@ -61,8 +61,7 @@ ELEMENT-TYPE, CAST, COPY-TENSOR, DEEP-COPY-TENSOR, TREF, SETF TREF)"
                        (funcall #',constructor-sym
                                 size
                                 actual-storage)))
-                 (when finalizer
-                   (tg:finalize vector finalizer))
+                 (finalize vector finalizer)
                  vector)))))
 
        (defmethod cast ((tensor ,name) (class (eql ',name)))
@@ -90,7 +89,7 @@ ELEMENT-TYPE, CAST, COPY-TENSOR, DEEP-COPY-TENSOR, TREF, SETF TREF)"
                (allocate (vector-size m)
                          :element-type (element-type m))
              (setf (,storage-sym new-m) storage)
-             (tg:finalize new-m finalizer))
+             (finalize new-m finalizer))
            new-m))
 
        (defmethod deep-copy-tensor ((m ,name) &rest args)

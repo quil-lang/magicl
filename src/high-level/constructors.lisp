@@ -154,7 +154,7 @@ The tensor is specialized on SHAPE and TYPE."
                 (make-tensor tensor-class shape
                              :storage storage
                              :layout layout)))
-          (tg:finalize tensor finalizer)
+          (finalize tensor finalizer)
           tensor)))))
 
 (defun from-storage (storage shape &key layout)
