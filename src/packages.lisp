@@ -27,7 +27,8 @@
            #:every
            #:some
            #:notevery
-           #:notany)
+           #:notany
+           #:make-array)
 
   (:import-from #:magicl.backends
                 #:no-applicable-implementation
@@ -67,6 +68,7 @@
            #:some
            #:notevery
            #:notany
+           #:make-array
 
            #:map
            #:map!

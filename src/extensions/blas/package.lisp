@@ -12,4 +12,5 @@
                           #:every
                           #:some
                           #:notevery
-                          #:notany))
+                          #:notany
+                          #:make-array))
