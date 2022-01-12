@@ -209,7 +209,7 @@
             (jobvt (if reduced "S" "A"))
             (rows (nrows m))
             (cols (ncols m))
-            (a (alexandria:copy-array (magicl::storage (if (eql :row-major (layout m)) (transpose m) m))))
+            (a (magicl::storage (deep-copy-tensor (if (eql :row-major (layout m)) (transpose m) m))))
             (lwork -1)
             (info 0)
             (k (min rows cols))

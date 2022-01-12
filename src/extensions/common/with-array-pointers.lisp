@@ -32,7 +32,7 @@ WARNING: Do not close over these pointers or otherwise store them outside of the
                  bindings)
           (bindings)
           "Malformed bindings in WITH-ARRAY-POINTERS. Given ~S" bindings)
-  #- (or sbcl ccl ecl allegro)
+  #- (or sbcl ccl ecl allegro lispworks8)
   (error "WITH-ARRAY-POINTERS unsupported on ~A" (lisp-implementation-type))
 
   (let* ((symbols (mapcar #'first bindings))
@@ -87,4 +87,12 @@ WARNING: Do not close over these pointers or otherwise store them outside of the
                ,@body))
            #+allegro
            (let ,(mapcar #'list symbols evaled-symbols)
-             ,@body)))))
+             ,@body)
+           #+lispworks8
+           (hcl:with-pinned-objects ,evaled-symbols
+             ,@(reduce (lambda (s/e body)
+                         `((fli:with-dynamic-lisp-array-pointer (,(car s/e) ,(cdr s/e) :type (array-element-type ,(cdr s/e)))
+                             ,@body)))
+                       (mapcar #'cons symbols evaled-symbols)
+                       :initial-value body
+                       :from-end t))))))

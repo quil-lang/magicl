@@ -12,7 +12,8 @@
                           #:every
                           #:some
                           #:notevery
-                          #:notany)
+                          #:notany
+                          #:make-array)
   (:export
    #:lapack-eig
    #:lapack-lu
