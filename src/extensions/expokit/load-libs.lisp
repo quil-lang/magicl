@@ -7,12 +7,16 @@
 (cffi:define-foreign-library libexpokit
   (:darwin (:or "libexpokit.dylib" "expokit.dylib"))
   (:unix  (:or "libexpokit.so" "expokit.so"))
+  (:windows (:or "libexpokit.dll" "expokit.dll"))
   (t (:default "expokit")))
 
 (pushnew 'libexpokit *foreign-libraries*)
 
 
-(pushnew (asdf:apply-output-translations "expokit/")
+(pushnew (first (asdf:output-files 'asdf:compile-op
+                                   (asdf:find-component
+                                    (asdf:find-component "magicl/ext-expokit" "expokit")
+                                    "expokit")))
          cffi:*foreign-library-directories*
          :test #'equal)
 
