@@ -136,10 +136,19 @@
   (:default-initargs
    :type "f"))
 
+(defun dynamic-library-extension ()
+  "Return the dynamic library extension on the current OS as a string."
+  (cond
+    ((uiop:os-windows-p) "dll")
+    ((uiop:os-macosx-p)  "dylib")
+    ((uiop:os-unix-p)    "so")
+    (t                   (error "unsupported OS"))))
+
 (defmethod output-files ((operation compile-op) (component f->so))
-  (values (list (make-pathname :name "libexpokit"
-                               :type #-darwin "so" #+darwin "dylib"
-                               :defaults (component-pathname component)))
+  (values (list (apply-output-translations
+                 (make-pathname :name "libexpokit"
+                                :type (dynamic-library-extension)
+                                :defaults (component-pathname component))))
           t))
 
 (defmethod perform ((operation load-op) (component f->so))
@@ -150,9 +159,7 @@
     (let* ((fortran-file (component-pathname component))
            (object-file (apply-output-translations
                          (make-pathname :type "o" :defaults fortran-file)))
-           (shared-object (make-pathname :type #+darwin "dylib" #-darwin "so"
-                                         :name "libexpokit"
-                                         :defaults object-file)))
+           (shared-object (first (output-files operation component))))
       (ensure-directories-exist shared-object)
       (uiop:run-program
        (list "gfortran" "-fPIC" "-std=legacy"
