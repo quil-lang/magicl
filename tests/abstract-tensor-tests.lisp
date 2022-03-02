@@ -4,6 +4,81 @@
 
 (in-package #:magicl-tests)
 
+(defmacro swapping-arguments-is ((predicate arg1 arg2))
+  "Try both argument orders for a commutative predicate."
+  (let ((arg1sym (gensym))
+        (arg2sym (gensym)))
+    `(let ((,arg1sym ,arg1)
+           (,arg2sym ,arg2))
+       (is (,predicate ,arg1sym ,arg2sym))
+       (is (,predicate ,arg2sym ,arg1sym)))))
+
+(defmacro swapping-arguments-not ((predicate arg1 arg2))
+  "Try both argument orders for a negated commutative predicate."
+  (let ((arg1sym (gensym))
+        (arg2sym (gensym)))
+    `(let ((,arg1sym ,arg1)
+           (,arg2sym ,arg2))
+       (is (not (,predicate ,arg1sym ,arg2sym)))
+       (is (not (,predicate ,arg2sym ,arg1sym))))))
+
+(deftest test-scalar-equality ()
+  "Test the various scalar equality predicates."
+  (let ((exactvalues '((-1 0 1) ; integers
+                       (-3/2 0 3/2) ; ratios
+                       (-1.0s0 0.0s0 1.0s0) ; single-floats
+                       (-1.0d0 0.0d0 1.0d0) ; double-floats
+                       (#c(-1.0s0 1.0s0) #c(-1.0s0 0.0s0) #c(1.0s0 -1.0s0) #c(1.0s0 1.0s0)) ; complex-singles
+                       (#c(-1.0d0 1.0d0) #c(-1.0d0 0.0d0) #c(1.0d0 -1.0d0) #c(1.0d0 1.0d0)) ; complex-doubles
+                       ))
+        (inexactvalues '(-1.0s0 0.0s0 1.0s0 ; single-floats
+                                -1.0d0 0.0d0 1.0d0 ; double-floats
+                                #c(-1.0s0 1.0s0) #c(-1.0s0 0.0s0) #c(1.0s0 -1.0s0) #c(1.0s0 1.0s0) ; complex-singles
+                                #c(-1.0d0 1.0d0) #c(-1.0d0 0.0d0) #c(1.0d0 -1.0d0) #c(1.0d0 1.0d0) ; complex-doubles
+                       ))
+        (small-single-delta (/ magicl::*float-comparison-threshold* 2))
+        (small-double-delta (/ magicl::*double-comparison-threshold* 2))
+        (big-single-delta (* magicl::*float-comparison-threshold* 2))
+        (big-double-delta (* magicl::*double-comparison-threshold* 2)))
+    
+    (flet ((test-exact (group1 group2)
+             "Verify that magicl:= matches common-lisp:= where appropriate"
+             (dolist (x1 group1)
+               (dolist (x2 group2)
+                 (if (common-lisp:= x1 x2)
+                     (swapping-arguments-is (magicl:= x1 x2))
+                     (swapping-arguments-not (magicl:= x1 x2))))))
+           
+           (test-inexact (x)
+             "Verify that magicl:= works as expected on inexact values close to epsilon"
+             (let ((smalldelta (etypecase x ; a delta small enough that = should still be true
+                                 (single-float small-single-delta)
+                                 (double-float small-double-delta)
+                                 ((complex single-float) small-single-delta)
+                                 ((complex double-float) small-double-delta)))
+                   (bigdelta (etypecase x ; a delta big enough that = should become false
+                               (single-float big-single-delta)
+                               (double-float big-double-delta)
+                               ((complex single-float) big-single-delta)
+                               ((complex double-float) big-double-delta))))
+               
+               (swapping-arguments-is (magicl:= x (+ x smalldelta)))
+               (swapping-arguments-is (magicl:= x (- x smalldelta)))
+               (swapping-arguments-not (magicl:= x (+ x bigdelta)))
+               (swapping-arguments-not (magicl:= x (- x bigdelta)))
+               ; offset the imaginary parts. Bonus: This also causes real/complex comparisons when x is real.
+               (swapping-arguments-is (magicl:= x (+ x (complex 0.0 smalldelta))))
+               (swapping-arguments-is (magicl:= x (- x (complex 0.0 smalldelta))))
+               (swapping-arguments-not (magicl:= x (+ x (complex 0.0 bigdelta))))
+               (swapping-arguments-not (magicl:= x (- x (complex 0.0 bigdelta)))))))
+      
+      (dolist (group1 exactvalues)
+        (dolist (group2 exactvalues)
+          (test-exact group1 group2)))
+      
+      (dolist (x inexactvalues)
+        (test-inexact x)))))
+
 (deftest test-tensor-equality ()
   "Test that tensor equality is sane for tensors of dimension 1 to 8"
   (loop :for dimensions :on '(8 7 6 5 4 3 2 1) :do

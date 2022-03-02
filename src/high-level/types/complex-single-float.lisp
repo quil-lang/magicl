@@ -29,6 +29,37 @@
   (loop :for i :below (size vector1)
         :sum (* (tref vector1 i) (conjugate (tref vector2 i)))))
 
+(defmethod =-lisp ((scalar1 complex) (scalar2 complex) &optional epsilon)
+  (declare (ignore epsilon))
+  (and (=-lisp (realpart scalar1) (realpart scalar2))
+       (=-lisp (imagpart scalar1) (imagpart scalar2))))
+
+(defmethod =-lisp ((scalar1 complex) (scalar2 real) &optional epsilon)
+  (let ((imagpart (imagpart scalar1))
+        (zero nil))
+    (typecase imagpart ;; TODO: do we need to care about short-floats and long-floats? On which implementations does it matter?
+      (single-float (setf epsilon (or epsilon *float-comparison-threshold*)
+                          zero 0.0s0))
+      (double-float (setf epsilon (or epsilon *double-comparison-threshold*)
+                          zero 0.0d0))
+      ; If imagpart is rational it's also guaranteed nonzero per ANSI, which means we can just go ahead and exit now
+      (t (return-from =-lisp nil)))
+    (and (%scalar= zero imagpart epsilon)
+         (%scalar= (realpart scalar1) scalar2 epsilon))))
+
+(defmethod =-lisp ((scalar1 real) (scalar2 complex) &optional epsilon)
+  (let ((imagpart (imagpart scalar2))
+        (zero nil))
+    (typecase imagpart
+      (single-float (setf epsilon (or epsilon *float-comparison-threshold*)
+                          zero 0.0s0))
+      (double-float (setf epsilon (or epsilon *double-comparison-threshold*)
+                          zero 0.0d0))
+      ; If imagpart is rational it's also guaranteed nonzero per ANSI, which means we can just go ahead and exit now
+      (t (return-from =-lisp nil)))
+    (and (%scalar= zero imagpart epsilon)
+         (%scalar= (realpart scalar2) scalar1 epsilon))))
+
 (defmethod =-lisp ((tensor1 tensor/complex-single-float) (tensor2 tensor/complex-single-float) &optional (epsilon *float-comparison-threshold*))
   (unless (equal (shape tensor1) (shape tensor2))
     (return-from =-lisp nil))
