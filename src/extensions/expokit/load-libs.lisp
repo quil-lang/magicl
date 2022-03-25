@@ -13,10 +13,7 @@
 (pushnew 'libexpokit *foreign-libraries*)
 
 
-(pushnew (first (asdf:output-files 'asdf:compile-op
-                                   (asdf:find-component
-                                    (asdf:find-component "magicl/ext-expokit" "expokit")
-                                    "expokit")))
+(pushnew (asdf:apply-output-translations (asdf:system-relative-pathname "magicl" "expokit"))
          cffi:*foreign-library-directories*
          :test #'equal)
 
