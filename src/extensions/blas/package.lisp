@@ -1,4 +1,4 @@
-(defpackage #:magicl.blas-cffi
+(uiop:define-package #:magicl.blas-cffi
   (:use))
 
 (defpackage #:magicl.blas
