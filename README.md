@@ -16,7 +16,7 @@ part).
 
 The system `MAGICL/CORE` requires:
 
-* SBCL (> 1.3.19) or CCL (>= 1.11) on AMD64
+* SBCL (> 1.3.19), CCL (>= 1.11) or ECL (>= 20.4.24) on AMD64
 * quicklisp
 
 The system `MAGICL`, on the other hand, requires several foreign
@@ -28,7 +28,7 @@ dependencies not shipped with MAGICL, like:
 Detailed instructions on how to install `libffi` and BLAS/LAPACK can
 be found [here](doc/requirements.md).
 
-Currently this library is SBCL- and CCL-only. The non-portable code is
+Currently this library is SBCL-, CCL- and ECL-only. The non-portable code is
 in `with-array-pointers.lisp` and `magicl.lisp`.
 
 ## Installation

@@ -1,6 +1,6 @@
 # Requirements
 
- * SBCL (> 1.3.19) or (>= 1.11) CCL on AMD64
+ * SBCL (> 1.3.19), CCL (>= 1.11) or ECL (>= 20.4.24) on AMD64
  * gfortran
  * quicklisp
  * [libffi](#libffi)
