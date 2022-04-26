@@ -46,9 +46,9 @@ This table was adapted largely from the [NumPy Equivalents Table](https://docs.s
 |-------------------------------------------------|--------------------|-----------------------------------|--------------------------------------------------------------------------------------|
 | `(from-list '(1d0 2d0 3d0 4d0 5d0 6d0) '(2 3))` | `[ 1 2 3; 4 5 6 ]` | `array([[1.,2.,3.], [4.,5.,6.]])` | Create a 2x3 matrix from given elements.                                             |
 | `(zeros '(2 3 4))` or `(const 0d0 '(2 3 4))`    | `zeros(2,3,4)`     | `zeros((2,3,4))`                  | Create a 2x3x4 dimensional array of zeroes of double-float element type.             |
-| `(ones '(3 4)` or `(const 1d0 '(3 4))`          | `ones(3,4)`        | `ones((3,4))`                     | Create a 3x4 dimensional array of ones of double-float element type.                 |
-| `(eye 1d0 '(3 3))`                              | `eye(3)`           | `eye(3)`                          | Create a 3x3 identity array of double-float element type.                            |
-| `(from-diag a)`                                 | `diag(a)`          | `diag(a)`                         | Create a square matrix from the diagonal entries in `a` with zeroes everywhere else. |
+| `(ones '(3 4))` or `(const 1d0 '(3 4))`         | `ones(3,4)`        | `ones((3,4))`                     | Create a 3x4 dimensional array of ones of double-float element type.                 |
+| `(eye '(3 3) :value 1d0)`                       | `eye(3)`           | `eye(3)`                          | Create a 3x3 identity array of double-float element type.                            |
+| `(from-diag '(1 2 3))`                          | `diag([1 2 3])`    | `diag([1.,2.,3.])`                | Create a tensor from a list, placing given elements along the diagonal |
 | `(rand '(3 4))`                                 | `rand(3,4)`        | `random.rand(3,4)`                | Create a random 3x4 array.                                                           |
 
 #### Block Matrix Constructors
