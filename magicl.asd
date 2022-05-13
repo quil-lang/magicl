@@ -57,6 +57,7 @@
                  (:file "types/complex-single-float")
                  (:file "types/complex-double-float")
                  (:file "types/int32")
+                 (:file "types/specialized-vector")
                  (:file "constructors")
                  (:file "specialize-constructor")
                  (:file "polynomial-solver")))

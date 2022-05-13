@@ -153,13 +153,13 @@ ELEMENT-TYPE, CAST, COPY-TENSOR, DEEP-COPY-TENSOR, TREF, SETF TREF)"
        (assertion (cl:= 1 (length new-value))))
     (setf (vector-size vector) (first new-value))))
 
-(defgeneric dot (vector1 vector2)
-  (:documentation "Compute the dot product of two vectors")
+(define-extensible-function (dot dot-lisp) (vector1 vector2)
+  (:documentation "Compute the dot product of two vectors. For complex vectors, this conjugates the second argument.")
   (:method ((vector1 vector) (vector2 vector))
     (policy-cond:with-expectations (> speed safety)
         ((assertion (cl:= (size vector1) (size vector2))))
       (loop :for i :below (size vector1)
-            :sum (* (tref vector1 i) (tref vector2 i))))))
+            :sum (* (tref vector1 i) (conjugate (tref vector2 i)))))))
 
 (deftype p-norm-type ()
   `(or (member :inf :infinity :positive-infinity)
