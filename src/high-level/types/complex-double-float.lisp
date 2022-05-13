@@ -22,13 +22,6 @@
   matrix/complex-double-float
   vector/complex-double-float)
 
-(defmethod dot ((vector1 vector/complex-double-float) (vector2 vector/complex-double-float))
-  (assert (cl:= (size vector1) (size vector2))
-          () "Vectors must have the same size. The first vector is size ~a and the second vector is size ~a."
-          (size vector1) (size vector2))
-  (loop :for i :below (size vector1)
-        :sum (* (tref vector1 i) (conjugate (tref vector2 i)))))
-
 (defmethod =-lisp ((tensor1 tensor/complex-double-float) (tensor2 tensor/complex-double-float) &optional (epsilon *double-comparison-threshold*))
   (unless (equal (shape tensor1) (shape tensor2))
     (return-from =-lisp nil))
