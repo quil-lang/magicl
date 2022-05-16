@@ -28,6 +28,7 @@
                #:abstract-classes
                #:policy-cond
                #:interface              ; for CALLING-FORM
+               #:cffi
                #:static-vectors
                #:trivial-garbage
                )
