@@ -7,6 +7,12 @@
 (defvar *float-comparison-threshold* (* 1e2 single-float-epsilon))
 (defvar *double-comparison-threshold* (* 1e2  double-float-epsilon))
 
+(declaim (inline make-array))
+(defun make-array (dimensions &rest args &key &allow-other-keys)
+  (apply #'cl:make-array dimensions
+         #+lispworks8 :allocation #+lispworks8 :pinnable
+         args))
+
 (declaim (inline matrix-row-major-index))
 (defun matrix-row-major-index (row col numrows numcols)
   (declare (optimize (speed 3) (safety 0))

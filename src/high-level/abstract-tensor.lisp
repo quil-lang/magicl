@@ -309,9 +309,3 @@ If TARGET is not specified then a new tensor is created with the same element ty
               tensor
               target)
       target)))
-
-(declaim (inline make-array))
-(defun make-array (dimensions &rest args &key &allow-other-keys)
-  (apply #'cl:make-array dimensions
-         #+lispworks8 :allocation #+lispworks8 :pinnable
-         args))

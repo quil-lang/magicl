@@ -524,6 +524,9 @@ If :SQUARE is T, then the result will be restricted to the lower leftmost square
 (define-backend-function eig (matrix)
   "Find the (right) eigenvectors and corresponding eigenvalues of a square matrix M. Returns a list and a tensor (EIGENVALUES, EIGENVECTORS)")
 
+(define-backend-function hermitian-eig (matrix)
+  "Like EIG, but specialized for Hermitian matrices.")
+
 (define-backend-function lu (matrix)
   "Get the LU decomposition of MATRIX. Returns two tensors (LU, IPIV)")
 
@@ -578,7 +581,7 @@ NOTE: If H is not Hermitian, the behavior is undefined.")
       (let ((D (magicl:from-diag
                 (mapcar #'cis lambdas)
                 :type (element-type matrix))))
-        (magicl:@ V D (magicl:dagger V))))))
+        (magicl:@ V D (magicl:conjugate-transpose V))))))
 
 (define-backend-function logm (matrix)
   "Finds the matrix logarithm of a given square matrix M assumed to be diagonalizable, with nonzero eigenvalues.")
