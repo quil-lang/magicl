@@ -533,10 +533,12 @@ If :SQUARE is T, then the result will be restricted to the lower leftmost square
 (define-backend-function lu-solve (lu ipiv b)
   "Solve the system AX=B, where A is a square matrix, B is a compatibly shaped matrix, and A has PLU factorization indicated by the permutation vector IPIV and lower & upper triangular portions of the argument LU.")
 
-;; TODO: Make this one generic and move to lapack-macros
-;;       This is being blocked by the ZUNCSD shenanigans
-(define-backend-function csd (matrix p q)
-  "Find the Cosine-Sine Decomposition of a matrix X given that it is to be partitioned with upper left block of dimension P-by-Q. Returns the CSD elements (VALUES U SIGMA VT) such that X = U @ SIGMA @ VT.")
+(define-backend-function csd-blocks (matrix p q)
+  "Compute the cosine-sine decomposition of the matrix MATRIX and return the result as blocks. See LISP-CSD-BLOCKS for mathematical details.
+
+See also: MAGICL:CSD")
+
+;;; CSD is also defined (in terms of CSD-BLOCKS) in a different file..
 
 (define-backend-function inv (matrix)
   "Get the inverse of the matrix")
