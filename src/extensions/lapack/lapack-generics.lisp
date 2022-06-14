@@ -19,9 +19,7 @@
 
 (magicl:define-extensible-function (magicl:inv lapack-inv :lapack) (matrix))
 
-(magicl:define-extensible-function (magicl:csd csd-extension :lapack) (matrix p q))
-
-(defgeneric lapack-csd (matrix p q))
+(magicl:define-extensible-function (magicl:csd-blocks csd-blocks-extension :lapack) (matrix p q))
 
 (magicl:define-extensible-function (magicl:svd lapack-svd :lapack) (matrix &key reduced))
 

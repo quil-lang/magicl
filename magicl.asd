@@ -59,7 +59,10 @@
                  (:file "types/specialized-vector")
                  (:file "constructors")
                  (:file "specialize-constructor")
-                 (:file "polynomial-solver")))
+                 (:file "polynomial-solver")
+                 (:module "matrix-functions"
+                  :serial t
+                  :components ((:file "csd")))))
    (:file "magicl")))
 
 ;;; Extension common code

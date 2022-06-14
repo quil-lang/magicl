@@ -26,5 +26,4 @@
    #:lapack-ql-q
    #:lapack-qr-q
    #:lapack-rq-q
-   #:lapack-lq-q
-   #:lapack-csd))
+   #:lapack-lq-q))
