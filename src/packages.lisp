@@ -191,6 +191,12 @@
            ;; Vector operators
            #:dot
            #:norm
+           #:normalize
+           #:normalize!
+           #:vector->row-matrix
+           #:vector->column-matrix
+           #:row-matrix->vector
+           #:column-matrix->vector
 
            ;; Misc utilities
            #:row-major-index
