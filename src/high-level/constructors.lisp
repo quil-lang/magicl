@@ -298,6 +298,20 @@ The tensor specialized on the specified SHAPE and TYPE."
   "Produce a matrix of entries which are normally distributed (mean 0, variance 1). Complex types will have their real and imaginary parts normally distributed."
   (fill-with-random-normal! (zeros shape :type type)))
 
+(defun orthonormalize! (columns)
+  (cond
+    ((null columns)
+     nil)
+    (t
+     (setf columns (mapcar #'vector->column-matrix columns))
+     (normalize! (first columns))
+     (loop :for ci :in (rest columns) :do
+       (loop :for cj :in columns
+             :until (eq ci cj)
+             :do (.- ci (magicl:@ (conjugate-transpose cj) ci cj) ci))
+       (normalize! ci))
+     columns)))
+
 (defun random-unitary (shape &key (type `(complex ,*default-tensor-type*)))
   "Generate a uniformly random element of U(n)."
   ;; See "How to generate random matrices from the classical compact
@@ -305,6 +319,11 @@ The tensor specialized on the specified SHAPE and TYPE."
   ;; why there is scaling.
   (policy-cond:with-expectations (> speed safety)
       ((assertion (square-shape-p shape)))
+    (let ((columns (loop :repeat (first shape)
+                         ;; a cons saved is a cons earned
+                         :collect (random-normal (rest shape) :type type))))
+      (hstack (orthonormalize! columns)))
+    #+using-QR-decomposition
     (multiple-value-bind (q r) (qr (random-normal shape :type type))
       (let ((d (diag r)))
         (setf d (cl:map 'list (lambda (di) (/ di (sqrt (* di (conjugate di))))) d))
