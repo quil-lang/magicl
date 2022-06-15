@@ -166,12 +166,16 @@ ELEMENT-TYPE, CAST, COPY-TENSOR, DEEP-COPY-TENSOR, TREF, SETF TREF)"
        (integer 1)))
 
 (defun norm (vector &optional (p 2))
-  "Compute the p-norm of a vector.
+  "Compute the p-norm of a vector or row/column matrix.
 
 If P is not specified then the Euclidean norm is computed.
 Special values of P are: :INFINITY :INF :POSITIVE-INFINITY"
-  (declare (type vector vector)
+  (declare (type (or vector matrix) vector)
            (type p-norm-type p))
+  (assert (or (typep vector 'vector)
+              (and (typep vector 'matrix)
+                   (or (cl:= 1 (nrows vector))
+                       (cl:= 1 (ncols vector))))))
   (case p
     (1
      (reduce #'+ (storage vector) :key #'abs))
