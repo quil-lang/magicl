@@ -275,10 +275,20 @@ ELEMENT-TYPE, CAST, COPY-TENSOR, DEEP-COPY-TENSOR, TREF, SETF TREF)"
   (:documentation
    "Library users: consider using MAGICL:@ instead.
 
-Multiply a by b, storing in target or creating a new tensor if target is not specified.
+Multiply A by B, storing in target or creating a new tensor if target is not specified. More specifically, calculate
 
-Target cannot be the same as a or b.")
-  ;; TODO: write a lisp impl of this
+    TARGET := ALPHA*opA(A)*opB(B) + BETA*TARGET
+
+where
+             { X    if TRANSX = NIL or TRANSX = :N
+    opX(X) = { X^T  if TRANSX = :T
+             { X^H  if TRANSX = :C
+
+TARGET cannot be the same as A or B.
+
+In the world of BLAS/LAPACK, this is known as GEMM.
+")
+  ;; Methods are defined in matrix-functions/mult.lisp
   )
 
 (defgeneric @ (matrix &rest matrices)
