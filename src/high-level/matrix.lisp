@@ -534,8 +534,8 @@ If :SQUARE is T, then the result will be restricted to the lower leftmost square
 (define-backend-function eig (matrix)
   "Find the (right) eigenvectors and corresponding eigenvalues of a square matrix M. Returns a list and a tensor (EIGENVALUES, EIGENVECTORS)")
 
-(define-backend-function hermitian-eig (matrix)
-  "Like EIG, but specialized for Hermitian matrices.")
+(define-extensible-function (hermitian-eig hermitian-eig-lisp) (matrix)
+  (:documentation "Like EIG, but specialized for Hermitian matrices."))
 
 (define-backend-function lu (matrix)
   "Get the LU decomposition of MATRIX. Returns two tensors (LU, IPIV)")
@@ -543,28 +543,28 @@ If :SQUARE is T, then the result will be restricted to the lower leftmost square
 (define-backend-function lu-solve (lu ipiv b)
   "Solve the system AX=B, where A is a square matrix, B is a compatibly shaped matrix, and A has PLU factorization indicated by the permutation vector IPIV and lower & upper triangular portions of the argument LU.")
 
-(define-backend-function csd-blocks (matrix p q)
-  "Compute the cosine-sine decomposition of the matrix MATRIX and return the result as blocks. See LISP-CSD-BLOCKS for mathematical details.
+(define-extensible-function (csd-blocks csd-blocks-lisp) (matrix p q)
+  (:documentation "Compute the cosine-sine decomposition of the matrix MATRIX and return the result as blocks. See LISP-CSD-BLOCKS for mathematical details.
 
-See also: MAGICL:CSD")
+See also: MAGICL:CSD"))
 
 ;;; CSD is also defined (in terms of CSD-BLOCKS) in a different file..
 
 (define-backend-function inv (matrix)
   "Get the inverse of the matrix")
 
-(define-backend-function svd (matrix &key reduced)
-  "Find the SVD of a matrix M. Return (VALUES U SIGMA Vt) where M = U @ SIGMA @ Vt")
+(define-extensible-function (svd svd-lisp) (matrix &key reduced)
+  (:documentation "Find the SVD of a matrix M. Return (VALUES U SIGMA Vt) where M = U @ SIGMA @ Vt"))
 
 (define-backend-function qz (matrix1 matrix2)
   "Compute the QZ decomposition (aka the generalized Schur decomposition) on the pair of square matrices MATRIX1 and MATRIX2. Return (VALUES AA BB Q Z) such that
 
     (MATRIX1, MATRIX2) = (Q @ AA @ Z*, Q @ BB @ Z*).")
 
-(define-backend-function qr (matrix)
-  "Finds the QR factorization of MATRIX. Returns two matrices (Q, R).
+(define-extensible-function (qr qr-lisp) (matrix)
+  (:documentation "Finds the QR factorization of MATRIX. Returns two matrices (Q, R).
 
-NOTE: If MATRIX is not square, this will compute the reduced QR factorization.")
+NOTE: If MATRIX is not square, this will compute the reduced QR factorization."))
 
 (define-backend-function ql (matrix)
   "Finds the QL factorization of MATRIX. Returns two matrices (Q, L).

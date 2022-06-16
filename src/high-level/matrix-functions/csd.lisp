@@ -86,7 +86,13 @@ The function returns U1, U2, C, S, and V2H."
 
             (values u1 u2 c s v2h)))))))
 
-(defun lisp-csd-blocks (matrix p q)
+(defmethod csd-blocks-lisp ((matrix matrix/complex-single-float) p q)
+  (%csd-blocks-lisp matrix p q))
+
+(defmethod csd-blocks-lisp ((matrix matrix/complex-double-float) p q)
+  (%csd-blocks-lisp matrix p q))
+
+(defun %csd-blocks-lisp (matrix p q)
   "Compute the 2x2 Cosine-Sine decomposition of MATRIX (assumed to be unitary and 2n×2n) partitioned into n×n blocks A1 A2 A3 A4 as shown below:
 
        ⎡ A1  A3 ⎤        ⎡ A1  A3 ⎤   ⎡ U1     ⎤ ⎡ C  -S ⎤ ⎡ V1     ⎤H
@@ -156,8 +162,6 @@ See also http://www.netlib.org/lapack/explore-html/de/d0d/zuncsd_8f.html."
                     (if equipartition-p v1h (slice v1h (list (- m 2) 0) (list (1- m) 1)))
                     v2h
                     theta)))))))
-
-(define-backend-implementation csd-blocks :lisp 'lisp-csd-blocks)
 
 
 
