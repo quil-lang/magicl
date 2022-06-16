@@ -114,6 +114,7 @@
 
            #:random-normal
            #:random-unitary
+           #:random-special-unitary
            #:random-hermitian
 
            ;; Block Matrix Constructors
