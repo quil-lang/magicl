@@ -65,6 +65,13 @@
                   :components ((:file "row-column-matrices")
                                (:file "mult-definition")
                                (:file "mult-methods")
+                               (:file "givens")
+                               (:file "householder")
+                               (:file "qr")
+                               (:file "tridiagonal-form")
+                               (:file "eig")
+                               (:file "svd")
+                               (:file "random-hermitian")
                                (:file "csd")))))
    (:file "magicl")))
 
