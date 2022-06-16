@@ -114,6 +114,7 @@
 
            #:random-normal
            #:random-unitary
+           #:random-hermitian
 
            ;; Block Matrix Constructors
            #:block-diag
@@ -193,14 +194,14 @@
            #:norm
            #:normalize
            #:normalize!
-           #:vector->row-matrix
-           #:vector->column-matrix
-           #:row-matrix->vector
-           #:column-matrix->vector
 
            ;; Misc utilities
            #:row-major-index
            #:matrix-row-major-index
            #:column-major-index
            #:matrix-column-major-index
-           #:valid-index-p))
+           #:valid-index-p
+           #:vector->row-matrix
+           #:vector->column-matrix
+           #:row-matrix->vector
+           #:column-matrix->vector))

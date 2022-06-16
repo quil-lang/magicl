@@ -163,7 +163,7 @@ See also http://www.netlib.org/lapack/explore-html/de/d0d/zuncsd_8f.html."
 
 ;;; Blocks to Matrices
 
-(defun csd-matrices-from-blocks (p q u1 u2 v1t v2t theta)
+(defun csd-matrices-from-blocks (u1 u2 v1t v2t theta)
   "Calculates the matrices U, SIGMA, and VT of the CSD of a matrix from its intermediate representation, as calculated from LAPACK-CSD."
   (let ((p (nrows u1))
         (q (nrows v1t))
@@ -206,4 +206,4 @@ See also http://www.netlib.org/lapack/explore-html/de/d0d/zuncsd_8f.html."
 (defun csd (matrix p q)
   "Find the Cosine-Sine Decomposition of a matrix X given that it is to be partitioned with upper left block of dimension P-by-Q. Returns the CSD elements (VALUES U SIGMA VT) such that X=U*SIGMA*VT."
   (multiple-value-bind (u1 u2 v1t v2t theta) (csd-blocks matrix p q)
-    (csd-matrices-from-blocks p q u1 u2 v1t v2t theta)))
+    (csd-matrices-from-blocks u1 u2 v1t v2t theta)))
