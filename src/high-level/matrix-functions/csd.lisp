@@ -114,15 +114,15 @@ See also http://www.netlib.org/lapack/explore-html/de/d0d/zuncsd_8f.html."
            (values matrix matrix matrix matrix list))
 
   (let ((m (nrows matrix)))
-    (assert (and (evenp m) (= m (ncols matrix)))
+    (assert (and (evenp m) (cl:= m (ncols matrix)))
             (matrix)
             "Invalid matrix size.")
 
-    (assert (and (= p q) (or (= p 1) (= p (/ m 2))))
+    (assert (and (cl:= p q) (or (cl:= p 1) (cl:= p (/ m 2))))
             (p q)
             "This implementation of the CS decomposition supports equipartitions or partitions with (p, q) = (1, 1) only.")
 
-    (let ((equipartition-p (= p q (/ m 2)))
+    (let ((equipartition-p (cl:= p q (/ m 2)))
           (a1 (slice matrix '(0 0) (list p q)))
           (a2 (slice matrix (list p 0) (list m q)))
           (a3 (slice matrix (list 0 q) (list p m)))
