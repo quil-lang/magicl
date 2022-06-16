@@ -1,4 +1,4 @@
-;;;; eig.lisp
+;;;; hermitian-eig.lisp
 ;;;;
 ;;;; Author: Erik Davis
 
@@ -48,7 +48,7 @@
     (otherwise matrix)))
 
 
-(defmethod hermitian-eig-lisp (matrix)
+(defmethod hermitian-eig-lisp ((matrix matrix))
   (assert (hermitian-matrix-p matrix))
   (let ((m (ncols matrix))        
         (eigs nil)
