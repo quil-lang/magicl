@@ -76,6 +76,9 @@
                     (setf B (slice B (list 0 0) (list i i)))
                     (decf i)
               :finally (push (tref B 0 0) svals))
+        ;; TODO: assert these are real:
+        (setf svals (map-into svals #'realpart svals))
+
         (setf U (@ Q U))
         ;; permute singular values
         ;; we want positive values, from greatest to smallest
