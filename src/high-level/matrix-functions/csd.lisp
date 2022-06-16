@@ -20,7 +20,7 @@
   (let* ((m (nrows diag))
          (n (ncols diag))
          (k (ncols matrix))
-         (result (zeros (list m k))))
+         (result (zeros (list m k) :type (element-type matrix))))
     (dotimes (i (min m n) result)
       (let ((dii (tref diag i i)))
         (dotimes (j k)
