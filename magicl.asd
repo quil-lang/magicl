@@ -62,7 +62,9 @@
                  (:file "polynomial-solver")
                  (:module "matrix-functions"
                   :serial t
-                  :components ((:file "csd")))))
+                  :components ((:file "mult-definition")
+                               (:file "mult-methods")
+                               (:file "csd")))))
    (:file "magicl")))
 
 ;;; Extension common code
