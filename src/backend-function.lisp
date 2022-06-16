@@ -61,30 +61,57 @@
 ;;; now the meat
 
 (define-condition no-applicable-implementation (simple-error)
-  ()
+  ((function-name :initarg :function-name :reader no-applicable-implementation-function-name)
+   (failed-callees :initarg :failed-callees :reader no-applicable-implementation-failed-callees
+                   :documentation "A list of NO-APPLICABLE-IMPLEMENTATION conditions that were a result of callee failures."))
   (:documentation "The error to signal when there's no applicable implementation, whether from a backend function or a CLOS generic function."))
 
-(defun no-applicable-implementation (name)
+(defun describe-callees (s conditions &optional (indent 1))
+  ;; used to format NO-APPLICABLE-IMPLEMENTATION errors
+  (etypecase conditions
+    ((member :|<unavailable>|)
+     (format s "~vT* <unavailable>~%" (* 4 indent)))
+    (no-applicable-implementation
+     (format s "~vT* ~S~%" (* 4 indent)
+             (no-applicable-implementation-function-name conditions))
+     (describe-callees s (no-applicable-implementation-failed-callees conditions) (1+ indent)))
+    (list
+     (dolist (c conditions)
+       (describe-callees s c indent)))))
+
+(defun nai-fmt (s arguments &optional colon-modifier at-modifier)
+  ;; used to format NO-APPLICABLE-IMPLEMENTATION errors
+  (declare (ignore colon-modifier at-modifier))
+  (destructuring-bind (name callees) arguments
+    (let ((*package* (find-package "KEYWORD")))
+      (format s "No applicable implementations found for the (supposed) ~
+                 backend function ~S.~2%" name)
+      (describe-backend-function name s)
+      (terpri s)
+      (format s "There was no implementation of ~S that was applicable to the given ~
+                 arguments. This may be because:~2%" name)
+      (format s "    * An implementation exists, but a function this implementation ~
+                       itself uses doesn't have an implementation. (See below.)~2%")
+      (format s "    * No implementation exists in a currently active backend,~2%")
+      (format s "    * A generic function implements the backend, but the generic ~
+                       function does not specialize on the argument, or~2%")
+      (format s "    * An implementation exists, but signaled that it wasn't ~
+                       applicable for the given arguments.~2%")
+      (unless (null callees)
+        (format s "The callees that failed to find an implementation were:~2%")
+        (describe-callees s callees))
+      (terpri s)
+      (format s "Ensure the proper backends are activated, and the implementations ~
+                 in those backends can handle the argument types appropriately. If ~
+                 an implementation does not exist, consider writing one!"))))
+
+(defun no-applicable-implementation (name &key (failed-callees ':|<unavailable>|))
   "Call this function to signal an error indicating the caller (or any callers above it) are not applicable to the current backend function being invoked."
   (error 'no-applicable-implementation
-         :format-control
-         (let ((*package* (find-package "KEYWORD")))
-           (with-output-to-string (s)
-             (format s "No applicable implementations found for the supposed ~
-                        backend function ~S.~2%" name)
-             (describe-backend-function name s)
-             (terpri s)
-             (format s "There was no implementation of ~S that was applicable to the given ~
-                        arguments. This may be because:~2%" name)
-             (format s "    * No implementation exists in a currently active backend,~2%")
-             (format s "    * A generic function implements the backend, but the generic ~
-                              function does not specialize on the argument, or~2%")
-             (format s "    * An implementation exists, but signaled that it wasn't ~
-                              applicable for the given arguments.~2%")
-             (format s "Ensure the proper backends are activated, and the implementations ~
-                        in those backends can handle the argument types appropriately. If ~
-                        an implementation does not exist, consider writing one!")))
-         :format-arguments nil))
+         :function-name name
+         :failed-callees failed-callees
+         :format-control "~/magicl.backends::nai-fmt/"
+         :format-arguments (list (list name failed-callees))))
 
 (defmacro define-compatible-no-applicable-method-behavior (&rest generic-function-names)
   "Ensure the (unquoted symbol) generic function names GENERIC-FUNCTION-NAMES will behave correctly when used as implementations for backend functions.
@@ -99,7 +126,7 @@ Without using this, a backend function may error if no method is found."
          :collect
          `(defmethod cl:no-applicable-method ((gf (eql #',name)) &rest args)
             (declare (ignore args))
-            (no-applicable-implementation ',name)))))
+            (no-applicable-implementation ',name :failed-callees nil)))))
 
 ;;; Backend Names
 
@@ -115,7 +142,7 @@ Without using this, a backend function may error if no method is found."
     "A list in priority order the backends that MAGICL should use for functionality.
 
 It is preferable to use WITH-BACKENDS instead of this.")
-  
+
   (defun backend-name-p (x)
     (and (symbolp x)
          (find x *known-backends*)
@@ -224,16 +251,16 @@ Backend implementations are defined with DEFINE-BACKEND-IMPLEMENTATION."
        (initialize-function-for-implementations ',name)
        (defun ,name ,lambda-list
          ,@(and doc (list doc))
-         (dolist (,backend *backend*)
-           (handler-case
-               (let ((,func (backend-implementation ',name ,backend)))
-                 (unless (null ,func)
-                   (return-from ,name
-                     ,(interface:calling-form func lambda-list))))
-             (no-applicable-implementation (c)
-               (declare (ignore c))
-               nil)))
-         (no-applicable-implementation ',name)))))
+         (let ((callees nil))
+           (dolist (,backend *backend*)
+             (handler-case
+                 (let ((,func (backend-implementation ',name ,backend)))
+                   (unless (null ,func)
+                     (return-from ,name
+                       ,(interface:calling-form func lambda-list))))
+               (no-applicable-implementation (c)
+                 (push c callees))))
+           (no-applicable-implementation ',name :failed-callees callees))))))
 
 (defmacro define-backend-implementation (name backend funcallable-expression)
   "Define the implementation of the backend function named NAME, for the backend BACKEND, as the function FUNCALLABLE-EXPRESSION (evaluated).
@@ -289,7 +316,7 @@ NOTE: If your implementation is a generic function, then the generic function's 
            (terpri stream)
            (cond
              ((null inactive)
-              (format stream "There are no inactive backends.~%"))
+              (format stream "There are no loaded backends that are inactive.~%"))
              (t
               (format stream "Inactive Backends:~%")
               (dolist (b inactive)
