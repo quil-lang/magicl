@@ -62,7 +62,8 @@
                  (:file "polynomial-solver")
                  (:module "matrix-functions"
                   :serial t
-                  :components ((:file "mult-definition")
+                  :components ((:file "row-column-matrices")
+                               (:file "mult-definition")
                                (:file "mult-methods")
                                (:file "csd")))))
    (:file "magicl")))
