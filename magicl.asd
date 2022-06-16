@@ -69,7 +69,7 @@
                                (:file "householder")
                                (:file "qr")
                                (:file "tridiagonal-form")
-                               (:file "eig")
+                               (:file "hermitian-eig")
                                (:file "svd")
                                (:file "random-hermitian")
                                (:file "csd")))))
