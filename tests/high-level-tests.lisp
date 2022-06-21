@@ -37,11 +37,11 @@
 (deftest test-random-unitary ()
   "Check that we can make and identify unitaries."
   (loop :for i :from 1 :to 128 :do
-    (is (magicl:unitary-matrix-p (magicl:random-unitary (list i i) :type '(complex double-float)) +double-comparison-threshold-loose+))))
+    (is (magicl:unitary-matrix-p (magicl:random-unitary i :type '(complex double-float)) +double-comparison-threshold-loose+))))
 
 (deftest test-logm ()
   "Check that the matrix logarithm is the inverse of the matrix exponential."
-  (let* ((x (magicl:random-unitary '(4 4) :type '(complex double-float)))
+  (let* ((x (magicl:random-unitary 4 :type '(complex double-float)))
          (h (magicl:scale (magicl:logm x) #C(0d0 -1d0)))
          (expih (magicl:expih h)))
     (loop :for i :from 0 :to (1- (magicl:ncols x))
@@ -148,8 +148,7 @@
 
 (deftest test-csd-2x2-basic ()
   "Test CS decomposition of an equipartitioned 2x2 unitary matrix."
-  (let ((x (magicl:random-unitary '(2 2)
-                                  :type '(complex double-float)))
+  (let ((x (magicl:random-unitary 2 :type '(complex double-float)))
         (tol (* 1.0d2 double-float-epsilon)))
     (multiple-value-bind (u1 u2 v1h v2h theta)
         (magicl-lapack::csd-2x2-basic x 1 1)
@@ -164,7 +163,7 @@
 (deftest test-lapack-csd-matrix-ordering ()
   "Test the CS decomposition of a 16x16 unitary matrix under both row-major and column-major orderings."
   (flet ((random-unitary (size layout)
-           (let ((u (magicl:random-unitary (list size size) :type '(complex double-float))))
+           (let ((u (magicl:random-unitary size :type '(complex double-float))))
              (unless (eq layout (magicl::layout u))
                (magicl:transpose! u :fast t)
                (assert (eq layout (magicl::layout u))))

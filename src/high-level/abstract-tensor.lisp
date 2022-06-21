@@ -265,8 +265,8 @@ If TARGET is not specified then a new tensor is created with the same element ty
 
 (define-backend-implementation ./ :lisp
   (lambda (source1 source2 &optional target)
-    ;; This won't do the right thing if / is not closed in the set of
-    ;; choice, like integers.
+    ;; FIXME: This won't do the right thing if / is not closed in the
+    ;; set of choice, like integers.
     (binary-operator #'/ source1 source2 target)))
 
 (define-backend-function .^ (source1 source2 &optional target)
@@ -275,8 +275,6 @@ If TARGET is not specified then a new tensor is created with the same element ty
 
 (define-backend-implementation .^ :lisp
   (lambda (source1 source2 &optional target)
-    ;; This won't do the right thing if / is not closed in the set of
-    ;; choice, like integers.
     (binary-operator #'expt source1 source2 target)))
 
 (define-extensible-function (.max max-lisp) (source1 source2 &optional target)
@@ -319,7 +317,6 @@ If TARGET is not specified then a new tensor is created with the same element ty
 If TARGET is not specified then a new tensor is created with the same element type as the source tensor")
   (:method ((source abstract-tensor) &optional target)
     (unary-operator #'log source target)))
-
 
 (define-extensible-function (= =-lisp) (source1 source2 &optional epsilon)
   (:documentation "Check the equality of tensors with an optional EPSILON")

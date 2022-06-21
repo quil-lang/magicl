@@ -68,6 +68,7 @@
                                (:file "givens")
                                (:file "householder")
                                (:file "qr")
+                               (:file "lu")
                                (:file "tridiagonal-form")
                                (:file "hermitian-eig")
                                (:file "svd")
