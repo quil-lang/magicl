@@ -153,7 +153,7 @@
   "Test calls to RANDOM-UNITARY for all float types and sizes 1x1 to 64x64 to check properties"
   (dolist (type +magicl-float-types+)
     (loop :for i :from 1 :to 64 :do
-      (let ((m (magicl:random-unitary (list i i) :type type)))
+      (let ((m (magicl:random-unitary i :type type)))
         (is (> 5e-5 (abs (cl:-
                           (abs (magicl:det m))
                           1))))
@@ -204,3 +204,10 @@
                              2d0 0d0 0d0 0d0 0d0
                              0d0 2d0 0d0 0d0 0d0)
                            '(5 5))))))
+
+(deftest test-doolittle ()
+  (loop :for n :from 2 :to 6 :do
+    (loop :repeat 100 :do
+      (let ((m (magicl:rand (list n n))))
+        (multiple-value-bind (l u) (magicl::doolittle m)
+          (is (magicl:= m (magicl:@ l u) 1d-10)))))))
