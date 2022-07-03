@@ -201,6 +201,40 @@ If TARGET is not specified then a new tensor is created with the same element ty
                   target dims)))
         target))))
 
+;;; Extend bianary-operator to handle (TENSOR, NUMBER) and (NUMBER, TENSOR)
+;;; arguments Recall that, e.g., TENSOR + NUMBER is commutative, but
+;;; TENSOR - NUMBER isn't, so need two DEFMETHODs here
+;;;
+;;; N.B. This implementation still suffers from the existing issue that if the
+;;; type of the arguments differ then we can get a TYPE-ERROR from the SETF
+;;; Try adding a MATRIX/INT32 to a MATRIX/SINGLE-FLOAT
+
+;;  (TENSOR, NUMBER)
+(defmethod binary-operator ((function function) (source1 abstract-tensor) (source2 number) &optional target)
+  (let ((target (or target (copy-tensor source1))))
+    (map-indexes
+     (shape source1)
+     (lambda (&rest dims)
+       (apply #'(setf tref)
+              (funcall function
+                       (apply #'tref source1 dims)
+                       source2)
+              target dims)))
+    target))
+
+;; (NUMBER, TENSOR)
+(defmethod binary-operator ((function function) (source1 number) (source2 abstract-tensor) &optional target)
+  (let ((target (or target (copy-tensor source2))))
+    (map-indexes
+     (shape source2)
+     (lambda (&rest dims)
+       (apply #'(setf tref)
+              (funcall function
+                       source1
+                       (apply #'tref source2 dims))
+              target dims)))
+    target))
+
 (define-backend-function .+ (source1 source2 &optional target)
   "Add tensors elementwise, optionally storing the result in TARGET.
 If TARGET is not specified then a new tensor is created with the same element type as the first source tensor")
