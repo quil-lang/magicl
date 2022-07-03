@@ -133,6 +133,8 @@
            #:map
            #:.exp
            #:.log
+           #:.max
+           #:.min
 
            ;; Matrix operators
            #:square-matrix-p
