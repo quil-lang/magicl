@@ -279,22 +279,18 @@ If TARGET is not specified then a new tensor is created with the same element ty
     ;; choice, like integers.
     (binary-operator #'expt source1 source2 target)))
 
-(define-backend-function .max (source1 source2 &optional target)
-  "Apply MAX function to tensors elementwise, optionally storing the result in TARGET.
+(define-extensible-function (.max max-lisp) (source1 source2 &optional target)
+  (:documentation "Apply MAX function to tensors elementwise, optionally storing the result in TARGET.
 If TARGET is not specified then a new tensor is created with the same element type as the first source tensor.
 If one argument is a NUMBER then apply MAX function to tensor element and number")
-
-(define-backend-implementation .max :lisp
-  (lambda (source1 source2 &optional target)
+  (:method (source1 source2 &optional target)
     (binary-operator #'max source1 source2 target)))
 
-(define-backend-function .min (source1 source2 &optional target)
-  "Apply MIN function to tensors elementwise, optionally storing the result in TARGET.
+(define-extensible-function (.min min-lisp) (source1 source2 &optional target)
+  (:documentation "Apply MIN function to tensors elementwise, optionally storing the result in TARGET.
 If TARGET is not specified then a new tensor is created with the same element type as the first source tensor.
 If one argument is a NUMBER then apply MIN function to tensor element and number")
-
-(define-backend-implementation .min :lisp
-  (lambda (source1 source2 &optional target)
+  (:method (source1 source2 &optional target)
     (binary-operator #'min source1 source2 target)))
 
 
