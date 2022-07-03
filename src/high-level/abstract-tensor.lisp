@@ -246,6 +246,33 @@ If TARGET is not specified then a new tensor is created with the same element ty
     (binary-operator #'expt source1 source2 target)))
 
 
+
+(defgeneric unary-operator (function source &optional target)
+  (:documentation "Perform a unary operator on tensor elementwise, optionally storing the result in TARGET.
+If TARGET is not specified then a new tensor is created with the same element type as the source tensor")
+  (:method ((function function) (source abstract-tensor) &optional target)
+    (let ((target (or target (copy-tensor source))))
+      (map-indexes
+       (shape source)
+       (lambda (&rest dims)
+         (apply #'(setf tref)
+                (funcall function
+                         (apply #'tref source dims))
+                target dims)))
+      target)))
+
+(define-extensible-function (.exp exp-lisp) (source &optional target)
+  (:documentation "Applies exponential function to tensor elementwise, optionally storing the restult in TARGET.
+If TARGET is not specified then a new tensor is created with the same element type as the source tensor")
+  (:method ((source abstract-tensor) &optional target)
+    (unary-operator #'exp source target)))
+
+(define-extensible-function (.log log-lisp) (source &optional target)
+  (:documentation "Applies natural logarithm to tensor elementwise, optionally storing the restult in TARGET.
+If TARGET is not specified then a new tensor is created with the same element type as the source tensor")
+  (:method ((source abstract-tensor) &optional target)
+    (unary-operator #'log source target)))
+
 (define-extensible-function (= =-lisp) (source1 source2 &optional epsilon)
   (:documentation "Check the equality of tensors with an optional EPSILON")
   (:method ((source1 abstract-tensor) (source2 abstract-tensor) &optional epsilon)
