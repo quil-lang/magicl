@@ -75,6 +75,8 @@ Magicl provides some "block matrix" constructors: these construct matrices from 
 | `(.exp a)`   | `exp(a)`   | `np.exp(a)`       | Element-wise exponential       |
 | `(.log a)`   | `log(a)`   | `np.log(a)`       | Element-wise natural logarithm |
 
+Note: Elementwise operators with two arguments (e.g. `.+`, `.-`) also act as expected when one argument is a number; for example `(.- A 5.0)` subtracts 5.0 from each element of A.
+
 ### Linear Algebra
 
 | MAGICL                                                  | MATLAB            | NumPy                                                          | Description                                |
