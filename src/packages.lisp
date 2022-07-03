@@ -123,6 +123,7 @@
 
            ;; Operators
            #:binary-operator
+           #:unary-operator
            #:.+
            #:.-
            #:.*
@@ -130,6 +131,8 @@
            #:.^
            #:=
            #:map
+           #:.exp
+           #:.log
 
            ;; Matrix operators
            #:square-matrix-p

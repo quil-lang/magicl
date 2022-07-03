@@ -64,14 +64,16 @@ Magicl provides some "block matrix" constructors: these construct matrices from 
 
 ### Basic Operations
 
-| MAGICL     | MATLAB   | NumPy            | Description                 |
-|------------|----------|------------------|-----------------------------|
-| `(@ a b)`  | `a * b`  | `a @ b`          | Matrix multiplication       |
-| `(.+ a b)` | `a + b`  | `a + b`          | Element-wise add            |
-| `(.- a b)` | `a - b`  | `a - b`          | Element-wise subtract       |
-| `(.* a b)` | `a .* b` | `a * b`          | Element-wise multiply       |
-| `(./ a b)` | `a./b`   | `a/b`            | Element-wise divide         |
-| `(.^ a b)` | `a.^b`   | `np.power(a,b)`  | Element-wise exponentiation |
+| MAGICL       | MATLAB     | NumPy             | Description                    |
+|--------------|------------|-------------------|--------------------------------|
+| `(@ a b)`    | `a * b`    | `a @ b`           | Matrix multiplication          |
+| `(.+ a b)`   | `a + b`    | `a + b`           | Element-wise add               |
+| `(.- a b)`   | `a - b`    | `a - b`           | Element-wise subtract          |
+| `(.* a b)`   | `a .* b`   | `a * b`           | Element-wise multiply          |
+| `(./ a b)`   | `a./b`     | `a/b`             | Element-wise divide            |
+| `(.^ a b)`   | `a.^b`     | `np.power(a,b)`   | Element-wise exponentiation    |
+| `(.exp a)`   | `exp(a)`   | `np.exp(a)`       | Element-wise exponential       |
+| `(.log a)`   | `log(a)`   | `np.log(a)`       | Element-wise natural logarithm |
 
 ### Linear Algebra
 
