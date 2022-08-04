@@ -1,4 +1,4 @@
-(defpackage #:magicl.lapack-cffi
+(uiop:define-package #:magicl.lapack-cffi
   (:use))
 
 (defpackage #:magicl-lapack

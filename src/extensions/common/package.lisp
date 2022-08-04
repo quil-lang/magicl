@@ -13,7 +13,7 @@
            #:fortran-complex-double
            #:fortran-logical))
 
-(defpackage #:magicl.foreign-libraries
+(uiop:define-package #:magicl.foreign-libraries
   (:use #:common-lisp)
   (:export #:*foreign-libraries*
            #:track-symbols              ; used in MAGICL-GEN
