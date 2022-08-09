@@ -10,6 +10,14 @@
           (dotimes (c cols)
             (setf (aref x (+ c (* r cols))) (tref m r c))))))))
 
+(defgeneric to-col-major-lisp-array (m)
+  (:method ((m matrix/double-float))
+    (destructuring-bind (rows cols) (shape m)
+      (let ((x (make-array (* rows cols) :element-type 'double-float :initial-element 0.0d0)))
+        (dotimes (c cols x)
+          (dotimes (r rows)
+            (setf (aref x (+ r (* c rows))) (tref m r c))))))))
+
 (defun cplx (a b)
   (if (zerop b) a (complex a b)))
 
@@ -18,7 +26,7 @@
          (eigs-real  (make-array n :element-type 'double-float :initial-element 0.0d0))
          (eigs-imag  (make-array n :element-type 'double-float :initial-element 0.0d0))
          (left-vecs  (make-array 0 :element-type 'double-float :initial-element 0.0d0))
-         (right-vecs (make-array (* 2 n n) :element-type 'double-float :initial-element 0.0d0))
+         (right-vecs (make-array (* n n) :element-type 'double-float :initial-element 0.0d0))
          (lwork      (* 4 n n))
          (work       (make-array lwork :element-type 'double-float :initial-element 0.0d0)))
     (lapack::dgeev
@@ -30,9 +38,9 @@
      eigs-real                          ; eigenvalues (real part)
      eigs-imag                          ; eigenvalues (imag part)
      left-vecs                          ; left eigenvectors (not computed)
-     (* 2 n)
+     n
      right-vecs                         ; right eigenvectors
-     (* 2 n)
+     n
      work
      lwork
      0                                  ; info
@@ -41,7 +49,9 @@
 
 (defmethod eig-lisp ((m matrix/double-float))
   (assert (square-matrix-p m))
-  (let* ((a (to-row-major-lisp-array m))
+  ;; Fortran arrays are column-major. Make sure we convert to column
+  ;; major, *AND* index resulting arrays in column major afterward.
+  (let* ((a (to-col-major-lisp-array m))
          (shape (shape m))
          (n (first shape)))
     (multiple-value-bind (val-re val-im vecs) (internal-eig a)
@@ -55,7 +65,7 @@
                     (real
                      (dotimes (i n)
                        (setf (tref eigenvectors i j)
-                             (complex (aref vecs (+ j (* i (* 2 n))))
+                             (complex (aref vecs (+ i (* j n)))
                                       0.0d0)))
                      (incf j 1))
                     (complex
@@ -65,8 +75,8 @@
                            ()
                            "Expected eigenvalues to come in conjugate pairs. Got ~A then ~A, which don't appear to be conjugates." e next))
                      (dotimes (i n)
-                       (let ((re (aref vecs (+ j       (* i (* 2 n)))))
-                             (im (aref vecs (+ (+ j 1) (* i (* 2 n))))))
+                       (let ((re (aref vecs (+ i (* j n))))
+                             (im (aref vecs (+ i (* (+ j 1) n)))))
                          (setf (tref eigenvectors i j)
                                (complex re im)
                                (tref eigenvectors i (+ j 1))
@@ -79,7 +89,7 @@
   (assert (square-matrix-p m))
   (let* ((n (nrows m))
          (embedding (zeros (list (* 2 n) (* 2 n)) :type 'double-float)))
-    ;; map a+bi -> [a -b; b a] for all elements of M
+    ;; map a+bi -> [a b; -b a] for all elements of M
     (uiop:nest
      (dotimes (z-row n))
      (let ((r-row (* 2 z-row))))
@@ -92,144 +102,74 @@
        (setf (tref embedding r-row      r-col)
              re-z
              (tref embedding r-row      (1+ r-col))
-             (- im-z)
-             (tref embedding (1+ r-row) r-col)
              im-z
+             (tref embedding (1+ r-row) r-col)
+             (- im-z)
              (tref embedding (1+ r-row) (1+ r-col))
              re-z)))
     embedding))
 
+(defun matrix-columns-as-vectors (m)
+  (loop :for col :below (ncols m)
+        :collect (column-matrix->vector (column m col))))
+
+(defun disembed-vector (e)
+  (check-type e vector)
+  (assert (evenp (size e)))
+  (let* ((n (size e))
+         (n/2 (/ n 2))
+         (vec (zeros (list n/2)
+                     :type '(complex double-float))))
+    (dotimes (i n/2 vec)
+      (setf (tref vec i)
+            ;; TODO: Why -?
+            (- (tref e (+ 0 (* 2 i)))
+               (* #C(0.0d0 1.0d0)
+                  (tref e (+ 1 (* 2 i)))))))))
+
+(defun zero-vector-p (x)
+  (< (norm x) *junk-tol*))
+
 (defmethod eig-lisp ((m matrix/complex-double-float))
-  ;; Below, we try to calculate eigenvalues of C^(n x n) using only a
-  ;; routine that calculates eigenvalues of real matrices.
-  ;;
-  ;; The problem is that I have not proven it to be correct!
-  ;;
-  ;; The procedure is as follows:
-  ;;
-  ;; First, map M (in C^(n x n) to a matrix L in R(2n x 2n) by mapping
-  ;;
-  ;;                  [ Re z   -Im z ]
-  ;;    Mij (=: z) -> [              ]
-  ;;                  [ Im z    Re z ]
-  ;;
-  ;; where the top-left element of the resulting 2x2 matrix is the
-  ;; entry L(2i,2j).
-  ;;
-  ;; This is the usual embedding of complex numbers in R^(2x2).
-  ;;
-  ;; Next, we compute eigenvalues of L as usual. We will get a
-  ;; collection of real eigenvalues and complex eigenvalues.
-  ;;
-  ;; The real eigenvalues will come in equal pairs. This is because
-  ;; Re(z) now shows up in the diagonal of L twice per entry.
-  ;;
-  ;; The complex eigenvalues will come in conjugate pairs, as is usual
-  ;; for real matrices.
-  ;;
-  ;; The conjecture is that one of these conjugate pairs is an actual
-  ;; eigenvalue of M, but we don't know which one.
-  ;;
-  ;; To figure it out, we use the fact that Tr(M) is the sum of M's
-  ;; eigenvalues. Since all of the real parts of the eigenvalues will
-  ;; be known, we just need to solve the equation for s_j in {-1, +1}:
-  ;;
-  ;;               
-  ;;                ====
-  ;;                \
-  ;;     Im Tr(M) =  >    s  l
-  ;;                /      j  j
-  ;;                ====
-  ;;                 j
-  ;;                
-  ;; Here, l_j is the set of positive imaginary parts of the
-  ;; eigenvalues, drawing just one from each conjugate pair (i.e., for
-  ;; candidate eigenvalues a+bi and a-bi, the positive imaginary part
-  ;; b is one of the l_j, and -b is not included).
-  ;;
-  ;; Solving this equation is done brute-force, as it appears to
-  ;; basically be a subset-sum problem.
-  ;;
-  ;; For all the randomized testing up to 16x16 complex matrices, it
-  ;; seems to work!
   (assert (square-matrix-p m))
   (multiple-value-bind (evals evecs)
       (eig-lisp (embed-complex m))
-    (let* ((tr (trace m))
-           (tr-real (realpart tr))
-           (tr-imag (imagpart tr))
-           (known-vals   nil)
-           (unknown-vals nil))
-      (loop :for (e1 e2) :on evals :by #'cddr
-            :do (cond
-                  ((and (realp e1) (realp e2))
-                   (assert (cl:= e1 e2))
-                   (push e1 known-vals)
-                   (decf tr-real e1))
-                  ((and (complexp e1) (complexp e2))
-                   (assert (cl:= e1 (conjugate e2)))
-                   (push (complex (realpart e1)
-                                  (abs (imagpart e1)))
-                         unknown-vals)
-                   (decf tr-real (realpart e1)))
-                  (t
-                   (error "unexpected eigenvalue pair"))))
-      (format t "Re(tr) left            = ~A~%~
-                 Im(tr)                 = ~A~%~
-                 Known Eigenvalues      = ~A~%~
-                 Canidate Eigenvalues   = ~A~%~
-                 The remaining Re(tr) should be zero. ~
-                 An assert will trigger if it is not.~%"
-              tr-real
-              tr-imag
-              known-vals
-              unknown-vals)
-      (assert (< (abs tr-real) *junk-tol*))
-      (format t "...Solving for signs...~%")
-      (loop :for sign :in (solve-plus-minus-sum
-                           (mapcar #'imagpart unknown-vals)
-                           tr-imag)
-            :for unknown-val := (pop unknown-vals)
-            :do (push (complex (realpart unknown-val)
-                               (* sign (imagpart unknown-val)))
-                      known-vals))
+    (let ((dis-evecs (mapcar #'disembed-vector
+                             (matrix-columns-as-vectors evecs))))
+      (assert (cl:= (length evals) (length dis-evecs)))
+      (loop :for eval :in evals
+            :for evec :in dis-evecs
+            ;; Vectors that "disembed" to zero are not true
+            ;; eigenvectors.
+            :unless (zero-vector-p evec)
+              :collect eval :into final-evals
+              :and :collect evec :into final-evecs
+            :finally (progn
+                       ;; Check for the correct number of eigenvalues
+                       ;; and eigenvectors.
+                       (assert (cl:= (ncols m)
+                                     (length final-evals)))
+                       (assert (cl:= (ncols m)
+                                     (length final-evecs)))
+                       ;; Check for the correct dimension of
+                       ;; eigenvectors,
+                       (dolist (evec final-evecs)
+                         (assert (cl:= (nrows m)
+                                       (size evec))))
+                       ;; Extreme sanity check to verify each
+                       ;; eigenvalue and eigenvector are actually such
+                       ;; by definition.
+                       (loop :for eval :in final-evals
+                             :for evec :in final-evecs
+                             :for ecol := (vector->column-matrix evec)
+                             :for m*v := (magicl:@ m ecol)
+                             :for l*v := (scale ecol eval)
+                             :for zero := (column-matrix->vector (.- m*v l*v))
+                             :do (assert (zero-vector-p zero) () ()
+                                         "Got an eigenvalue L and an eigenvector V such that L*V /= M.V"))
+                       ;; Finally, return the purchase.
+                       (return
+                         (values
+                          final-evals
+                          (hstack (mapcar #'vector->column-matrix final-evecs)))))))))
 
-      (format t "Known    = ~A~%~
-                 Canidate = ~A~%~
-                 Tr       = ~A~%~
-                 sum(eig) = ~A~%~
-                 The trace and sum should be equal. ~
-                 An assert will trigger if they're not.~%"
-              known-vals
-              unknown-vals
-              tr
-              (reduce #'+ known-vals))
-      (assert (null unknown-vals))
-      (assert (< (abs (- tr (reduce #'+ known-vals))) *junk-tol*))
-      known-vals)))
-
-
-(defun solve-plus-minus-sum (a b)
-  "Given a list of values A = (a1 a2 ... aN) and a value B, return a list of signs S = (s1 ... sN)---each of which is {-1, +1}---such that
-
-    S.A = B.
-"
-  (labels ((rec (a s sum)
-             (cond
-               ((null a)
-                (cond
-                  ((< (abs (- b sum)) *junk-tol*)
-                   (return-from solve-plus-minus-sum
-                     (reverse s)))
-                  ((< (abs (+ b sum)) *junk-tol*)
-                   (return-from solve-plus-minus-sum
-                     (reverse (mapcar #'- s))))
-                  (t
-                   ;; keep on truckin. return from REC and continue
-                   ;; searching.
-                   )))
-               (t
-                (let ((ai (pop a)))
-                  (rec a (cons  1 s) (+ sum ai))
-                  (rec a (cons -1 s) (- sum ai)))))))
-    (rec a nil 0)))
