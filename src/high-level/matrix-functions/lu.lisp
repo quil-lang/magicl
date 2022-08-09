@@ -4,6 +4,7 @@
 
 (in-package #:magicl)
 
+;;; XXX FIXME BUG: Need to permute to be "diagonally dominant".
 (defun doolittle (matrix)
   "Perform an LU decomposition of a square matrix MATRIX. Return (VALUES L U)."
   (assert (square-matrix-p matrix))
