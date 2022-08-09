@@ -4,7 +4,6 @@
 
 (in-package #:magicl)
 
-;;; XXX FIXME BUG: Need to permute to be "diagonally dominant".
 (defun doolittle (matrix)
   "Perform an LU decomposition of a square matrix MATRIX. Return (VALUES L U)."
   (assert (square-matrix-p matrix))
@@ -41,14 +40,39 @@
         (setf (tref r i j) (tref lower i j)
               (tref r j i) (tref upper j i))))))
 
-(defun doolittle-ipiv (n)
-  ;; just the identity
-  (let ((p (zeros (list n) :type '(signed-byte 32))))
-    (dotimes (i n p)
-      (setf (tref p i) i))))
+(defun exchange-rows! (matrix p q)
+  (destructuring-bind (rows cols) (shape matrix)
+    (assert (<= 0 p (1- rows)))
+    (assert (<= 0 q (1- rows)))
+    (when (/= p q)
+      (dotimes (c cols)
+        (rotatef (tref matrix p c)
+                 (tref matrix q c)))
+      nil)))
+
+(defun make-pivoting-permutation-matrix (matrix)
+  (destructuring-bind (mx my) (shape matrix)
+    (assert (cl:= mx my) () "Matrix must be square")
+    (let ((perm-matrix (eye (shape matrix) :type (element-type matrix)))
+          (ipiv        (arange mx :type '(signed-byte 32))))
+      (flet ((exch! (a b)
+               (setf (tref ipiv a) b)
+               (exchange-rows! perm-matrix a b)))
+        (loop :for x :below mx
+              :for max := (abs (tref matrix x x))
+              :for r := x
+              :do (loop :for y :from x :below mx
+                        :for new := (abs (tref matrix y x))
+                        :when (> new max)
+                          :do (setf max new
+                                    r y))
+              :unless (cl:= x r)
+                :do (exch! x r)
+              :finally (return (values ipiv perm-matrix)))))))
 
 ;;; We could specialize the above for each type, but it's pedagogical
 ;;; anyway...
 (defmethod lu-lisp ((matrix matrix))
-  (values (multiple-value-call #'merge-lu (doolittle matrix))
-          (doolittle-ipiv (nrows matrix))))
+  (multiple-value-bind (ipiv perm) (make-pivoting-permutation-matrix matrix)
+    (values (multiple-value-call #'merge-lu (doolittle (magicl:@ perm matrix)))
+            ipiv)))
