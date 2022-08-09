@@ -54,9 +54,9 @@
   (destructuring-bind (mx my) (shape matrix)
     (assert (cl:= mx my) () "Matrix must be square")
     (let ((perm-matrix (eye (shape matrix) :type (element-type matrix)))
-          (ipiv        (arange mx :type '(signed-byte 32))))
+          (ipiv        (map! #'1+ (arange mx :type '(signed-byte 32)))))
       (flet ((exch! (a b)
-               (setf (tref ipiv a) b)
+               (setf (tref ipiv a) (1+ b))
                (exchange-rows! perm-matrix a b)))
         (loop :for x :below mx
               :for max := (abs (tref matrix x x))
@@ -68,11 +68,11 @@
                                     r y))
               :unless (cl:= x r)
                 :do (exch! x r)
-              :finally (return (values ipiv perm-matrix)))))))
+              :finally (return (values perm-matrix ipiv)))))))
 
 ;;; We could specialize the above for each type, but it's pedagogical
 ;;; anyway...
 (defmethod lu-lisp ((matrix matrix))
-  (multiple-value-bind (ipiv perm) (make-pivoting-permutation-matrix matrix)
+  (multiple-value-bind (perm ipiv) (make-pivoting-permutation-matrix matrix)
     (values (multiple-value-call #'merge-lu (doolittle (magicl:@ perm matrix)))
             ipiv)))
