@@ -100,6 +100,58 @@
     embedding))
 
 (defmethod eig-lisp ((m matrix/complex-double-float))
+  ;; Below, we try to calculate eigenvalues of C^(n x n) using only a
+  ;; routine that calculates eigenvalues of real matrices.
+  ;;
+  ;; The problem is that I have not proven it to be correct!
+  ;;
+  ;; The procedure is as follows:
+  ;;
+  ;; First, map M (in C^(n x n) to a matrix L in R(2n x 2n) by mapping
+  ;;
+  ;;                  [ Re z   -Im z ]
+  ;;    Mij (=: z) -> [              ]
+  ;;                  [ Im z    Re z ]
+  ;;
+  ;; where the top-left element of the resulting 2x2 matrix is the
+  ;; entry L(2i,2j).
+  ;;
+  ;; This is the usual embedding of complex numbers in R^(2x2).
+  ;;
+  ;; Next, we compute eigenvalues of L as usual. We will get a
+  ;; collection of real eigenvalues and complex eigenvalues.
+  ;;
+  ;; The real eigenvalues will come in equal pairs. This is because
+  ;; Re(z) now shows up in the diagonal of L twice per entry.
+  ;;
+  ;; The complex eigenvalues will come in conjugate pairs, as is usual
+  ;; for real matrices.
+  ;;
+  ;; The conjecture is that one of these conjugate pairs is an actual
+  ;; eigenvalue of M, but we don't know which one.
+  ;;
+  ;; To figure it out, we use the fact that Tr(M) is the sum of M's
+  ;; eigenvalues. Since all of the real parts of the eigenvalues will
+  ;; be known, we just need to solve the equation for s_j in {-1, +1}:
+  ;;
+  ;;               
+  ;;                ====
+  ;;                \
+  ;;     Im Tr(M) =  >    s  l
+  ;;                /      j  j
+  ;;                ====
+  ;;                 j
+  ;;                
+  ;; Here, l_j is the set of positive imaginary parts of the
+  ;; eigenvalues, drawing just one from each conjugate pair (i.e., for
+  ;; candidate eigenvalues a+bi and a-bi, the positive imaginary part
+  ;; b is one of the l_j, and -b is not included).
+  ;;
+  ;; Solving this equation is done brute-force, as it appears to
+  ;; basically be a subset-sum problem.
+  ;;
+  ;; For all the randomized testing up to 16x16 complex matrices, it
+  ;; seems to work!
   (assert (square-matrix-p m))
   (multiple-value-bind (evals evecs)
       (eig-lisp (embed-complex m))
@@ -122,16 +174,18 @@
                    (decf tr-real (realpart e1)))
                   (t
                    (error "unexpected eigenvalue pair"))))
-      (format t "Re(tr) = ~A~%~
-                 Im(tr) = ~A~%~
-                 Known  = ~A~%~
-                 UKnown = ~A~2%"
+      (format t "Re(tr) left            = ~A~%~
+                 Im(tr)                 = ~A~%~
+                 Known Eigenvalues      = ~A~%~
+                 Canidate Eigenvalues   = ~A~%~
+                 The remaining Re(tr) should be zero. ~
+                 An assert will trigger if it is not.~%"
               tr-real
               tr-imag
               known-vals
               unknown-vals)
       (assert (< (abs tr-real) *junk-tol*))
-      (format t "solving...~%")
+      (format t "...Solving for signs...~%")
       (loop :for sign :in (solve-plus-minus-sum
                            (mapcar #'imagpart unknown-vals)
                            tr-imag)
@@ -141,13 +195,16 @@
                       known-vals))
 
       (format t "Known    = ~A~%~
-                 UKnown   = ~A~%~
+                 Canidate = ~A~%~
                  Tr       = ~A~%~
-                 sum(eig) = ~A~%"
+                 sum(eig) = ~A~%~
+                 The trace and sum should be equal. ~
+                 An assert will trigger if they're not.~%"
               known-vals
               unknown-vals
               tr
               (reduce #'+ known-vals))
+      (assert (null unknown-vals))
       (assert (< (abs (- tr (reduce #'+ known-vals))) *junk-tol*))
       known-vals)))
 
