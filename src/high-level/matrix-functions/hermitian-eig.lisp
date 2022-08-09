@@ -10,7 +10,9 @@
   (let* ((ajk2 (* ajk (conjugate ajk)))
          (delta (/ (- ajj akk) 2))
          (d2 (* delta delta))
-         (sgnd (if (minusp delta) -1d0 1d0)) ; we do NOT want SIGNUM here
+         ;; XXX: DELTA should be real here? It's possibly of type
+         ;; COMPLEX.
+         (sgnd (if (minusp (realpart delta)) -1d0 1d0)) ; we do NOT want SIGNUM here
          )
     (- akk
        (/ ajk2
