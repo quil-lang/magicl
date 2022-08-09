@@ -137,13 +137,22 @@
     (let ((dis-evecs (mapcar #'disembed-vector
                              (matrix-columns-as-vectors evecs))))
       (assert (cl:= (length evals) (length dis-evecs)))
-      (loop :for eval :in evals
-            :for evec :in dis-evecs
-            ;; Vectors that "disembed" to zero are not true
-            ;; eigenvectors.
-            :unless (zero-vector-p evec)
+      (loop :until (null evals)
+            :for eval := (pop evals)
+            :for evec := (pop dis-evecs)
+            ;; Real eigenvalues come in pairs. Just take the first
+            ;; one.
+            :if (< (abs (imagpart eval)) *junk-tol*)
               :collect eval :into final-evals
               :and :collect evec :into final-evecs
+              :and :do (progn (pop evals) (pop dis-evecs))
+            :else
+              ;; Vectors that "disembed" to zero are not true
+              ;; eigenvectors. Skip them. (The conjugate will be one
+              ;; though.)
+              :if (not (zero-vector-p evec))
+                :collect eval :into final-evals
+                :and :collect evec :into final-evecs
             :finally (progn
                        ;; Check for the correct number of eigenvalues
                        ;; and eigenvectors.
