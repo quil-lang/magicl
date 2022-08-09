@@ -543,7 +543,7 @@ If :SQUARE is T, then the result will be restricted to the lower leftmost square
 
     - LU is a matrix whose upper triangle is U and lower triangle is L. It is assumed that L has a diagonal of 1 values, and so it is not stored.
 
-    - IPIV is an integer vector stating that row I was interchanged with IPIV(I).
+    - IPIV is an integer vector stating that row I was interchanged with IPIV(I)-1. (The one-based indexing is due to LAPACK convention.)
 
 So assuming P is a permutation matrix representing IPIV, we have
 

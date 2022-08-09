@@ -180,5 +180,7 @@
                        (return
                          (values
                           final-evals
-                          (hstack (mapcar #'vector->column-matrix final-evecs)))))))))
+                          (hstack (mapcar (lambda (vec)
+                                            (vector->column-matrix (normalize vec)))
+                                          final-evecs)))))))))
 
