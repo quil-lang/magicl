@@ -1,4 +1,13 @@
+;;;; eig.lisp
+;;;;
+;;;; Author: Robert Smith
+
 (in-package #:magicl)
+
+;;; This file contains an experimental algorithm to compute
+;;; eigenvalues of a complex matrix using a real eigenvalue solver.
+;;;
+;;; It is not currently compiled into MAGICL.
 
 (defvar *junk-tol* 1d-8)
 
@@ -46,6 +55,29 @@
      0                                  ; info
      )
     (values eigs-real eigs-imag right-vecs)))
+
+(defun eigenvalue< (a b)
+  (let ((a-real? (< (abs (imagpart a)) *junk-tol*))
+        (b-real? (< (abs (imagpart b)) *junk-tol*)))
+    (cond
+      ((and a-real? b-real?)
+       (< (realpart a) (realpart b)))
+      ((and a-real? (not b-real))
+       t)
+      ((and (not a-real?) b-real?)
+       nil)
+      (t
+       ;; doesn't really matter, but we'll do something hopefully
+       ;; sensible
+       (or (< (abs a) (abs b))
+           (< (realpart a) (realpart b))
+           (< (imagpart a) (imagpart b)))))))
+
+(defun sort-keys (keys values predicate)
+  (let ((pairs (mapcar #'cons keys values)))
+    (setf pairs (sort pairs predicate :key #'car))
+    (values (mapcar #'car pairs)
+            (mapcar #'cdr pairs))))
 
 (defmethod eig-lisp ((m matrix/double-float))
   (assert (square-matrix-p m))
@@ -130,22 +162,80 @@
 (defun zero-vector-p (x)
   (< (norm x) *junk-tol*))
 
+(defun double= (x y)
+  (and (< (abs (- (realpart x) (realpart y))) *junk-tol*)
+       (< (abs (- (imagpart x) (imagpart y))) *junk-tol*)))
+
+(defun conjugatep (x y)
+  (double= x (conjugate y)))
+
+(defun columns (matrix)
+  (loop :for i :below (ncols matrix)
+        :collect (column matrix i)))
+
+(defun organize-eigensystem (evals evecs)
+  (labels ((same-vector-mod-u1 (a b)
+             (assert (cl:= (nrows a) (nrows b)))
+             (let ((scale nil))
+               (dotimes (i (nrows a) t)
+                 (cond
+                   (scale
+                    (unless (double= (tref a i 0)
+                                     (* scale (conjugate (tref b i 0))))
+                      (return-from same-vector-mod-u1 nil)))
+                   ((and (double= 0.0d0 (tref a i 0))
+                         (double= 0.0d0 (tref b i 0)))
+                    nil)
+                   ((not (or (double= 0.0d0 (tref a i 0))
+                             (double= 0.0d0 (tref b i 0))))
+                    (return-from same-vector-mod-u1 nil))
+                   ((not (double= (abs (tref a i 0))
+                                  (abs (tref b i 0))))
+                    (return-from same-vector-mod-u1 nil))
+                   (t
+                    (setf scale (/ (tref a i 0) (conjugate (tref b i 0)))))))))
+           (conjugate-pair (x y)
+             (and (conjugatep (car x) (car y))
+                  ;; TODO: is something like this needed?
+                  ;;
+                  ;; (same-vector-mod-u1 (cdr x) (cdr y))
+                  )))
+    (let* ((esys (cl:map 'cl:vector #'cons evals (columns evecs)))
+           (n (length esys)))
+      (loop :with i := 0
+            :while (< i n)
+            :for x := (aref esys i)
+            :for buddy-pos := (position-if (lambda (y) (conjugate-pair x y)) esys :start (1+ i))
+            :if buddy-pos
+              :do (print 'found-byddt)
+                  (rotatef (aref esys (1+ i)) (aref esys buddy-pos))
+                  (incf i 2)
+            :else
+              :do (incf i 1))
+      (values (cl:map 'list #'car esys)
+              (hstack (cl:map 'list #'cdr esys))))))
+
 (defmethod eig-lisp ((m matrix/complex-double-float))
   (assert (square-matrix-p m))
   (multiple-value-bind (evals evecs)
-      (eig-lisp (embed-complex m))
+      (multiple-value-call #'organize-eigensystem
+        (eig-lisp (embed-complex m)))
     (let ((dis-evecs (mapcar #'disembed-vector
                              (matrix-columns-as-vectors evecs))))
+      (print dis-evecs)
       (assert (cl:= (length evals) (length dis-evecs)))
       (loop :until (null evals)
             :for eval := (pop evals)
             :for evec := (pop dis-evecs)
             ;; Real eigenvalues come in pairs. Just take the first
-            ;; one.
+            ;; one and delete the other one.
             :if (< (abs (imagpart eval)) *junk-tol*)
               :collect eval :into final-evals
               :and :collect evec :into final-evecs
-              :and :do (progn (pop evals) (pop dis-evecs))
+              :and :do (progn
+                         (format t "~&keep/lose eval = ~A // ~A ~%" eval (pop evals))
+                         (format t "keep evec = ~A~%" evec)
+                         (format t "lose evec = ~A~%" (pop dis-evecs)))
             :else
               ;; Vectors that "disembed" to zero are not true
               ;; eigenvectors. Skip them. (The conjugate will be one
@@ -176,11 +266,16 @@
                              :for zero := (column-matrix->vector (.- m*v l*v))
                              :do (assert (zero-vector-p zero) () ()
                                          "Got an eigenvalue L and an eigenvector V such that L*V /= M.V"))
-                       ;; Finally, return the purchase.
-                       (return
-                         (values
-                          final-evals
-                          (hstack (mapcar (lambda (vec)
-                                            (vector->column-matrix (normalize vec)))
-                                          final-evecs)))))))))
+                       (let ((evec-matrix (hstack (mapcar (lambda (vec)
+                                                            (vector->column-matrix (normalize vec)))
+                                                          final-evecs))))
+                         (when (and (< (abs (magicl:det evec-matrix)) *junk-tol*)
+                                    (not (< (abs (magicl:det m)) *junk-tol*)))
+                           (error "eigenspace is singular"))
+                         ;; Finally, return the purchase.
+                         (return
+                           (values
+                            final-evals
+                            evec-matrix
+                            ))))))))
 

@@ -472,7 +472,7 @@ If fast is t then just change layout. Fast can cause problems when you want to m
         ((assertion (square-matrix-p matrix)))
       (let ((d 1))
         (multiple-value-bind (a ipiv) (lu matrix)
-          (dotimes (i (nrows matrix))
+          (dotimes (i (nrows a))
             (setq d (* d (tref a i i))))
           (dotimes (i (size ipiv))
             (unless (cl:= (1+ i) (tref ipiv i))
