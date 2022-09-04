@@ -70,7 +70,7 @@
                         :do (right-apply-givens! U gu)
                             (right-apply-givens! V gv))
               :when (<= (abs (tref B (1- i) i))
-                        (* 2 *double-comparison-threshold* ; TODO
+                        (* 2  *double-comparison-threshold* ; TODO
                            (+ (abs (tref B (1- i) (1- i))) (abs (tref B i i)))))
                 :do (push (tref B i i) svals)
                     (setf B (slice B (list 0 0) (list i i)))

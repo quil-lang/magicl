@@ -70,9 +70,6 @@
                                (:file "qr")
                                (:file "lu")
                                (:file "tridiagonal-form")
-                               (:module "eig"
-                                :serial t
-                                :components ((:file "eig")))
                                (:file "hermitian-eig")
                                (:file "svd")
                                (:file "random-hermitian")
