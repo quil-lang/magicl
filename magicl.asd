@@ -15,8 +15,7 @@
   :depends-on (#:magicl/core
                #:magicl/ext
                #:magicl/ext-blas
-               #:magicl/ext-lapack
-               #:magicl/ext-expokit))
+               #:magicl/ext-lapack))
 
 (asdf:defsystem #:magicl/core
   :license "BSD 3-Clause (See LICENSE.txt)"
