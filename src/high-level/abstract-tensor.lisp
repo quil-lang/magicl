@@ -291,6 +291,14 @@ If one argument is a NUMBER then apply MIN function to tensor element and number
   (:method (source1 source2 &optional target)
     (binary-operator #'min source1 source2 target)))
 
+(define-extensible-function (.realpart .realpart-lisp) (source)
+  (:documentation "Extract the real part of each entry of a tensor SOURCE."))
+
+(define-extensible-function (.imagpart .imagpart-lisp) (source)
+  (:documentation "Extract the real part of each entry of a tensor SOURCE."))
+
+(define-extensible-function (.complex .complex-lisp) (re-source im-source)
+  (:documentation "Construct a complex tensor with real parts drawn from RE-SOURCE and complex parts drawn from IM-SOURCE."))
 
 (defgeneric unary-operator (function source &optional target)
   (:documentation "Perform a unary operator on tensor elementwise, optionally storing the result in TARGET.

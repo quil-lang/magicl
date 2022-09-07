@@ -137,6 +137,9 @@
            #:.log
            #:.max
            #:.min
+           #:.realpart
+           #:.imagpart
+           #:.complex
 
            ;; Matrix operators
            #:square-matrix-p

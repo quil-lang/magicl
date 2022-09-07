@@ -64,18 +64,22 @@ Magicl provides some "block matrix" constructors: these construct matrices from 
 
 ### Basic Operations
 
-| MAGICL       | MATLAB     | NumPy             | Description                    |
-|--------------|------------|-------------------|--------------------------------|
-| `(@ a b)`    | `a * b`    | `a @ b`           | Matrix multiplication          |
-| `(.+ a b)`   | `a + b`    | `a + b`           | Element-wise add               |
-| `(.- a b)`   | `a - b`    | `a - b`           | Element-wise subtract          |
-| `(.* a b)`   | `a .* b`   | `a * b`           | Element-wise multiply          |
-| `(./ a b)`   | `a./b`     | `a/b`             | Element-wise divide            |
-| `(.^ a b)`   | `a.^b`     | `np.power(a,b)`   | Element-wise exponentiation    |
-| `(.exp a)`   | `exp(a)`   | `np.exp(a)`       | Element-wise exponential       |
-| `(.log a)`   | `log(a)`   | `np.log(a)`       | Element-wise natural logarithm |
-| `(.max a b)` | `max(a,b)` | `np.maximum(a,b)` | Element-wise maximum           |
-| `(.min a b)` | `min(a,b)` | `np.minimum(a,b)` | Element-wise minimum           |
+| MAGICL           | MATLAB     | NumPy             | Description                           |
+|------------------|------------|-------------------|---------------------------------------|
+| `(@ a b)`        | `a * b`    | `a @ b`           | Matrix multiplication                 |
+| `(.+ a b)`       | `a + b`    | `a + b`           | Element-wise add                      |
+| `(.- a b)`       | `a - b`    | `a - b`           | Element-wise subtract                 |
+| `(.* a b)`       | `a .* b`   | `a * b`           | Element-wise multiply                 |
+| `(./ a b)`       | `a./b`     | `a/b`             | Element-wise divide                   |
+| `(.^ a b)`       | `a.^b`     | `np.power(a,b)`   | Element-wise exponentiation           |
+| `(.exp a)`       | `exp(a)`   | `np.exp(a)`       | Element-wise exponential              |
+| `(.log a)`       | `log(a)`   | `np.log(a)`       | Element-wise natural logarithm        |
+| `(.max a b)`     | `max(a,b)` | `np.maximum(a,b)` | Element-wise maximum                  |
+| `(.min a b)`     | `min(a,b)` | `np.minimum(a,b)` | Element-wise minimum                  |
+| `(.realpart a)`  |            | `np.real(a)`      | Element-wise real part                |
+| `(.imagpart a)`  |            | `np.imag(a)`      | Element-wise imaginary part           |
+| `(.complex a b)` |            |                   | Complex matrix from rectangular parts |
+
 
 Note: Elementwise operators with two arguments (e.g. `.+`, `.-`) also act as expected when one argument is a number; for example `(.- A 5.0)` subtracts 5.0 from each element of A.
 

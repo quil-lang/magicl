@@ -22,6 +22,16 @@
   matrix/complex-single-float
   vector/complex-single-float)
 
+(defmethod .realpart-lisp ((m matrix/complex-single-float))
+  (let ((re-m (zeros (shape m) :type 'single-float)))
+    (map-to #'realpart m re-m)
+    re-m))
+
+(defmethod .imagpart-lisp ((m matrix/complex-single-float))
+  (let ((im-m (zeros (shape m) :type 'single-float)))
+    (map-to #'imagpart m im-m)
+    im-m))
+
 (defmethod =-lisp ((tensor1 tensor/complex-single-float) (tensor2 tensor/complex-single-float) &optional (epsilon *float-comparison-threshold*))
   (unless (equal (shape tensor1) (shape tensor2))
     (return-from =-lisp nil))

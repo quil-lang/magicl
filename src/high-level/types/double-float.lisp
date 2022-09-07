@@ -22,6 +22,22 @@
   matrix/double-float
   vector/double-float)
 
+(defmethod .realpart-lisp ((m matrix/double-float))
+  m)
+
+(defmethod .imagpart-lisp ((m matrix/double-float))
+  (zeros (shape m) :type 'double-float))
+
+(defmethod .complex-lisp ((re matrix/double-float) (im matrix/double-float))
+  (assert (equal (magicl:shape re) (magicl:shape im)))
+  (let ((z (zeros (shape re)
+                  :type '(complex double-float))))
+    (into! (lambda (i j)
+             (complex (tref re i j)
+                      (tref im i j)))
+           z)
+    z))
+
 (defmethod =-lisp ((tensor1 tensor/double-float) (tensor2 tensor/double-float) &optional (epsilon *double-comparison-threshold*))
   (unless (equal (shape tensor1) (shape tensor2))
     (return-from =-lisp nil))
