@@ -92,6 +92,7 @@ Note: Elementwise operators with two arguments (e.g. `.+`, `.-`) also act as exp
 | `(inv a)`                                               | `inv(a)`          | `linalg.inv(a)`                                                | Inverse of matrix                          |
 | `(svd a)` (Returns `(VALUES U SIGMA Vt)`)               | `[U,S,V]=svd(a)`  | `U, S, Vh = linalg.svd(a), V = Vh.T`                           | Singular value decomposition of matrix     |
 | `(eig a)` (Returns `(VALUES EIGENVALUES EIGENVECTORS)`) | `[V,D]=eig(a)`    | `D,V = linalg.eig(a)`                                          | Eigenvalues and eigenvectors of matrix     |
+| `(qz a)` (Returns `(VALUES S T Q Z)`                    |                   | `s,t,p,q = linalg.qz(a,b)`                                     | Eigenvalues and the Schur form             |
 | `(qr a)` (Returns `(VALUES Q R)`)                       | `[Q,R,P]=qr(a,0)` | `Q,R = scipy.linalg.qr(a)`                                     | QR factorization of matrix                 |
 | `(ql a)` (Returns `(VALUES Q L)`)                       |                   |                                                                | QL factorization of matrix                 |
 | `(rq a)` (Returns `(VALUES R Q)`)                       |                   | `R,Q = scipy.linalg.rq(a)`                                     | RQ factorization of matrix                 |

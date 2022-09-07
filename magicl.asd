@@ -126,6 +126,7 @@
     :components ((:file "lapack-generics")
                  (:file "lapack-templates")
                  (:file "lapack-bindings")
+                 (:file "lapack-qz")
                  (:file "lapack-csd")))))
 
 

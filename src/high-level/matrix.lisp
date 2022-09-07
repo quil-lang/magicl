@@ -536,13 +536,18 @@ If :SQUARE is T, then the result will be restricted to the lower leftmost square
 ;; TODO: Make this one generic and move to lapack-macros
 ;;       This is being blocked by the ZUNCSD shenanigans
 (define-backend-function csd (matrix p q)
-  "Find the Cosine-Sine Decomposition of a matrix X given that it is to be partitioned with upper left block of dimension P-by-Q. Returns the CSD elements (VALUES U SIGMA VT) such that X=U*SIGMA*VT.")
+  "Find the Cosine-Sine Decomposition of a matrix X given that it is to be partitioned with upper left block of dimension P-by-Q. Returns the CSD elements (VALUES U SIGMA VT) such that X = U @ SIGMA @ VT.")
 
 (define-backend-function inv (matrix)
   "Get the inverse of the matrix")
 
 (define-backend-function svd (matrix &key reduced)
-  "Find the SVD of a matrix M. Return (VALUES U SIGMA Vt) where M = U*SIGMA*Vt")
+  "Find the SVD of a matrix M. Return (VALUES U SIGMA Vt) where M = U @ SIGMA @ Vt")
+
+(define-backend-function qz (matrix1 matrix2)
+  "Compute the QZ decomposition (aka the generalized Schur decomposition) on the pair of square matrices MATRIX1 and MATRIX2. Return (VALUES AA BB Q Z) such that
+
+    (MATRIX1, MATRIX2) = (Q @ AA @ Z*, Q @ BB @ Z*).")
 
 (define-backend-function qr (matrix)
   "Finds the QR factorization of MATRIX. Returns two matrices (Q, R).

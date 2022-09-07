@@ -82,9 +82,38 @@
                                     '(4 4)
                                     :type '(complex double-float))))
     ;; Check that it yields the right dimensions.
-    (is (cl:= (magicl:nrows xxx) (magicl:ncols xxx) (expt matrix-dim 3)))
-    ))
+    (is (cl:= (magicl:nrows xxx) (magicl:ncols xxx) (expt matrix-dim 3)))))
 
+(deftest test-qz-real ()
+  "Test QZ on real matrices."
+  ;;; example from
+  ;;; https://docs.scipy.org/doc/scipy/reference/generated/scipy.linalg.qz.html
+  (loop :repeat 20 :do
+    (let ((a (magicl:from-list (alexandria:iota 9 :start 1.0d0) '(3 3)))
+          (b (magicl:from-list
+              (loop :repeat 9 :collect (alexandria:gaussian-random))
+              '(3 3))))
+      (multiple-value-bind (aa bb q z) (magicl:qz a b)
+        ;; precision is usually fine, but we just want to match
+        ;; TEST-QZ-COMPLEX
+        (is (magicl:= a (magicl:@ q aa (magicl:dagger z)) 1d-10))
+        (is (magicl:= b (magicl:@ q bb (magicl:dagger z)) 1d-10))))))
+
+(deftest test-qz-complex ()
+  "Test QZ on complex matrices."
+  (loop :repeat 20 :do
+    (let ((a (magicl:from-list (mapcar #'complex
+                                       (alexandria:iota 9 :start 1.0d0)
+                                       (alexandria:iota 9 :start -1.5d0))
+                               '(3 3)))
+          (b (magicl:from-list
+              (loop :repeat 9 :collect (multiple-value-call #'complex
+                                         (alexandria:gaussian-random)))
+              '(3 3))))
+      (multiple-value-bind (aa bb q z) (magicl:qz a b)
+        ;; Precision usually isn't as good, so we lower it a bit.
+        (is (magicl:= a (magicl:@ q aa (magicl:dagger z)) 1d-10))
+        (is (magicl:= b (magicl:@ q bb (magicl:dagger z)) 1d-10))))))
 
 (deftest test-svd ()
   "Test the full and reduced SVDs."
