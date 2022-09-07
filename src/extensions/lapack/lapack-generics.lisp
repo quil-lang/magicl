@@ -25,6 +25,8 @@
 
 (magicl:define-extensible-function (magicl:svd lapack-svd :lapack) (matrix &key reduced))
 
+(magicl:define-extensible-function (magicl:qz qz-extension :lapack) (matrix1 matrix2))
+
 (magicl:define-extensible-function (magicl:ql ql-extension :lapack) (matrix))
 
 (magicl:define-extensible-function (magicl:qr qr-extension :lapack) (matrix))

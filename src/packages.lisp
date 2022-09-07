@@ -171,6 +171,7 @@
            #:lu-solve
            #:csd
            #:svd
+           #:qz
            #:ql
            #:qr
            #:rq
