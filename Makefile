@@ -1,5 +1,5 @@
 SBCL_BIN=sbcl
-SBCL=$(SBCL_BIN) --noinform --no-userinit --no-sysinit --non-interactive
+SBCL=$(SBCL_BIN) --dynamic-space-size 4096 --noinform --no-userinit --no-sysinit --non-interactive
 
 QUICKLISP_HOME=$(HOME)/quicklisp
 QUICKLISP_SETUP=$(QUICKLISP_HOME)/setup.lisp
