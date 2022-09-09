@@ -566,6 +566,11 @@ See also: MAGICL:CSD"))
 (define-extensible-function (svd svd-lisp) (matrix &key reduced)
   (:documentation "Find the SVD of a matrix M. Return (VALUES U SIGMA Vt) where M = U @ SIGMA @ Vt"))
 
+(define-backend-function schur (matrix1)
+  "Compute the Schur decomposition of a square matrix MATRIX. Return (VALUES ZZ TT) such that
+
+    MATRIX = ZZ @ TT @ ZZ*.")
+
 (define-backend-function qz (matrix1 matrix2)
   "Compute the QZ decomposition (aka the generalized Schur decomposition) on the pair of square matrices MATRIX1 and MATRIX2. Return (VALUES AA BB Q Z) such that
 

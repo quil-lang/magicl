@@ -175,6 +175,7 @@
            #:csd-blocks
            #:csd
            #:svd
+           #:schur
            #:qz
            #:ql
            #:qr
