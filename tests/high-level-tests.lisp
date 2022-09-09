@@ -115,6 +115,27 @@
         (is (magicl:= a (magicl:@ q aa (magicl:dagger z)) 1d-10))
         (is (magicl:= b (magicl:@ q bb (magicl:dagger z)) 1d-10))))))
 
+(deftest test-schur-real ()
+  "Test SCHUR on real matrices"
+  (loop :repeat 20 :do
+    (let ((a (magicl:random-hermitian 4)))
+      (multiple-value-bind (zz tt)
+          (magicl:schur a)
+        ;; XXX: Multiplication is not yet defined for real*complex matrices.
+        (let ((zz-c (magicl:zeros (magicl:shape zz) :type `(complex ,(magicl:element-type zz))))
+              (a-c (magicl:zeros (magicl:shape a) :type `(complex ,(magicl:element-type a)))))
+          (magicl::map-to #'complex zz zz-c)
+          (magicl::map-to #'complex a a-c)
+          (is (magicl:= a-c (magicl:@ zz-c tt (magicl:transpose zz-c)))))))))
+
+(deftest test-schur-complex ()
+  "Test SCHUR on complex matrices"
+  (loop :repeat 20 :do
+    (let ((a (magicl:random-unitary 4)))
+      (multiple-value-bind (zz tt)
+          (magicl:schur a)
+        (is (magicl:= a (magicl:@ zz tt (magicl:dagger zz))))))))
+
 (deftest test-svd ()
   "Test the full and reduced SVDs."
   (labels ((mul-diag-times-gen (diag matrix)
