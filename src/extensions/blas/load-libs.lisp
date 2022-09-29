@@ -4,7 +4,10 @@
   #+:magicl.use-accelerate
   (:darwin "libBLAS.dylib" :search-path #P"/System/Library/Frameworks/Accelerate.framework/Frameworks/vecLib.framework/Versions/A/")
   #-:magicl.use-accelerate
-  (:darwin (:or "/usr/local/opt/lapack/lib/libblas.dylib" "libblas.dylib" ))
+  (:darwin (:or
+            "/opt/homebrew/opt/lapack/lib/libblas.dylib"
+            "/usr/local/opt/lapack/lib/libblas.dylib"
+            "libblas.dylib" ))
   #+:magicl.use-mkl
   (:unix  "libmkl_rt.so")
   #-:magicl.use-mkl
