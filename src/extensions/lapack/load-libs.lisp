@@ -8,7 +8,10 @@
   ;; because it's more complete. (macOS-provided LAPACK doesn't have a
   ;; lot of the more obscure subroutines.)
   #-:magicl.use-accelerate
-  (:darwin (:or "/usr/local/opt/lapack/lib/liblapack.dylib" "liblapack.dylib"))
+  (:darwin (:or
+            "/opt/homebrew/opt/lapack/lib/liblapack.dylib"
+            "/usr/local/opt/lapack/lib/liblapack.dylib"
+            "liblapack.dylib"))
   #+:magicl.use-mkl
   (:unix  "libmkl_rt.so")
   #-:magicl.use-mkl
