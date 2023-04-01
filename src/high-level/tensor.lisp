@@ -114,7 +114,7 @@ COPY-TENSOR, DEEP-COPY-TENSOR, TREF, SETF TREF)"
                           (:row-major (row-major-index pos (tensor-shape tensor)))
                           (:column-major (column-major-index pos (tensor-shape tensor))))))
              (setf (aref (,storage-sym tensor) index)
-                   new-value)))))))
+                   (coerce new-value ',type))))))))
 
 (defun pprint-tensor (stream tensor &optional colon-p at-sign-p)
   "Pretty-print a matrix MATRIX to the stream STREAM."
