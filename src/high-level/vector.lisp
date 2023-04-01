@@ -108,7 +108,8 @@ ELEMENT-TYPE, CAST, COPY-TENSOR, DEEP-COPY-TENSOR, TREF, SETF TREF)"
        (defmethod (setf tref) (new-value (vector ,name) &rest pos)
          (policy-cond:with-expectations (> speed safety)
              ((assertion (valid-index-p pos (list (vector-size vector)))))
-           (setf (aref (,storage-sym vector) (first pos)) new-value))))))
+           (setf (aref (,storage-sym vector) (first pos))
+				 (coerce new-value ',type)))))))
 
 
 (defun pprint-vector (stream vector)
