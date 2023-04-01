@@ -144,12 +144,12 @@ The tensor is specialized on SHAPE and TYPE."
               shape
               (lambda (&rest pos)
                 (setf (aref storage (funcall index-function pos shape))
-                      (aref array (funcall input-index-function pos shape))))))
+					  (coerce (aref array (funcall input-index-function pos shape)) type)))))
             (t (map-indexes
                 shape
                 (lambda (&rest pos)
                   (setf (aref storage (funcall index-function pos shape))
-                        (apply #'aref array pos)))))))
+						(coerce (apply #'aref array pos) type)))))))
         (let ((tensor
                 (make-tensor tensor-class shape
                              :storage storage
