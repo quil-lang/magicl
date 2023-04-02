@@ -156,6 +156,9 @@
            #:sum
            #:diag
            #:det
+	   #:find-max
+	   #:find-min
+	   #:argwhere
            #:upper-triangular
            #:lower-triangular
            #:triu
