@@ -159,6 +159,7 @@
 	   #:find-max
 	   #:find-min
 	   #:argwhere
+	   #:where
            #:upper-triangular
            #:lower-triangular
            #:triu
