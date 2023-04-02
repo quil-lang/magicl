@@ -28,7 +28,7 @@
   (let ((x (magicl:from-list '(1 -2 3 4 5 -6) '(6))))
     (is (= 6 (magicl:norm x :infinity)))
     (is (= 21 (magicl:norm x 1)))
-    (is (= 9.539392 (magicl:norm x 2)))))
+    (is (= 9.539392f0 (magicl:norm x 2)))))
 
 (deftest test-examples ()
   "Run all of the examples. Does not check for their correctness."

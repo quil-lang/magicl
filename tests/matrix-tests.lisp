@@ -211,3 +211,19 @@
       (let ((m (magicl:rand (list n n))))
         (multiple-value-bind (l u) (magicl::doolittle m)
           (is (magicl:= m (magicl:@ l u) 1d-10)))))))
+
+
+(deftest test-condition-function()
+  (let ((matrix (magicl:from-list '(0 1 2 3 4 5 6 7 8 9) '(2 5))))
+    (is (cl:= 0 (magicl:find-min matrix)))
+    (is (cl:= 9 (magicl:find-max matrix)))
+    (is (cl:equalp #((0 0)) (magicl:argwhere (lambda(x)(cl:= 0 x)) matrix)))
+    (is (cl:equalp #((1 4)) (magicl:argwhere (lambda(x)(cl:= 9 x)) matrix)))
+    (is (cl:equalp #((1 0) (1 1) (1 2) (1 3) (1 4))
+		  (magicl:argwhere (lambda(x)(cl:> x 4)) matrix)))
+    (is (cl:equalp #(#(1 1 1 1 1) #(0 1 2 3 4))
+		  (magicl:where (lambda(x)(cl:> x 4)) matrix)))
+    (is (cl:equalp #(#(0 0 0 1 1) #(0 2 4 1 3))
+		  (magicl:where #'evenp matrix)))))
+    
+    
