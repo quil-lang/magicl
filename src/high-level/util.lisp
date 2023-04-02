@@ -83,12 +83,33 @@
     (declare (dynamic-extent ihead))
     (labels ((rec (dims itail)
                (declare (type list dims itail))
+	       (declare (optimize (speed 3) (safety 0)))
                (cond
                  ((endp dims) (apply f ihead))
                  (t (dotimes (d (the alexandria:non-negative-fixnum (car dims)))
                       (rplaca itail d)
                       (rec (cdr dims) (cdr itail)))))))
       (rec dims ihead))))
+
+(defun condition-indexes (dims cf)
+  "Call a condition function F for all indexes in shape DIMS, going in row-major order.
+   When condition is True, collect and return indexes."
+  (declare (type function cf)
+           (type shape dims))
+  (let ((ihead (make-list (list-length dims)))
+        (result '()))
+    (declare (dynamic-extent ihead))
+    (labels ((rec (dims itail)
+               (declare (type list dims itail))
+	       (declare (optimize (speed 3) (safety 0)))
+               (cond
+                 ((endp dims)
+                  (when (apply cf ihead) (push (copy-list ihead) result)))
+                 (t (dotimes (d (the alexandria:non-negative-fixnum (car dims)))
+                      (rplaca itail d)
+                      (rec (cdr dims) (cdr itail)))))))
+      (rec dims ihead))
+   (coerce (reverse result) 'cl:vector)))
 
 (defun map-column-indexes (dims f)
   "Call a function F for all indexes in shape DIMS, going in column-major order"

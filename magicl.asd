@@ -59,6 +59,7 @@
                  (:file "constructors")
                  (:file "specialize-constructor")
                  (:file "polynomial-solver")
+		 (:file "einsum")
                  (:module "matrix-functions"
                   :serial t
                   :components ((:file "row-column-matrices")
