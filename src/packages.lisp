@@ -153,6 +153,7 @@
            #:kron
            #:scale
            #:scale!
+           #:sum
            #:diag
            #:det
            #:upper-triangular

@@ -38,7 +38,7 @@
          (right-vecs (make-array (* n n) :element-type 'double-float :initial-element 0.0d0))
          (lwork      (* 4 n n))
          (work       (make-array lwork :element-type 'double-float :initial-element 0.0d0)))
-    (lapack::dgeev
+    (magicl.lapack-cffi:%dgeev          ;lapack::dgeev
      "N"                                ; left eigenvectors
      "V"                                ; right eigenvectors
      n                                  ; order
@@ -62,7 +62,7 @@
     (cond
       ((and a-real? b-real?)
        (< (realpart a) (realpart b)))
-      ((and a-real? (not b-real))
+      ((and a-real? (not b-real?))
        t)
       ((and (not a-real?) b-real?)
        nil)
