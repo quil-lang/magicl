@@ -98,7 +98,7 @@ In the event TARGET is not specified, the result may return an array sharing mem
 
 (defgeneric argwhere (function tensor)
   (:documentation "Call condition function with each element of TENSOR,
- if condition is True, collect elements indexes. ((0 1)(0 2) (0 3))")
+ if condition is True, collect elements indexes, return: #((m1 n1)(m2 n2) (m3 n3))")
   (:method ((function function) (tensor abstract-tensor))
     (condition-indexes
      (shape tensor)
@@ -107,7 +107,7 @@ In the event TARGET is not specified, the result may return an array sharing mem
 
 (defgeneric where(function tensor)
   (:documentation "Call condition function with each element of TENSOR,
- if condition is True, collect elements indexes: ((0 0 0)(1 2 3))")
+ if condition is True, collect elements indexes, return: #(#(m1 m2 m3) #(n1 n2 n3))")
   (:method ((function function) (tensor abstract-tensor))
     (let ((indexes (argwhere function tensor)))
       (cl:vector (cl:map 'cl:vector #'first indexes)
