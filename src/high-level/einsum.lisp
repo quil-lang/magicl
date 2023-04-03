@@ -211,3 +211,15 @@ suit different needs (e.g., LPARALLEL:PDOTIMES.)
                           (update-output-array 
                              (indices-loop summation-indices summation-dims
                                            (inner-sum-tally))))))))))))
+
+
+(defun tensor-to-array(tensor)
+  "Create an array from tensor with the same dimension and element"
+  (let ((array (cl:make-array (shape tensor)
+			      :element-type (element-type tensor))))
+    (map-indexes
+     (shape tensor)
+     (lambda(&rest pos)
+       (setf (apply #'aref array pos)
+	     (apply #'tref tensor pos))))
+    array))

@@ -227,3 +227,7 @@
 		  (magicl:where #'evenp matrix)))))
     
     
+(deftest test-tensor-to-array()
+  (let ((tensor (magicl:const 1 '(2 2) :type 'double-float)))
+    (is (cl:equalp #2A((1.0 1.0) (1.0 1.0))
+		   (magicl:tensor-to-array tensor)))))
