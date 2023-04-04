@@ -96,6 +96,36 @@ In the event TARGET is not specified, the result may return an array sharing mem
        (funcall function (apply #'tref tensor dims))))
     tensor))
 
+(defgeneric argwhere (function tensor)
+  (:documentation "Call condition function with each element of TENSOR,
+ if condition is True, collect elements indexes, return: #((m1 n1)(m2 n2) (m3 n3))")
+  (:method ((function function) (tensor abstract-tensor))
+    (condition-indexes
+     (shape tensor)
+     (lambda (&rest dims)
+       (funcall function (apply #'tref tensor dims))))))
+
+(defgeneric where(function tensor)
+  (:documentation "Call condition function with each element of TENSOR,
+ if condition is True, collect elements indexes, return: #(#(m1 m2 m3) #(n1 n2 n3))")
+  (:method ((function function) (tensor abstract-tensor))
+    (let ((indexes (argwhere function tensor)))
+      (cl:vector (cl:map 'cl:vector #'first indexes)
+                 (cl:map 'cl:vector #'second indexes)))))
+    
+
+(defgeneric find-max(tensor)
+  (declare (optimize (speed 3) (safety 0)))
+  (:documentation "find maximize element")
+  (:method ((tensor abstract-tensor))
+    (loop for num across (storage tensor) maximize num)))
+
+(defgeneric find-min(tensor)
+  (declare (optimize (speed 3) (safety 0)))
+  (:documentation "find minimize element")
+  (:method ((tensor abstract-tensor))
+    (loop for num across (storage tensor) minimize num)))
+
 (defgeneric map-to (function source target)
   (:documentation "Map elements of SOURCE by replacing the corresponding element of TARGET the output of FUNCTION on the source element")
   (:method ((function function) (source abstract-tensor) (target abstract-tensor))

@@ -49,7 +49,7 @@ computes the matrix-vector product AB and stores the results in a fresh array."
 (defun check-factor-indices (factor)
   "Generate an expression to check whether FACTOR has an appropriate number of indices."
   (destructuring-bind (array &rest indices) factor
-    `(unless (= ,(length indices) (array-rank ,array))
+    `(unless (cl:= ,(length indices) (array-rank ,array))
        (error "Incompatible dimensions: given array ~A with dimensions ~A and indices ~A"
               ,array
               (array-dimensions ,array)
@@ -87,7 +87,7 @@ index table."
     ;; Only generate code if we have multiple things to test equality
     ;; for.
     (when (< 1 (length factor-entries))
-      `(unless (= ,@(mapcar #'dim-expr factor-entries))
+      `(unless (cl:= ,@(mapcar #'dim-expr factor-entries))
          (error "Index variable ~A applied to arrays with incompatible dimensions" ',idx)))))
 
 
@@ -149,7 +149,7 @@ suit different needs (e.g., LPARALLEL:PDOTIMES.)
          (output-dims (loop :repeat (length output-indices) :collect (gensym "OUTPUT-DIM")))
          (summation-indices (loop :for idx :being :the :hash-keys :of index-table
                                     :using (hash-value entries)
-                                  :when (= 2 (length entries))
+                                  :when (cl:= 2 (length entries))
                                     :collect idx))
          (summation-dims (loop :repeat (length summation-indices) :collect (gensym "SUM-DIM")))
          (result-array (gensym "RESULT")) ; array to store results
@@ -195,7 +195,7 @@ suit different needs (e.g., LPARALLEL:PDOTIMES.)
               (append (mapcar #'check-factor-indices factors)
                       (loop :for idx :being :the :hash-keys :of index-table
                               :using (hash-value entries)
-                            :for check-form := (check-index-factors idx entries)
+                            :for check-form cl:= (check-index-factors idx entries)
                             :unless (null check-form)
                               :collect check-form))))
         ;; Given our convention above, the following "looks" a lot
@@ -211,3 +211,4 @@ suit different needs (e.g., LPARALLEL:PDOTIMES.)
                           (update-output-array 
                              (indices-loop summation-indices summation-dims
                                            (inner-sum-tally))))))))))))
+
