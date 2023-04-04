@@ -111,7 +111,6 @@
            #:from-diag
            #:zeros
            #:ones
-	   #:tensor-to-array
 
            #:random-normal
            #:random-unitary
