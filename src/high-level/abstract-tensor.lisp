@@ -106,10 +106,10 @@ In the event TARGET is not specified, the result may return an array sharing mem
        (lambda (&rest dims)
          (apply #'(setf tref) (funcall function (apply #'tref source dims)) target dims))))))
 
-(defgeneric map (function tensor)
-  (:documentation "Map elements of TENSOR, storing the output of FUNCTION on the element into the corresponding element of a new tensor")
-  (:method ((function function) (tensor abstract-tensor))
-    (map! function (deep-copy-tensor tensor))))
+(defgeneric map (function tensor &optional target)
+  (:documentation "Map elements of TENSOR, storing the output of FUNCTION on the element into the corresponding element of TARGET if it is supplied or else a new tensor")
+  (:method ((function function) (tensor abstract-tensor &optional (target nil targetp)))
+    (map! function (if targetp target (deep-copy-tensor tensor)))))
 
 (defgeneric into (function tensor)
   (:documentation "Map indices of TENSOR, storing the output of FUNCTION on the index into the corresponding element of a new tensor
