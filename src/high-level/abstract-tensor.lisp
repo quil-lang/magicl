@@ -132,12 +132,17 @@ If LAYOUT is specified then traverse TENSOR in the specified order (column major
   (lambda (tensor factor)
     (map! (lambda (x) (* x factor)) tensor)))
 
-(define-backend-function scale (tensor factor)
-  "Scale TENSOR by FACTOR, returning a new tensor of the same type as TENSOR")
+(define-backend-function scale (tensor factor &optional target)
+  "Scale TENSOR by FACTOR.
+If TARGET is specified then the result is stored in TARGET,
+otherwise a new tensor of the same type as TENSOR is used for the result.")
 
 (define-backend-implementation scale :lisp
-  (lambda (tensor factor)
-    (scale! (deep-copy-tensor tensor) factor)))
+  (lambda (tensor factor &optional (target nil targetp))
+    (scale! (if targetp
+                target
+                (deep-copy-tensor tensor))
+            factor)))
 
 (defgeneric slice (tensor from to)
   (:documentation "Slice a tensor from FROM to TO, returning a new tensor with the contained elements")
