@@ -103,9 +103,7 @@
                          nil
                          (second doc-option))))
     `(progn
-       ,@(unless (magicl.backends:backend-function-p fun-name)
-           (list
-            `(define-backend-function ,fun-name ,lambda-list ,@(if doc-string (list doc-string)))))
+       (define-backend-function ,fun-name ,lambda-list ,@(if doc-string (list doc-string)))
        (defgeneric ,fun-name-backend ,lambda-list ,@options)
        (define-compatible-no-applicable-method-behavior ,fun-name-backend)
        (define-backend-implementation ,fun-name ,backend ',fun-name-backend))))
