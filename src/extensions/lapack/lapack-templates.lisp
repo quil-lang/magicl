@@ -241,8 +241,6 @@
                    (from-array smat (list u-cols vt-rows) :input-layout :column-major)
                    (from-array vt (list vt-rows cols) :input-layout :column-major)))))))
 
-;; TODO: This returns only the real parts when with non-complex
-;; numbers. Should do something different?
 (defun generate-lapack-eig-for-type (class type eig-function &optional real-type)
   ` (defmethod lapack-eig ((m ,class))
       (policy-cond:with-expectations (> speed safety)
@@ -273,7 +271,55 @@
               ;; run it again with optimal workspace size
               (,eig-function jobvl jobvr rows a rows ,@(if real-type `(w) `(wr wi))
                              vl 1 vr rows work lwork ,@(when real-type `(rwork)) info)
-              (values (coerce ,@(if real-type `(w) `(wr)) 'list) (from-array vr (list rows cols) :input-layout :column-major))))))))
+              ,(if real-type
+                   `(values (coerce w 'list)
+                            (from-array vr (list rows cols) :input-layout :column-major))
+                   `(values (cl:map 'list (lambda (a b)
+                                            (if (zerop b)
+                                                a
+                                                (complex a b)))
+                                    wr wi)
+                            (let* ((evecs (magicl:zeros (list rows cols) :type '(complex ,type)))
+                                   (storage (magicl::storage evecs)))
+                              ;; square matrix
+                              (loop :with col-lapack := 0
+                                    :with col-result := 0
+                                    :with skip := nil
+                                    :for zr :across wr
+                                    :for zi :across wi
+                                    :do (cond
+                                          ;; real eigenvalue
+                                          ((zerop zi)
+                                           (when skip
+                                             (warn "SKIP is T when we reached a real eigenvalue."))
+                                           (dotimes (r rows)
+                                             ;; column-major
+                                             (setf (aref storage (+ r (* col-result rows)))
+                                                   (complex (aref vr (+ r (* col-lapack rows))))))
+                                           (incf col-result)
+                                           (incf col-lapack))
+                                          ;; complex eigenvalue with conjugate
+                                          (skip
+                                           (unless (cl:= skip (- zi))
+                                             (error "Reached a non-conjugate eigenvalue"))
+                                           (setf skip nil))
+                                          ;; New complex eigenvalue
+                                          (t
+                                           ;; expect a conjugate in the next iteration
+                                           (setf skip zi)
+                                           (dotimes (r rows)
+                                             ;; column-major
+                                             (setf (aref storage (+ r (* col-result rows)))
+                                                   (complex
+                                                    (aref vr (+ r (* col-lapack rows)))
+                                                    (aref vr (+ r (* (1+ col-lapack) rows)))))
+                                             (setf (aref storage (+ r (* (1+ col-result) rows)))
+                                                   (complex
+                                                    (aref vr (+ r (* col-lapack rows)))
+                                                    (- (aref vr (+ r (* (1+ col-lapack) rows)))))))
+                                           (incf col-result 2)
+                                           (incf col-lapack 2)))
+                                    :finally (return evecs)))))))))))
 
 (defun generate-lapack-hermitian-eig-for-type (class type eig-function real-type)
   `(defmethod lapack-hermitian-eig ((m ,class))
