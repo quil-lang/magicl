@@ -24,7 +24,6 @@
   :author "Rigetti Computing"
   :version (:read-file-form "VERSION.txt")
   :depends-on (#:alexandria
-               #:abstract-classes
                #:policy-cond
                #:interface              ; for CALLING-FORM
                #:static-vectors

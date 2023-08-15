@@ -18,8 +18,7 @@
    #:define-backend-implementation))
 
 (defpackage #:magicl
-  (:use #:common-lisp
-        #:abstract-classes)
+  (:use #:common-lisp)
   (:shadow #:vector
            #:=
            #:map
