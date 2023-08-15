@@ -10,8 +10,7 @@
                #:uiop
                #:magicl
                #:magicl-examples
-               #:fiasco
-               #:trivial-garbage)
+               #:fiasco)
   :perform (asdf:test-op (o s)
                          (uiop:symbol-call :magicl-tests
                                            '#:run-magicl-tests))
