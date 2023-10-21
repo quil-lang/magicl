@@ -181,19 +181,36 @@ If INPUT-LAYOUT is not specified then row-major is assumed.
 If TYPE is not specified then it is inferred from the type of the first element of LIST.
 LAYOUT specifies the internal storage representation ordering of the returned tensor.
 The tensor is specialized on SHAPE and TYPE."
-  (let ((len (length list)))
-    (policy-cond:with-expectations (> speed safety)
-        ((type shape shape)
-         (assertion (cl:= len (reduce #'* shape))))
-      (let* ((tensor-class (infer-tensor-type type shape (first list)))
-             (tensor (make-tensor tensor-class shape :layout layout))
-             (index-function (if (eq input-layout ':row-major)
-                                 #'from-row-major-index
-                                 #'from-column-major-index)))
-        ;; XXX: Optimizations for rank 1 and 2 tensors should be added
-        (dotimes (i len tensor)
-          (setf (apply #'tref tensor (funcall index-function i shape))
-                (pop list)))))))
+  (cond ((and (listp list) (numberp (car list)))
+	 (let ((len (length list)))
+	   (policy-cond:with-expectations (> speed safety)
+               ((type shape shape)
+		(assertion (cl:= len (reduce #'* shape))))
+	     (let* ((tensor-class (infer-tensor-type type shape (first list)))
+		    (tensor (make-tensor tensor-class shape :layout layout))
+		    (index-function (if (eq input-layout ':row-major)
+					#'from-row-major-index
+					#'from-column-major-index)))
+               (dotimes (i len tensor)
+		 (setf (apply #'tref tensor (funcall index-function i shape))
+                       (pop list)))))))
+	(t (let* ((temp-type)
+		  (first-num (elt list 0)))
+	     (when (null type)
+	       (loop do		
+		 (when (numberp first-num)
+		   (setf temp-type
+			 (etypecase first-num
+			   (single-float 'single-float)
+			   (double-float 'double-float)
+			   ((complex single-float) 'complex-single-float)
+			   ((complex double-float) 'complex-double-float)
+			   ((signed-byte 32) '(signed-byte 32))))
+		   (return))
+		 (setf first-num (elt first-num 0))))
+	     (from-array (cl::make-array shape :initial-contents list) shape
+			 :type (if type type temp-type) :layout layout
+			 :input-layout input-layout)))))
 
 (defun from-diag (list &key (order 2) (offset 0) type layout)
   "Create a tensor from a list, placing along the diagonal
