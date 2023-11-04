@@ -196,15 +196,19 @@ Special values of P are: :INFINITY :INF :POSITIVE-INFINITY"
   "Normalize the vector VECTOR in-place."
   (scale! vector (/ (norm vector p))))
 
-;;; These are implemented later in matrix-functions/row-column-matrices.lisp
 (defgeneric vector->row-matrix (vector)
-  (:documentation "Convert a VECTOR to a row vector as a matrix. The output will share memory with the input."))
+  (:documentation
+   "Convert a VECTOR to a row vector as a matrix.
+   The output will share memory with the input.")
+  (:method (vector)
+    (reshape vector (list 1 (size vector)))))
+
 (defgeneric vector->column-matrix (vector)
-  (:documentation "Convert a VECTOR to a column vector as a matrix. The output will share memory with the input."))
-(defgeneric row-matrix->vector (matrix)
-  (:documentation "Convert a MATRIX (a row vector) into a vector. The output will share memory with the input."))
-(defgeneric column-matrix->vector (matrix)
-  (:documentation "Convert a MATRIX (a column vector) into a vector. The output will share memory with the input."))
+  (:documentation
+   "Convert a VECTOR to a column vector as a matrix.
+    The output will share memory with the input.")
+  (:method (vector)
+    (reshape vector (list (size vector) 1))))
 
 
 

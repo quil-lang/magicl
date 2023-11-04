@@ -254,22 +254,36 @@ ELEMENT-TYPE, CAST, COPY-TENSOR, DEEP-COPY-TENSOR, TREF, SETF TREF)"
     (setf (matrix-nrows m) (first new-value)
           (matrix-ncols m) (second new-value))))
 
-;; Specific constructors
 
+(defgeneric row-matrix->vector (matrix)
+  (:documentation
+   "Convert a MATRIX (a row vector) into a vector.
+   The output will share memory with the input.")
+  (:method (matrix)
+    (reshape matrix (list (size matrix)))))
+
+(defgeneric column-matrix->vector (matrix)
+  (:documentation
+   "Convert a MATRIX (a column vector) into a vector.
+   The output will share memory with the input.")
+  (:method (matrix)
+    (reshape matrix (list (size matrix)))))
+
+;; Specific constructors
 (defgeneric row (matrix index)
   (:documentation "Get row vector from a matrix")
   (:method ((m matrix) index)
     (check-type index alexandria:non-negative-fixnum)
-    (slice m
-           (list index 0)
-           (list (1+ index) (ncols m)))))
+    (let* ((row-matrix (slice m (list index 0)
+			    (list (1+ index) (ncols m)))))
+      (row-matrix->vector row-matrix))))
 
 (defgeneric column (matrix index)
   (:documentation "Get column vector from a matrix")
   (:method ((m matrix) index)
-    (slice m
-           (list 0 index)
-           (list (nrows m) (1+ index)))))
+    (let* ((column-matrix (slice m (list 0 index)
+			       (list (nrows m) (1+ index)))))
+      (column-matrix->vector column-matrix))))
 
 (define-extensible-function (mult mult-lisp) (a b &key target alpha beta transa transb)
   (:documentation
