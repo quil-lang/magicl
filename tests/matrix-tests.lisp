@@ -183,11 +183,11 @@
     (is (magicl:= expected
                   (magicl:hstack
                    (loop :for j :below 3
-                         :collect (magicl:column expected j)))))
+                         :collect (magicl:vector->column-matrix (magicl:column expected j))))))
     (is (magicl:= expected
                   (magicl:vstack
                    (loop :for i :below 2
-                         :collect (magicl:row expected i)))))))
+                         :collect (magicl:vector->row-matrix (magicl:row expected i))))))))
 
 
 (deftest test-block-matrix-construction ()
