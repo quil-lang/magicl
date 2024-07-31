@@ -1,7 +1,8 @@
 (defpackage #:magicl.generate-interface
   (:use #:common-lisp
         #:magicl.cffi-types)
-  (:export #:generate-blas-files
+  (:export #:*inclusion-criterion*
+           #:generate-blas-files
            #:generate-lapack-files
            #:generate-lapack-files*
            #:generate-expokit-files))
@@ -11,6 +12,33 @@
 ;;; We maximize safety because this is mostly generating and writing
 ;;; out code.
 (declaim (optimize (safety 3) (debug 3) (speed 1)))
+
+(defun desired-function-p (string)
+  (let ((desired-functions
+          ;; We only want to do this once when this file is being
+          ;; compiled.
+          '#.(let ((file (asdf:system-relative-pathname "magicl" "src/functions.txt")))
+               (with-open-file (s file :direction ':input :if-does-not-exist ':error)
+                 (loop :for line := (read-line s nil nil)
+                       :while line
+                       :unless (or (zerop (length line))
+                                   (eql 0 (position #\; line)))
+                         :collect line :into lines
+                       :finally (return (sort lines #'string<)))))))
+    (find string
+          desired-functions
+          :test (lambda (haystack needle)
+                  (search needle haystack :test #'char-equal)))))
+
+(defparameter *inclusion-criterion* 'desired-function-p
+  "A function designator which determines if a BLAS or LAPACK function
+will be included. Should take the name of a Fortran function, such as
+\"dgges\", and return a boolean as to whether it should be generated.
+
+By default this is bound to the symbol DESIRED-FUNCTION-P, which will
+check the functions.txt list for valid functions.
+
+It may be bound to (CONSTANTLY T) to include everything.")
 
 (defun read-lines (file)
   "Returns a list of strings, one string per line of file."
@@ -263,32 +291,37 @@ remaining lines."
 
 (defun parse-blas-files (&optional (basedir *basedir*))
   (let ((files
-	 (directory
-	  (pathname
-	   (concatenate 'string
-			(namestring basedir) "BLAS/SRC/*.f")))))
-    (mapcar #'parse-fortran-file files)))
+	  (directory
+	     (pathname
+	      (concatenate 'string
+			   (namestring basedir) "BLAS/SRC/*.f")))))
+    (loop :for file :in files
+          :when (funcall *inclusion-criterion* (pathname-name file))
+            :collect (parse-fortran-file file))))
 
 (defun parse-lapack-files (&optional (basedir *basedir*))
   (let ((files
 	 (directory
 	  (pathname
 	   (concatenate 'string (namestring basedir) "SRC/*.f")))))
-    (mapcar #'parse-fortran-file files)))
+    (loop :for file :in files
+          :when (funcall *inclusion-criterion* (pathname-name file))
+            :collect (parse-fortran-file file))))
 
 (defun make-lapack-parser* (&optional (basedir *basedir*) (chunks 8))
   (let* ((files
-          (directory
-           (pathname
-            (concatenate 'string (namestring basedir) "SRC/*.f"))))
+           (directory
+            (pathname
+             (concatenate 'string (namestring basedir) "SRC/*.f"))))
          (chunk-size (ceiling (length files) chunks)))
     (format *trace-output* "; Creating generator with batch size: ~s~%" chunk-size)
     (lambda ()
       (loop
-         repeat chunk-size
-         for file = (pop files)
-         while file
-         collect (parse-fortran-file file)))))
+         :repeat chunk-size
+         :for file := (pop files)
+         :while file
+         :when (funcall *inclusion-criterion* (pathname-name file))
+           :collect (parse-fortran-file file)))))
 
 (defun lookup-type (type-string-list)
   (let ((found-type nil)
@@ -570,17 +603,13 @@ the CFFI binding file."
   (let ((*basedir* lapack-dir))
     (generate-blas-file)))
 
-(defun generate-lapack-file ()
-  (generate-file "lapack-cffi"
-                 '#:magicl.lapack-cffi
-                 'magicl.foreign-libraries::liblapack
-                 #'parse-lapack-files))
-
-(defun generate-lapack-files (file-name parser)
-  (generate-file file-name
-                 '#:magicl.lapack-cffi
-                 'magicl.foreign-libraries::liblapack
-                 parser))
+(defun generate-lapack-files (lapack-dir)
+  "Generate all LAPACK bindings in a single file."
+  (let ((*basedir* lapack-dir))
+    (generate-file "lapack-cffi"
+                   '#:magicl.lapack-cffi
+                   'magicl.foreign-libraries::liblapack
+                   #'parse-lapack-files)))
 
 (defun generate-lapack-files* (lapack-dir)
   (loop

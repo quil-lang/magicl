@@ -17,13 +17,24 @@ bindings with the following commands:
 (ql:quickload :magicl-gen)
 (in-package :magicl.generate-interface)
 (generate-blas-files #P"/path/to/lapack-3.9.0/")
-(generate-lapack-files* #P"/path/to/lapack-3.9.0/")     ; note the '*'!
+(generate-lapack-files #P"/path/to/lapack-3.9.0/")
 (generate-expokit-files #P"/path/to/expokit/")
 ```
 
 Currently this will write to the source distribution directory of
-MAGICL, namely the files `blas-cffi.lisp`, `lapack*-cffi.lisp`, and
+MAGICL, namely the files `blas-cffi.lisp`, `lapack-cffi.lisp`, and
 `expokit-cffi.lisp`.
+
+At present, since MAGICL doesn't use most of the functionality offered
+by BLAS and LAPACK, we only write out bindings for select
+functions. These are determined by the file "src/functions.txt". If
+you wish to include *every* BLAS and LAPACK function, then issue the
+following *before* the `generate-*` commands:
+
+```
+(setf *inclusion-criterion* (constantly t))
+```
+
 
 
 ## Seeing What Fortran Functions Are Available
