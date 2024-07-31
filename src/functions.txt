@@ -1,0 +1,35 @@
+; This file contains the functions for which we want to generate
+; bindings.
+
+; Functions should be on a single line, and they'll be matched by
+; substring search. Comments should be prepended with a ; character.
+; Empty lines will be ignored.
+
+; blas
+scal
+axpy
+
+; lapack
+gemm
+gemv
+gges
+gees
+getrf
+getrs
+getri
+gesvd
+geev
+geqlf
+geqrf
+gerqf
+gelqf
+ungql
+orgql
+ungqr
+orgqr
+unglq
+orglq
+ungrq
+orgrq
+heev
+uncsd
