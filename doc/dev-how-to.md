@@ -33,12 +33,11 @@ Let's say we want to add a fused multiply-add function called
 
 This defines `fma` as the main API function, and `fma-lisp` as the
 generic function implementing `fma`. If we want to implement `fma` in
-a specific backend, we can use the same form, but adding the backend's
-name as an option. For example, if we are implementing this function
-with BLAS acceleration, we can specify the `:blas` backend:
+a specific backend, we can use `extend-function` to extend `fma` into the backend. For example, if we are extending this function
+with BLAS acceleration, we can specify the `:blas` backend and write,
 
 ```
-(define-extensible-function (fma fma-blas :blas) (a x b)
+(extend-function (fma fma-blas :blas) (a x b)
   (:method (a x b)
     (some-funny-blas-function a x b)))
 ```
@@ -198,16 +197,19 @@ specify two names. The above code makes the `matmul` backend function
 as implemented by the `matmul-lisp` generic function.
 
 Later on, when implementing the BLAS accelerated `matmul`, we can use
-`define-extensible-function` and specify the backend we're defining it
-for.
+`extend-function` and specify the backend we're extending it
+with.
 
 ```
 ;; in BLAS extension
-(define-extensible-function (matmul matmul-blas :blas) (a b)
+(extend-function (matmul matmul-blas :blas) (a b)
   (:method (a b)
     ;; ...
     ))
 ```
+
+As the names imply, `define-extensible-function` defines a backend function and extends it,
+and `extend-function` extends an already-defined backend function.
 
 In general, we suggest always having a pure Lisp version if feasible.
 
