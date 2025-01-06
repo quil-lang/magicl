@@ -113,3 +113,10 @@
        (defgeneric ,fun-name-backend ,lambda-list ,@options)
        (define-compatible-no-applicable-method-behavior ,fun-name-backend)
        (define-backend-implementation ,fun-name ,backend ',fun-name-backend))))
+
+(defmacro extend-function ((fun-name fun-name-backend &optional (backend :lisp)) lambda-list)
+  "This macro mimics DEFGENERIC, using FUN-NAME as the backend function whose BACKEND implementation (default :LISP) is a generic function named FUN-NAME-BACKEND."
+  `(progn
+       (defgeneric ,fun-name-backend ,lambda-list)
+       (define-compatible-no-applicable-method-behavior ,fun-name-backend)
+       (define-backend-implementation ,fun-name ,backend ',fun-name-backend)))

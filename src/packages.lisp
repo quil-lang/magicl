@@ -44,6 +44,7 @@
   (:export #:with-blapack
            #:time-backends
            #:define-extensible-function ; For extensions, not users...
+           #:extend-function ; For extensions, not users...
 
            #:allocate-storage
            #:*default-allocator*

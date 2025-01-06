@@ -51,7 +51,7 @@
         (declare (ignore r))
         q))))
 
-(defun svd-lisp (matrix &key reduced)
+(defmethod svd-lisp (matrix &key reduced)
   ;; short and fat => find svd of tranpose
   (when (> (ncols matrix) (nrows matrix))
     (multiple-value-bind (U D Vh) (svd-lisp (transpose matrix) :reduced reduced)
