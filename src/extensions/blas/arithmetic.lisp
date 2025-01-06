@@ -3,8 +3,7 @@
 ;;;; Author: Vasily Postnicov
 
 (in-package #:magicl.blas)
-
-(define-extensible-function (scale! scale!-blas :blas) (tensor factor))
+(extend-function (scale! scale!-blas :blas) (tensor factor))
 
 ;; Scalar - matrix multiplication
 (macrolet ((def-scale (matrix-type scalar-type function)
@@ -68,10 +67,10 @@ DEEP-COPY-TENSOR."))
   (def-copier vector/single-float single-float)
   (def-copier vector/double-float double-float))
 
-(define-extensible-function (.+ .+-blas :blas) (source1 source2 &optional target))
-(define-extensible-function (.- .--blas :blas) (source1 source2 &optional target))
-(define-extensible-function (.* .*-blas :blas) (source1 source2 &optional target))
-(define-extensible-function (./ ./-blas :blas) (source1 source2 &optional target))
+(extend-function (.+ .+-blas :blas) (source1 source2 &optional target))
+(extend-function (.- .--blas :blas) (source1 source2 &optional target))
+(extend-function (.* .*-blas :blas) (source1 source2 &optional target))
+(extend-function (./ ./-blas :blas) (source1 source2 &optional target))
 
 ;; Fast matrix/vector addition
 (macrolet ((def-+ (tensor-type scalar-type function)
