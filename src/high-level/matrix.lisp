@@ -511,6 +511,7 @@ If :SQUARE is T, then the result will be restricted to the upper rightmost squar
                                   (tref matrix i j))))
         target))))
 ;;; Synonym for upper-triangular
+(declaim (ftype (function (matrix)) triu))
 (setf (fdefinition 'triu) #'upper-triangular)
 
 (define-extensible-function (lower-triangular lower-triangular-lisp) (matrix &key square)
@@ -531,18 +532,21 @@ If :SQUARE is T, then the result will be restricted to the lower leftmost square
                                   (tref matrix i j))))
         target))))
 ;;; Synonym for lower-triangular
+(declaim (ftype (function (matrix)) tril))
 (setf (fdefinition 'tril) #'lower-triangular)
 
 (define-extensible-function (conjugate-transpose conjugate-transpose-lisp) (matrix)
   (:documentation "Compute the conjugate transpose of a matrix")
   (:method ((matrix matrix))
     (map #'conjugate (transpose matrix))))
+(declaim (ftype (function (matrix)) dagger))
 (setf (fdefinition 'dagger) #'conjugate-transpose)
 
 (define-extensible-function (conjugate-transpose! conjugate-transpose!-lisp) (matrix)
   (:documentation "Compute the conjugate transpose of a matrix, replacing the elements")
   (:method ((matrix matrix))
     (map! #'conjugate (transpose! matrix))))
+(declaim (ftype (function (matrix)) dagger!))
 (setf (fdefinition 'dagger!) #'conjugate-transpose!)
 
 (define-backend-function eig (matrix)
