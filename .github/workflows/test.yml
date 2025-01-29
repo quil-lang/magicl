@@ -1,0 +1,24 @@
+name: Tests
+
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+
+  workflow_dispatch:
+
+jobs:
+  test-magicl:
+    name: Test MAGICL
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Run MAGICL tests
+        run: |
+          sudo apt install sbcl
+          sudo make quicklisp
+          sudo make install-test-deps
+          make test
+
+
