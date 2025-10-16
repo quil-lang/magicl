@@ -467,15 +467,24 @@ need to be customized."
                        :unless (atom norm-type)
                          :collect `(,ref-var ,var))
 
-                ;; The raw call.
-                (,raw-call-name
-                 ,@(loop :for var :in vars
-                         :for ref-var :in ref-vars
-                         :for norm-type :in normalized-types
-                         :collect (cond
-                                    ((eq ':fortran-string norm-type) var)
-                                    ((atom norm-type) ref-var)
-                                    (t ref-var)))))))))))
+              ;; The raw call.
+              (values
+               (,raw-call-name
+                ,@(loop :for var :in vars
+                        :for ref-var :in ref-vars
+                        :for norm-type :in normalized-types
+                        :collect (cond
+                                   ((eq ':fortran-string norm-type) var)
+                                   ((atom norm-type) ref-var)
+                                   (t ref-var))))
+               ,@(loop :for ref-var :in ref-vars
+                       :for norm-type :in normalized-types
+                       :when (and (atom norm-type)
+                                  (not (eq ':fortran-string norm-type)))
+                         :collect `(cffi:mem-ref
+                                    ,ref-var
+                                    ',(normalized-type-to-cffi-type
+                                       norm-type ':immediate)))))))))))
 
 (defun generate-bindings-file (filename package-name bindings
 			       &optional (outdir *outdir*))

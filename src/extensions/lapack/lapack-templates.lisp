@@ -137,17 +137,19 @@
             (ipiv (magicl::storage ipiv))
             (info 0))
        (when (eql :row-major (layout b-tensor)) (transpose! b-tensor))
-       (,lu-solve-function
-        trans
-        n
-        nrhs
-        a        
-        lda
-        ipiv
-        b
-        ldb
-        info)
-       b-tensor)))
+       (multiple-value-bind (res n nrhs lda ldb info)
+           (,lu-solve-function
+            trans
+            n
+            nrhs
+            a
+            lda
+            ipiv
+            b
+            ldb
+            info)
+         (declare (ignore res n nrhs lda ldb))
+         (values b-tensor info)))))
 
 (defun generate-lapack-inv-for-type (class type lu-function inv-function)
   `(defmethod lapack-inv ((a ,class))
