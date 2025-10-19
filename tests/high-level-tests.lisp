@@ -306,3 +306,44 @@
         (b (magicl:from-list '((0d0 0d0) (1d0 1d0) (5d0 2d0) (6d0 3d0)) '(4 2))))
     (let ((x (magicl:least-squares A b)))
       (is (magicl:= x (magicl:from-list '((2.2d0 1d0) (-2.5d0 -1d0)) '(2 2)))))))
+
+(deftest data-layout-invariant ()
+  "Check that QR/QL/LU/etc. is invariant to row- or column-major order"
+  (loop repeat 50
+        for row-major    = (magicl:rand '(100 50) :layout :row-major)
+        for column-major = (magicl:@ row-major (magicl:eye '(50 50) :layout :column-major))
+        for rms          = (magicl:rand '(50 50) :layout :row-major)
+        for cms          = (magicl:@ rms (magicl:eye '(50 50) :layout :column-major))
+        do
+        ;; QR
+        (is (equalp
+             (multiple-value-list
+              (magicl:qr row-major))
+             (multiple-value-list
+              (magicl:qr column-major))))
+        ;; QL
+        (is (equalp
+             (multiple-value-list
+              (magicl:ql row-major))
+             (multiple-value-list
+              (magicl:ql column-major))))
+        ;; LU
+        (is (equalp
+             (multiple-value-list
+              (magicl:lu row-major))
+             (multiple-value-list
+              (magicl:lu column-major))))
+        ;; Solver
+        (flet ((solve (m)
+                 (multiple-value-bind (lu ipiv)
+                     (magicl:lu m)
+                   (magicl:lu-solve lu ipiv (magicl:ones '(100 1))))))
+          (is (equalp (solve rms) (solve cms))))
+        ;; Inversion
+        (is (equalp (magicl:inv rms) (magicl:inv cms)))
+        ;; SVD
+        (is (equalp
+             (multiple-value-list
+              (magicl:svd row-major))
+             (multiple-value-list
+              (magicl:svd column-major))))))
