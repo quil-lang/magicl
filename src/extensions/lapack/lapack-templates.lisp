@@ -117,7 +117,7 @@
         lda
         ipiv
         info)
-       (values a-tensor ipiv-tensor))))
+       (values (magicl::from-storage a (list m n) :layout :column-major) ipiv-tensor))))
 
 (defun generate-lapack-lu-solve-for-type (class type lu-solve-function)
   (declare (ignore type))
@@ -530,10 +530,10 @@
            (setf work (make-array (max 1 lwork) :element-type ',type))
            ;; run it again with optimal workspace size
            (,qr-function rows cols a lda tau work lwork info)
-           (values a-tensor
-                   (from-array tau (list (min rows cols))
-                               :type ',type
-                               :input-layout :column-major)))))
+           (values (magicl::from-storage a (list rows cols)
+                                         :layout :column-major)
+                   (magicl::from-storage tau (list (min rows cols))
+                                         :layout :column-major)))))
 
      (defmethod lapack-ql ((m ,class))
        (let* ((rows (nrows m))
@@ -553,10 +553,10 @@
            (setf work (make-array (max 1 lwork) :element-type ',type))
            ;; run it again with optimal workspace size
            (,ql-function rows cols a lda tau work lwork info)
-           (values a-tensor
-                   (from-array tau (list (min rows cols))
-                               :type ',type
-                               :input-layout :column-major)))))
+           (values (magicl::from-storage a (list rows cols)
+                                         :layout :column-major)
+                   (magicl::from-storage tau (list (min rows cols))
+                                         :layout :column-major)))))
 
      (defmethod lapack-rq ((m ,class))
        (let* ((rows (nrows m))
@@ -576,10 +576,10 @@
            (setf work (make-array (max 1 lwork) :element-type ',type))
            ;; run it again with optimal workspace size
            (,rq-function rows cols a lda tau work lwork info)
-           (values a-tensor
-                   (from-array tau (list (min rows cols))
-                               :type ',type
-                               :input-layout :column-major)))))
+           (values (magicl::from-storage a (list rows cols)
+                                         :layout :column-major)
+                   (magicl::from-storage tau (list (min rows cols))
+                                         :layout :column-major)))))
 
      (defmethod lapack-lq ((m ,class))
        (let* ((rows (nrows m))
@@ -599,10 +599,10 @@
            (setf work (make-array (max 1 lwork) :element-type ',type))
            ;; run it again with optimal workspace size
            (,lq-function rows cols a lda tau work lwork info)
-           (values a-tensor
-                   (from-array tau (list (min rows cols))
-                               :type ',type
-                               :input-layout :column-major)))))
+           (values (magicl::from-storage a (list rows cols)
+                                         :layout :column-major)
+                   (magicl::from-storage tau (list (min rows cols))
+                                         :layout :column-major)))))
 
      (defmethod lapack-qr-q ((m ,class) tau)
        (let ((m (nrows m))
