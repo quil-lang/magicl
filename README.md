@@ -131,7 +131,12 @@ note that by doing this, `with-backends` will not be respected.
 
 ## Testing MAGICL
 
-You can run the MAGICL tests from your Lisp REPL with:
+To load tests and install dependencies from your Lisp REPL:
+```
+(ql:quickload '(:magicl-tests))
+```
+
+Then you can run the MAGICL tests from your Lisp REPL with:
 
 ```
 (asdf:test-system :magicl)
