@@ -418,29 +418,6 @@ In the world of BLAS/LAPACK, this is known as GEMM.
                                                   (empty (list (* ma mb) (* na nb))
                                                          :type '(complex double-float))))))))
 
-(define-extensible-function (transpose! transpose!-lisp) (matrix &key fast)
-  (:documentation "Transpose MATRIX, replacing the elements of MATRIX, optionally performing a faster change of layout if FAST is specified")
-  (:method ((matrix matrix) &key fast)
-    "Transpose a matrix by copying values.
-If FAST is t then just change layout. Fast can cause problems when you want to multiply specifying transpose."
-    (if fast
-        (progn (rotatef (matrix-ncols matrix) (matrix-nrows matrix))
-               (setf (matrix-layout matrix) (ecase (matrix-layout matrix)
-                                              (:row-major :column-major)
-                                              (:column-major :row-major))))
-        (let ((index-function
-                (ecase (matrix-layout matrix)
-                  (:row-major #'matrix-row-major-index)
-                  (:column-major #'matrix-column-major-index)))
-              (shape (shape matrix)))
-          (loop :for row :below (matrix-nrows matrix)
-                :do (loop :for col :from row :below (matrix-ncols matrix)
-                          :do (rotatef
-                               (aref (storage matrix) (apply index-function row col shape))
-                               (aref (storage matrix) (apply index-function col row shape)))))
-          (rotatef (matrix-ncols matrix) (matrix-nrows matrix))))
-    matrix))
-
 (define-extensible-function (transpose transpose-lisp) (matrix)
   (:documentation "Create a new matrix containing the transpose of MATRIX")
   (:method ((matrix matrix))
@@ -460,6 +437,21 @@ If fast is t then just change layout. Fast can cause problems when you want to m
                                   (index2 (apply index-function col row (shape new-matrix))))
                               (setf (aref (storage new-matrix) index2) (aref (storage matrix) index1))))))
       new-matrix)))
+
+(define-extensible-function (transpose! transpose!-lisp) (matrix &key fast)
+  (:documentation "Transpose MATRIX, replacing the elements of MATRIX, optionally performing a faster change of layout if FAST is specified")
+  (:method ((matrix matrix) &key fast)
+    "Transpose a matrix by copying values.
+If FAST is t then just change layout. Fast can cause problems when you want to multiply specifying transpose."
+    (if fast
+        (progn (rotatef (matrix-ncols matrix) (matrix-nrows matrix))
+               (setf (matrix-layout matrix) (ecase (matrix-layout matrix)
+                                              (:row-major :column-major)
+                                              (:column-major :row-major))))
+        ;; TODO: make it really inplace
+        (let ((transposed (transpose matrix)))
+          (replace (storage matrix) (storage transposed))))
+    matrix))
 
 ;; TODO: allow setf on matrix diag
 (define-extensible-function (diag diag-lisp) (matrix)
