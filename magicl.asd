@@ -139,7 +139,10 @@
                  (:file "lapack-bindings")
                  (:file "lapack-schur")
                  (:file "lapack-qz")
-                 (:file "lapack-csd")))))
+                 (:file "lapack-csd")
+                 ;; Last: the checks exercise the high-level API, so everything
+                 ;; they use has to be defined by the time they run.
+                 (:file "validate-backend")))))
 
 
 ;;; EXPOKIT
