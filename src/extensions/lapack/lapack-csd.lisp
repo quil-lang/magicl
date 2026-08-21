@@ -33,7 +33,11 @@
                                             (WORK-REF71685 WORK)
                                             (RWORK-REF71687 RWORK)
                                             (IWORK-REF71689 IWORK))
-      (MAGICL.LAPACK-CFFI::%%ZUNCSD
+      ;; Dispatched through a pointer rather than MAGICL.LAPACK-CFFI::%%ZUNCSD so
+      ;; that Accelerate's new-LAPACK spelling of the symbol works too; see
+      ;; newlapack.lisp. That binding names "zuncsd_" literally and is declaimed
+      ;; inline, so it can neither be redefined nor redirected after the fact.
+      (MAGICL.FOREIGN-LIBRARIES::CALL-ZUNCSD
        JOBU1 JOBU2 JOBV1T JOBV2T TRANS SIGNS M-REF71665 P-REF71666
        Q-REF71667 X11 LDX11-REF71669 X12 LDX12-REF71671
        X21 LDX21-REF71673 X22 LDX22-REF71675 THETA-REF71676

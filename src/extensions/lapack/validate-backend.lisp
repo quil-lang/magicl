@@ -39,9 +39,10 @@
 
 ;;; Completeness
 
-(defparameter *required-lapack-symbols*
-  '("zuncsd_" "zgesdd_" "zgeev_" "zheev_" "zgesvd_" "zgetrf_" "zgeqrf_")
-  "Fortran symbols that must be available for magicl's high-level API to work.
+(defparameter *required-lapack-routines*
+  '("zuncsd" "zgesdd" "zgeev" "zheev" "zgesvd" "zgetrf" "zgeqrf")
+  "Routines that must be available for magicl's high-level API to work, named
+without the trailing underscore.
 
 Deliberately a small subset of the symbols TRACK-SYMBOLS registers: most of
 those are bound but never reached, and refusing to start over a routine nothing
@@ -49,12 +50,19 @@ calls would be worse than useless. PRINT-AVAILABILITY-REPORT remains the way to
 see the whole picture. zuncsd_ is the one that matters in practice -- it backs
 MAGICL:CSD, and is exactly what Accelerate's legacy interface lacks.")
 
+(defun lapack-routine-available-p (base-name)
+  "Whether BASE-NAME, given without a trailing underscore, is callable.
+Accepts Accelerate's new-LAPACK spelling as well as the standard one.
+
+The lookup is process-wide in practice -- on SBCL the :LIBRARY argument does not
+restrict the search -- which is the question worth asking here: will a call to
+this routine resolve?"
+  (or (foreign-symbol-available-p (concatenate 'string base-name "_") 'liblapack)
+      (foreign-symbol-available-p (concatenate 'string base-name "$NEWLAPACK")
+                                  'liblapack)))
+
 (defun missing-lapack-symbols ()
-  ;; FOREIGN-SYMBOL-AVAILABLE-P is process-wide in practice -- on SBCL the
-  ;; :LIBRARY argument does not restrict the search -- which is exactly the
-  ;; question worth asking here: will a call to this routine resolve?
-  (remove-if (lambda (name) (foreign-symbol-available-p name 'liblapack))
-             *required-lapack-symbols*))
+  (remove-if #'lapack-routine-available-p *required-lapack-routines*))
 
 (defun check-lapack-completeness ()
   (let ((missing (missing-lapack-symbols)))
