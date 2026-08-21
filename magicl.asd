@@ -134,7 +134,8 @@
    (:module "bindings" :if-feature (:not :allegro)
     :components ((:file "lapack-cffi")))
    (:module "extensions/lapack"
-    :components ((:file "lapack-generics")
+    :components ((:file "newlapack")
+                 (:file "lapack-generics")
                  (:file "lapack-templates")
                  (:file "lapack-bindings")
                  (:file "lapack-schur")
