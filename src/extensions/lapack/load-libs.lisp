@@ -29,8 +29,13 @@
 
 (defvar *blapack-libs-loaded* nil)
 
+(defvar *lapack-library-path* nil
+  "Pathname of the LAPACK shared library actually loaded, once known.")
+
 (unless *blapack-libs-loaded*
-  (cffi:load-foreign-library 'liblapack)
+  ;; MAGICL_LAPACK_PATH overrides the search order above; see
+  ;; LOAD-LIBRARY-DESIGNATOR in the BLAS load-libs.
+  (setf *lapack-library-path* (load-library-designator 'liblapack "MAGICL_LAPACK_PATH"))
   (setf *blapack-libs-loaded* t))
 
 (magicl:define-backend :lapack
