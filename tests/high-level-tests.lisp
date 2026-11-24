@@ -136,6 +136,25 @@
           (magicl:schur a)
         (is (magicl:= a (magicl:@ zz tt (magicl:dagger zz))))))))
 
+(deftest test-lapack-completeness-reachable-routines ()
+  "Unused bindings must not prevent startup, but a missing SVD routine must."
+  (let* ((symbol 'magicl.foreign-libraries::lapack-routine-available-p)
+         (original (symbol-function symbol))
+         (missing '("zgesdd")))
+    (unwind-protect
+         (progn
+           (setf (symbol-function symbol)
+                 (lambda (name)
+                   (not (member name missing :test #'string=))))
+           (is (null (magicl.foreign-libraries::missing-lapack-symbols)))
+           (is (null (magicl.foreign-libraries::check-lapack-completeness)))
+           (push "zgesvd" missing)
+           (is (equal '("zgesvd")
+                      (magicl.foreign-libraries::missing-lapack-symbols)))
+           (signals magicl.foreign-libraries::backend-check-failed
+             (magicl.foreign-libraries::check-lapack-completeness)))
+      (setf (symbol-function symbol) original))))
+
 (deftest test-svd ()
   "Test the full and reduced SVDs."
   (labels ((mul-diag-times-gen (diag matrix)

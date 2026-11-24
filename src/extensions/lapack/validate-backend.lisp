@@ -40,13 +40,14 @@
 ;;; Completeness
 
 (defparameter *required-lapack-routines*
-  '("zuncsd" "zgesdd" "zgeev" "zheev" "zgesvd" "zgetrf" "zgeqrf")
+  '("zuncsd" "zgeev" "zheev" "zgesvd" "zgetrf" "zgeqrf")
   "Routines that must be available for magicl's high-level API to work, named
 without the trailing underscore.
 
 Deliberately a small subset of the symbols TRACK-SYMBOLS registers: most of
 those are bound but never reached, and refusing to start over a routine nothing
-calls would be worse than useless. PRINT-AVAILABILITY-REPORT remains the way to
+calls would be worse than useless. SVD uses zgesvd, not the zgesdd routine bound
+on Allegro. PRINT-AVAILABILITY-REPORT remains the way to
 see the whole picture. zuncsd_ is the one that matters in practice -- it backs
 MAGICL:CSD, and is exactly what Accelerate's legacy interface lacks.")
 
