@@ -443,14 +443,17 @@ If fast is t then just change layout. Fast can cause problems when you want to m
   (:method ((matrix matrix) &key fast)
     "Transpose a matrix by copying values.
 If FAST is t then just change layout. Fast can cause problems when you want to multiply specifying transpose."
-    (if fast
-        (progn (rotatef (matrix-ncols matrix) (matrix-nrows matrix))
-               (setf (matrix-layout matrix) (ecase (matrix-layout matrix)
-                                              (:row-major :column-major)
-                                              (:column-major :row-major))))
-        ;; TODO: make it really inplace
-        (let ((transposed (transpose matrix)))
-          (replace (storage matrix) (storage transposed))))
+    (cond
+      (fast
+       (rotatef (matrix-ncols matrix) (matrix-nrows matrix))
+       (setf (matrix-layout matrix) (ecase (matrix-layout matrix)
+                                      (:row-major :column-major)
+                                      (:column-major :row-major))))
+      (t
+       ;; TODO: make it really inplace
+       (let ((transposed (transpose matrix)))
+         (replace (storage matrix) (storage transposed))
+         (rotatef (matrix-ncols matrix) (matrix-nrows matrix)))))
     matrix))
 
 ;; TODO: allow setf on matrix diag
