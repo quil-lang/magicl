@@ -42,11 +42,9 @@ Returns NIL if neither is present."
 ;;; MAGICL:CSD, and a backend that lacks it is still perfectly usable for
 ;;; everything else. Erring here at load would take that away.
 
-(defvar *zuncsd-pointer* nil)
-
 (defun zuncsd-pointer ()
-  (or *zuncsd-pointer*
-      (setf *zuncsd-pointer* (require-lapack-routine "zuncsd"))))
+  ;; Raw foreign pointers do not survive saving and restoring a Lisp image.
+  (require-lapack-routine "zuncsd"))
 
 (defun call-zuncsd (jobu1 jobu2 jobv1t jobv2t trans signs m p q
                     x11 ldx11 x12 ldx12 x21 ldx21 x22 ldx22

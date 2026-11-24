@@ -196,6 +196,37 @@
       (check-reduced-svd short-fat-matrix))))
 
 
+(deftest test-csd-routine-resolution ()
+  "Resolve ZUNCSD anew, preserving symbol fallback and use-time errors."
+  (let* ((symbol 'cffi:foreign-symbol-pointer)
+         (original (symbol-function symbol))
+         (standard (cffi:make-pointer 1))
+         (fallback (cffi:make-pointer 2))
+         (available standard)
+         (lookups nil))
+    (unwind-protect
+         (progn
+           (setf (symbol-function symbol)
+                 (lambda (name &key library)
+                   (declare (ignore library))
+                   (push name lookups)
+                   (cond
+                     ((string= name "zuncsd_")
+                      (when (eq available standard) standard))
+                     ((string= name "zuncsd$NEWLAPACK")
+                      (when (eq available fallback) fallback)))))
+           (is (cffi:pointer-eq standard
+                                (magicl.foreign-libraries::zuncsd-pointer)))
+           (is (equal '("zuncsd_") (reverse lookups)))
+           (setf available fallback
+                 lookups nil)
+           (is (cffi:pointer-eq fallback
+                                (magicl.foreign-libraries::zuncsd-pointer)))
+           (is (equal '("zuncsd_" "zuncsd$NEWLAPACK") (reverse lookups)))
+           (setf available nil)
+           (signals error (magicl.foreign-libraries::zuncsd-pointer)))
+      (setf (symbol-function symbol) original))))
+
 (deftest test-csd-2x2-basic ()
   "Test CS decomposition of an equipartitioned 2x2 unitary matrix."
   (let ((x (magicl:random-unitary 2 :type '(complex double-float)))
