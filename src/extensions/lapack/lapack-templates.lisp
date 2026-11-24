@@ -124,12 +124,10 @@
   `(defmethod lapack-lu-solve ((lu ,class) ipiv (b ,class))
      (unless (square-matrix-p lu)
        (error "Expected a square matrix encoding a valid LU factorization."))
-     (let* ((a (magicl::storage lu))
+     (let* ((a (magicl::storage (if (eql :row-major (layout lu)) (transpose lu) lu)))
             (b-tensor (deep-copy-tensor b))
             (b (magicl::storage b-tensor))
-            (trans (ecase (layout lu)
-                     (:row-major "T")
-                     (:column-major "N")))
+            (trans "N")
             (lda (nrows lu))
             (n lda)
             (ldb (nrows b-tensor))
@@ -147,7 +145,7 @@
         b
         ldb
         info)
-       b-tensor)))
+       (magicl::from-storage b (list ldb nrhs) :layout :column-major))))
 
 (defun generate-lapack-svdls-for-type (class type lstsq-function)
   `(defmethod lapack-svdls ((a ,class) (b-tensor ,class) rcond)
@@ -220,56 +218,56 @@
 
 (defun generate-lapack-inv-for-type (class type lu-function inv-function)
   `(defmethod lapack-inv ((a ,class))
-     (let ((a-tensor (deep-copy-tensor a)))
+     (let* ((a-tensor (deep-copy-tensor a))
+            (a (magicl::storage a-tensor))
+            (m (nrows a-tensor))
+            (n (ncols a-tensor))
+            (lda m)
+            (ipiv-tensor (empty (list (max m n)) :type '(signed-byte 32)))
+            (ipiv (magicl::storage ipiv-tensor))
+            (info 0))
        (when (eql :row-major (layout a-tensor)) (transpose! a-tensor))
-       (let* ((a (magicl::storage a-tensor))
-              (m (nrows a-tensor))
-              (n (ncols a-tensor))
-              (lda m)
-              (ipiv-tensor (empty (list (max m n)) :type '(signed-byte 32)))
-              (ipiv (magicl::storage ipiv-tensor))
+       (,lu-function
+        m
+        n
+        a
+        lda
+        ipiv
+        info)
+       ;; TODO: This check is already performed by the LU
+       ;;       function, however INFO is not being returned
+       ;;       correctly. When the bindings are fixed this should
+       ;;       just check if INFO is non-zero
+       (assert (cl:notany
+                (lambda (x)
+                  (cl:= x 0))
+                (diag a-tensor))
+               () "The provided matrix is singular and cannot be inverted.")
+       (let* ((lwork -1)
+              (work1 (make-array (max 1 lwork) :element-type ',type))
+              (work nil)
               (info 0))
-         (,lu-function
-          m
+         ;; Perform work size query with work of length 1
+         (,inv-function
           n
           a
-          lda
+          m
           ipiv
+          work1
+          lwork
           info)
-         ;; TODO: This check is already performed by the LU
-         ;;       function, however INFO is not being returned
-         ;;       correctly. When the bindings are fixed this should
-         ;;       just check if INFO is non-zero
-         (assert (cl:notany
-                  (lambda (x)
-                    (cl:= x 0))
-                  (diag a-tensor))
-                 () "The provided matrix is singular and cannot be inverted.")
-         (let* ((lwork -1)
-                (work1 (make-array (max 1 lwork) :element-type ',type))
-                (work nil)
-                (info 0))
-           ;; Perform work size query with work of length 1
-           (,inv-function
-            n
-            a
-            m
-            ipiv
-            work1
-            lwork
-            info)
-           (setf lwork (round (realpart (aref work1 0))))
-           (setf work (make-array (max 1 lwork) :element-type ',type))
-           ;; Perform actual operation with correct work size
-           (,inv-function
-            n
-            a
-            m
-            ipiv
-            work
-            lwork
-            info))
-         (values (from-array a (shape a-tensor) :input-layout :column-major))))))
+         (setf lwork (round (realpart (aref work1 0))))
+         (setf work (make-array (max 1 lwork) :element-type ',type))
+         ;; Perform actual operation with correct work size
+         (,inv-function
+          n
+          a
+          m
+          ipiv
+          work
+          lwork
+          info))
+       (values (from-array a (list m n) :input-layout :column-major)))))
 
 (defun generate-lapack-svd-for-type (class type svd-function &optional real-type)
   `(defmethod lapack-svd ((m ,class) &key reduced)
@@ -414,7 +412,8 @@
            (setf work (make-array (max 1 lwork) :element-type ',type))
            ;; run it again with optimal workspace size
            (,eig-function jobz uplo n a lda w work lwork rwork info)
-           (values (coerce w 'list) a-tensor))))))
+           (values (coerce w 'list)
+                   (magicl::from-storage a (list rows rows) :layout :column-major)))))))
 
 ;; TODO: implement row-major checks in these functions
 (defun generate-lapack-ql-qr-rq-lq-for-type (class type

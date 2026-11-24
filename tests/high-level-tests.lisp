@@ -308,42 +308,57 @@
       (is (magicl:= x (magicl:from-list '((2.2d0 1d0) (-2.5d0 -1d0)) '(2 2)))))))
 
 (deftest data-layout-invariant ()
-  "Check that QR/QL/LU/etc. is invariant to row- or column-major order"
+  "Check that QR/QL/RQ/LQ/LU/etc. are invariant to row- or column-major order."
   (loop repeat 50
-        for row-major    = (magicl:rand '(100 50) :layout :row-major)
-        for column-major = (magicl:@ row-major (magicl:eye '(50 50) :layout :column-major))
-        for rms          = (magicl:rand '(50 50) :layout :row-major)
-        for cms          = (magicl:@ rms (magicl:eye '(50 50) :layout :column-major))
+        for row-major         = (magicl:rand '(100 50) :layout :row-major)
+        for column-major      = (magicl:@ row-major (magicl:eye '(50 50) :layout :column-major))
+        for row-major-wide    = (magicl:rand '(50 100) :layout :row-major)
+        for column-major-wide = (magicl:@ row-major-wide (magicl:eye '(100 100) :layout :column-major))
+        for rms               = (magicl:rand '(50 50) :layout :row-major)
+        for cms               = (magicl:@ rms (magicl:eye '(50 50) :layout :column-major))
+        for b-rm              = (magicl:rand '(50 2) :layout :row-major)
+        for b-cm              = (magicl:@ b-rm (magicl:eye '(2 2) :layout :column-major))
+        for h-seed            = (magicl:rand '(20 20) :type '(complex double-float) :layout :row-major)
+        for h-rm              = (magicl:.+ h-seed (magicl:conjugate-transpose h-seed))
+        for h-cm              = (magicl:@ h-rm (magicl:eye '(20 20) :type '(complex double-float) :layout :column-major))
         do
         ;; QR
-        (is (equalp
-             (multiple-value-list
-              (magicl:qr row-major))
-             (multiple-value-list
-              (magicl:qr column-major))))
+        (is (every #'magicl:=
+                   (multiple-value-list (magicl:qr row-major))
+                   (multiple-value-list (magicl:qr column-major))))
         ;; QL
-        (is (equalp
-             (multiple-value-list
-              (magicl:ql row-major))
-             (multiple-value-list
-              (magicl:ql column-major))))
+        (is (every #'magicl:=
+                   (multiple-value-list (magicl:ql row-major))
+                   (multiple-value-list (magicl:ql column-major))))
+        ;; RQ
+        (is (every #'magicl:=
+                   (multiple-value-list (magicl:rq row-major-wide))
+                   (multiple-value-list (magicl:rq column-major-wide))))
+        ;; LQ
+        (is (every #'magicl:=
+                   (multiple-value-list (magicl:lq row-major-wide))
+                   (multiple-value-list (magicl:lq column-major-wide))))
         ;; LU
-        (is (equalp
-             (multiple-value-list
-              (magicl:lu row-major))
-             (multiple-value-list
-              (magicl:lu column-major))))
+        (is (every #'magicl:=
+                   (multiple-value-list (magicl:lu row-major))
+                   (multiple-value-list (magicl:lu column-major))))
         ;; Solver
-        (flet ((solve (m)
+        (flet ((solve (m b)
                  (multiple-value-bind (lu ipiv)
                      (magicl:lu m)
-                   (magicl:lu-solve lu ipiv (magicl:ones '(100 1))))))
-          (is (equalp (solve rms) (solve cms))))
+                   (magicl:lu-solve lu ipiv b))))
+          (let ((sol (solve cms b-cm)))
+            (is (magicl:= (solve rms b-rm) sol))
+            (is (magicl:= (solve rms b-cm) sol))
+            (is (magicl:= (solve cms b-rm) sol))))
         ;; Inversion
-        (is (equalp (magicl:inv rms) (magicl:inv cms)))
+        (is (magicl:= (magicl:inv rms) (magicl:inv cms)))
         ;; SVD
-        (is (equalp
-             (multiple-value-list
-              (magicl:svd row-major))
-             (multiple-value-list
-              (magicl:svd column-major))))))
+        (is (every #'magicl:=
+                   (multiple-value-list (magicl:svd row-major))
+                   (multiple-value-list (magicl:svd column-major))))
+        ;; Hermitian eigensolver
+        (multiple-value-bind (vals-rm vecs-rm) (magicl:hermitian-eig h-rm)
+          (multiple-value-bind (vals-cm vecs-cm) (magicl:hermitian-eig h-cm)
+            (is (equalp vals-rm vals-cm))
+            (is (magicl:= vecs-rm vecs-cm))))))
